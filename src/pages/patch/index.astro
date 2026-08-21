@@ -1,0 +1,18 @@
+---
+import { getLatestPatch } from "../../lib/data";
+
+const latest = getLatestPatch();
+const target = `/patch/${latest.id}`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RiftScry — current patch</title>
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={new URL(target, Astro.site)} />
+  </head>
+  <body>
+    <p>Redirecting to <a href={target}>patch {latest.id}</a>…</p>
+  </body>
+</html>

@@ -1,0 +1,120 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import DeltaGlyph from "../../components/DeltaGlyph.astro";
+import { getAllPatches } from "../../lib/data";
+
+const patches = getAllPatches();
+
+function fmt(date: string): string {
+  return new Date(date + "T00:00:00Z").toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+}
+---
+
+<Layout
+  title="All League Patches — RiftScry"
+  description="Every 2026 season League of Legends patch, diffed: champion, item and system changes as structured data."
+>
+  <div class="page">
+    <h1>The season, patch by patch.</h1>
+    <ol class="patch-list" reversed>
+      {
+        patches.map((p) => {
+          const buffs = p.champions.filter((c) => c.classification === "buff").length;
+          const nerfs = p.champions.filter((c) => c.classification === "nerf").length;
+          return (
+            <li>
+              <a href={`/patch/${p.id}`}>
+                <span class="pid num">{p.id}</span>
+                <span class="date">{fmt(p.releaseDate)}</span>
+                <span class="stats">
+                  <span class="stat">
+                    <DeltaGlyph kind="buff" showLabel={false} />
+                    <span class="num">{buffs}</span>
+                  </span>
+                  <span class="stat">
+                    <DeltaGlyph kind="nerf" showLabel={false} />
+                    <span class="num">{nerfs}</span>
+                  </span>
+                  <span class="total num">{p.champions.length} champions</span>
+                </span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</Layout>
+
+<style>
+  .page {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--s7) var(--page-pad) 0;
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--s6);
+  }
+
+  .patch-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .patch-list a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s5);
+    padding: var(--s4) 0;
+    border-top: 1px solid var(--line);
+    transition: background-color var(--t-fast) var(--ease-out);
+  }
+
+  .patch-list a:hover {
+    background: var(--ink-2);
+    color: inherit;
+  }
+
+  .pid {
+    font-size: var(--text-xl);
+    color: var(--cream);
+    min-width: 5.5ch;
+  }
+
+  .date {
+    color: var(--cream-faint);
+    font-size: var(--text-sm);
+    min-width: 5ch;
+  }
+
+  .stats {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s4);
+    margin-left: auto;
+    font-size: var(--text-sm);
+  }
+
+  .stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--s1);
+  }
+
+  .total {
+    color: var(--cream-faint);
+  }
+
+  @media (max-width: 640px) {
+    .total {
+      display: none;
+    }
+  }
+</style>

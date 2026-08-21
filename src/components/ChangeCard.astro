@@ -1,0 +1,153 @@
+---
+import type { ChampionChange } from "../lib/schema";
+import type { ChampionMeta, Role } from "../lib/data";
+import ClassificationBadge from "./ClassificationBadge.astro";
+import DeltaRow from "./DeltaRow.astro";
+
+interface Props {
+  change: ChampionChange;
+  meta: ChampionMeta | undefined;
+  roles: Role[];
+  assetVersion: string;
+}
+
+const { change, meta, roles, assetVersion } = Astro.props;
+const name = meta?.name ?? change.championId;
+const title = meta?.title ?? "";
+const portrait = `https://ddragon.leagueoflegends.com/cdn/${assetVersion}/img/champion/${change.championId}.png`;
+
+const ABILITY_LABEL: Record<string, string> = {
+  base: "Base Stats",
+  passive: "P",
+  Q: "Q",
+  W: "W",
+  E: "E",
+  R: "R",
+  other: "",
+};
+---
+
+<article
+  class="change-card"
+  id={change.championId.toLowerCase()}
+  data-champion-id={change.championId.toLowerCase()}
+  data-classification={change.classification}
+  data-roles={roles.join(",")}
+  data-name={name.toLowerCase()}
+>
+  <header>
+    <img src={portrait} alt="" width="56" height="56" loading="lazy" decoding="async" />
+    <div class="who">
+      <h3><a href={`/champion/${change.championId.toLowerCase()}`}>{name}</a></h3>
+      {title && <p class="title">{title}</p>}
+    </div>
+    <ClassificationBadge classification={change.classification} />
+  </header>
+  {change.summary && <p class="summary">{change.summary}</p>}
+  <div class="abilities">
+    {
+      change.abilities.map((a) => (
+        <section class="ability">
+          <h4>
+            {ABILITY_LABEL[a.ability] && a.ability !== "other" && (
+              <span class="slot num">{ABILITY_LABEL[a.ability]}</span>
+            )}
+            {a.ability !== "base" && <span class="ability-name">{a.name}</span>}
+          </h4>
+          <div>
+            {a.changes.map((c) => (
+              <DeltaRow change={c} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</article>
+
+<style>
+  .change-card {
+    padding: var(--s5) 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .change-card[data-filtered="out"] {
+    display: none;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: var(--s4);
+    margin-bottom: var(--s3);
+  }
+
+  header img {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--line-strong);
+  }
+
+  .who {
+    margin-right: auto;
+  }
+
+  h3 {
+    font-size: var(--text-xl);
+    letter-spacing: 0.02em;
+  }
+
+  h3 a:hover {
+    color: var(--gold-bright);
+  }
+
+  .title {
+    color: var(--cream-faint);
+    font-size: var(--text-sm);
+  }
+
+  .summary {
+    color: var(--cream-dim);
+    font-size: var(--text-sm);
+    max-width: 68ch;
+    margin-bottom: var(--s4);
+    line-height: 1.7;
+  }
+
+  .ability {
+    margin-bottom: var(--s4);
+  }
+
+  .ability:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-bottom: var(--s2);
+  }
+
+  .slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6em;
+    padding: 0 0.3em;
+    height: 1.6em;
+    border: 1px solid var(--gold-deep);
+    color: var(--gold-bright);
+    font-size: var(--text-xs);
+  }
+
+  .ability-name {
+    color: var(--cream);
+  }
+</style>

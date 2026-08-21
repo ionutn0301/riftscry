@@ -1,0 +1,37 @@
+---
+import type { Classification } from "../lib/schema";
+import DeltaGlyph from "./DeltaGlyph.astro";
+
+interface Props {
+  classification: Classification;
+}
+
+const { classification } = Astro.props;
+---
+
+<span class={`badge badge-${classification}`}>
+  <DeltaGlyph kind={classification} />
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--s1) var(--s3);
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    background: var(--ink-2);
+  }
+
+  .badge-buff {
+    border-color: var(--buff-dim);
+  }
+
+  .badge-nerf {
+    border-color: var(--nerf-dim);
+  }
+
+  .badge-rework {
+    border-color: var(--gold-deep);
+  }
+</style>

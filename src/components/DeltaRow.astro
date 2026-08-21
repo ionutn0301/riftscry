@@ -1,0 +1,122 @@
+---
+import type { Change } from "../lib/schema";
+import { formatDelta, relativeDelta } from "../lib/deltas";
+
+interface Props {
+  change: Change;
+}
+
+const { change } = Astro.props;
+const rel = change.kind === "numeric" ? formatDelta(relativeDelta(change.before, change.after)) : null;
+const dirLabel =
+  change.kind === "numeric"
+    ? change.direction === "buff"
+      ? "Buff"
+      : change.direction === "nerf"
+        ? "Nerf"
+        : null
+    : null;
+---
+
+{
+  change.kind === "numeric" ? (
+    <div class={`delta-row dir-${change.direction}`}>
+      <span class="label">{change.label}</span>
+      <span class="values num">
+        <span class="before">{change.before}</span>
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+        <span class="visually-hidden">changed to</span>
+        <span class="after">{change.after}</span>
+      </span>
+      {(rel || dirLabel) && (
+        <span class="meta num">
+          {rel && <span class="rel">{rel}</span>}
+          {dirLabel && (
+            <span class="dir">
+              <span aria-hidden="true">{change.direction === "buff" ? "▲" : "▼"}</span> {dirLabel}
+            </span>
+          )}
+        </span>
+      )}
+    </div>
+  ) : (
+    <div class="delta-row prose-row">
+      <span class="label">{change.label}</span>
+      <span class="prose-text">{change.text}</span>
+    </div>
+  )
+}
+
+<style>
+  .delta-row {
+    display: grid;
+    grid-template-columns: minmax(8rem, 14rem) 1fr auto;
+    gap: var(--s2) var(--s4);
+    align-items: baseline;
+    padding: var(--s2) 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--text-sm);
+  }
+
+  .delta-row:last-child {
+    border-bottom: none;
+  }
+
+  .label {
+    color: var(--cream-dim);
+  }
+
+  .values {
+    color: var(--cream);
+    overflow-wrap: anywhere;
+  }
+
+  .before {
+    color: var(--cream-faint);
+    text-decoration: line-through;
+    text-decoration-color: var(--line-strong);
+    text-decoration-thickness: 1px;
+  }
+
+  .arrow {
+    color: var(--gold);
+    margin: 0 var(--s2);
+  }
+
+  .meta {
+    display: inline-flex;
+    gap: var(--s3);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+
+  .rel {
+    color: var(--cream-faint);
+  }
+
+  .dir-buff .dir {
+    color: var(--buff);
+  }
+
+  .dir-nerf .dir {
+    color: var(--nerf);
+  }
+
+  .prose-text {
+    grid-column: 2 / -1;
+    color: var(--cream);
+  }
+
+  @media (max-width: 640px) {
+    .delta-row {
+      grid-template-columns: 1fr;
+      gap: var(--s1);
+    }
+
+    .meta {
+      justify-self: start;
+    }
+  }
+</style>
