@@ -17,6 +17,19 @@ export function notesUrlFor(id: string): string {
 }
 
 /**
+ * Riot has used two slug forms in 2026: the long
+ * "league-of-legends-patch-26-16-notes" and (early season) the short
+ * "patch-26-1-notes". Try in order.
+ */
+export function notesUrlCandidatesFor(id: string): string[] {
+  const slug = id.replace(".", "-");
+  return [
+    notesUrlFor(id),
+    `https://www.leagueoflegends.com/en-us/news/game-updates/patch-${slug}-notes/`,
+  ];
+}
+
+/**
  * Map a player-facing patch id ("26.16") to the Data Dragon version that
  * shares its minor ("16.16.1"). ddragon versions are sorted newest-first;
  * the first match wins.

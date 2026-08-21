@@ -1,0 +1,1912 @@
+{
+  "schemaVersion": 1,
+  "id": "26.1",
+  "assetVersion": "16.1.1",
+  "releaseDate": "2026-01-07",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/",
+  "ingestedAt": "2026-08-21T20:21:44.063Z",
+  "champions": [
+    {
+      "championId": "Cassiopeia",
+      "classification": "buff",
+      "summary": "While Cassiopeia's no boots passive is very thematic, the addition of more boot based systems over the years (like role quest rewards) has made it feel like a punishment at times instead of a boon. We think it's important for Cassio to have the opportunity to engage with these new systems so we're reworking the passive into a new movement based effect. (We also wanted to do Soobin a solid.)",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Movement Speed",
+              "before": "328",
+              "after": "335",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Serpentine Grace",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Passive Rework",
+              "before": "Gain 4-72 Movement Speed (Based on level), but she cannot purchase boots.",
+              "after": "Increased effectiveness of all Movement Speed buffs by 6-40% (based on level).",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Samira",
+      "classification": "adjustment",
+      "summary": "We like that Samira's R and Q are almost direct auto-attack replacements and want to preserve as much of their crit damage as possible. However, with the value of crit going up, the value of AD must then go down.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Flair",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Q Non-Crit Damage",
+              "before": "5/10/15/20/25 (+ 95/102.5/110/117.5/125% total AD)",
+              "after": "0/5/10/15/20 (+ 110% total AD)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Q Critical Strike Damage",
+              "before": "1.25/1.65x with IE",
+              "after": "50% of bonus crit damage: 1.5/1.65x with IE",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Inferno Trigger",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "R Non-Crit Damage",
+              "before": "5/15/25 + 45% total AD",
+              "after": "20/40/60 + 30% total AD",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "R Critical Damage",
+              "before": "1.75/2.15x with IE",
+              "after": "100% of bonus crit damage: 2.0/2.3x with IE",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Aphelios",
+      "classification": "adjustment",
+      "summary": "Aphelios has a lot of intricacies and some of his abilities try to behave exactly like basic attacks. With that in mind, we're converting Severum's active to total attack damage in line with similar abilities and generally lowering the bonus AD ratios of several abilities that already scale well due to firing off basic attacks that can crit as part of their cast.",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "Calibrum",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Damage per Mark",
+              "before": "15 (+ 20% bonus AD)",
+              "after": "15 (+ 10% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "other",
+          "name": "Severum",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Onslaught Damage per Hit",
+              "before": "10/15/20/25/30/35/40 (+ 22/25/28/31/34/37/40% bonus AD)",
+              "after": "(+ 19/22.5/26/29.5/33/36.5/40% total AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Still critically strikes for 100% crit damage (1.75/2.15x ⇒ 2.0/2.3x)"
+            }
+          ]
+        },
+        {
+          "ability": "other",
+          "name": "Infernum",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Duskwave Active Damage",
+              "before": "25/31.67/38.33/45/51.67/58.33/65 (+ 56/60/64/68/72/76/80% bonus AD)",
+              "after": "20/35/50/65/80/95/110 (+ 10/11/12/13/14/15/16% bonus AD)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Follow-up attack still critically strikes for 100% crit damage (1.75/2.15x ⇒ 2.0/2.3x)"
+            }
+          ]
+        },
+        {
+          "ability": "other",
+          "name": "Crescendum",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Sentry Active Damage",
+              "before": "35/50/65/80/95/110/125 (+ 42/45/48/51/54/57/60% bonus AD)",
+              "after": "35/50/65/80/95/110/125 (+ 30/32/34/36/38/40/42% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Still critically strikes for 100% crit damage (1.75/2.15x ⇒ 2/2.3x)"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Moonlight Vigil",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Follow-Up Attack Critical Damage",
+              "before": "1.2/1.6x with IE",
+              "after": "30% of bonus critical strike damage: 1.3/1.39x with IE",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Caitlyn",
+      "classification": "buff",
+      "summary": "Caitlyn's top-end Headshot damage has gotten out of hand and with the value of critical strikes going up it's about to get even stronger, so we're taking a heavy swing to Headshot's top end. We're also making her R scale with Infinity Edge, as it already scales with critical strike chance, but we're reducing its damage to make room for her stronger basic attacks.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Headshot",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "0-148.75/182.75% total AD",
+              "after": "100%*Bonus Crit Damage (0-100/130% total AD)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Ace in the Hole",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "Up to 1.5x",
+              "after": "30% of bonus critical strike damage: up to 1.3/1.39x with IE",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Tristana",
+      "classification": "nerf",
+      "summary": "Tristana's E is one of the sharpest-scaling abilities in the game, and considering her late game is already poised to be great with a strong attack speed steroid, long range, and lots of crit damage, we think the top end of her E can stand to go down a few pegs.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Explosive Charge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Non-crit Damage",
+              "before": "60/70/80/90/100 (+ 100/110/120/130/140% bonus AD)",
+              "after": "60/85/110/135/160 (+ 80% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "100%: Up to 1.75/2.15x with IE",
+              "after": "40% of critical strike damage: 1.40/1.52x with IE",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nilah",
+      "classification": "adjustment",
+      "summary": "Nilah's in an interesting place where her Q didn't scale with Infinity Edge, so unlocking that avenue marks a small power increase on top of her basic attacks getting better, so we sought to find other ways to slightly lower her late game scaling as compensation.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Growth",
+              "before": "2.25%",
+              "after": "2%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Formless Blade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Active Damage",
+              "before": "5/10/15/20/25 (+ 90/95/100/105/110% total AD)",
+              "after": "0/10/20/30/40 (+ 100% total AD)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "Up to 2x",
+              "after": "80% of bonus crit damage: 1.8/2.04x",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Armor Penetration Crit Scaling",
+              "before": "0-33%",
+              "after": "0-30%",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Apotheosis",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "80",
+              "after": "100",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Jinx",
+      "classification": "nerf",
+      "summary": "We like the overall shape of how Jinx functions and generally just want to preserve the value of her minigun's high attack speed, so we're making sure her two stances are more distinguished from one another and generally lowering a bit of spell damage to keep her attack-focused.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Growth",
+              "before": "1.4%",
+              "after": "1%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Super Mega Death Rocket!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Maximum Flat Damage",
+              "before": "250/400/550 (+ 130% bonus AD)",
+              "after": "200/350/500 (+ 120% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Jhin",
+      "classification": "nerf",
+      "summary": "Jhin won't behave any differently next season as we want to avoid letting his guaranteed crit fourth shot do too much damage.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Multiplicative Crit Damage Mod",
+              "before": "86%",
+              "after": "75% (1.505x ⇒ 1.5x)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Sivir",
+      "classification": "buff",
+      "summary": "As Sivir's going to gain a lot of power from stronger Ricochet crits, we're reducing her Q's scaling.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Boomerang Blade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60/85/110/135/160 (+ 85% bonus AD)",
+              "after": "60/85/110/135/160 (+ 70% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "Up to 1.5x",
+              "after": "40%: 1.4/1.52x",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zeri",
+      "classification": "adjustment",
+      "summary": "We're updating Zeri's E to crit exactly as a basic attack would, which means re-tuning some of her abilities to make room for that power.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Ultrashock Laser",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "30/70/110/150/190 (+ 130% total AD)",
+              "after": "30/70/110/150/190 (+ 120% total AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Through-Wall Damage",
+              "before": "1.75x, 2.15x with IE",
+              "after": "75% of bonus critical strike damage: 1.75/1.975x",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Tooltip now shows the enhanced damage"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Damage now cosmetically critically strikes its targets when shot through a wall"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Spark Surge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "20/22/24/26/28 (+12% bonus AD)",
+              "after": "17/19/21/23/25 (+ 10% bonus AD)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "Up to 1.85x every hit",
+              "after": "100% of bonus crit damage on crit: 2.0/2.3x",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Lightning Crash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Active Damage",
+              "before": "200/300/400 (+ 100% bonus AD)",
+              "after": "150/250/350 (+ 100% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Lucian",
+      "classification": "adjustment",
+      "summary": "Lucian's builds are pretty sensible and as a spell-focused ADC, but we want to make sure his spell scaling is good. We're updating R to fire even more bullets with crit damage, which will make crit scale his ult just as well as it scales basic attacks. Considering he's already got extremely strong AD scaling and we want to make sure that Navori Flickerblades feels good, we're bringing down some of his Q's AD scaling.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "2.9",
+              "after": "2.5",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Growth",
+              "before": "3.3%",
+              "after": "2.5%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Piercing Light",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "85/115/145/175/205 (+ 60/75/90/105/120% bonus AD)",
+              "after": "80/115/150/185/220 (+ 100% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "The Culling",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "R Extra Bolts from Crit Chance",
+              "before": "Up to 25",
+              "after": "100% of bonus crit damage: Up to 22/28",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total R Bolts",
+              "before": "22-47 (based on critical strike chance)",
+              "after": "22-44/50 (based on critical strike chance and damage)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Xayah",
+      "classification": "nerf",
+      "summary": "We're updating Xayah's E to care about crit damage and adjusting her E's overall damage profile to be more reliable and less snowbally.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Bladecaller",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "55/65/75/85/95 (+ 60% bonus AD)",
+              "after": "50/65/80/95/110 (+ 40% bonus AD)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "Up to 75%",
+              "after": "Up to 50% of bonus crit damage: 1.5/1.65x",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Draven",
+      "classification": "nerf",
+      "summary": "Draven is very auto-attack focused and averages about two crit items per game, so he's also in need of some compensation. Considering he's gaining direct auto-attack DPS, we're trying to compensate him directly on the same axis.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AD Growth",
+              "before": "3.6",
+              "after": "3",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Blood Rush",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed",
+              "before": "30/35/40/45/50%",
+              "after": "20/25/30/35/40%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yunara",
+      "classification": "nerf",
+      "summary": "Yunara has a crit build and an on-hit build, but even her on-hit build almost always picks up Hurricane, so she's getting stronger no matter what she does next season. We're looking for nerfs that will skew more toward low-Attack Speed high-AD crit builds, as they'll be more directly buffed by the global crit damage increase.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Cultivation of Spirit",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed",
+              "before": "25/35/45/55/65%",
+              "after": "20/30/40/50/60%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "other",
+          "name": ">R+W - Arc of Ruin",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "175/350/525 (+ 150% bonus AD)",
+              "after": "160/320/480 (+ 120% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Akshan",
+      "classification": "adjustment",
+      "summary": "Akshan's abilities currently scale crit in three different ways and we're making that more consistent here. His passive auto, being functionally a true basic attack, will crit for 100% value. Meanwhile, the crit scaling on E and R are going down as compensation. We're also doing some discretionary adjustments to allow Q-max and E-max to perform at similar levels of power by adjusting their rank-up incentives.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Dirty Fighting",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "P second shot crit damage",
+              "before": "30% of bonus crit damage (1.225/1.345x)",
+              "after": "100% of bonus crit damage: 2/2.3x",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Fixed a bug where the second shot could bypass blind if it didn't crit."
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Avengerang",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "5/25/45/65/85 (+ 80% total AD)",
+              "after": "45/75/105/135/165 (+ 70% bonus AD)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Heroic Swing",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "15/30/45/60/75 (+ 15% total AD)",
+              "after": "8/16/24/32/40 (+ 25% total AD)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "1.575/1.935x",
+              "after": "50% of bonus crit damage: 1.5/1.65x",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Clarified that damage scales with attack speed in tooltip."
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Comeuppance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "1.5/1.7x",
+              "after": "30% of bonus crit damage: 1.3/1.42x",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Gangplank",
+      "classification": "adjustment",
+      "summary": "Gangplank is one of two champions (alongside Smolder) who we think is going to gain extra power due to Essence Reaver once again building from Sheen. We expect him to perform much, much better with his increased critical strike damage, so we're pulling out many of the unique crit scalars that have been added over the years and delivering an extra hit to his E on top.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Trial by Fire",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "50-250 (based on level) (+100% bonus AD) (+200% Crit Chance)",
+              "after": "50-250 (+ 100% bonus AD) (+ 0% crit scaling)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Powder Keg",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Champion Damage",
+              "before": "75 / 105 / 135 / 165 / 195",
+              "after": "75 / 95 / 115 / 135 / 155",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Timer no longer reduces to 0.25 seconds at level 19."
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "No longer deals 5% more damage on critical strike."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yone",
+      "classification": "buff",
+      "summary": "Yone won't be much different this year. Considering he doubles how much critical strike chance he gets from each item, he just isn't allowed to crit for full damage.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Damage",
+              "before": "1.75/2.15x",
+              "after": "90% (1.8/2.07x)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yasuo",
+      "classification": "buff",
+      "summary": "Yasuo won't be much different this year. Considering he doubles how much critical strike chance he gets from each item, he just isn't allowed to crit for full damage.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Damage",
+              "before": "1.75/2.15x",
+              "after": "90% (1.8/2.07x)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "MissFortune",
+      "classification": "adjustment",
+      "summary": "Miss Fortune tends to build quite a lot of critical strike chance and we'd like it to stay that way, but she can't just be directly buffed so we're here to compensate some of that value by softening her Q crit mod. For her R, we want to make sure that critical strikes feel like they have some impact, so we're increasing the crit mod slightly, but in order to not push her scaling too hard, have compensated that with a new base damage and a lower AD ratio.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Double Up",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Active Critical Damage",
+              "before": "1.75/2.15x",
+              "after": "50% of bonus crit damage (1.5/1.65x)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Bullet Time",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80% total AD (+ 25% AP)",
+              "after": "20 / 30 / 40 (+60% Total AD) (+ 25% AP)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "1.2/1.28x",
+              "after": "30% of bonus crit damage (1.3/1.39x)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Tryndamere",
+      "classification": "adjustment",
+      "summary": "Tryndamere is getting some real gameplay updates with this patch and some very real nerfs due to how much critical strike chance he normally has. To weaken how incredible his early game all-ins can be with 200% crit damage, we're nerfing his early bonus AD from Q and nerfing his early E as well. However, he's also getting some new tools. First, his Q now gives full value at 10% remaining health, meaning he can get the full bonus attack damage during his ultimate and it no longer has a disincentive for ranking up. Second, his W will now slow enemies any time they are running away from Tryndamere, regardless of where they were looking when he cast it. We expect this substantial increase in reliability is a big buff, so we've preemptively nerfed the slow itself. Though the slow duration is going down, the AD reduction is still the full four seconds regardless of facing.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Bloodlust",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus AD",
+              "before": "5 / 10 / 15 / 20 / 25 (+ up to 15 / 25 / 35 / 45 / 55 based on missing health)",
+              "after": "0 (+20 / 35 / 50 / 65 / 80 based on missing health)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Bonus AD",
+              "before": "Max at 0% remaining HP",
+              "after": "Max at 10% remaining HP",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Clarified the per-fury and maximum heal in Q's tooltip."
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Mocking Shout",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "No longer slows enemies who are facing away when cast for 4 seconds."
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Now slows any enemy while they're facing away from Tryndamere during the 2.5 second debuff."
+            },
+            {
+              "kind": "numeric",
+              "label": "Slow",
+              "before": "30 / 37.5 / 45 / 52.5 / 60%",
+              "after": "30 / 35 / 40 / 45 / 50%",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Enemy attack damage is still reduced by 4 seconds."
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Spinning Slash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "75 / 105 / 135 / 165 / 195 (+ 130% Bonus AD)",
+              "after": "70 / 105 / 140 / 175 / 210 (+ 100% Bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Twitch",
+      "classification": "nerf",
+      "summary": "Twitch's late game team deletion with 200% crit damage will probably be too fast, so we're targeting some general late-game DPS nerfs.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Growth",
+              "before": "3.38%",
+              "after": "3%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "3.1",
+              "after": "3",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Ambush",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Attack Speed",
+              "before": "45 / 50 / 55 / 60 / 65%",
+              "after": "40 / 45 / 50 / 55 / 60%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ashe",
+      "classification": "nerf",
+      "summary": "Ashe is already quite attack-reliant and pretty balanced but considering she buys about 1.5 crit items per game, we're lowering her late game a little to make room for the increased damage coming her way.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Growth",
+              "before": "3.33%",
+              "after": "3%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "3.45",
+              "after": "3",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Frost Shot",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "100% (up to 1.75/2.15x)",
+              "after": "100% (up to 2/2.3x)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Volley",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 95 / 130 / 165 / 200 (+ 110% Bonus AD)",
+              "after": "60 / 95 / 130 / 165 / 200 (+ 100% Bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Smolder",
+      "classification": "buff",
+      "summary": "Smolder, like Gangplank, stands to gain a lot of power from Essence Reaver's changes in this patch so we're taking a swing at how strongly his Q scales with critical strike purchases.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Super Scorcher Breath",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "Up to 1.75/2.15x",
+              "after": "50% of bonus crit damage (Up to 1.5/1.65x) (also affects passive Q stacks)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kindred",
+      "classification": "adjustment",
+      "summary": "Kindred's E mechanics are rather confusing and they build several critical strike items already. So we're updating the E to be much easier to understand and reducing the numbers. We're also modernizing the E's monster cap to allow for more damage when building AD and ranking up the ability.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Mounting Dread",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Missing Health Crit",
+              "before": "1.5/1.9x if target is below 25-75% (based on crit chance) Health",
+              "after": "50% of bonus crit chance and crit damage always (up to 1.5/1.65x)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Pounce Damage",
+              "before": "1.75/2.15x on crit",
+              "after": "50% of bonus crit chance and crit damage always (up to 1.5/1.65x)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Monster Damage Cap",
+              "before": "300 including base damage and bonus AD ratio",
+              "after": "200 to only the %HP portion (This is a buff in almost all scenarios)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Corki",
+      "classification": "nerf",
+      "summary": "Corki isn't particularly strong at the moment, so while this is a nerf on paper, we expect Corki will be overall stronger at the start of the season. This nerf is aimed at weakening his ability to crush a minion wave right before a Recall.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Valkyrie",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage per second",
+              "before": "40 / 55 / 70 / 85 / 100 (+40% bonus AD) (+ 30% AP)",
+              "after": "30 / 45 / 60 / 75 / 90 (+40% bonus AD) (+ 30% AP)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Shaco",
+      "classification": "adjustment",
+      "summary": "When Shaco crits during a Backstab or a Deceive, everything crits along with it for his full crit damage, so his top end can be very, very high. We like that he builds for crit sometimes and want to let as many of these tools inherit the new higher base crit damage, but also want to modernize his other scalings to respect crit damage mods more consistently and generally preserve the total power level of Shaco builds that don't buy any critical strike chance.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Backstab",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "20-35 (based on level) (+25% bonus AD)",
+              "after": "20-35 (based on level)(+ 20% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Modifier",
+              "before": "100% (1.75/2.15x)",
+              "after": "100% (2.0/2.3x)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Deceive",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Backstab Modifier",
+              "before": "1.55/1.95x",
+              "after": "60% of bonus crit damage (1.6/1.78x)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Backstab on Crit",
+              "before": "100% (1.75/2.15x)",
+              "after": "100% (2.0/2.3x)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Graves",
+      "classification": "adjustment",
+      "summary": "The functional result of these Graves changes should be almost nothing. He'll deal about 1% more damage with his basic attacks when critically striking.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Damage",
+              "before": "45% of bonus (33.75/51.75%)",
+              "after": "35% of bonus (35/45.5%)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total Damage on Crit",
+              "before": "250-357% total AD",
+              "after": "252-360% total AD",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Quinn",
+      "classification": "buff",
+      "summary": "As Quinn builds a decent amount of crit and that crit manifests in stronger autos and more passive procs, we're compensation nerfing those same auto-reliant passive procs.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Harrier",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "10-95 (based on level) (+ 16-50% (based on level) total AD)",
+              "after": "15-120 (based on level) (+ 40% bonus AD)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Senna",
+      "classification": "nerf",
+      "summary": "Like Jhin, Yasuo, and Yone, Senna's guaranteed critical strikes cannot sustain a 2x modifier, so we're lowering her base crit damage down to a value similar to last year.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Damage",
+              "before": "100% of total crit damage (1.75/2.15x)",
+              "after": "90% of total (1.8/2.07x)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Garen",
+      "classification": "nerf",
+      "summary": "Critical strike chance on Garen is pretty good since both his basic attacks and Judgment are improved by it. We want to continue to make space for non-crit Garen builds, so we're compensating the global critical strike damage increase and updating the calculation to properly discount bonus crit damage.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Judgement",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "E Crit Ratio",
+              "before": "80% of total (1.4/1.72x)",
+              "after": "30% of bonus (1.3/1.39x)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Rengar",
+      "classification": "adjustment",
+      "summary": "Rengar is getting a heavy re-script. This is mostly intended to maintain current functionality and feel, while addressing bugs and tech debt. The list of bug fixes is too long to add here so it'll be added to the bugs section. Alongside the crit changes, we're looking to make Rengar's Q work more intuitively by letting the underlying attack itself roll for critical strikes, and if so, deal bonus damage based on his total AD. This removes an optimization around rushing Infinity Edge to enhance the old forced-crit mechanic and also makes him not immediately lose 30% of his damage if his opponents build Randuin's Omen. We'll keep an eye on lethality-vs-crit Rengar and how it performs next season as we suspect Essence Reaver will be a big deal on him.",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "General",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "All abilities rescripted"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Savagery",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Q is now consumed on plants"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Q is no longer always always considered a critical strike"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Q damage no longer deals up to 101.25% total AD bonus damage based on crit chance and damage"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Q now deals 100/130% total AD bonus damage if Rengar crits the attack."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Viego",
+      "classification": "adjustment",
+      "summary": "Viego buys a decent amount of crit chance and we want to make sure those crits allow him to play out a consistent auto-attack pattern, so the larger nerfs are to the active damage of the Q and R.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Blade of the Ruined King",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "% Current HP Crit Scaling",
+              "before": "100% of total (1.75/2.15x)",
+              "after": "50% of bonus (1.5/1.65x)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Second Strike Crit Scaling",
+              "before": "100% of total (1.75/2.15x)",
+              "after": "100% of bonus (2/2.3x)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Active Crit Mod",
+              "before": "100% of total (Up to 1.75/2.15x)",
+              "after": "50% of bonus (Up to 1.5/1.65x)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Heartbreaker",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Crit Scaling",
+              "before": "Up to 2x",
+              "after": "70% of bonus (Up to 1.7/1.91x)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Elise",
+      "classification": "adjustment",
+      "summary": "Elise is in a silly spot where ability power quickly fails to scale her damage against monsters after the mid game. We're delivering a change that will be a slight buff on average but is primarily meant to let her damage scale up with AP like it would for anyone else.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Neurotoxin / Venomous Bite",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Damage Cap",
+              "before": "75/100/125/150/175",
+              "after": "65/85/105/125/145 (+ 90% AP)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Damage to Monsters",
+              "before": "115/170/225/280/335",
+              "after": "105155/205/255/305 (+ 90% AP)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Jax",
+      "classification": "adjustment",
+      "summary": "Now that the top lane quest can raise champion levels to 20, we're looking for any champions who intermittently scale their passives and giving them another breakpoint if they deserve one. Jax is one such champion who's gaining a bit more attack speed at level 19.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Relentless Assault",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Now gains an additional 1.5% attack speed per stack at level 19."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [],
+  "systems": [
+    {
+      "name": "Queuing Up",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Custom Summoner's Rift lobbies will now require players to select a position."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Swiftplay and rotating game modes will not have this feature enabled, and will retain the same jungle and support quest rules as before."
+        }
+      ]
+    },
+    {
+      "name": "Completing Your Quest",
+      "classification": "system",
+      "changes": []
+    },
+    {
+      "name": "Top Lane",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Gold and experience from minions reduced by 25% outside of top lane until level 3"
+        }
+      ]
+    },
+    {
+      "name": "Quest Progress:",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1200 points required for quest completion"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+1 per minion kill (+2 in Top Lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+30 per epic monster takedown"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+25 per turret takedown (+50 in Top Lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+20 per turret plate (+40 in Top Lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+15 per champion takedown"
+        },
+        {
+          "kind": "prose",
+          "label": "Starting at 1",
+          "text": "05, +1 per 3 seconds passively, increased to +8 per 5 seconds in and around top lane (Note: roughly, past your outermost living turret in your assigned lane.)"
+        }
+      ]
+    },
+    {
+      "name": "Quest Rewards:",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Level cap increased to 20"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+600 experience"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "All future experience gains increased by 12.5%."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "If the top laner did not select Teleport as a Summoner Spell, gain Unleashed Teleport on a 7 minute cooldown."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "If the top laner did select Teleport as a Summoner Spell, they are also shielded for 30% of their maximum health on arrival, lasting for 30 seconds."
+        }
+      ]
+    },
+    {
+      "name": "Jungle",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Pet counters needed to fully finish the quest",
+          "before": "40",
+          "after": "35",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Gustwalker movement speed duration",
+          "before": "2s",
+          "after": "1.5s",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Smite damage",
+          "before": "600/900/1200",
+          "after": "600/1000/1400",
+          "direction": "neutral"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "After quest completion, Junglers gain 4% movement speed in the jungle or river, increased to 8% while out of combat."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "After quest completion, Junglers gain +10g and +10 XP per large monster killed"
+        }
+      ]
+    },
+    {
+      "name": "Mid Lane",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Gold and experience from minions reduced by 25% outside of mid lane until level 3"
+        }
+      ]
+    },
+    {
+      "name": "Quest Progress:",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1350 points required for quest completion"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Ranged Champions gain 1.5% of damage dealt to Champions as quest progress"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Melee Champions gain 3% of damage dealt to Champions as quest progress"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+1 per minion kill (+2 in mid lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+30 per epic monster takedown"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+25 per turret takedown (+50 in mid lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+20 per turret plate (+40 in mid lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+25 per champion takedown"
+        },
+        {
+          "kind": "prose",
+          "label": "Starting at 1",
+          "text": "05, +1 per 3 seconds passively, increased to +8 per 5 seconds in and around the mid lane"
+        }
+      ]
+    },
+    {
+      "name": "Quest Rewards:",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Tier 2 boots upgrade to their corresponding Tier 3 boots. If you do not have Tier 2 boots in your inventory upon quest completion they will be upgraded on purchase."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Every 5 minutes, gain an empowered Recall, reducing the channel time from 8 to 4 seconds"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Champion takedowns reduce the cooldown on empowered Recall by 1 minute"
+        }
+      ]
+    },
+    {
+      "name": "Crimson Lucidity",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Upgrades from Ionian Boots of Lucidity"
+        },
+        {
+          "kind": "prose",
+          "label": "Ability Haste",
+          "text": "20"
+        },
+        {
+          "kind": "prose",
+          "label": "Movement Speed",
+          "text": "45"
+        },
+        {
+          "kind": "prose",
+          "label": "Ionian Lucidity",
+          "text": "Gain 20 Summoner Haste."
+        },
+        {
+          "kind": "prose",
+          "label": "Noxian Haste",
+          "text": "Empowering or protecting allies with abilities, dealing damage to enemy Champions with abilities, or casting a Summoner Spell grants 10% Movement Speed for 4 seconds."
+        }
+      ]
+    },
+    {
+      "name": "Swiftmarch",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Upgrades from Boots of Swiftness"
+        },
+        {
+          "kind": "prose",
+          "label": "Movement Speed",
+          "text": "65"
+        },
+        {
+          "kind": "prose",
+          "label": "Fleetfooted",
+          "text": "Reduce the effectiveness of Slows by 40%."
+        },
+        {
+          "kind": "prose",
+          "label": "Noxian Fervor",
+          "text": "Gain 5% of your Movement Speed as Adaptive Force."
+        }
+      ]
+    },
+    {
+      "name": "Spellslinger's Shoes",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Upgrades from Sorcerer's Shoes"
+        },
+        {
+          "kind": "prose",
+          "label": "Magic Penetration",
+          "text": "18"
+        },
+        {
+          "kind": "prose",
+          "label": "Magic Penetration",
+          "text": "8%"
+        },
+        {
+          "kind": "prose",
+          "label": "Movement Speed",
+          "text": "45"
+        }
+      ]
+    },
+    {
+      "name": "Gunmetal Greaves",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Upgrades from Berserker's Greaves"
+        },
+        {
+          "kind": "prose",
+          "label": "Attack Speed",
+          "text": "40%"
+        },
+        {
+          "kind": "prose",
+          "label": "Movement Speed",
+          "text": "45"
+        },
+        {
+          "kind": "prose",
+          "label": "Life Steal",
+          "text": "5%"
+        }
+      ]
+    },
+    {
+      "name": "Chainlaced Crushers",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Upgrades from Mercury's Treads"
+        },
+        {
+          "kind": "prose",
+          "label": "Magic Resist",
+          "text": "30"
+        },
+        {
+          "kind": "prose",
+          "label": "Movement Speed",
+          "text": "45"
+        },
+        {
+          "kind": "prose",
+          "label": "Noxian Persistence (15s cooldown)",
+          "text": "After taking magic damage from a Champion, gain a (10-120 [level scaling] +10% Health) magic shield for 5s."
+        }
+      ]
+    },
+    {
+      "name": "Armored Advance",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Upgrades from Plated Steelcaps"
+        },
+        {
+          "kind": "prose",
+          "label": "Armor",
+          "text": "35"
+        },
+        {
+          "kind": "prose",
+          "label": "Movement Speed",
+          "text": "45"
+        },
+        {
+          "kind": "prose",
+          "label": "Plating",
+          "text": "Reduces incoming damage from Attacks by 10%."
+        },
+        {
+          "kind": "prose",
+          "label": "Noxian Endurance (15s cooldown)",
+          "text": "After taking physical damage from a Champion, gain a (10-120 [level scaling] +10% Health) physical shield for 5s."
+        }
+      ]
+    },
+    {
+      "name": "Bot Lane",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Gold and experience from minions reduced by 25% outside of bot lane until level 3"
+        }
+      ]
+    },
+    {
+      "name": "Quest Progress:",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1350 points required for quest completion"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+1.5 per minion kill (+3 in Bot Lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+30 per epic monster takedown"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+25 per turret takedown (+50 in Bot Lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+20 per turret plate (+40 in Bot Lane)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+15 per champion takedown"
+        },
+        {
+          "kind": "prose",
+          "label": "Starting at 1",
+          "text": "05, +1 per 3 seconds passively, increased to +8 per 5 seconds in the Bot Lane playspace"
+        }
+      ]
+    },
+    {
+      "name": "Quest Rewards:",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+300g"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+2g per minion kill for the rest of the game"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "+50g per champion takedown for the rest of the game"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Boots move to the Role Quest slot, effectively opening up a 7th item slot"
+        }
+      ]
+    },
+    {
+      "name": "Support",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Gold and experience from minion kills and from Support Quest Items is reduced by 25% outside of bot lane until level 3"
+        },
+        {
+          "kind": "numeric",
+          "label": "Zaz'Zak's Realmspike, Solstice Sleigh, Bloodsong, Dream Maker, and Celestial Opposition",
+          "before": "5g per 10s",
+          "after": "9g per 10s",
+          "direction": "neutral"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "After Quest Completion, Control Ward gold cost reduced to 40g"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "After Quest Completion, store up to 2 Control Wards on your Role Quest slot instead of your item inventory"
+        }
+      ]
+    },
+    {
+      "name": "Doran's Blade",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": ": Life Draining passive"
+        },
+        {
+          "kind": "prose",
+          "label": "Added",
+          "text": "2.5% Omnivamp"
+        }
+      ]
+    },
+    {
+      "name": "End of Season Year 2025 Ranked Rewards",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Victorious Skin Border that is compatible with all 3 Victorious Skins of 2025 (requires owning all 3 Victorious skins of the year)"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2025 Ranked Emote"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2025 Ranked Icon"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "In order to receive rewards players must have an honor level of 3 or above."
+        }
+      ]
+    },
+    {
+      "name": "Aegis of Valor",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Autofill status won't go away by dodging the champ select. If a player dodges an autofilled game during champ select, the status would carry on until the player plays their autofilled game."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "For Master or above players, dodging a ranked champ select would cost more LP."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Ranked Flex will have better and more reasonable skill rating based on your Solo/Duo queue rank."
+        }
+      ]
+    },
+    {
+      "name": "Apex Duo Restriction Update for Solo/Duo Queue",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "D1 can duo with D3-D1, Master, Grandmaster and Challenger."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Grandmaster can duo with D1, Master, Grandmaster, Challenger"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Challenger can duo with D1, Master, Grandmaster, Challenger"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Master can duo with D1, Master, Grandmaster, Challenger"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "For CN, duo queuing is allowed up to Master with the premade party lower band at D1. CN Grandmaster and Challenger can only solo queue."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "For KR, Master, Grandmaster and Challenger can only solo queue."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "For CN and KR, similar to previous years, their APEX duo MMR restriction (CN at Grandmaster target MMR, KR at Master target MMR) will be temporarily disabled for 26.1, so if you are Grandmaster MMR in CN, or Master MMR in KR, if you have not achieved the visual Rank because you are still climbing, you can still duo. Visual Rank restrictions will always be on."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,413 @@
+{
+  "schemaVersion": 1,
+  "id": "26.14",
+  "assetVersion": "16.14.1",
+  "releaseDate": "2026-07-14",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-14-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.167Z",
+  "champions": [
+    {
+      "championId": "Azir",
+      "classification": "adjustment",
+      "summary": "Azir is feeling more headless chicken than valiant falcon right now. But rather than straight numerical buffs, we're preening his feathers of impactful bugs and changing some rune interactions that should make him start squawking about Shurima more often.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Arise!",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "On-Hit? More Like On-Destroy",
+              "text": "Scorch, Liandry's Torment, Blackfire Torch, and Hextech Alternator now deal 100% of their damage on-hit instead of 50%"
+            },
+            {
+              "kind": "prose",
+              "label": "Double-tap",
+              "text": "Conqueror will now apply 2 stacks on-hit instead of 1"
+            },
+            {
+              "kind": "prose",
+              "label": "Laser Focus",
+              "text": "Press the Attack now applies to the primary target hit"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Emperor's Divide",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Be Gone, Peasant!",
+              "text": "Now knocks back jungle monsters"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Corki",
+      "classification": "buff",
+      "summary": "Everyone's favorite incoherent aviator is having trouble taking off in bot lane. So, we want to give a little more firepower to Corki's sorties later in the game, and really enhance his spell-weaving missile firing fantasy!",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "2",
+              "after": "2.5",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Missile Barrage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Remaining Recharge Time Reduction from Autos",
+              "before": "2 - 4 seconds (based on critical strike chance)",
+              "after": "2 - 6 seconds",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Garen",
+      "classification": "nerf",
+      "summary": "Garen is dishing out too much justice across all skill brackets right now. So, we're going to tap down the Demacian Justice just a tad to make him a little less oppressive, while still rewarding well-timed target selection and inspiring fear in the hearts of those who shirk justice.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Demacian Justice",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "True Damage",
+              "before": "150 / 250 / 350 (+ 25 / 30 / 35% of target's missing health)",
+              "after": "125 / 200 / 275 (+ 25 / 30 / 35% of target's missing health)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Jayce",
+      "classification": "nerf",
+      "summary": "Jayce quickly climbed the ranks after our 26.03 adjustments and has stayed at the top of the pack. Additionally, he has become a fairly comfortable blind pick champ due to his Rune flexibility, and is the most picked top laner in higher ranks. Right now he's building like an assassin, but playing like a fighter, which we prefer to the tank Jayce era. These changes should tap down on his speediness and high durability while preserving what makes him fun.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Hextech Capacitor",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Move Speed",
+              "before": "40",
+              "after": "30",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Mercury Hammer",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Armor and Magic Resistance",
+              "before": "5 / 15 / 25 / 35 (+7.5% bonus Attack Damage)",
+              "after": "5 / 12 / 19 / 26 (+7.5% bonus Attack Damage)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Locke",
+      "classification": "nerf",
+      "summary": "Locke's release has gone relatively smoothly, and we are now tuning him down a bit as players have had time to pick him up. We want to open up more counterplay by reducing how long he can pressure with his Q. And we're bumping down the healing on his W because he's not an enchanter, after all.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Ritual Nails",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Nail Recast Hold Time",
+              "before": "5 seconds",
+              "after": "4 seconds",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Nail Damage",
+              "before": "50 / 60 / 70 / 80 / 90",
+              "after": "50 / 58 / 66 / 74 / 82",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Mark Base Bonus Damage",
+              "before": "20 / 30 / 40 / 50 / 60",
+              "after": "18 / 26 / 34 / 42 / 50",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Soul Ignition",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage Taken Grey Health Cap",
+              "before": "40 / 80 / 120 / 160 / 200",
+              "after": "40 / 70 / 100 / 130 / 160",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Mordekaiser",
+      "classification": "adjustment",
+      "summary": "Morde has lost a fair amount of power ever since the Riftmaker bugfix in 26.10 and could use some love, so we're rewarding him more for when he gets you in his Grasp and enhancing the Lord of Death's 1:1 fantasy.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Death's Grasp",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 75 / 90 / 105 / 120 (+40% Ability Power)",
+              "after": "60 / 80 / 100 / 120 / 140 (+45% Ability Power)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Realm of Death",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Stat Steal",
+              "before": "10%",
+              "after": "13%",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nami",
+      "classification": "adjustment",
+      "summary": "Nami has been feeling a bit like a fish out of water since the Mandate changes, especially when combined with her nerf in 26.7. We've targeted her E which has been feeling a bit underwhelming with her new builds, which should shift the tides a bit in her favor to help her make a bigger splash!",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Tidecaller's Blessing",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage per Hit",
+              "before": "20 / 30 / 40 / 50 / 60",
+              "after": "20 / 35 / 50 / 65 / 80",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Senna",
+      "classification": "nerf",
+      "summary": "Even after her nerfs last patch, Senna is still tearing through the darkness and the light. We're focusing on bringing down her passive and scaling power as she collects souls and takes names, which should impact her in support less, and more in bot where Shiv is rushed for AP ratios.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Absolution",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Critical Strike Damage Modifier",
+              "before": "85%",
+              "after": "80%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Piercing Darkness",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Ability Power Slow Ratio",
+              "before": "10% per 100 Ability Power",
+              "after": "7% per 100 Ability Power",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Ability Power Healing Ratio",
+              "before": "50% Ability Power",
+              "after": "35% Ability Power",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Seraphine",
+      "classification": "nerf",
+      "summary": "Seraphine's vocal lessons have paid off and she's hitting those High Notes more consistently. So much so that she's become one of the bot lane headliners. So, we're lowering her volume a little so she doesn't burst everyone's ear drums. We don't have any more immediate plans to adjust her Q hitbox, so are going to tune her around this current state going forward.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "High Note",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Ability Power Ratio",
+              "before": "50% Ability Power",
+              "after": "40% Ability Power",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yunara",
+      "classification": "buff",
+      "summary": "Yunara's spirit is waning a little. So we're giving her a little more scaling power to help find more balance later in the game.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "2.5",
+              "after": "3",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Immortal Path",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Damage Increase While Above 50% Maximum Health",
+          "before": "5%",
+          "after": "4%",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Healing, Shielding, and Regeneration Increase While Below 50% Maximum Health",
+          "before": "15%",
+          "after": "12%",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Protoplasm Harness",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Cost",
+          "before": "2500",
+          "after": "2600",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Bonus Health",
+          "before": "200 - 300",
+          "after": "100 - 300",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Healing",
+          "before": "200 - 400",
+          "after": "100 - 400",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Hextech Rocketbelt",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Build Path",
+          "before": "Hextech Alternator + Fiendish Codex + Amplifying Tome + 300",
+          "after": "Hextech Alternator + Kindlegem + Ruby Crystal + 350",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Active Cooldown",
+          "before": "40 seconds",
+          "after": "50 seconds",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Ability Power",
+          "before": "70",
+          "after": "60",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Health",
+          "before": "300",
+          "after": "350",
+          "direction": "buff"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Blue Buff",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Ability Haste",
+          "before": "10",
+          "after": "10 / 15 / 20 (levels 1 / 6 / 11)",
+          "direction": "neutral"
+        }
+      ]
+    }
+  ]
+}

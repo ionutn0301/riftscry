@@ -12,12 +12,12 @@ import type { Classification, Direction } from "../../src/lib/schema";
  */
 export const STAT_SEMANTICS: ReadonlyArray<{ pattern: RegExp; increaseIsGood: boolean }> = [
   {
-    pattern: /cooldown|recharge|cost|cast time|delay|channel/i,
+    pattern: /cooldown|recharge|cost|cast time|delay|channel|price/i,
     increaseIsGood: false,
   },
   {
     pattern:
-      /damage|ratio|\bad\b|\bap\b|heal|shield|movement speed|move speed|attack speed|range|duration|slow|stun|charm|root|armor|magic resist|health|\bhp\b|mana(?! cost)|regen|gold|bonus/i,
+      /damage|ratio|\bad\b|\bap\b|\bmr\b|heal|shield|movement speed|move speed|attack speed|range|duration|slow|stun|charm|root|armor|magic resist|resistance|health|\bhp\b|mana(?! cost)|regen|gold|bonus|life ?steal|(?:omni|spell| )vamp|haste|tenacity|penetration|lethality|adaptive force|crit|bolt|ability power|movespeed|\bms\b|execute/i,
     increaseIsGood: true,
   },
 ];

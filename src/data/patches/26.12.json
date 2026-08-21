@@ -1,0 +1,536 @@
+{
+  "schemaVersion": 1,
+  "id": "26.12",
+  "assetVersion": "16.12.1",
+  "releaseDate": "2026-06-09",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-12-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.131Z",
+  "champions": [
+    {
+      "championId": "Aatrox",
+      "classification": "buff",
+      "summary": "We're looking to give Aatrox some love as he's been sitting on the sidelines for some time now, even though signs point to the Darkin being a solid pick in the current meta. We're putting more power into his Q sweet spot to reward him for his core skill check and make him a real threat against lumbering tanks and squishies alike.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "The Darkin Blade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Sweet Spot Bonus Damage",
+              "before": "70",
+              "after": "75",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Gwen",
+      "classification": "buff",
+      "summary": "Gwen has been cut out of the meta for quite some time across all skill brackets. She lost some power with 26.09's minor rework to Dusk and Dawn, so we're giving her some of that power back in the early game. She'll remain a scaling pick, but a weaker first item spike has cost her early game a bit too much. These changes should help Gwen players live that snip and skip fantasy at all stages!",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Snip Snip!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage Per Snip",
+              "before": "10/13.5/17/20.5/24",
+              "after": "10/14/18/22/26",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Skip 'n Slash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Attack Speed",
+              "before": "20/35/50/65/80%",
+              "after": "30/42.5/55/67.5/80%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Hwei",
+      "classification": "buff",
+      "summary": "Hwei's 26.08 changes to how his ability slows stack and interact with other sources of slows had a larger negative impact than expected. While we had put in a compensation buff along with that change, it's clear after a few patches that he has ended up worse off from the change, so we are giving him some power spread between his Q and E to keep all his abilities feeling relevant.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Subject: Disaster",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "QQ Damage",
+              "before": "50 / 80 / 110 / 140 / 170 (+70% AP) (+3 / 4 / 5 / 6 / 7% Target Max HP)",
+              "after": "50 / 80 / 110 / 140 / 170 (+80% AP) (+3 / 4 / 5 / 6 / 7% Target Max HP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "QW Damage",
+              "before": "60 / 85 / 110 / 135 / 160 (+25% AP), increased to up to 120 / 201.875 / 302.5 / 421.875 / 560 (+50 / 59.375 / 68.75 / 78.125 / 87.5% AP)",
+              "after": "60 / 85 / 110 / 135 / 160 (+30% AP), increased to up to 120 / 201.875 / 302.5 / 421.875 / 560 (+60 / 71.25 / 82.5 / 93.75 / 105% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "QE Slow",
+              "before": "30%",
+              "after": "35%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Subject: Torment",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "13 / 12.5 / 12 / 11.5 / 11s",
+              "after": "12 / 11.5 / 11 / 10.5 / 10s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Jax",
+      "classification": "buff",
+      "summary": "Our favorite Grandmaster at Angling has been patiently waiting for his time to strike. Jax is meant to be a high-damage threat who ramps up in fights, but currently he's been a (fish)bait pick against durable opponents. These changes should help with that, without pushing him over the (fishing) line.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Leap Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "65",
+              "after": "50",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Counter Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Target Max Health Damage",
+              "before": "3.5% minimum damage / 7% maximum damage",
+              "after": "4% minimum damage / 8% maximum damage",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "LeeSin",
+      "classification": "nerf",
+      "summary": "The recent changes taking away some of Lee Sin's kit restrictions have been cool for Lee players, but he's clearly just too powerful now. With more outplay potential, we are nerfing his raw damage to balance him out.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AD Growth",
+              "before": "3.7",
+              "after": "3.4",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "other",
+          "name": "Q1 - Sonic Wave",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "65 / 95 / 125 / 155 / 185 (+95% bonus AD)",
+              "after": "60 / 90 / 120 / 150 / 180 (+90% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "other",
+          "name": "Q2 - Resonating Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "65 / 95 / 125 / 155 / 185 (+95% bonus AD)",
+              "after": "60 / 90 / 120 / 150 / 180 (+90% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nocturne",
+      "classification": "adjustment",
+      "summary": "Nocturne has been in quite a strong spot for a while, especially in the higher echelons of play. We like how distinct he feels to play with his relatively low ultimate cooldown, but that means we are going to pull power out of his 1v1 and farming since he has such strong tools to quickly create unequal fights.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Duskbringer",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "65 / 110 / 155 / 200 / 245",
+              "after": "65 / 105 / 145 / 185 / 225",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Orianna",
+      "classification": "nerf",
+      "summary": "Often called League's \"perfect champ,\" Orianna in recent years has been doing it all and more: dominating lane, protecting allies, and outputting extremely reliable damage in teamfights. As the highest pro priority in recent patches, we feel like too much of her power is in early lane dominance. She should still show up - just more situationally and for 3k elo shockwaves rather than early game bullying.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Health",
+              "before": "585",
+              "after": "565",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Clockwork Windup",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage Increase Per Stack",
+              "before": "20%",
+              "after": "15%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Command: Shockwave",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "250/400/550 (+95% AP)",
+              "after": "225/350/475 (+110% AP)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ryze",
+      "classification": "nerf",
+      "summary": "Ryze's early game trading has only gotten stronger with Deathfire Touch. For a champion known as a scaling combo mage, we feel his laning has gotten too unassailable. So like Orianna, we're tuning down his early game a bit to keep his power budget in the late game as he's intended to be.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Health",
+              "before": "645",
+              "after": "620",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Base AD",
+              "before": "58",
+              "after": "55",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Sylas",
+      "classification": "adjustment",
+      "summary": "Sylas is one of the champions who has come out worse for wear since the start of Season 2. We think he is still a powerful early lane bully, but he's lost enough power that his scaling is critically low to the point he's completely one note, so we are helping him out there.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Chain Lash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Initial Damage",
+              "before": "40 / 60 / 80 / 100 / 120 (+40% AP)",
+              "after": "40 / 65 / 90 / 115 / 140 (+45% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Kingslayer",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Heal Amount",
+              "before": "20 / 40 / 60 / 80 / 100 (+20% AP) (+5% Sylas' Bonus HP), increased by up to 100% based on Sylas' missing health",
+              "after": "20 / 40 / 60 / 80 / 100 (+30% AP) (+5% Sylas' Bonus HP), increased by up to 100% based on Sylas' missing health",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Syndra",
+      "classification": "buff",
+      "summary": "Pass the ball, Ori! Syndra has had some of her more reliable damage stripped away recently in W and R, so we want to give her the tools to start pushing for that scaling fantasy with Dark Sphere, her highest variance bread and butter ability. We're hoping this mix of exciting and functional buffs gets players across skill brackets interested in her untapped power.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Health",
+              "before": "563",
+              "after": "583",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Dark Sphere",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80-220 (+65% AP)",
+              "after": "90-230 (+70% AP)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Tristana",
+      "classification": "adjustment",
+      "summary": "it's been two years since we've seen marksmen run over the mid meta, and while we absolutely don't want to go back to that world, we do feel like some marksmen in mid make for an interesting flavor of game. Tristana makes for a good candidate as she's been absent since we added mana costs to her Q in a couple seasons back. We'll be pulling back on some of those nerfs here and improving her level scaling generally.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AD Growth",
+              "before": "2.9",
+              "after": "3.4",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Rapid Fire",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana",
+              "before": "30 / 35 / 40 / 45 / 50",
+              "after": "15 / 20 / 25 / 30 / 35",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Varus",
+      "classification": "adjustment",
+      "summary": "Varus has steadily become the highest priority ADC & top laner over the course of the year among the top tiers of gameplay. While the changes to Experimental Hexplate should help alleviate his dominance in top lane, in bot lane, we're looking to further disincentivize oppressive early game focused lethality builds, while being relatively less impactful to the most common on-hit builds and helping them scale a bit better.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Living Vengeance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On Non-Champ Kill AD and AP",
+              "before": "10% of his Total AS",
+              "after": "11% of his Total AS",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "On Champ Kill AD and AP",
+              "before": "25% of his Total AS",
+              "after": "33% of his Total AS",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "On Non-Champ Kill AS",
+              "before": "+50% AS",
+              "after": "+30% AS",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Piercing Arrow",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "53.33 / 100 / 146.67 / 193.33 / 240 (+100% bonus AD) to 80 / 150 / 220 / 290 / 360 (+150% bonus AD)",
+              "after": "53.33 / 100 / 146.67 / 193.33 / 240 (+80% bonus AD) to 80 / 150 / 220 / 290 / 360 (+120% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Blighted Quiver",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On-Hit Damage",
+              "before": "8 / 17 / 26 / 35 / 44 (+15% bonus AD) (+25% AP)",
+              "after": "4 / 13 / 22 / 31 / 40 (+15% bonus AD) (+25% AP)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "XinZhao",
+      "classification": "nerf",
+      "summary": "AP Xin Zhao continues being far too strong in mid lane. We are following up last patch's adjustment with a straight nerf this time to his ability to sustain both his health and mana in lane.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Determination",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Healing",
+              "before": "3 / 4 / 5% Max HP (+45 / 55 / 80% AP)",
+              "after": "2 / 3.5 / 5% Max HP (+40 / 50 / 70% AP)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Wind Becomes Lightning",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "60 / 55 / 50 / 45 / 40",
+              "after": "60",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Audacious Charge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "50",
+              "after": "60",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yuumi",
+      "classification": "adjustment",
+      "summary": "As the only champion in the game with built in Heal/Shield power, Yuumi was hit hardest by the Moonstone Renewer mechanics changes in 26.09. We are giving her AP ratios a compensation buff to help keep enchanter items optimal for her.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Feline Friendship",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Heal Amount",
+              "before": "20 - 110 (+25% AP) (Levels 1 - 18)",
+              "after": "20 - 110 (+30% AP) (Levels 1 - 18)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Zoomies",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Shield Amount",
+              "before": "65 / 90 / 115 / 140 / 165 (+30% AP)",
+              "after": "65 / 90 / 115 / 140 / 165 (+40% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [],
+  "systems": [
+    {
+      "name": "Teleport",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Max Health Shield",
+          "before": "30% for 30 seconds",
+          "after": "35% for 10 seconds",
+          "direction": "buff"
+        }
+      ]
+    }
+  ]
+}

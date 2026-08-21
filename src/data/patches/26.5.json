@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 1,
+  "id": "26.5",
+  "assetVersion": "16.5.1",
+  "releaseDate": "2026-03-03",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-5-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.035Z",
+  "champions": [
+    {
+      "championId": "Akali",
+      "classification": "adjustment",
+      "summary": "Currently, Akali’s re-stealth timer on her Shroud scales with game time. And since we’ve adjusted Summoner’s Rift’s pacing and League now has multiple modes with varying start times, we think everyone’s favorite ninja deserves a bit more flexibility when it comes to her sneakiness.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Twilight Shroud",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Restealth Timer",
+              "before": "1s / .9s / .825s / .725s / .625s after your last attack or ability (at game times 0:00 / 8:00 / 11:00 / 20:00 / 30:00)",
+              "after": "1s / .9s / .825s / .725s / .625s (at levels 1 / 7 / 10 / 13 / 16)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Azir",
+      "classification": "nerf",
+      "summary": "Azir does a lot of things very well when played at a high level, and we want to make sure we preserve that expression of mastery Azir players spend a lot of time developing. But with that in mind when he gets going he can feel very oppressive and unstoppable. In order to give his opponents some degree of counterplay we’re bringing his health in the late game down a notch so assassin type champions can have a chance to dethrone the Shuriman emperor.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "119",
+              "after": "108",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Garen",
+      "classification": "buff",
+      "summary": "Garen is moderately popular but statistically underpowered, and we’d like it if he was as powerful as other straightforward top lane juggernauts. We’re continuing on the trend of making traditional fighter items more comparable to his crit builds and giving him better trading power before he has access to tools like Stridebreaker and Phantom Dancer.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Decisive Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Move speed duration",
+              "before": "1 / 1.65 / 2.3 / 2.95 / 3.6",
+              "after": "1.4 / 1.95 / 2.5 / 3.05 / 3.6",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Judgment",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage per spin",
+              "before": "4 / 7 / 10 / 13 / 16 (+ 38 / 41 / 44 / 47 / 50% AD)",
+              "after": "4 / 7 / 10 / 13 / 16 (+ 40 / 43 / 46 / 49 / 52% AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Khazix",
+      "classification": "nerf",
+      "summary": "Kha'Zix has evolved with the season changes and overcame all his worthy prey to take the top spot of solo queue junglers. We think he has room to go down in clear speed as the game progresses, as well as overkilling isolated targets without hurting him where he's already weak in teamfights. We're also making the bug less speedy to hit higher skill brackets.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Move Speed",
+              "before": "350",
+              "after": "345",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Taste Their Fear",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus AD",
+              "before": "+ 110% (231% isolated bonus)",
+              "after": "+ 105% (220.5% isolated bonus)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "LeeSin",
+      "classification": "buff",
+      "summary": "Lee Sin has lost some of his skill and flair as of late and could use some help, so we’re increasing his damage in a way that will benefit more skilled Lee Sin players (aka those that hit their Q’s).",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "Base Damage: 60 / 90 / 120 / 150 / 180 ⇒ 65 / 95 / 125 / 155 / 185",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "60 / 90 / 120 / 150 / 180",
+              "after": "65 / 95 / 125 / 155 / 185",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Lillia",
+      "classification": "adjustment",
+      "summary": "We overshot Lillia’s Q nerf and historically gave her power in places she’s less likely to appreciate, all of which has led to the speedy deer feeling limp. We are reverting her ultimate buffs from 25.19, which were fairly small, as well as Q nerfs from 26.02, which were much more impactful. The hope here is that this net buff lets her live out her sustained fight fantasy as we believe that weaving in and out of fights doing damage with Q is closer to that rather than needing to land large scale R's.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Dream-Laden Bough",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster heal bonus AP ratio",
+              "before": "9%",
+              "after": "15%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Blooming Blows",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus AP ratio",
+              "before": "30%",
+              "after": "35%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Lilting Lullaby",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base damage",
+              "before": "100 / 150 / 200",
+              "after": "150 / 200 / 250",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "AP ratio",
+              "before": "45%",
+              "after": "40%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "150 / 130 / 110",
+              "after": "140 / 120 / 100",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Mel",
+      "classification": "adjustment",
+      "summary": "Mel’s recent update and follow-up balance work has succeeded in creating more counterplay and thus reducing her frustration and ban rate with a similar win rate to the preceding patches. With the initial dust now settled, it’s time to bring her up to a more reasonable power level. We’re looking toward her proactive damage, especially with champion level, to skew these buffs strongly toward the mid lane. We’re also sliding in a small compensation to her passive’s minion mod in order to not push her Q-driven wave clear any higher than it already is.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Searing Brilliance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Minion Damage Modifier",
+              "before": "0.6x",
+              "after": "0.5x",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Radiant Volley",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage per Bolt",
+              "before": "5 / 6 / 7 / 8 / 9",
+              "after": "5 / 7 / 9 / 11 / 13",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total Q Base Damage",
+              "before": "90 / 132 / 176 / 222 / 270",
+              "after": "90 / 145 / 200 / 255 / 310",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Golden Eclipse",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Initial Base Damage",
+              "before": "100 / 150 / 200",
+              "after": "125 / 200 / 275",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Neeko",
+      "classification": "adjustment",
+      "summary": "Neeko has a lot of things going for her right now: strong laning, teamfight utility, and vision control. We like her explosive and high-spectacle teamfights, with the occasional 7th minion engage or wolf flank, but want to tap down the utility her clone provides. This change should still let her engage in trickery, while introducing a tradeoff to when clones stare people down from a bush on repeat, as we explore the best solution that limits her vision control but retains satisfying mechanics.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Shapeshifter",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Slightly-Less-Tricksy-Neekoses",
+              "text": "Cooldown now starts on clone expiration, instead of on cast"
+            },
+            {
+              "kind": "prose",
+              "label": "Fun Eliminated",
+              "text": "Neeko can no longer use Ctrl+5, which plays the joke expression for clone only. Neeko can still joke, dance, recall, to make their clone initiate said actions."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nocturne",
+      "classification": "buff",
+      "summary": "Nocturne’s underperforming considering how easy to pick up and play he is, so he’s made the cut for buffs in this patch. In an effort to help him succeed in moderate fight durations, we’re upgrading his ability to stick to his enemies under the Dusk Trail and run them down with basic attacks.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Umbra Blades",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "13",
+              "after": "12",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Duskbringer",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus move speed",
+              "before": "15 / 20 / 25 / 30 / 35%",
+              "after": "20 / 25 / 30 / 35 / 40%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Orianna",
+      "classification": "nerf",
+      "summary": "Orianna has been one of the strongest champions in the mid lane as of late, so strong that she’s head and shoulders above the rest of the competition. In the hands of a true expert, her laning phase can feel unassailable, so we’re focusing on her early game in the hope of opening up some weaknesses and making some space for other champions in the mid lane.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Command: Attack",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "6 / 5.25 / 4.5 / 3.75 / 3",
+              "after": "7 / 6 / 5 / 4 / 3",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Samira",
+      "classification": "adjustment",
+      "summary": "We’re giving Samira some love in the form of QoL and minor bugfixing around her Q! Sometimes Q doesn’t do what you want which can be a bit frustrating, and we’re hoping to fix some of the extreme end of feels-bad cases by adding some additional logic on the decision of when to use her Sword and when to use her Gun.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Flair",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "The Right Tool for the Job",
+              "text": "Samira Q will now do multiple additional checks to see if there are units on both the right and left of her. If there are, and importantly if there are no units far in front of her, she will use Sword Q. If a unit is far in front of her, she will still use Gun Q regardless of units on the right and left."
+            },
+            {
+              "kind": "prose",
+              "label": "Itchy Trigger Finger",
+              "text": "Samira Q is now properly sealed during her passive. This resolves a case where Samira Q can go on cooldown despite not being used if pressed during her passive’s animation. This also applies to an instance where her ultimate was cast after her W."
+            },
+            {
+              "kind": "prose",
+              "label": "Can’t Out-Walk Me",
+              "text": "Samira Q will now do a check to see if the enemy is walking away from her and in the very last part of her Sword Q’s range. If so, she will instead use Gun Q. This should resolve the extreme cases where champions can simply walk away from her Q at very low move speed (higher move speeds will still likely be able to do so, rightfully.)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Taliyah",
+      "classification": "adjustment",
+      "summary": "Taliyah’s powerful wave control in the early game means she consistently gets to be the first mid laner to every scuttle fight which can make it difficult to prioritize other picks over her. We’d like for this to not be as reliable a game plan as it currently is, so we’re bringing her early push power down and compensating jungle Taliyah with a bit more bonus damage to monsters.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Threaded Volley",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "55 / 72.5 / 90 / 107.5 / 125",
+              "after": "50 / 67.5 / 85 / 102.5 / 120",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Bonus Monster Damage",
+              "before": "20 / 25 / 30 / 35 / 40",
+              "after": "23 / 28 / 33 / 38 / 43",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Varus",
+      "classification": "adjustment",
+      "summary": "Oh, Varus. Look, canonically you’re kinda three people at once, so having three times the balance changes of other champions is only fair, right? We’re nerfing Varus’s lethality build as it’s the most pro-dominant ADC in the current patch. However, because on-hit Varus in bot lane is weak, we’re compensating AD on-hit Varus to keep that build afloat.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Piercing Arrow",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Maximum damage",
+              "before": "80 / 160 / 240 / 320 / 400 (+ 130 / 140 / 150 / 160 / 170% bonus AD)",
+              "after": "80 / 150 / 220 / 290 / 360 (+ 150% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Blighted Quiver",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On-hit damage",
+              "before": "8 / 17 / 26 / 35 / 44 (+ 25% AP)",
+              "after": "8 / 17 / 26 / 35 / 44 (+ 25% AP + 15% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Volibear",
+      "classification": "buff",
+      "summary": "Volibear's last set of nerfs were effective at hitting jungle harder than top, but ended up a bit over the line still. We're aiming to make laning a bit more satisfying for top Volibear with mana changes, and still trying to open up some bruiser builds so it's not always wizard bear.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Thundering Smash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus physical damage",
+              "before": "+140%",
+              "after": "+160%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Frenzied Maul",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana cost",
+              "before": "30 / 35 / 40 / 45 / 50",
+              "after": "20 / 25 / 30 / 35 / 40",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Wounded bonus",
+              "before": "+ 15% per 100 bonus AD",
+              "after": "+ 25% per 100 bonus AD",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Sky Splitter",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana cost",
+              "before": "60",
+              "after": "50",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Hubris",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Combine cost",
+          "before": "950 gold",
+          "after": "750 gold",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Total price",
+          "before": "3000 gold",
+          "after": "2800 gold",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Locket of the Iron Solari",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "SHIELD",
+          "before": "200 - 360, scaling after level 1",
+          "after": "290 - 360, scaling after level 8",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Functional Shield Level 8-18",
+          "before": "265 - 360",
+          "after": "290 - 360",
+          "direction": "buff"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Aegis of Valor",
+      "classification": "system",
+      "changes": []
+    },
+    {
+      "name": "Autofill and Secondary Matchmaking Improvements",
+      "classification": "system",
+      "changes": []
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import {
   fetchChampionIndex,
   fetchDdragonVersions,
   fetchWithCache,
-  notesUrlFor,
+  notesUrlCandidatesFor,
   resolveAssetVersion,
 } from "./fetch";
 import { parsePatchHtml } from "./parse";
@@ -48,12 +48,23 @@ async function ingestPatch(id: string, versions: string[]): Promise<boolean> {
     console.error(`✗ ${id}: no matching Data Dragon version`);
     return false;
   }
-  const url = notesUrlFor(id);
-  let html: string;
-  try {
-    html = await fetchWithCache(url, `notes-${id.replace(".", "-")}.html`);
-  } catch (err) {
-    console.error(`✗ ${id}: ${err instanceof Error ? err.message : err}`);
+  // Riot used two slug forms in 2026; per-candidate cache keys keep the
+  // recorded sourceUrl truthful.
+  let html: string | null = null;
+  let url = "";
+  const errors: string[] = [];
+  for (const candidate of notesUrlCandidatesFor(id)) {
+    const slug = candidate.split("/").filter(Boolean).pop()!;
+    try {
+      html = await fetchWithCache(candidate, `${slug}.html`);
+      url = candidate;
+      break;
+    } catch (err) {
+      errors.push(err instanceof Error ? err.message : String(err));
+    }
+  }
+  if (html === null) {
+    console.error(`✗ ${id}: ${errors.join(" | ")}`);
     return false;
   }
 

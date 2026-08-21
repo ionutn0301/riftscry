@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "id": "26.6",
+  "assetVersion": "16.6.1",
+  "releaseDate": "2026-03-17",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-6-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.049Z",
+  "champions": [
+    {
+      "championId": "Ahri",
+      "classification": "nerf",
+      "summary": "A moderate buff to Ahri back in 26.3 skyrocketed her to the top of the mid lane pool and pushed her power a bit too far. Her overall waveclear is quite powerful right now, so we're targeting her Q's base damage as it could stand to lose some power.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Orb of Deception",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damager per Pass",
+              "before": "40 / 65 / 90 / 115 / 140",
+              "after": "35 / 60 / 85 / 110 / 135",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Azir",
+      "classification": "adjustment",
+      "summary": "In this patch we're looking to make Azir a bit more powerful for players at home. These changes should be pretty appreciable for all Azir players, regardless of rank.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Conquering Sands",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage AP Ratio",
+              "before": "(+ 35% AP)",
+              "after": "(+ 35 / 40 / 45 / 50 / 55% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Arise!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "0-45 (5 damage per level starting at level 10)",
+              "after": "0-72 (7 damage per level starting at level 10)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage AP Ratio",
+              "before": "(+ 32.5 / 40 / 47.5 / 55 / 62.5% AP)",
+              "after": "(+35 / 42.5 / 50 / 57.5 / 65% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Cassiopeia",
+      "classification": "buff",
+      "summary": "We're looking to get more damage in Cassiopeia's poison this patch, particularly when for her mid lane players. We want to give her more freedom to look for trades and to feel rewarded when she finds successful ones, so we're bumping up her base Mana and empowered E scaling.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Mana",
+              "before": "450",
+              "after": "480",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Twin Fang",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Magic Damage to Poisoned Targets",
+              "before": "20 / 43 / 66 / 89 / 112",
+              "after": "20 / 45 / 70 / 90 / 120",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Lissandra",
+      "classification": "adjustment",
+      "summary": "The Queen of Ice has not ruled in a very, very long time... thankfully, a lot of her biggest problem children like Everfrost and Aftershock aren't in her toolkit anymore, so we're looking to give her some a chill buff. We want to do this by letting her get that 2nd Q off more reliably in those tighter combos. We think this is going to be a big power-up, so we want to make sure she's not icing out her AD melee matchups too hard without affecting her durability in others.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "4.9",
+              "after": "4.2",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Ice Shard",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "8 / 7 / 6 / 5 / 4",
+              "after": "7 / 6 / 5 / 4 / 3",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Olaf",
+      "classification": "buff",
+      "summary": "Olaf top is fine but he's lagging behind in the jungle. As such, we're improving his clear, making his ganking stronger and leaning into his identity as a risky, low health fighter. We hope to keep top lane in a fairly stable place while boosting his jungle performance.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Attack Speed",
+              "before": "0.694",
+              "after": "0.72",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Undertow",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Slow Amount",
+              "before": "25 / 30 / 40 / 45% for 1.5- 2.5 seconds (based on distance)",
+              "after": "30 / 40 / 45 / 50% for 1-3 seconds (based on distance)",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Bug Fix",
+              "text": "Enemies only struck by the Lollipop at the end of the Q are now slowed for the proper amount of time (was a fixed 30% slow)."
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Tough it Out",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Bug Fix",
+              "text": "If you cast W while the previous cast was still active, it now properly re-applies its effects rather than just refreshing the prior cast (you get the attack reset and the AS value is updated)."
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Reckless Swing",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage to Self",
+              "before": "30% of Damage Dealt",
+              "after": "40% of Damage Dealt",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Pyke",
+      "classification": "nerf",
+      "summary": "Pyke has often toed the line around being strong enough to be worth playing in most skill brackets and being overbearing in Elite levels of play. Recently, he's crossed that line and is due for a power reduction. We want to keep his ability to strongly punish squishy lanes and deal tons of damage at the drop of a hat, so for this patch's nerf we're making him more easily counter-attacked when he makes a mistake or gets caught by a well-placed engage.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Armor",
+              "before": "43",
+              "after": "37",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Shen",
+      "classification": "nerf",
+      "summary": "Shungle is performing better than he is in the top lane, not to mention he's also outperforming many other junglers with one of the best clear speeds in the game, reliable ganks, and a global presence starting at level 6. Given the latter two strengths, we think it's fair to reduce his clear speed in order to keep the other two intact.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Twilight Assault",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Damage Cap",
+              "before": "120 / 140 / 160 / 180 / 200",
+              "after": "100 / 125 / 150 / 175 / 200",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Skarner",
+      "classification": "buff",
+      "summary": "Our few Skarner top laners have gained tremendous empathy for their solitary Brackern, as their brethren scattered and left them to become the last of their kind. By letting him cast more freely in lane while also giving him some more trading power on his bread and butter ability, we hope some of our scorpion bros will come out of hiding in top lane (and jungle too!)",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Shattered Earth",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "45",
+              "after": "30",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Third Attack Target Max Health Damage",
+              "before": "9%",
+              "after": "11%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Tryndamere",
+      "classification": "buff",
+      "summary": "We're back for another Tryndamere buff as he's still underperforming relative to other top laners. Arguably the highlight of Tryndamere is right clicking enemy champions and killing them with crits. He can already do that extremely well in the early game, so how about doing it in the late game, too?",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Ratio",
+              "before": "0.694",
+              "after": "0.725",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zaahen",
+      "classification": "nerf",
+      "summary": "Zaahen has caught on as one of the strongest top laners and junglers in the game. In our view his jungle performance is farther over the line, so we're delivering some nerfs with a moderate jungle skew to them. His W is more core to his ganking than it is to his laning, and this E nerf is jungle-skewed and will reduce his ability to create and react to pressure early on.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Dreaded Return",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Secondary Damage",
+              "before": "40 / 60 / 80 / 100 / 120 (+ 50% bonus AD)",
+              "after": "30 / 50 / 70 / 90 / 110 (+ 30% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Aureate Rush",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Damage to Monsters",
+              "before": "75",
+              "after": "50",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Chempunk Chainsword",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Combine Cost",
+          "before": "350 gold",
+          "after": "250 gold",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Total Cost",
+          "before": "3100",
+          "after": "3000 gold",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Sunfire Aegis",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Build Path",
+          "before": "Bami's Cinder + Chain Vest + 1000 gold",
+          "after": "Bami's Cinder + Chain Vest + Ruby Crystal + 600 gold",
+          "direction": "neutral"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "FARMING AS SUPPORTS",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Minion Kills Before Gold Penalty Activates (Before 5 Minutes)",
+          "before": "7",
+          "after": "24",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Minion Kills Per 5 Minutes Before Gold Penalty Activates (After 5 minutes)",
+          "before": "20",
+          "after": "30",
+          "direction": "buff"
+        }
+      ]
+    }
+  ]
+}

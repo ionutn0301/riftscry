@@ -33,6 +33,32 @@ it("cast time up = nerf", () =>
 it("q cooldown label still cooldown-polarity", () =>
   expect(classifyChange("Q Cooldown", "10", "12").direction).toBe("nerf"));
 
+// season-observed labels (26.4 triage)
+it("MR per stack up = buff", () =>
+  expect(classifyChange("MR per Stack", "2", "3").direction).toBe("buff"));
+it("life steal up = buff", () =>
+  expect(classifyChange("Life Steal Effectiveness", "50%", "60%").direction).toBe("buff"));
+it("ability haste up = buff", () =>
+  expect(classifyChange("Ability Haste", "10", "15").direction).toBe("buff"));
+it("armor penetration up = buff", () =>
+  expect(classifyChange("Armor Penetration", "10", "12").direction).toBe("buff"));
+it("tenacity up = buff", () =>
+  expect(classifyChange("Tenacity", "20%", "30%").direction).toBe("buff"));
+it("omnivamp up = buff", () =>
+  expect(classifyChange("Omnivamp", "5%", "7%").direction).toBe("buff"));
+it("crit scaling up = buff", () =>
+  expect(classifyChange("Crit Scaling", "50%", "75%").direction).toBe("buff"));
+it("item price up = nerf", () =>
+  expect(classifyChange("Price", "3000", "3200").direction).toBe("nerf"));
+it("ability power up = buff", () =>
+  expect(classifyChange("Ability Power", "80", "90").direction).toBe("buff"));
+it("movespeed (one word) up = buff", () =>
+  expect(classifyChange("Movespeed", "330", "335").direction).toBe("buff"));
+it("MS per stack up = buff", () =>
+  expect(classifyChange("MS per stack", "2%", "3%").direction).toBe("buff"));
+it("execute threshold up = buff", () =>
+  expect(classifyChange("Execute threshold", "5%", "7%").direction).toBe("buff"));
+
 // edge cases
 it("unknown label = neutral, unknown", () =>
   expect(classifyChange("Sweetness Factor", "1", "2")).toEqual({

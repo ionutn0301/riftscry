@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "id": "26.16",
+  "assetVersion": "16.16.1",
+  "releaseDate": "2026-08-11",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.210Z",
+  "champions": [
+    {
+      "championId": "Azir",
+      "classification": "buff",
+      "summary": "We are continuing to monitor Azir, especially as players continue to pick up Press The Attack as his optimal keystone. For now however, we are going to give him a moderate buff to his laning to help him out.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Conquering Sands",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 80 / 100 / 120 / 140 (+35 / 40 / 45 / 50 / 55% AP)",
+              "after": "75 / 95 / 115 / 135 / 155 (+35 / 40 / 45 / 50 / 55% AP)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Belveth",
+      "classification": "adjustment",
+      "summary": "Bel'Veth has come out with the scaling curve of Kayle and Aurelion Sol. Her power is rapidly growing across all skill brackets and given her early game is already quite weak, we've opted to make her late game a bit less sharp.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "110",
+              "after": "105",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Endless Banquet",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "True Form Total Attack Speed",
+              "before": "5 / 15 / 25%",
+              "after": "6 / 13 / 20%",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "True Form Remora Indicator",
+              "text": "Resource bar now turns purple when True Form can spawn Remora"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Camille",
+      "classification": "adjustment",
+      "summary": "With roaming supports all the rage, Camille has been queen. We are simultaneously looking to nerf her support roaming power while keeping or (hopefully) actually buffing her top lane. This means trading the raw all in power behind her passive shield early game in favor of significantly lowered cooldowns for better repeatable trading.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana",
+              "before": "339",
+              "after": "375",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Adaptive Defenses",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Shield",
+              "before": "20% Maximum Health",
+              "after": "10 / 15 / 20 / 25% Maximum Health (levels 1 / 7 / 13 / 19)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "18 / 14 / 10 / 6s (levels 1 / 7 / 13 / 19)",
+              "after": "14 / 11 / 8s (levels 1 / 7 / 13)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Tactical Sweep",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "15 / 14 / 13 / 12 / 11s",
+              "after": "12 / 11.5 / 11 / 10.5 / 10s",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Outer Cone Bonus Damage",
+              "before": "6 / 6.5 / 7 / 7.5 / 8% (+2.5% per 100 bonus Attack Damage) Target Maximum Health",
+              "after": "7 / 7.5 / 8 / 8.5 / 9% (+2.5% per 100 bonus Attack Damage) Target Maximum Health",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Gwen",
+      "classification": "buff",
+      "summary": "Gwen has remained slightly weak since her nerfs earlier this year. We are buffing her passive sustain back up towards where it has previously been, which should help her be a powerful threat in some of her stronger matchups without making her feel uncounterable.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "A Thousand Cuts",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Healing On Champions",
+              "before": "50% post-mitigation, capped to 10-25 (based on level) (+6.5% AP)",
+              "after": "67% post-mitigation, capped to 12-40 (based on level) (+7% AP)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kennen",
+      "classification": "buff",
+      "summary": "With the reshape to Hextech Rocketbelt to prevent it from becoming the ubiquitous mage legendary, Kennen came out behind the pack. We are buffing him to compensate, making sure he is rewarded well when he does find the right flanks for those huge team-deleting ults.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Slicing Maelstrom",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Resistances",
+              "before": "20 / 40 / 60",
+              "after": "25 / 50 / 75",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "40 / 75 / 110 (+22.5% AP)",
+              "after": "40 / 80 / 120 (+25% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Damage",
+              "before": "300 / 562.5 / 825 (+168.75% AP)",
+              "after": "300 / 600 / 900 (+187.5% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nasus",
+      "classification": "adjustment",
+      "summary": "Nasus has been a distinct jungle pick that we think is pretty exciting to see; however his top lane has lagged very far behind. We are adjusting his Q stack generation to bring these two roles closer to each other in raw power.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Siphoning Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Stacks",
+              "before": "3, increased to 12 on champions / large minions / monsters",
+              "after": "4, increased to 10 on champions / large minions / monsters",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Poppy",
+      "classification": "adjustment",
+      "summary": "Poppy is meant to be a tank whose gameplay has leaned too far into early game snowball fighter, to the point she's choosing Hail of Blades and Sundered Sky over more tank runes and items. We're looking to shift power out of her early game AD fighter pattern and enable her tank pattern by significantly increasing her scaling with durability and giving her enough mana growth that sustained combat doesn't immediately run her out of resources.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage",
+              "before": "60",
+              "after": "56",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Health Regeneration",
+              "before": "8",
+              "after": "9",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Mana",
+              "before": "280 + 40/level",
+              "after": "300 + 45/level",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Hammer Shock",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "30 / 55 / 80 / 105 / 130 (+100% bonus Attack Damage) (+9% Target Maximum Health), twice",
+              "after": "30 / 55 / 80 / 105 / 130 (+75% bonus Attack Damage) (+7 / 7.5 / 8 / 8.5 / 9% Target Maximum Health), twice",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Target Maximum Health Monster Cap",
+              "before": "75 / 105 / 135 / 165 / 195",
+              "after": "85 / 120 / 155 / 190 / 225",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Slow Amount",
+              "before": "20 / 25 / 30 / 35 / 40%",
+              "after": "20 / 23 / 26 / 29 / 32% (+8% per 1000 bonus Health)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Steadfast Presence",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Total Armor and Magic Resistance",
+              "before": "12%, doubled below 40% Maximum Health",
+              "after": "16%, doubled below 40% Maximum Health",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Berserker's Greaves",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Speed",
+          "before": "25%",
+          "after": "30%",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "T3 Attack Speed",
+          "before": "40%",
+          "after": "45%",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Black Cleaver",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "40",
+          "after": "45",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Fervor Move Speed",
+          "before": "20 for 2s",
+          "after": "[20 Melee || 10 Ranged] for 2s",
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Eclipse",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Damage",
+          "before": "[6% Melee || 4% Ranged] Target Maximum Health",
+          "after": "[8% Melee || 5% Ranged] Target Maximum Health",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Shield",
+          "before": "[160 + 40% bonus Attack Damage Melee || 80 + 20% bonus Attack Damage Ranged]",
+          "after": "[150 + 40% bonus Attack Damage Melee || 75 + 20% bonus Attack Damage Ranged]",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Runaan's Hurricane",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Move Speed",
+          "before": "4%",
+          "after": "5%",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Wind's Fury Bolt Damage",
+          "before": "55% Attack Damage",
+          "after": "65% Attack Damage",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Sterak's Gage",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Bonus Attack Damage",
+          "before": "45% of Base Attack Damage",
+          "after": "50% of Base Attack Damage",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Sundered Sky",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Recipe",
+          "before": "Tunneler (1150g) + Caulfield's (1050g) + Ruby Crystal (400g) + 500g",
+          "after": "Tunneler (1150g) + Caulfield's (1050g) + 900g",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Healing",
+          "before": "[100% Melee || 50% Ranged] Base Attack Damage + 6% Missing Health",
+          "after": "[90% Melee || 45% Ranged] Base Attack Damage + 4% Missing Health",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Health",
+          "before": "400",
+          "after": "450",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Sunfire Cape",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Damage",
+          "before": "20 (+1% bonus Health)",
+          "after": "20 (+1.5% bonus Health)",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Minion / Monster Modifier",
+          "before": "160% Minion, 200% Monster",
+          "after": "150% Minion, 180% Monster",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Recipe",
+          "before": "600g",
+          "after": "700g",
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Chainlaced Crushers",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Magic Resistance",
+          "before": "30",
+          "after": "25",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Spellslinger's Shoes",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Magic Penetration",
+          "before": "18 + 8%",
+          "after": "20 + 8%",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Tiamat",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "20",
+          "after": "25",
+          "direction": "buff"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Fleet Footwork",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Healing",
+          "before": "10-130 ( +[10% bonus AD Melee || 6% bonus AD Ranged]) ( +[5% AP Melee || 3% AP Ranged])",
+          "after": "15-160 ( +[10% bonus AD Melee || 6% bonus AD Ranged]) ( +[5% AP Melee || 3% AP Ranged])",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Hail of Blades",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Speed",
+          "before": "120% Melee || 60% Ranged",
+          "after": "90% Melee || 60% Ranged",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Bonus True Damage",
+          "before": "4-20 (+8% bonus AD) (+6% AP)",
+          "after": "2-20 (+12% bonus AD) (+10% AP)",
+          "direction": "nerf"
+        }
+      ]
+    }
+  ]
+}

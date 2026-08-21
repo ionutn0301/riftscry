@@ -1,0 +1,1052 @@
+{
+  "schemaVersion": 1,
+  "id": "26.9",
+  "assetVersion": "16.9.1",
+  "releaseDate": "2026-04-28",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-9-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.086Z",
+  "champions": [
+    {
+      "championId": "Ambessa",
+      "classification": "nerf",
+      "summary": "Ambessa has carried the Medarda legacy a bit too well. Her brutality and fantasy has resonated with her mains, but we believe her ult has felt slightly fast to the point that players hit by it often don't have clarity on what happened. We're extending her cast time to open up clearer counterplay, and will be keeping a watchful eye on opportunities for follow-up work.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Public Execution",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cast Time",
+              "before": "0.55",
+              "after": "0.70",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Briar",
+      "classification": "nerf",
+      "summary": "Briar has one of the steepest mastery curves in League. However, as time has gone on, more and more players have ended up at the high end of that curve and have been finding a lot of success. So we're looking to nerf a bit of her survivability, but keep her ability to kill a target.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "100",
+              "after": "95",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ezreal",
+      "classification": "adjustment",
+      "summary": "We want to bring back some playstyles that have been lost to the sands of time. First up on that list is AP Ezreal. Bring out your global snipes—there's a lot of good mages out there but none of them are this skillful!",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Mystic Shot",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AP Ratio",
+              "before": "15% AP",
+              "after": "40% AP",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Essence Flux",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AP Ratio",
+              "before": "70 - 90%",
+              "after": "90%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Trueshot Barrage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AP Ratio",
+              "before": "90%",
+              "after": "110%",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage To Minions / Non-Epic Monsters",
+              "before": "175 / 275 / 375 (+50% bonus AD) (+45% AP)",
+              "after": "150 / 225 / 300 (+100% bonus AD) (+110% AP)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Gragas",
+      "classification": "adjustment",
+      "summary": "Gragas top is most impacted by the removal of Phase Rush, and only time will tell whether Grasp or Comet comes out on top. As we wait to see how his laning shakes out, this change should let Gragas players better frontline for their teams, and have a bigger impact in the late-game where they struggle most.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Drunken Rage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage Reduction",
+              "before": "10 / 12 / 14 / 16 / 18% (+ 4% per 100 AP)",
+              "after": "10 / 14 / 18 / 22 / 26 (+ 4% per 100 AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kennen",
+      "classification": "adjustment",
+      "summary": "Our second lost playstyle is AD Kennen. In this case, we're adding critical strike synergy to Kennen's W and E. While a more attack speed focused on-hit hybrid build may stand out as a more intuitive choice for an auto-attack focused Kennen, we actually think it would spill over too hard into his standard AP builds and want to avoid adjustments to his typical playstyle just to enable this one.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Electrical Surge",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "[NEW] Passive",
+              "text": "When ready, now applies the passive effect to the entire attack as an On-Hit, rather than just the first On-Hit trigger"
+            },
+            {
+              "kind": "prose",
+              "label": "[NEW] Passive Damage",
+              "text": "Can now Critically Strike for 140% (+40% of Bonus Critical Strike Damage)"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Lightning Rush",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "[NEW] Attack Speed Buff",
+              "text": "Critical Strikes now extend the duration of Lightning Rush's Attack Speed buff by 1 second, up to the initial duration of 4s. This can happen any number of times."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Shyvana",
+      "classification": "adjustment",
+      "summary": "With Shyvana having been out for a few patches, we've taken stock of where she's landed and identified two areas to address: broadening bruiser item viability and sharpening the distinction between AD and AP builds. On the bruiser side, we've reduced the emphasis on pure dps items like Kraken Slayer. Adjustments to her base stats, Q and W create more room for Sheen, ability haste, and health to meaningfully contribute to her kit. For build differentiation, AD Shyvana looks to engage in more sustained combat through auto attacks followed by big Q hits, using her W for sustain and sticking power and E for supplementary chase power. AP Shyvana, by contrast, centers damage around R and E, with W existing as a way to weave in and out of combat.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed",
+              "before": "0.625",
+              "after": "0.638",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Ratio",
+              "before": "0.69",
+              "after": "0.638",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "3",
+              "after": "4",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Emberstrike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Passive",
+              "before": "1% (+ 1.1% per 100 bonus AD) (+ 1.1% per 100 AP) of target's maximum health",
+              "after": "1% (+ 1.1% per 100 bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Hit Reduction",
+              "before": "1 second",
+              "after": "0.5 seconds",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Area Physical Damage",
+              "before": "10 / 15 / 20 / 25 / 30 (+ 110% AD) (+ 25% AP)",
+              "after": "10 / 15 / 20 / 25 / 30 (+ 110% AD) (+ 30% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Cooldown ticks in the background if you do not finish the sequence. Cooldown starts ticking at the last activated input in that sequence."
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Inferno Aegis",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "14 / 13.5 / 13 / 12.5 / 12",
+              "after": "13 / 12 / 11 / 10 / 9",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Shield",
+              "before": "60 / 80 / 100 / 120 / 140 (+ 5% max health)",
+              "after": "75 / 95 / 115 / 135 / 155 (+12% bonus health)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80 / 100 / 120 / 140 / 160 (+ 40% bonus AD) (+ 20% AP)",
+              "after": "80 / 100 / 120 / 140 / 160 (+ 65% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Dragon Form Heal",
+              "before": "75 – 214.71 (based on level) (+ 10% bonus AD) (+ 5% AP), increased by 0% – 100% (based on her missing health) for a maximum heal of 150 – 429.41 (based on level) (+ 20% bonus AD) (+ 10% AP)",
+              "after": "60 - 100 + 4-8% missing health (based on level)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "W move speed separate from shield"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Molten Burst",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "12 / 11.5 / 11 / 10.5 / 10",
+              "after": "12 / 11 / 10 / 9 / 8",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Magic Damage",
+              "before": "80 / 110 / 140 / 170 / 200 (+ 35% bonus AD) (+ 70% AP)",
+              "after": "50 / 65 / 80 / 95 / 110 (+ 60 / 65 / 70 / 75 / 80% AP) + 5% Target Max Health",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Subsequent Explosion Damage Against Same Target",
+              "before": "50%",
+              "after": "40%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Slow",
+              "before": "20 / 25 / 30 / 35 / 40%",
+              "after": "30%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "TahmKench",
+      "classification": "buff",
+      "summary": "Last patch's adjustment last patch ended up a very slight nerf (less than .5%) for both top and support. So we're making some support-focused improvements to compensate.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Thick Skin",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Grey Health to HP conversion",
+              "before": "45 - 100% (Level 1 - 18)",
+              "after": "60 - 100% (Level 1 - 18)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Devour",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Move Speed On Ally Devour",
+              "before": "40% for 3 seconds",
+              "after": "60% for 3 seconds",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Taliyah",
+      "classification": "adjustment",
+      "summary": "Taliyah is in the same spot as Gragas (RIP Phase Rush), except she was also taken down a notch from the pro mid meta in her last nerf. We don't expect her to be able to utilize the changes as well as a lot of her competition, so we're walking back our last hit to her, while also making sure she doesn't approach sub-2:30 clears.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Threaded Volley",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "50 / 67.5 / 85 / 102.5 / 120",
+              "after": "55 / 72.5 / 90 / 107.5 / 125",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Bonus Monster Damage",
+              "before": "23 / 28 / 33 / 38 / 43",
+              "after": "20 / 25 / 30 / 35 / 40",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Teemo",
+      "classification": "adjustment",
+      "summary": "Our third lost playstyle—On-hit-focused Teemo builds have slowly fallen out of vogue as he's been tuned around Malignance and Liandries. We are adding bonus AD ratios to Teemo's E to open up itemization options for auto-attack builds featuring hybrid items like rageblade and the reworked Statikk Shiv.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Toxic Shot",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "[NEW] Initial Damage Bonus AD Ratio",
+              "text": "10% Bonus AD"
+            },
+            {
+              "kind": "prose",
+              "label": "[NEW] DoT Damage Bonus AD Ratio",
+              "text": "30% Bonus AD over 4 seconds"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Udyr",
+      "classification": "buff",
+      "summary": "Currently, we feel that Udyr's AD Q builds are extremely one note—which makes sense when you look at their scaling. We want to broaden his AD Q bruiser builds by shifting some of his AD ratios out of his Q and into W and E so the stance swapper has more than one stance.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Wildling Claw",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Damage on First 2 Attacks",
+              "before": "3 / 4 / 5 / 6 / 7 / 8% (+4% per 100 bonus AD) of the target's Max Health",
+              "after": "3 / 4 / 5 / 6 / 7 / 8% (+3.5% per 100 bonus AD) of the target's Max Health",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Bonus Damage On-Hit for 4 seconds",
+              "before": "5 / 13 / 21 / 29 / 37 / 45 (+25% bonus AD)",
+              "after": "6 / 12 / 18 / 24 / 30 / 36 (+20% bonus AD) (+1 - 2% bonus HP)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Awakened Bonus Damage on First 2 Attacks",
+              "before": "An additional 2 - 4% (based on level) (+3% per 100 bonus AD) of the target's Max Health",
+              "after": "An additional 2 - 4% (based on level) (+1.5% per 100 bonus AD) (+1% per 1000 bonus HP of the target's Max Health)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Awakened Chain Lightning Damage Per Bounce",
+              "before": "1.5 - 3% (based on level) (+.8% per 100 AP)",
+              "after": "1.5 - 3% (based on level) (+.6% per 100 AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Iron Mantle",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "[NEW] Shield AD Ratio",
+              "text": "50% bonus AD"
+            },
+            {
+              "kind": "prose",
+              "label": "[NEW] Awakened Shield AD Ratio",
+              "text": "100% bonus AD"
+            },
+            {
+              "kind": "prose",
+              "label": "[NEW] Awakened Heal AD Ratio",
+              "text": "50% bonus AD"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Blazing Stampede",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "[NEW] Move Speed AD Ratio",
+              "text": "5% move speed per 100 bonus AD"
+            },
+            {
+              "kind": "prose",
+              "label": "[NEW] Awakened Move Speed AD Ratio",
+              "text": "10% move speed per 100 bonus AD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Warwick",
+      "classification": "adjustment",
+      "summary": "Our favorite wolf-boy Warwick has been struggling to find his place over game time. We are looking to soften the blow of his transition into the late game by bringing up some of his scaling.",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "P - Eternal Hunger",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On-hit Damage",
+              "before": "6 / 16 / 26 / 36 / 46",
+              "after": "6 / 18.25 / 30.5 / 42.75 / 55",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "XinZhao",
+      "classification": "nerf",
+      "summary": "Our fourth lost playstyle is centered around Xin Zhao—particularly attack speed and AP Xin Zhao. Over the years Xin has moved off of auto attack builds solidly into bruiser AD-caster builds buying items like Sundered Sky or Black Cleaver. We think more attack speed-centric Xin Zhao builds offered an enjoyable melee fighter experience, and we want to bring it back. Whether it's full AP builds revolving around drain tanking, heavy attack speed on-hit carry builds, or just some minor pivots into Stridebreaker, Titanic Hydra, and Triforce, we want to see a bit more build options.",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "P - Determination",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Healing",
+              "before": "3 / 4 / 5% Max HP (+65% AP) (levels 1 / 6 / 11)",
+              "after": "3 / 4 / 5% Max HP (+50 / 65 / 90% AP) (levels 1 / 6 / 11)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Wind Becomes Lightning",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Slow On Thrust",
+              "before": "50% for 1.5 seconds",
+              "after": "50% for 1.5 (+.5 per 100 AP) seconds",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Audacious Charge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Magic Damage",
+              "before": "50 / 75 / 100 / 125 / 150 (+60% AP)",
+              "after": "50 / 75 / 100 / 125 / 150 (+120% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Buff",
+              "before": "40 / 50 / 60 / 70 / 80% for 5 seconds",
+              "after": "38 / 46 / 54 / 62 / 70% (+1% per 5% permanent AS) (+10% per 100 AP) for 5 seconds",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zeri",
+      "classification": "adjustment",
+      "summary": "Zeri's changes have pushed her over time to become more of a bursty assassin than the fantasy that initially called to many of her players. By moving power from her burst and late-game DPS towards her mobility and early laning, these changes should allow Zeri to shine once again as the zappy, speedy legend she is (while still doing ADC damage!)",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "P - Living Battery",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Right Click Range",
+              "before": "500",
+              "after": "550",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Execute threshold",
+              "before": "60 / 82.5 / 105 / 127.5 / 150 (+ 18% AP)",
+              "after": "70 / 92.5 / 115 / 137.5 / 160 (+ 20% AP)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Burst Fire",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "15 / 17 / 19 / 21 / 23 (+ 104 / 108 / 112 / 116 / 120% AD)",
+              "after": "21 / 24 / 27 / 30 / 33 (+ 102 / 104 / 106 / 108 / 110% AD)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Excess AS to AD conversion",
+              "before": "70%",
+              "after": "50%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Now forced quick cast"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Ultrashock Laser",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Wall Crit Multiplier",
+              "before": "175%",
+              "after": "150%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "AP Ratio",
+              "before": "25%",
+              "after": "50%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Spark Surge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Magic Damage",
+              "before": "17 / 19 / 21 / 23 / 25 (+ 10% bonus AD) (+ 20% AP)",
+              "after": "22 / 24 / 26 / 28 / 30 (+ 20% AP)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "22 / 21 / 20 / 19 / 18",
+              "after": "24 / 22.5 / 21 / 19.5 / 18",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cooldown Refresh",
+              "before": "Applies on attacks and abilities vs champions",
+              "after": "Applies on attacks vs everything",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Lightning Crash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Burst AD ratio",
+              "before": "100%",
+              "after": "60%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "MS per stack",
+              "before": "1%",
+              "after": "1.5%",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Stack duration",
+              "before": "1.5",
+              "after": "2.5",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zoe",
+      "classification": "nerf",
+      "summary": "Looking to move some of Zoe's power out laning phase stat checking, and into more skillful outplay around her Bubble.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Spell Thief",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage Per Bolt",
+              "before": "20 / 30 / 40 / 50 / 60 (+ 15% AP)",
+              "after": "15 / 25 / 35 / 45 / 55 (+ 10% AP)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total Damage",
+              "before": "60 / 90 / 120 / 150 / 180 (+ 45% AP)",
+              "after": "45 / 75 / 105 / 135 / 165 (+ 30% AP)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Sleepy Trouble Bubble",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "16 / 15 / 14 / 13 / 12",
+              "after": "18 / 17 / 16 / 15 / 14",
+              "direction": "nerf"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Refunds 16 / 19.5 / 23 / 26.5 / 30% of cooldown when hitting an enemy champion"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Axiom Arc",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Flux",
+          "before": "On takedown, refund 15% (+.15% per lethality) of your ultimate's total cooldown",
+          "after": "10% (+.25% per lethality)",
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "[NEW] Doran's Bow",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Attack Damage",
+          "text": "6"
+        },
+        {
+          "kind": "prose",
+          "label": "Attack Speed",
+          "text": "12%"
+        },
+        {
+          "kind": "prose",
+          "label": "Omnivamp",
+          "text": "1.5%"
+        }
+      ]
+    },
+    {
+      "name": "[NEW] Doran's Helm",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Health",
+          "text": "100"
+        },
+        {
+          "kind": "prose",
+          "label": "Armor",
+          "text": "10"
+        },
+        {
+          "kind": "prose",
+          "label": "Magic Resist",
+          "text": "10"
+        },
+        {
+          "kind": "prose",
+          "label": "Helping Hand",
+          "text": "5 on-hit vs minions"
+        }
+      ]
+    },
+    {
+      "name": "Dusk And Dawn",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "[NEW] Spellblade",
+          "text": "Now also heals the user for (10% AP) (+3% Bonus HP)"
+        },
+        {
+          "kind": "numeric",
+          "label": "Health",
+          "before": "350",
+          "after": "300",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Ability Power",
+          "before": "70",
+          "after": "60",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Attack Speed",
+          "before": "25%",
+          "after": "20%",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Endless Hunger",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Unique Passive - Famine",
+          "before": "Grants 5 (+10% Bonus AD) Ability Haste",
+          "after": "Grants 5 (+[13% Melee | 10% Ranged] Bonus AD) Ability Haste",
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "[NEW] Gluttonous Greaves",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Build Path",
+          "text": "Boots (300g) + 650g"
+        },
+        {
+          "kind": "prose",
+          "label": "Move Speed",
+          "text": "45"
+        },
+        {
+          "kind": "prose",
+          "label": "Omnivamp",
+          "text": "4%"
+        },
+        {
+          "kind": "prose",
+          "label": "Unique Passive - Slay",
+          "text": "On champion takedown, gain 1% Omnivamp permanently, stacking up to 6 times"
+        },
+        {
+          "kind": "prose",
+          "label": "Tier 3 Immortal Path - Bonus Unique Passive - Now and Forever",
+          "text": "While above half health, deal 5% increased damage. While below half health, receive +15% healing, shielding, and regeneration."
+        }
+      ]
+    },
+    {
+      "name": "Hubris",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Base AD",
+          "before": "60",
+          "after": "55",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Passive AD per Stack",
+          "before": "+2",
+          "after": "+3",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Bonus AD",
+          "before": "+15",
+          "after": "+12",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "[REMOVED] Opportunity",
+      "classification": "adjustment",
+      "changes": []
+    },
+    {
+      "name": "Staff of Flowing Water",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Unique Passive - Rapids",
+          "before": "Healing or Shielding other ally champions grants both you and them +45 Ability Power for 6s",
+          "after": "Healing or Shielding other ally champions grants both you and them +40 Ability Power and +15 Ability Haste for 6s",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Ability Haste",
+          "before": "15",
+          "after": "10",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "[REWORKED] Statikk Shiv",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Build Path",
+          "text": "Scout's Slingshot (600g) + Pickaxe (875g) + Aether Wisp (800g) + 625g"
+        },
+        {
+          "kind": "prose",
+          "label": "Attack Damage",
+          "text": "40"
+        },
+        {
+          "kind": "prose",
+          "label": "Ability Power",
+          "text": "45"
+        },
+        {
+          "kind": "prose",
+          "label": "Attack Speed",
+          "text": "30%"
+        },
+        {
+          "kind": "prose",
+          "label": "Move Speed",
+          "text": "4%"
+        },
+        {
+          "kind": "prose",
+          "label": "Unique Passive - Electrospark",
+          "text": "Your Energized trigger fires a chain of lightning, dealing 60 (increased to 90 for minions and monsters) bonus magic damage to up to (4 - 8, scaling with level) targets. Applies on-hit effects to secondary bounce targets."
+        },
+        {
+          "kind": "prose",
+          "label": "Unique Passive - Electroshock",
+          "text": "Basic attacks grant an additional +9 Energize stacks"
+        }
+      ]
+    },
+    {
+      "name": "[REMOVED] Trailblazer",
+      "classification": "adjustment",
+      "changes": []
+    },
+    {
+      "name": "[REWORKED] Voltaic Cyclosword",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Unique Passive - Galvanize",
+          "text": "Damaging enemy champions with abilities will trigger Energized if it is ready"
+        },
+        {
+          "kind": "prose",
+          "label": "Unique Passive - Firmament",
+          "text": "Your Energized trigger grants you [15 Melee | 12 Ranged] Lethality for 4s and deals bonus physical damage equal to [9% Melee | 7% Ranged] of the target's current health. This bonus damage is capped to 200 against non-champions."
+        },
+        {
+          "kind": "numeric",
+          "label": "Cost",
+          "before": "3000g",
+          "after": "2900g",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Lethality",
+          "before": "18",
+          "after": "10",
+          "direction": "nerf"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "[NEW] Deathfire Touch",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Sorcery Tree Keystone",
+          "text": "Damaging a champion with an ability burns them for (4s singletarget / 2s AoE / 1s DoT). The burn deals 4-12 (level scaling) + 8% bonus AD + 3% AP adaptive damage per second. After the burn has been on a target for 3s, the damage of the burn increases by 100%."
+        }
+      ]
+    },
+    {
+      "name": "[REMOVED] Phase Rush",
+      "classification": "system",
+      "changes": []
+    },
+    {
+      "name": "[NEW] Stormraider's Surge",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "[NEW] Sorcery Tree Keystone",
+          "text": "Dealing 25% of a champion's maximum health within 3s grants a movespeed and slow resistance for 3s. 20-10s cooldown, scales based on level."
+        },
+        {
+          "kind": "prose",
+          "label": "[NEW] Speed",
+          "text": "40%; 75% for ranged champs"
+        },
+        {
+          "kind": "prose",
+          "label": "[NEW] Slow Resist",
+          "text": "50%"
+        }
+      ]
+    },
+    {
+      "name": "Arcane Comet",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "[REMOVED] Cooldown Refund",
+          "text": "Removed"
+        },
+        {
+          "kind": "prose",
+          "label": "[NEW] Damage",
+          "text": "Now deals up to 100% increased damage based on distance from the target, max damage bonus at 750 range away"
+        },
+        {
+          "kind": "numeric",
+          "label": "Damage",
+          "before": "30 - 130 (based on level) + 10% bonus AD + 5% AP",
+          "after": "15 - 100 (based on level) + 10% bonus AD + 5% AP",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Hail Of Blades",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Speed",
+          "before": "[160% Melee || 80% Ranged] for 3 attacks, increased by +1 attack if you cast an ability that resets your auto attack",
+          "after": "[120% Melee || 60% Ranged] for 3 attacks, increased by +1 attack if you cast an ability that resets your auto attack up to +2 attacks",
+          "direction": "nerf"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": ": Attacks empowered by Hail of Blades deal 4 - 20 (+8% bonus AD) (+6% AP) bonus true damage"
+        },
+        {
+          "kind": "prose",
+          "label": "Bugfixes",
+          "text": "Fixed various Attack Reset abilities not properly granting bonus attacks (Bel'Veth Q, Kai'Sa R, K'Sante Q3, Gwen E, Quinn E, Rell Remount W, Riven Q)"
+        }
+      ]
+    }
+  ]
+}

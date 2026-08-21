@@ -74,6 +74,17 @@ it("maps punctuated names to ddragon ids", () => {
   expect(normalizePatch(r, meta, ids).champions[0]!.championId).toBe("Kaisa");
 });
 
+it("maps names with curly apostrophes (as Riot renders them)", () => {
+  const r: RawPatch = { ...raw, champions: [{ ...raw.champions[0]!, name: "Kai’Sa" }] };
+  expect(normalizePatch(r, meta, ids).champions[0]!.championId).toBe("Kaisa");
+});
+
+it("maps ampersand names spelled with 'and'", () => {
+  const withNunu = { ...ids, "Nunu & Willump": "Nunu" };
+  const r: RawPatch = { ...raw, champions: [{ ...raw.champions[0]!, name: "Nunu and Willump" }] };
+  expect(normalizePatch(r, meta, withNunu).champions[0]!.championId).toBe("Nunu");
+});
+
 it("throws on unmapped champion name", () => {
   const r: RawPatch = { ...raw, champions: [{ ...raw.champions[0]!, name: "Notachamp" }] };
   expect(() => normalizePatch(r, meta, ids)).toThrow(/Notachamp/);

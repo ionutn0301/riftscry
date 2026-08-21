@@ -1,0 +1,489 @@
+{
+  "schemaVersion": 1,
+  "id": "26.11",
+  "assetVersion": "16.11.1",
+  "releaseDate": "2026-05-27",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-11-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.116Z",
+  "champions": [
+    {
+      "championId": "Brand",
+      "classification": "nerf",
+      "summary": "Brand has been toeing the line in bot for a while now, and this patch has well and truly crossed over, so we're targeting that lane with a nerf to his base armor.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Armor",
+              "before": "27",
+              "after": "24",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Diana",
+      "classification": "buff",
+      "summary": "Diana's feeling a bit underwhelming in the jungle after her previous adjustments due to the Dusk and Dawn changes. So we're giving her a little more moon-power in the jungle to return her to her former glory.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Damage",
+              "before": "230%",
+              "after": "270%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Pale Cascade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Health",
+              "before": "9%",
+              "after": "11%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ekko",
+      "classification": "buff",
+      "summary": "Now that the dust has settled from 26.9's Dusk and Dawn reshape, we've uncovered that Ekko has room for a compensation buff as he is no longer completely bound to just buying that item for his power.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Z-Drive Resonance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Per-Enemy Cooldown",
+              "before": "5 seconds",
+              "after": "4 seconds",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Heimerdinger",
+      "classification": "buff",
+      "summary": "With the ranged minion aggro pull removed last patch, Heimerdinger mains ended up with some degraded functionality around how turret ranges interact with minion ranges—in the sense that ranged minions outrange Heimer's turrets and he had no way to pull them into their range. This makes for a pretty miserable experience where you just watch as your turrets tank minion autos without attacking back. Additionally, it was brought to our attention that his Evolution Turrets sometimes fail to follow up on his Storm Grenade when they lose vision of the target too quickly due to minor timing fluctuations around vision and turret logic, so we are increasing the vision duration slightly to resolve that.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "H-28G Evolution Turret",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Turret Attack Range",
+              "before": "530",
+              "after": "550",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Turret Vision Range",
+              "before": "585",
+              "after": "650",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Turret Range",
+              "text": "Turrets now gain 50 additional range against minions if nothing else is in range"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "CH-2 Electron Storm Grenade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Vision of target location",
+              "before": "1 second",
+              "after": "1.25 seconds",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kassadin",
+      "classification": "buff",
+      "summary": "Our Void Walker has been limping around the Rift more than blinking. Stackable tear items have provided an additional cool late-game fantasy option besides pure AP, but his early game has been tougher than usual (in part due to our mid quest adjustment). These changes should help his laning, both in farming and trading.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Null Sphere",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "10 / 9.5 / 9 / 8.5 / 8",
+              "after": "9 / 8.5 / 8 / 7.5 / 7",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Nether Blade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Magic Damage",
+              "before": "20 (+10% AP)",
+              "after": "25 (+10% AP)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Quinn",
+      "classification": "buff",
+      "summary": "Quinngle (or Qungle [Kwun-gle]?) has been pretty popular and fun, even in a weak state. We know a lot of you will pick up more tricks and mastery over time, so for now we're just making sure her clear speed is more competitive without changing burst or dueling. This should help our trusty ranger more regularly undertake dangerous missions deep in enemy territory, whether she's looking for camps or champs.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Harrier",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Damage",
+              "before": "50",
+              "after": "75",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Blinding Assault",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Damage",
+              "before": "150%",
+              "after": "200%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Smolder",
+      "classification": "nerf",
+      "summary": "The baby dragon has been absolutely blasting his opponents since getting his hands on Deathfire Touch. We've had to do an unfortunate number of micropatch nerfs back to back, and we are hopeful this will be the last one we need to do. Included in these changes are a continuation of the latest nerf's push towards bringing him back into primarily critical strike builds rather than just Essence Reaver into bruiser, which we think can sit stronger since at the end of the day, a squishier Smolder has more weaknesses to play around, like being burst by enemy spell rotations.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Dragon Practice",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Magic Damage on Q",
+              "before": "40% * (1 + (Crit Chance *.5 * (1 + Bonus Crit Damage)) of Passive stacks (60% at 100% Crit, 66% if you have IE)",
+              "after": "25% * (1 + (Crit Chance * 1.2 * (1 + Bonus Crit Damage)) of Passive stacks",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Bonus Magic Damage on E",
+              "before": "12% of Passive stacks",
+              "after": "8% * (1 + (Crit Chance * .6 * (1 + Bonus Crit Damage)) of Passive stacks",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Teemo",
+      "classification": "nerf",
+      "summary": "We'd love (fear) a world where Teemo could be equally happy building AP, on-hit, and AD for his new ratios, but as it stands, Shiv is ahead of the pack. By hitting his Toxic Shot AD ratio, we're confident Teemo with Shiv can land in a good spot without forcing those of you who like other builds (e.g. Nashor's, Liandry, Malignance) to rely on it. Additionally, hits to his scaling durability should preserve his lane bully identity, while increasing your chance of getting the jump on him!",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "4.95 per level",
+              "after": "4.5 per level",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Toxic Shot",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On-hit/Poison per tick scaling",
+              "before": "(+10% bonus AD/+20% bonus AD)",
+              "after": "(+5% bonus AD/+10% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "XinZhao",
+      "classification": "adjustment",
+      "summary": "While AP Xin builds are not OP per se, the sheer amount of healing has been eye popping in an extremely expectation breaking way. Tamping that down with some compensation in the form of sustained damage.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Determination",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Damage",
+              "before": "15 / 30 / 45 / 60% Bonus AD (Levels 1 / 6 / 11 / 16)",
+              "after": "15 / 30 / 45 / 60% Bonus AD (+5 / 10 / 15 / 20% AP) (Levels 1 / 6 / 11 / 16)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Heal Amount",
+              "before": "3 / 4 / 5% Max HP (+50 / 65 / 90% AP) (Levels 1 / 6 / 11)",
+              "after": "3 / 4 / 5% Max HP (+45 / 55 / 80% AP) (Levels 1 / 6 / 11)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Experimental Hexplate",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Overdrive",
+          "before": "On ulting, 50% bonus AS and 20% bonus MS for 8 seconds",
+          "after": "Ranged: 35% bonus AS and 14% bonus MS for 8 seconds (unchanged for melee)",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Damage To Permanent Health Conversion Rate",
+          "before": "8%",
+          "after": "10%",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "40",
+          "after": "45",
+          "direction": "buff"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Summon Aery",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Damage Per Tick, Per Grub",
+          "before": "3 / 9 / 12 || 1.5 / 4.5 / 6",
+          "after": "4 / 12 / 16 || 2 / 6 / 8",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Summoned Voidmite HP",
+          "before": "60% of Melee Minion",
+          "after": "100% of Melee Minion",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Shielding",
+          "before": "30 - 100 (Levels 1 - 18) (+10% bonus AD) (+5% AP)",
+          "after": "20 - 100 (Levels 1 - 18) (+10% bonus AD) (+5% AP)",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Armor and MR",
+          "before": "35 (+80% bonus)",
+          "after": "45 (+75% bonus)",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Cooldown",
+          "before": "90 - 40 (Level 1 - 18)",
+          "after": "75 - 40 (Level 1 - 18)",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Shield",
+          "before": "45 - 180 (+25% AP) (+5% bonus HP)",
+          "after": "40 - 150 (+20% AP) (+6% bonus HP)",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Blue Bubble Damage Reduction",
+          "before": "75 - 255 (Level 1 - 18)",
+          "after": "50 - 194 (Level 1 - 18)",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Blue Bubble Damage Reduction",
+          "before": "Damage reduction affects the next non-0 instance of damage, regardless of how large it is",
+          "after": "Damage reduction affects the next non-0 damage cast source (temporal carry-over)",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Purple Bubble Damage",
+          "before": "50 - 170 (Level 1 - 18)",
+          "after": "40 - 160 (Level 1 - 18)",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Purple Bubble Damage",
+          "before": "Damage triggers on hit, or on certain abilities / items",
+          "after": "Damage triggers on next damaging attack or ability, reduced for AoE effects (i.e. Nami E)",
+          "direction": "neutral"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed various bugs, including no longer double dipping on both heal / shield power and Grievous Wounds / Shield Reaver"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Bounces now prioritize lower health allies"
+        },
+        {
+          "kind": "numeric",
+          "label": "Build Path",
+          "before": "Fiendish Codex (850g) + Bandleglass Mirror (900g) + 500g = 2250g",
+          "after": "Blasting Wand (850g) + Bandleglass Mirror (900g) + 650g = 2400g",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Ability Power",
+          "before": "60",
+          "after": "65",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Ability Haste",
+          "before": "20",
+          "after": "15",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Mana Regen",
+          "before": "125%",
+          "after": "150%",
+          "direction": "buff"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Unique - Coordinated Fire"
+        },
+        {
+          "kind": "prose",
+          "label": "Unique - Control",
+          "text": "Gain 15 Ability Haste for your abilities with Immobilizing effects"
+        },
+        {
+          "kind": "prose",
+          "label": "Unique - Command",
+          "text": "On immobilizing an enemy champion, mark them as 6% Vulnerable for 4s (Vulnerable enemies take % increased damage)"
+        },
+        {
+          "kind": "numeric",
+          "label": "Damage Stored",
+          "before": "35%",
+          "after": "30%",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Armor and Magic Resist",
+          "before": "25",
+          "after": "30",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Damage Redirection",
+          "before": "12%",
+          "after": "14%",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Heal",
+          "before": "10%",
+          "after": "12%",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Frostfire Tempest",
+          "before": "Triggers on Ult cast",
+          "after": "Readies on Ult cast for the next 5 seconds, triggering the moment an enemy champion gets within the range or after 5 seconds",
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Deathfire Touch",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Damage",
+          "before": "Adaptive based on the user's AD vs AP",
+          "after": "Magic Damage",
+          "direction": "neutral"
+        }
+      ]
+    }
+  ]
+}

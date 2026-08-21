@@ -72,8 +72,17 @@ function toChanges(block: RawBlock): { changes: Change[]; directions: ("buff" | 
   return { changes, directions };
 }
 
+/**
+ * Lowercase alphanumerics only, with "&" → "and" — so "Kha’Zix"/"Kha'Zix"
+ * and "Nunu & Willump"/"Nunu and Willump" each collapse to one key.
+ */
+function canonicalName(name: string): string {
+  return name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]/g, "");
+}
+
 function toChampion(section: RawSection, championIds: Record<string, string>): ChampionChange {
-  const championId = championIds[section.name];
+  const canon = new Map(Object.entries(championIds).map(([n, id]) => [canonicalName(n), id]));
+  const championId = canon.get(canonicalName(section.name));
   if (!championId) {
     throw new Error(`Unmapped champion name from patch notes: "${section.name}"`);
   }

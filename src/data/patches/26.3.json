@@ -1,0 +1,1286 @@
+{
+  "schemaVersion": 1,
+  "id": "26.3",
+  "assetVersion": "16.3.1",
+  "releaseDate": "2026-02-03",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-3-notes/",
+  "ingestedAt": "2026-08-21T20:21:45.994Z",
+  "champions": [
+    {
+      "championId": "Ahri",
+      "classification": "buff",
+      "summary": "As the new season has shaken out, Ahri is performing worse than last year and worse than she ought to. Now that she's back on high burst builds, we're reverting a nerf from her “Rod of Ages every game” phase of her K-pop career. Some artists just fall off, you know?",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Fox-Fire",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "10 / 9 / 8 / 7 / 6",
+              "after": "9 / 8 / 7 / 6 / 5",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Belveth",
+      "classification": "buff",
+      "summary": "Bel'Veth is one of several AD junglers who suffered in the new season and we're here to buff her back up. We're aiming to bring up her late game in ways that synergize with squishy high attack speed builds by giving her a better payout for that attack speed and enough health to not need to buy as much of it.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "99",
+              "after": "105",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Endless Banquet",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "True Damage on attack per stack",
+              "before": "6 / 8 / 10 (+ 12% Bonus AD)",
+              "after": "6 / 10 / 14 (+ 12% Bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Braum",
+      "classification": "nerf",
+      "summary": "Braum has easily become a top tier support with the start of the new season. New items like Bandlepipes have been instrumental in helping him and his allies stick onto enemies and take them down. Given that Braum is still looking quite strong even after the nerf to Bandlepiepes, we'll be looking to revert the health buffs we gave him at the end of last year and bring down some of his overall fighting power.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health",
+              "before": "630",
+              "after": "610",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Winter's Bite",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "75 / 125 / 175 / 225 / 275 (+ 2.5% HP)",
+              "after": "75 / 120 / 165 / 210 / 255 (+ 2.5% HP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Briar",
+      "classification": "buff",
+      "summary": "Briar lost some of her luster in the new season and as someone with ample counter-play, she deserves to win more games than she currently does. We want to make sure her lifesteal-focused durability can manifest by giving her enough health and resists to make that healing efficient and while we're here, we're also throwing top lane Briar a bone by letting her trade more efficiently as well.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "95",
+              "after": "100",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "4.2",
+              "after": "4.5",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Head Rush",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Cost",
+              "before": "6% current health",
+              "after": "5% current health",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Blood Frenzy",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Cost",
+              "before": "6% current health",
+              "after": "5% current health",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Chilling Scream",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Cost",
+              "before": "6% current health",
+              "after": "5% current health",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Certain Death",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Cost",
+              "before": "6% current health",
+              "after": "5% current health",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Diana",
+      "classification": "nerf",
+      "summary": "Diana has gone to the moon due to seasonal changes, and in addition to Dusk & Dawn adjustments, this nerf should make sure her power wanes.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Moonsilver Blade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Damage",
+              "before": "280%",
+              "after": "230%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Draven",
+      "classification": "buff",
+      "summary": "Draven's Q was initially bugged to deal less damage at the start of the season, which was micropatched within the first week. Players are also trying Essence Reaver over Bloodthirster, which currently performs worse. After accounting for all of these factors, Draven's still not doing as well as he was last year, so we're coming to prop him back up by reverting one of our preemptive pre-season nerfs.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AD Growth",
+              "before": "3",
+              "after": "3.4",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ekko",
+      "classification": "nerf",
+      "summary": "Time has been on Ekko's side this year. We're taking a swing at both his clear speed and burst after early game to prevent him from going haywire after getting a lead.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Z-Drive Resonance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AP Ratio",
+              "before": "90%",
+              "after": "80%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Monster Damage",
+              "before": "300%",
+              "after": "270%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ezreal",
+      "classification": "buff",
+      "summary": "Ezreal's been in a pretty weak spot for most players this season, especially after Essence Reaver got nerfed in the micropatch. While we think there's some winrate to be gained through players optimizing their builds, we still want to bring Ezreal more in line.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "AD Growth",
+              "before": "3.25",
+              "after": "3.5",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Arcane Shift",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80 / 130 / 180 / 230 / 280 (+ 50% Bonus AD) (+ 75% AP)",
+              "after": "80 / 130 / 180 / 230 / 280(+ 60% Bonus AD) (+ 75% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Hecarim",
+      "classification": "adjustment",
+      "summary": "Hecarim isn't doing very well in the new season so he's got a buff coming up. We're doing this by giving him a strong mid game power spike that he can use to try to run the map and get his team a lead. And even if he fails to do so, at least he's got slightly better base damage to fall back on. For those who don't want to do the math, the net result of both Q changes is a strict buff until around 225 bonus AD.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Rampage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage per hit",
+              "before": "60 / 85 / 110 / 135 / 160 (+ 90% Bonus AD)",
+              "after": "60 / 90 / 120 / 150 / 180 (+ 90% Bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage amp per Rampage stack",
+              "before": "3% (+ 4% per 100 Bonus AD)",
+              "after": "3% (+ 3% per 100 Bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Heimerdinger",
+      "classification": "buff",
+      "summary": "Slaps roof We can fit so many Arcane champs in this patch. Heimerdinger's been performing worse in the new season and he was balanced before then, so we're here to return him to his former glory. We know top lane Heimer can feel suffocating when his turrets are all setup, so we're looking to re-buff him in ways that allow him to be proactive instead of turtling.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "101",
+              "after": "105",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Hextech Micro-Rockets",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Initial hit damage",
+              "before": "40 / 65 / 90 / 115 / 140 (+ 55% AP)",
+              "after": "50 / 75 / 100 / 125 / 150 (+ 55% AP)",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Follow-up damage",
+              "text": "unchanged"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Jayce",
+      "classification": "adjustment",
+      "summary": "Jayce's build has bounced around a lot over time. He's been a tank, he's been (and currently is) a lethality burst mage, and he's been a fighter. We'd like if Jayce were an AD fighter, caring about both his damage output and durability to stick it out in melee once in a while. He's also still better in the jungle than in the top lane after last patch's nerf, so we're here to re-visit him. Ultimately our goals for Viktor's better half are to give him a viable fighter build and a viable but not overbearing jungle role. To achieve these goals, we're reducing his reliance on bonus AD and shifting power from his poke into his melee damage and follow-up.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "To the Skies!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 105 / 150 / 295 / 240 / 285 (+135% Bonus AD)",
+              "after": "60 / 110 / 160 / 210 / 260 / 310 (+ 135% Bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Monster bonus damage",
+              "before": "25",
+              "after": "10",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Shock Blast",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80 / 126 / 172 / 218 / 264 / 310 (+ 140% Bonus AD)",
+              "after": "80 / 121 / 162 / 203 / 244 / 285 (+ 130% Bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Monster bonus damage",
+              "before": "25",
+              "after": "10",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Cannon Stance: Mercury Cannon",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor/Magic Resistance Shred",
+              "before": "10 / 15 / 20 / 25%",
+              "after": "20 / 25 / 30 / 35%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kayn",
+      "classification": "adjustment",
+      "summary": "Blue Kayn specifically became much weaker in the new season and we'd like to fix that with some direct buffs. There's not much fancy here except that as an assassin, he should be lethal when fighting up close and personal with his targets. As a reminder, Slayer Kayn replaces his Q when transformed.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Reaping Slash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "75 / 100 / 125 / 150 / 175 (+ 85% Bonus AD)",
+              "after": "75 / 105 / 135 / 165 / 195 (+ 85% Bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Maokai",
+      "classification": "buff",
+      "summary": "Maokai has been struggling to find his place both in the top lane and in the jungle. We want to give him a little bit of extra power to find relevance in our new season by boosting hist damage",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Bramble Smash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Flat Damage",
+              "before": "65 / 110 / 155 / 200 / 245",
+              "after": "75 / 120 / 165 / 210 / 255",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Mel",
+      "classification": "adjustment",
+      "summary": "This changelist is intended to help lower player frustration while playing against Mel through opening up additional counterplay opportunities for opponents beyond the ban button. One big change we have is changing her reflect damage immunity to a shield which will ensure when Fizz successfully lands his ultimate she no longer completely negates the damage with a late W. We also want to make sure when you're laning against her that you can see her Q coming and dodge out of the way at long ranges like many spammable projectile spells. Both her Q and E should now be more visually clear (thus easier to dodge) and we've reduced some of the power from her reflect in some situations where her reflections resulted in unexpectedly high damage. While we believe that champion agency can yield frustrating interactions, we also believe there should be avenues for counterplay to balance that out. Frankly, we underestimated how frustrating the play-against experience for Mel would be and are aiming to improve that with this change list. And for players looking to play Mel we want her to be playable more consistently after the ban phase while making sure her core gameplay that her players have come to love isn't lost. Our goals with these changes are that more players feel they can outplay Mel in ways that match their expectations, and that Mel players can feel more skillful and that their success is a result of that skill. We expect that there will continue to be players whose main champions are highly impacted by Mel's reflection that may continue to prioritize her as a ban, but we're targeting to get her out of must-ban territory for many players.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Ratio",
+              "before": "0.4",
+              "after": "0.625",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Searing Brilliance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Projectile Damage",
+              "before": "8-50 (based on level) (+ 5% AP)",
+              "after": "8-25 (based on level) (+ 3% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total Projectile Damage",
+              "before": "24-150 (based on level) (+ 15% AP)",
+              "after": "24-75 (based on level) (+ 9% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Reduced the visual clutter by no longer displaying the passive mark on non-champions for enemies."
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Fixed certain champion spawned units dying to Overwhelm from an unempowered basic attack."
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Radiant Volley",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Now deals additional damage the first time an explosion hits with reduced effectiveness from subsequent hits."
+            },
+            {
+              "kind": "prose",
+              "label": "Initial Hit",
+              "text": "60 / 90 / 120 / 150 / 180 (+ 60% AP)"
+            },
+            {
+              "kind": "prose",
+              "label": "Subsequent Hits",
+              "text": "5 / 6 / 7 / 8 / 9 (+ 5% AP)"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total Damage",
+              "before": "78 / 109 / 144 / 185 / 230 (+51-85% AP)",
+              "after": "85 / 126 / 169 / 214 / 261 (+ 85-105% AP)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "70 / 80 / 90 / 100 / 110",
+              "after": "70 / 75 / 80 / 85 / 90",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Minion Damage",
+              "before": "75%",
+              "after": "100%",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cast Time",
+              "before": "0.25s",
+              "after": "0.35s",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Projectile Speed",
+              "before": "4500",
+              "after": "3800",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Explosion Radius",
+              "before": "230",
+              "after": "200",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Area Spread",
+              "before": "30",
+              "after": "25",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Channel Time",
+              "before": "0.75s",
+              "after": "0.5s",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Damage type is now DoT AoE (reduced effectiveness in resetting Arcane Comet)."
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Stronger area telegraph visual."
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Rebuttal",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "No longer provides Damage Immunity."
+            },
+            {
+              "kind": "prose",
+              "label": "Shield",
+              "text": "80 / 110 / 140 / 170 / 200 (+ 60% AP)"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Physical damage reflected is reduced by 30% before magic damage conversion."
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Now destroys projectiles that target each unit in an area instead of reflecting them when those projectiles aren't targeting Mel. (ex. Ryze E, Brand E, Katarina R, Samira R, Yunara Q)"
+            },
+            {
+              "kind": "numeric",
+              "label": "Decaying Move Speed",
+              "before": "30% over 0.75s",
+              "after": "40% over 1.5s",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Solar Snare",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Root Missile Radius",
+              "before": "80",
+              "after": "70",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "End of Travel Linger Duration",
+              "before": "0.5s",
+              "after": "0.25s",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "DoT Radius",
+              "before": "260",
+              "after": "230",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cast Range",
+              "before": "1050",
+              "after": "1000",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Projectile Speed",
+              "before": "1000",
+              "after": "1100",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "12 / 11.5 / 11 / 10.5 / 10",
+              "after": "11 / 10.5 / 10 / 9.5 / 9",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Root Duration",
+              "before": "1.1 / 1.2 / 1.3 / 1.4 / 1.5",
+              "after": "1.5",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 100 / 140 / 180 / 220",
+              "after": "60 / 105 / 150 / 195 / 240",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage per Second",
+              "before": "16 / 26 / 36 / 46 / 56",
+              "after": "16 / 28 / 40 / 52 / 64",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "No longer visually pops at the end when descending terrain."
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Golden Eclipse",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage per Stack",
+              "before": "4 / 7 / 10 (+ 3.5% AP)",
+              "after": "4 / 7 / 10 (+ 4% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Naafiri",
+      "classification": "buff",
+      "summary": "Naafiri's doing pretty well in the mid lane at the moment but her jungling hasn't kept up so we're giving our favorite pack of dogs more of a fighting chance with her current slow clear.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "We Are More",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Packmate Monster Damage",
+              "before": "1.35x",
+              "after": "1.55x",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nilah",
+      "classification": "nerf",
+      "summary": "Even after her micropatch nerfs, Nilah is still sooo happy (overpowered) about the new season. We're looking to bring her overall power down now that the dust has settled.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage",
+              "before": "60",
+              "after": "58",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "4.5",
+              "after": "4.2",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nunu",
+      "classification": "buff",
+      "summary": "We aimed to give Nunu & Willump a hefty nerf but overshot our goals so we're here to walk back part of the nerf package.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Biggest Snowball Ever!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Maximum Damage",
+              "before": "150 / 195 / 240 / 285 / 330",
+              "after": "180 / 225 / 270 / 315 / 360",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Snowball Barrage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage per hit",
+              "before": "14 / 21 / 28 / 35 / 42",
+              "after": "15 / 22.5 / 30 / 37.5 / 45",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Riven",
+      "classification": "adjustment",
+      "summary": "Riven's been crushing it ever since she discovered Axiom Arc. We like that she's swift and lethal in the early game but ultimately she's bursting down her competition too quickly once mid game arrives. Additionally, with all the extra gold and experience in the game right now, players have cited that late game fights resolve too quickly. So, all that considered, we're here to take out some of her late game burst power.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Runic Blade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Total AD Ratio",
+              "before": "30-50% (based on level)",
+              "after": "30-45% (based on level)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Broken Wings",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "40 / 75 / 105 / 135 / 165 (+ 65 / 70 / 75 / 80 / 85% Bonus AD)",
+              "after": "40 / 75 / 105 / 135 / 165 (+ 60 / 65 / 70 / 75 / 80% Bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ryze",
+      "classification": "adjustment",
+      "summary": "Ryze has risen up the ranks this season and is due for a reduction in power. While we're nerfing Phase Rush, we're also buffing Actualizer so we think he deserves a direct nerf in this patch. With his late game damage going up and the overall game being more lethal than we'd like, we're reducing some late game damage in kind.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Rune Prison",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 90 / 120 / 150 / 180 (+70% AP) (+ 4% Bonus Mana)",
+              "after": "60 / 90 / 120 / 150 / 180(+ 60% AP) (+ 3% Bonus Mana)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Trundle",
+      "classification": "buff",
+      "summary": "Trundle's doing very poorly in both of his main roles and as a very straightforward champion should be much more successful than he is now. We want to make sure he's good at playing the role of the front-line juggernaut who's great at tank-busting, so we're playing up his late game sustained damage output and resilience",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "3.9",
+              "after": "4.5",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "4",
+              "after": "4.5",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Tryndamere",
+      "classification": "buff",
+      "summary": "After his micropatch buffs back in 26.1, Tryndamere's power level is close but not quite back to its former glory so we'd like to bring him back up to where he was and continue pushing him toward strong sustained damage.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "4",
+              "after": "4.5",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Varus",
+      "classification": "nerf",
+      "summary": "Last patch's Varus buffs heavily overshot our target and has resulted in him becoming one of the game's strongest top laners as well. We're sorry for the inaccurate tuning and now that we've got more room to work with, we're looking to weaken his top lane performance as much as possible by rendering him more susceptible to all-ins, reducing his affinity for the top lane role quest, and weakening his top-specific build of AP and maxing W first.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "4.6",
+              "after": "4",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Blighted Quiver",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On-hit damage",
+              "before": "8 / 17 / 26 / 35 / 44 (+ 35% AP)",
+              "after": "8 / 17 / 26 / 35 / 44 (+ 25% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Max health damage",
+              "before": "3 / 3.5 / 4 / 4.5 / 5% (+1.5% per 100 AP)",
+              "after": "3 / 3.5 / 4 / 4.5 / 5% (+ 1.3% per 100 AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Vi",
+      "classification": "buff",
+      "summary": "Vi certainly does not stand for victory anywhere but pro play. We'd like to make her much more successful for the average League player without indexing too hard into her strengths in tightly coordinated environments, which means we're aiming to play up her self-sufficiency and long-term brawling.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "99",
+              "after": "105",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "3",
+              "after": "3.5",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Volibear",
+      "classification": "nerf",
+      "summary": "We're happy that Volibear is seeing action at all levels with a new build as our signature garage sale enjoyer, but we want to make sure he's a little less overBearing, primarily in jungle. We're targeting his main build path's Q max burst without changing how it feels to get into combat, as well as his clear speed so that he has to work a little harder to show up to fights, and compensating with some AD ratio for anyone who's gotten a good deal on a Triforce or Gunblade recently.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Thundering Smash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Physical Damage",
+              "before": "10 / 30 / 50 / 70 / 90 (+ 120% Bonus AD)",
+              "after": "10 / 20 / 30 / 40 / 50 (+ 140% Bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Sky Splitter",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "14",
+              "after": "16",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Non-champion damage cap",
+              "before": "190 / 305 / 420 / 535 / 650 (+ 70% AP)",
+              "after": "150 / 265 / 380 / 495 / 610 (+ 70% AP)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "XinZhao",
+      "classification": "adjustment",
+      "summary": "Xin Zhao just can't catch a break. First he dies to Atakhan, now he's underpowered in solo queue? When will these tragedies cease? Today. They cease today. Xin Zhao buff time! Much like Vi's changes in this patch, we want to play up Xin Zhao's ability to stick up for himself and scrap with enemy champions in long-term fights.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Determination",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Heal every third hit",
+              "before": "3 / 3.5 / 4% max HP (Level 1/6/11)",
+              "after": "3/4/5% max HP",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Audacious Charge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Attack Speed",
+              "before": "40 / 45 / 50 / 55 / 60%",
+              "after": "40 / 50 / 60 / 70 / 80%",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yone",
+      "classification": "adjustment",
+      "summary": "Yone's on the weaker side of the roster right now so we think he could use a buff. We know it can feel unfair to simply lose to him right clicking you during his E but we don't want him to be super bursty either, so we're pushing power into his Q, which has more gameplay around predictions and dodging.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Mortal Steel",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "25 / 50 / 75 / 100 / 125 (+ 105% Total AD)",
+              "after": "25 / 50 / 75 / 100 / 125(+ 110% Total AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zaahen",
+      "classification": "buff",
+      "summary": "Zaahen was meant to have a secondary player base in the jungle and while he's great in the top lane, he's not performing well enough elsewhere. So we're delivering some straightforward jungle-specific buffs to bring him back up where he was at the end of last year.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "The Darkin Glaive",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Modifier",
+              "before": "1.75x",
+              "after": "2x",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Aureate Rush",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Monster Damage",
+              "before": "50",
+              "after": "75",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zed",
+      "classification": "nerf",
+      "summary": "We regret having jungle Zed in three of the past four patches now but players keep getting better at playing and itemizing this shadow ninja to the point where he wins more frequently today than he did before we shipped that first nerf. We're comfortable with how mid lane Zed is sitting but he's still overshadowing too many champions in the jungle. While this nerf looks very large on paper, the net impact of nerfing his jungle mod from 2.0 to 1.2 was under 1% of win rate movement, and we're looking for more than that here.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Contempt for the Weak",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage to monsters",
+              "before": "1.2x",
+              "after": "0.5x",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum damage to epic monsters",
+              "before": "300",
+              "after": "100",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Actualizer",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Total Gold Cost",
+          "before": "3100 Gold",
+          "after": "2800 Gold",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Combine Cost",
+          "before": "1050 Gold",
+          "after": "750 Gold",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Dusk and Dawn",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Spellblade Damage",
+          "before": "100% Base AD + 10% AP",
+          "after": "75% Base AD +10% AP",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Health",
+          "before": "300",
+          "after": "350",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Endless Hunger",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Recipe",
+          "before": "Caulfield's Warhammer + Pickaxe + 1075 Gold",
+          "after": "Caulfield's Warhammer + Pickaxe + Longsword + 825 Gold",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Total Gold Cost",
+          "before": "3000",
+          "after": "3100",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "60",
+          "after": "65",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Protoplasm Harness",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Lifeline max health gain",
+          "before": "200",
+          "after": "200-300 (based on level)",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Lifeline healing",
+          "before": "200-400 (based on level) (+ 250% Armor) (+ 250% Magic Resistance)",
+          "after": "200-400 (based on level)(+ 175% Armor) (+ 175% Magic Resistance)",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Ability Haste",
+          "before": "15",
+          "after": "20",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Armored Advance",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Noxian Endurance Shield",
+          "before": "10-120 (based on level 1-18) (+ 7% max HP)",
+          "after": "100-200 (based on level, scaling begins at level 9) (+ 8% Bonus HP)",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Chainlaced Crushers",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Noxian Endurance Shield",
+          "before": "10-120 (based on level 1-18) (+ 7% max HP)",
+          "after": "100-200 (based on level, scaling begins at level 9) (+ 8% Bonus HP)",
+          "direction": "buff"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Cash Back",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Gold Refund",
+          "before": "8%",
+          "after": "7.5%",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Phase Rush",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Ranged Effectiveness",
+          "before": "75% (18.75 - 37.5% Movement Speed)",
+          "after": "50% (12.5% - 25% Movement Speed)",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Triple Tonic",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Elixir of Force Adaptive Force",
+          "before": "30",
+          "after": "25",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "APEX NEGATIVE LP GAINS",
+      "classification": "system",
+      "changes": []
+    },
+    {
+      "name": "AEGIS OF VALOR ELIGIBILITY",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Mastery rating to unlock Aegis of Valor is pushed from C to B."
+        }
+      ]
+    },
+    {
+      "name": "DUO AT THE TOP OF CHALLENGER",
+      "classification": "system",
+      "changes": []
+    },
+    {
+      "name": "CLIMB INDICATOR",
+      "classification": "system",
+      "changes": []
+    }
+  ]
+}

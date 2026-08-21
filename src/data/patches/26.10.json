@@ -1,0 +1,612 @@
+{
+  "schemaVersion": 1,
+  "id": "26.10",
+  "assetVersion": "16.10.1",
+  "releaseDate": "2026-05-12",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-10-notes/",
+  "ingestedAt": "2026-08-21T20:21:46.100Z",
+  "champions": [
+    {
+      "championId": "Ambessa",
+      "classification": "adjustment",
+      "summary": "After getting to see the impact of last patch’s ultimate nerfs, they’ve been very effective at increasing counterplay at high skill levels. However, we still see an opportunity to shift some power from jungle into top while promoting a bruiser playstyle. As a result, we’re giving her some better early power, while keeping her jungle clear and general lategame potential the same.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Cunning Sweep / Sundering Slam",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Target Max Health Damage",
+              "before": "2 / 3 / 4 / 5 / 6%",
+              "after": "4 / 4.5 / 5 / 5.5 / 6%",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Bonus Monster Damage",
+              "before": "125",
+              "after": "75",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Public Execution",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Healing Percentage",
+              "before": "10 / 12.5 / 15%",
+              "after": "15 / 17.5 / 20%",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Healing Effectiveness vs Monsters",
+              "before": "40%",
+              "after": "25%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Anivia",
+      "classification": "nerf",
+      "summary": "The Ice Birb has been strong for quite some time, icing out opponents in top, mid, and support without much build or playstyle differentiation, which is why we’re opting for base stat adjustments. While the change will impact her across roles, we’re targeting her durability to allow for more all-in windows to crack the egg in top lane in particular.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Armor",
+              "before": "21",
+              "after": "19",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "4.5",
+              "after": "4.1",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ashe",
+      "classification": "adjustment",
+      "summary": "As one of our premier utility ADCs, Ashe is pumping out a bit too much damage. We’re giving her a minor nerf to her Q damage so she can’t have the best of both worlds.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Ranger's Focus",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Total Damage",
+              "before": "110 / 117.5 / 125 / 132.5 / 140% AD",
+              "after": "110 / 115 / 120 / 125 / 130% AD",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Galio",
+      "classification": "buff",
+      "summary": "Our favorite Demacian colossus has been quite sad between the removal of Phase Rush and the mid role quest adjustments. We’re flipping the script and helping him deliver justice by reducing some of his mana costs and tuning up the reward for a well-aimed Justice Punch. His ultimate is also lacking a bit of oomph in the damage department with how epic it is, so we’re helping it scale with his signature stat!",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Winds of War",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "70 / 75 / 80 / 85 / 90",
+              "after": "60 / 65 / 70 / 75 / 80",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Justice Punch",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Total Damage",
+              "before": "90 / 130 / 170 / 210 / 250 (+90% AP)",
+              "after": "100 / 135 / 170 / 205 / 240 (+100% AP)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Hero’s Entrance",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Total Damage",
+              "text": "Now scales with 100% bonus magic resistance"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "LeeSin",
+      "classification": "adjustment",
+      "summary": "Over time, Lee Sin has watched as other champs surpass him in both flair and mobility. We are looking to give him more opportunities to use the tools that allow him to fly around the map while making sure his high moments truly feel like such at all moments in the game.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Safeguard",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Shield",
+              "before": "70 / 115 / 160 / 205 / 250 (+80% AP)",
+              "after": "60 / 105 / 150 / 195 / 240 (+ 80% AP)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Flat Cooldown",
+              "before": "12s when used on non-champions and 6 when used on champions",
+              "after": "7s at all points",
+              "direction": "buff"
+            },
+            {
+              "kind": "prose",
+              "label": "Shield on non-champions",
+              "text": "Lee Sin gets his shield when jumping to a minion or ward"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Tempest",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Magic Damage",
+              "before": "35 / 60 / 85 / 110 / 135 (100% AD)",
+              "after": "35 / 60 / 85 / 110 / 135 (90% AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Dragon’s Rage",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Unconditional Collateral",
+              "text": "A champion’s body will continue to fly, knock up, and do damage even if killed mid-flight"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Naafiri",
+      "classification": "adjustment",
+      "summary": "Naafiri has been top dog for a while now in both mid and jungle. We are looking to tame some of her power by reducing her damage output a bit.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Darkin Daggers",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Minimum Bonus Physical Damage",
+              "before": "30 / 45 / 60 / 75 / 90 (+ 40% bonus AD) -",
+              "after": "30 / 42.5 / 55 / 67.5 / 80 (+ 40% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Bonus Physical Damage",
+              "before": "60 / 90 / 120 / 450 / 180 (+ 140% bonus AD)",
+              "after": "60 / 85 / 110 / 135 / 160 (+ 140% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Hounds’ Pursuit",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Physical Damage",
+              "before": "150 / 250 / 350 (120% bonus AD ) + 15 / 25 / 35 (+12% bonus AD) per packmate",
+              "after": "150 / 225 / 300 (120% bonus AD) + 15 / 22.5 / 30 ( +12% bonus AD) per packmate",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Quinn",
+      "classification": "buff",
+      "summary": "Quinn has been struggling in the top lane environment due to a number of system changes across 2026. We’re looking to let her impact the map with her unique ultimate as a laner by reducing her high mana barrier and also want to open the door (bush?) to the jungle. We’re excited to see if she can thrive as a natural predator in the jungle, and see if she and Valor can prey on the latest new jungler we introduced, Fizz (birds like fish)!",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "P - Harrier",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Bonus Monster Damage",
+              "text": "50"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Blinding Assault",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Bonus Monster Damage",
+              "text": "Now deals 50% increased damage to monsters"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Behind Enemy Lines",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "100 / 50 / 0",
+              "after": "50 / 25 / 0",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Shyvana",
+      "classification": "nerf",
+      "summary": "With the introduction of the most recent Shyvana changes, players have been finding success building more health and ability haste. As such, we’re looking to bring a bit of her innate defensive capabilities down to make taking down this dragon a bit more reasonable.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health per level",
+              "before": "100",
+              "after": "95",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Inferno Aegis",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "13 / 12 / 11 / 10 / 9",
+              "after": "13 / 12.25 / 11.5 / 10.75 / 10",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Shield",
+              "before": "75 / 95 / 115 / 135 / 155 (+12% bonus health)",
+              "after": "60 / 80 / 100 / 120 / 140 (+12% bonus health)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Smolder",
+      "classification": "adjustment",
+      "summary": "Smolder's early game has been bolstered significantly after gaining access to Deathfire Touch. While we’re nerfing DFT, we still expect it to be his best keystone, so we’re also tapping him down to compensate. Update: Smolder continued to skyrocket in winrate this patch despite the previous nerfs as players adapted builds. We’re nerfing him again and will continue to monitor his performance after the Black Cleaver and Deathfire Touch interaction is changed in the next patch.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base AD",
+              "before": "60",
+              "after": "58",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Super Scorcher Breath",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 75 / 90 / 105 / 120 (+130% bonus AD)",
+              "after": "60 / 70 / 80 / 90 / 100 (+130% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Crit Increase",
+              "before": "50% (+15% from Infinity Edge)",
+              "after": "75% (+22.5% from Infinity Edge)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Achooo!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Explosion Physical Damage",
+              "before": "10 - 110 (+65% bonus AD) (+80% AP)",
+              "after": "10 - 110 (+50% bonus AD) (+80% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "MMOOOMMMM!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "200 / 300 / 400 (+110% bonus AD)",
+              "after": "150 / 250 / 350 (+100% bonus AD)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "MonkeyKing",
+      "classification": "buff",
+      "summary": "Across roles, Wukong has been struggling to find success as of late. We’re looking to help him turn things around by empowering his trickster playstyle to reward clever and creative uses of his clones.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Warrior Trickster",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Clone Damage",
+              "before": "30 / 35 / 40 / 45 / 50%",
+              "after": "40 / 45 / 50 / 55 / 60%",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Clone Duration",
+              "before": "3.25",
+              "after": "4",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Nimbus Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Attack Speed",
+              "before": "35 / 40 / 45 / 50 / 55%",
+              "after": "40 / 45 / 50 / 55 / 60%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zed",
+      "classification": "nerf",
+      "summary": "Zed has soared in power along with huge spikes in pickrate with Season 2’s changes, and we think he’s still going to be extremely solid despite systemic nerfs. We’d like to preserve his identity as a strong laner, but hit some of his most guaranteed damage.",
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "P - Contempt for the Weak",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Max Health Damage",
+              "before": "6 / 8 / 10%",
+              "after": "5 / 7.5 / 10%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Shadow Slash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "70 / 95 / 120 / 145 / 170 (+80% bonus AD)",
+              "after": "70 / 92.5 / 115 / 137.5 / 160 (+70% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zeri",
+      "classification": "buff",
+      "summary": "Zeri’s new direction and feel have seemed really promising across tiers, but with her winrate being lower as players take time to adjust their playstyle and itemization (looking at you Stormrazor, not looking at you Shiv!). We want to make Zeri speed gaming more accessible!",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Burst Fire",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "21 / 24 / 27 / 30 / 33",
+              "after": "22 / 26 / 30 / 34 / 38",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Excess attack speed conversion to AD",
+              "before": "50%",
+              "after": "60%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Lightning Crash",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "[BUGFIX] Overcharged duration",
+              "text": "Attacks during R currently extend the R duration by 1.5s. Changing that to 2.5s to match the new Hypercharged MS stack duration."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Doran's Bow",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "6",
+          "after": "8",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Doran's Helm",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Health",
+          "before": "110",
+          "after": "140",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Gluttonous Greaves / Immortal Path",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Total Cost",
+          "before": "950g",
+          "after": "1000g",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Slay - Omnivamp Per Stack",
+          "before": "1% per takedown, up to 6 stacks max",
+          "after": ".6% per takedown, up to 10 stacks max",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Lich Bane",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "AP ratio",
+          "before": "40% AP",
+          "after": "45% AP",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Movespeed",
+          "before": "4%",
+          "after": "6%",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Voltaic Cyclosword",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Total Cost",
+          "before": "2900g",
+          "after": "3000g",
+          "direction": "nerf"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Deathfire Touch",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Damage Per Second",
+          "before": "4 - 12 (Levels 1 - 18) (+7% bonus AD) (+2.5% AP)",
+          "after": "3 - 12 (Levels 1 - 18) (+7% bonus AD) (+2.5% AP)",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Stormraider's Surge",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Move Speed",
+          "before": "[40% Melee | 30% Ranged] for 3 seconds",
+          "after": "[48% Melee | 36% Ranged] for 4 seconds",
+          "direction": "buff"
+        }
+      ]
+    }
+  ]
+}
