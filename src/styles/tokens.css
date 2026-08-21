@@ -1,3 +1,82 @@
-/* RiftScry design tokens — filled in Task 13 (see docs/superpowers/specs §10). */
+/*
+ * RiftScry design tokens — "The Balance Ledger".
+ * Ink + gold + cream, derived from the brand marks in src/assets/brand.
+ * Semantic buff/nerf colors are never the only signal (always paired with
+ * glyph + label) and gold is never used as a semantic change color.
+ */
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("../assets/fonts/ClashDisplay-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("../assets/fonts/GeneralSans-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-display: swap;
+}
+
 :root {
+  /* Environment */
+  --ink: #131110;
+  --ink-2: #1c1916;
+  --ink-3: #262119;
+  --line: #322b22;
+  --line-strong: #4a3f30;
+
+  /* Text */
+  --cream: #f1e9da;
+  --cream-dim: #b5aa96;
+  --cream-faint: #837a69;
+
+  /* Brand accent — gold, from the logo rift slashes */
+  --gold: #c99a4c;
+  --gold-bright: #e3b761;
+  --gold-deep: #8a6a2f;
+
+  /* Semantic change colors (CVD-safe pairings with ▲/▼ glyphs + labels) */
+  --buff: #74b8ab;
+  --buff-dim: #3f6b62;
+  --nerf: #d98a75;
+  --nerf-dim: #7d4a3c;
+  --neutral: #8a8378;
+
+  /* Type */
+  --font-display: "Clash Display", "Georgia", serif;
+  --font-ui: "General Sans", "Segoe UI", sans-serif;
+  --font-num: "Spline Sans Mono", "Consolas", monospace;
+
+  /* Type scale (fluid) */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+  --text-2xl: clamp(2rem, 1.4rem + 2.5vw, 3.5rem);
+  --text-display: clamp(3rem, 1.5rem + 7vw, 8rem);
+  --text-colossal: clamp(5rem, 2rem + 16vw, 18rem);
+
+  /* Spacing scale */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2.5rem;
+  --s7: 4rem;
+  --s8: 6.5rem;
+  --s9: 10rem;
+
+  /* Layout */
+  --content-max: 72rem;
+  --page-pad: clamp(1rem, 4vw, 2.5rem);
+
+  /* Motion (respects prefers-reduced-motion via global.css) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 140ms;
+  --t-med: 240ms;
 }

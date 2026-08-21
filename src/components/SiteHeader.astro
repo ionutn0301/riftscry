@@ -1,0 +1,107 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/brand/logo-desktop-light.png";
+import { getLatestPatch } from "../lib/data";
+
+const latest = getLatestPatch();
+const path = Astro.url.pathname;
+const links = [
+  { href: `/patch/${latest.id}`, label: "Patch", match: /^\/patch/ },
+  { href: "/champions", label: "Champions", match: /^\/champion/ },
+  { href: `/compare/${latest.id}`, label: "Compare", match: /^\/compare/ },
+  { href: "/pool", label: "My Pool", match: /^\/pool/ },
+];
+---
+
+<header class="site-header">
+  <a href="/" class="brand" aria-label="RiftScry home">
+    <Image src={logo} alt="RiftScry" height={56} densities={[1, 2]} class="brand-mark" />
+  </a>
+  <nav aria-label="Primary">
+    {
+      links.map((l) => (
+        <a href={l.href} aria-current={l.match.test(path) ? "page" : undefined}>
+          {l.label}
+        </a>
+      ))
+    }
+  </nav>
+  <button type="button" class="palette-hint num" data-palette-trigger aria-label="Open search">
+    <span aria-hidden="true">⌘K</span>
+  </button>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    align-items: center;
+    gap: var(--s5);
+    padding: var(--s4) var(--page-pad);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    margin-right: auto;
+  }
+
+  .brand-mark {
+    height: 28px;
+    width: auto;
+  }
+
+  nav {
+    display: flex;
+    gap: var(--s5);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  nav a {
+    color: var(--cream-dim);
+    transition: color var(--t-fast) var(--ease-out);
+  }
+
+  nav a:hover,
+  nav a[aria-current="page"] {
+    color: var(--cream);
+  }
+
+  nav a[aria-current="page"] {
+    box-shadow: 0 2px 0 0 var(--gold);
+  }
+
+  .palette-hint {
+    font-size: var(--text-xs);
+    color: var(--cream-faint);
+    border: 1px solid var(--line-strong);
+    padding: var(--s1) var(--s2);
+    border-radius: 4px;
+    transition:
+      color var(--t-fast) var(--ease-out),
+      border-color var(--t-fast) var(--ease-out);
+  }
+
+  .palette-hint:hover {
+    color: var(--gold-bright);
+    border-color: var(--gold-deep);
+  }
+
+  @media (max-width: 640px) {
+    .site-header {
+      gap: var(--s3);
+    }
+
+    nav {
+      gap: var(--s3);
+      font-size: var(--text-xs);
+    }
+
+    .brand-mark {
+      height: 22px;
+    }
+  }
+</style>

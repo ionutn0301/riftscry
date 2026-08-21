@@ -1,15 +1,66 @@
 ---
-// Placeholder page — replaced by the homepage in Phase 3 (Task 19).
+// Placeholder home — replaced by the cinematic homepage in Task 19.
+import Layout from "../layouts/Layout.astro";
+import DeltaGlyph from "../components/DeltaGlyph.astro";
+import { getLatestPatch } from "../lib/data";
+
+const latest = getLatestPatch();
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RiftScry — the patch notes, diffed.</title>
-  </head>
-  <body>
-    <h1>RiftScry</h1>
-    <p>The patch notes, diffed.</p>
-  </body>
-</html>
+<Layout title="RiftScry — the patch notes, diffed." description="Structured League of Legends patch intelligence for the champions you actually play.">
+  <section class="placeholder">
+    <p class="kicker num">PATCH {latest.id}</p>
+    <h1>The patch notes, diffed.</h1>
+    <p class="sub">
+      {latest.champions.length} champion changes ·
+      {latest.items.length} item changes ·
+      {latest.systems.length} system changes
+    </p>
+    <p class="badges">
+      <DeltaGlyph kind="buff" />
+      <DeltaGlyph kind="nerf" />
+      <DeltaGlyph kind="adjustment" />
+      <DeltaGlyph kind="rework" />
+    </p>
+    <p class="sample num">45% <span class="arrow">→</span> 40%</p>
+  </section>
+</Layout>
+
+<style>
+  .placeholder {
+    padding: var(--s8) var(--page-pad);
+    max-width: var(--content-max);
+    margin: 0 auto;
+  }
+
+  .kicker {
+    color: var(--gold-bright);
+    letter-spacing: 0.2em;
+    margin-bottom: var(--s4);
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    margin-bottom: var(--s5);
+  }
+
+  .sub {
+    color: var(--cream-dim);
+    margin-bottom: var(--s5);
+  }
+
+  .badges {
+    display: flex;
+    gap: var(--s5);
+    margin-bottom: var(--s6);
+  }
+
+  .sample {
+    font-size: var(--text-2xl);
+    color: var(--cream);
+  }
+
+  .arrow {
+    color: var(--gold);
+  }
+</style>

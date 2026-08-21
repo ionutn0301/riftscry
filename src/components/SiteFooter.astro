@@ -1,0 +1,88 @@
+---
+import { getLatestPatch } from "../lib/data";
+
+const latest = getLatestPatch();
+---
+
+<footer class="site-footer">
+  <div class="cols">
+    <div>
+      <p class="wordmark">RiftScry</p>
+      <p class="tagline">The patch notes, diffed.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href={`/patch/${latest.id}`}>Current patch</a>
+      <a href="/patches">All patches</a>
+      <a href="/champions">Champions</a>
+      <a href="https://github.com/riftscry/riftscry">Source on GitHub</a>
+    </nav>
+  </div>
+  <p class="provenance">
+    Patch data is parsed from the
+    <a href={latest.sourceUrl}>official Riot patch notes</a> and versioned in the open — every
+    value traces to its source. Champion assets via Riot's Data Dragon.
+  </p>
+  <p class="legal">
+    RiftScry is not endorsed by Riot Games and does not reflect the views or opinions of Riot
+    Games or anyone officially involved in producing or managing Riot Games properties. Riot
+    Games and League of Legends are trademarks or registered trademarks of Riot Games, Inc.
+  </p>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--s8);
+    padding: var(--s6) var(--page-pad) var(--s6);
+    border-top: 1px solid var(--line);
+    color: var(--cream-dim);
+    font-size: var(--text-sm);
+  }
+
+  .cols {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s5);
+    margin-bottom: var(--s5);
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+
+  .tagline {
+    color: var(--cream-faint);
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s4) var(--s5);
+    align-items: start;
+  }
+
+  nav a:hover {
+    color: var(--gold-bright);
+  }
+
+  .provenance {
+    max-width: 60ch;
+    margin-bottom: var(--s4);
+  }
+
+  .provenance a {
+    color: var(--cream);
+    border-bottom: 1px solid var(--gold-deep);
+  }
+
+  .legal {
+    max-width: 72ch;
+    color: var(--cream-faint);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+  }
+</style>

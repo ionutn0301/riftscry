@@ -1,0 +1,60 @@
+---
+/**
+ * Direction/classification marker: glyph + text label, never color alone.
+ * Usable inline beside values or as a badge.
+ */
+import type { Classification, Direction } from "../lib/schema";
+
+interface Props {
+  kind: Direction | Classification;
+  showLabel?: boolean;
+}
+
+const { kind, showLabel = true } = Astro.props;
+
+const GLYPHS: Record<string, { glyph: string; label: string; cls: string }> = {
+  buff: { glyph: "▲", label: "Buff", cls: "buff" },
+  nerf: { glyph: "▼", label: "Nerf", cls: "nerf" },
+  neutral: { glyph: "◆", label: "Changed", cls: "neutral" },
+  adjustment: { glyph: "◆", label: "Adjusted", cls: "neutral" },
+  rework: { glyph: "Δ", label: "Rework", cls: "gold" },
+  system: { glyph: "❖", label: "System", cls: "neutral" },
+};
+const g = GLYPHS[kind] ?? GLYPHS.neutral!;
+---
+
+<span class={`delta-glyph ${g.cls}`}>
+  <span aria-hidden="true" class="glyph">{g.glyph}</span>{showLabel && <span>{g.label}</span>}
+</span>
+
+<style>
+  .delta-glyph {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .glyph {
+    font-size: 0.85em;
+  }
+
+  .buff {
+    color: var(--buff);
+  }
+
+  .nerf {
+    color: var(--nerf);
+  }
+
+  .neutral {
+    color: var(--neutral);
+  }
+
+  .gold {
+    color: var(--gold-bright);
+  }
+</style>
