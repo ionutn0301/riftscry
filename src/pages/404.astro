@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getLatestPatch } from "../lib/data";
+
+const latest = getLatestPatch();
+---
+
+<Layout
+  title="404 — RiftScry"
+  description="This page got removed in a patch."
+>
+  <div class="page">
+    <p class="code num">404</p>
+    <h1>This page got removed in a patch.</h1>
+    <p class="sub">
+      No changelog entry survives. Try the current patch, or press
+      <kbd class="num">Ctrl K</kbd> and scry for it.
+    </p>
+    <div class="ctas">
+      <a class="cta solid" href={`/patch/${latest.id}`}>View patch {latest.id}</a>
+      <a class="cta ghost" href="/">Home</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page {
+    min-height: 60svh;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    padding: var(--s8) var(--page-pad);
+  }
+
+  .code {
+    font-size: var(--text-colossal);
+    line-height: 1;
+    color: var(--gold);
+    margin-bottom: var(--s4);
+  }
+
+  h1 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--s3);
+  }
+
+  .sub {
+    color: var(--cream-dim);
+    margin-bottom: var(--s6);
+  }
+
+  kbd {
+    border: 1px solid var(--line-strong);
+    padding: 1px var(--s2);
+    border-radius: 2px;
+    font-size: var(--text-sm);
+  }
+
+  .ctas {
+    display: flex;
+    justify-content: center;
+    gap: var(--s3);
+  }
+
+  .cta {
+    padding: var(--s3) var(--s5);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    border-radius: 2px;
+  }
+
+  .cta.solid {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .cta.solid:hover {
+    background: var(--gold-bright);
+    color: var(--ink);
+  }
+
+  .cta.ghost {
+    border: 1px solid var(--line-strong);
+    color: var(--cream);
+  }
+
+  .cta.ghost:hover {
+    border-color: var(--gold-deep);
+    color: var(--gold-bright);
+  }
+</style>
