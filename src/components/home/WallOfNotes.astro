@@ -1,0 +1,146 @@
+---
+interface Props {
+  patchId: string;
+  lines: string[];
+  totalChanges: number;
+}
+
+const { patchId, lines, totalChanges } = Astro.props;
+// Repeat lines into three drifting columns so the wall reads as overwhelming.
+const cols = [0, 1, 2].map((i) => lines.filter((_, idx) => idx % 3 === i));
+---
+
+<section class="wall" data-scene="wall" aria-labelledby="wall-h">
+  <div class="wall-stage">
+    <div class="noise" aria-hidden="true" data-wall-noise>
+      {
+        cols.map((col, i) => (
+          <div class={`col col-${i}`}>
+            {[...col, ...col].map((line) => (
+              <p class="line num">{line}</p>
+            ))}
+          </div>
+        ))
+      }
+      <div class="fade" aria-hidden="true"></div>
+    </div>
+
+    <div class="signal">
+      <h2 id="wall-h" data-wall-headline>
+        You don't play every champion.<br />
+        <span class="gold">Why read every change?</span>
+      </h2>
+      <ol class="funnel num" data-wall-funnel>
+        <li><span class="n">{totalChanges}</span> changes in patch {patchId}</li>
+        <li><span class="n">→</span> your champions</li>
+        <li><span class="n">→</span> the handful that matter</li>
+        <li class="done"><span class="n">Δ</span> done before queue pops</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .wall {
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .wall-stage {
+    position: relative;
+    min-height: 90svh;
+    display: grid;
+    align-items: center;
+  }
+
+  .noise {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    gap: var(--s5);
+    padding: 0 var(--page-pad);
+    overflow: hidden;
+  }
+
+  .col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+
+  .col-1 {
+    transform: translateY(-6%);
+  }
+
+  .col-2 {
+    transform: translateY(-12%);
+  }
+
+  .line {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--cream-faint);
+    opacity: 0.55;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fade {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, var(--ink) 88%, transparent) 20%, transparent 70%),
+      linear-gradient(var(--ink) 0%, transparent 18%, transparent 82%, var(--ink) 100%);
+  }
+
+  .signal {
+    position: relative;
+    z-index: 1;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--s8) var(--page-pad);
+    width: 100%;
+  }
+
+  h2 {
+    font-size: var(--text-display);
+    font-weight: 600;
+    max-width: 14ch;
+    margin-bottom: var(--s6);
+  }
+
+  h2 .gold {
+    color: var(--gold-bright);
+  }
+
+  .funnel {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    font-size: var(--text-lg);
+    color: var(--cream-dim);
+    max-width: 24ch;
+  }
+
+  .funnel .n {
+    display: inline-block;
+    min-width: 2.5ch;
+    color: var(--cream);
+    margin-right: var(--s2);
+  }
+
+  .funnel .done {
+    color: var(--gold-bright);
+  }
+
+  .funnel .done .n {
+    color: var(--gold-bright);
+  }
+</style>

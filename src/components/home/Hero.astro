@@ -1,0 +1,247 @@
+---
+interface Props {
+  patchId: string;
+  previousId: string;
+  releaseDate: string;
+  orbitDeltas: { label: string; before: string; after: string; direction: string }[];
+}
+
+const { patchId, previousId, releaseDate, orbitDeltas } = Astro.props;
+const date = new Date(releaseDate + "T00:00:00Z").toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  timeZone: "UTC",
+});
+---
+
+<section class="hero" data-scene="hero" aria-labelledby="hero-h">
+  <div class="stage">
+    <p class="patch-live num" data-hero-kicker>
+      <span class="pulse" aria-hidden="true"></span>
+      Patch {patchId} · live {date}
+    </p>
+
+    <div class="number-stage" aria-hidden="true">
+      <p class="big-number num" data-hero-number data-from={previousId} data-to={patchId}>
+        {patchId}
+      </p>
+      {
+        orbitDeltas.map((d, i) => (
+          <p class={`orbit num orbit-${i} dir-${d.direction}`} data-hero-orbit>
+            <span class="o-label">{d.label}</span>
+            <span>
+              {d.before} → {d.after}
+            </span>
+          </p>
+        ))
+      }
+    </div>
+
+    <div class="copy">
+      <h1 id="hero-h" data-hero-headline>
+        Your main got nerfed.<br />
+        <span class="dim">You shouldn't need 8,000 words to find out.</span>
+      </h1>
+      <p class="sub">The patch notes, diffed — for the champions you actually play.</p>
+      <div class="ctas">
+        <a class="cta solid" href="/pool">Pick your champions</a>
+        <a class="cta ghost" href={`/patch/${patchId}`}>Explore {patchId}</a>
+      </div>
+    </div>
+
+    <p class="scroll-cue" data-hero-cue aria-hidden="true">Scroll<span class="cue-line"></span></p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 88rem;
+    margin: 0 auto;
+    padding: var(--s6) var(--page-pad) var(--s7);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .patch-live {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    color: var(--gold-bright);
+    font-size: var(--text-sm);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold-bright);
+  }
+
+  .number-stage {
+    position: relative;
+    flex: 1;
+    display: grid;
+    place-items: center;
+    min-height: 40svh;
+  }
+
+  .big-number {
+    font-size: var(--text-colossal);
+    font-weight: 500;
+    line-height: 0.9;
+    color: var(--cream);
+    letter-spacing: -0.03em;
+    user-select: none;
+  }
+
+  .orbit {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--text-sm);
+    color: var(--cream-dim);
+  }
+
+  .orbit .o-label {
+    font-size: var(--text-xs);
+    color: var(--cream-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .orbit.dir-buff span:last-child {
+    color: var(--buff);
+  }
+
+  .orbit.dir-nerf span:last-child {
+    color: var(--nerf);
+  }
+
+  .orbit-0 {
+    top: 12%;
+    left: 4%;
+  }
+
+  .orbit-1 {
+    top: 18%;
+    right: 6%;
+  }
+
+  .orbit-2 {
+    bottom: 16%;
+    left: 10%;
+  }
+
+  .orbit-3 {
+    bottom: 8%;
+    right: 4%;
+  }
+
+  .copy {
+    max-width: 46rem;
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    margin-bottom: var(--s4);
+  }
+
+  h1 .dim {
+    color: var(--cream-dim);
+    font-weight: 450;
+  }
+
+  .sub {
+    color: var(--cream-dim);
+    font-size: var(--text-lg);
+    margin-bottom: var(--s5);
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s3);
+  }
+
+  .cta {
+    padding: var(--s3) var(--s5);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    letter-spacing: 0.03em;
+    border-radius: 2px;
+    transition:
+      background-color var(--t-fast) var(--ease-out),
+      border-color var(--t-fast) var(--ease-out),
+      color var(--t-fast) var(--ease-out);
+  }
+
+  .cta.solid {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .cta.solid:hover {
+    background: var(--gold-bright);
+    color: var(--ink);
+  }
+
+  .cta.ghost {
+    border: 1px solid var(--line-strong);
+    color: var(--cream);
+  }
+
+  .cta.ghost:hover {
+    border-color: var(--gold-deep);
+    color: var(--gold-bright);
+  }
+
+  .scroll-cue {
+    position: absolute;
+    right: var(--page-pad);
+    bottom: var(--s5);
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    color: var(--cream-faint);
+    font-size: var(--text-xs);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+
+  .cue-line {
+    width: 1px;
+    height: 3.5rem;
+    background: linear-gradient(var(--gold), transparent);
+  }
+
+  @media (max-width: 800px) {
+    .number-stage {
+      min-height: 32svh;
+    }
+
+    .orbit-1,
+    .orbit-2 {
+      display: none;
+    }
+
+    .scroll-cue {
+      display: none;
+    }
+  }
+</style>

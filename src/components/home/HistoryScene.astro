@@ -1,0 +1,163 @@
+---
+import type { HistoryEntry } from "../../lib/data";
+import DeltaGlyph from "../DeltaGlyph.astro";
+
+interface Props {
+  championId: string;
+  name: string;
+  history: HistoryEntry[];
+}
+
+const { championId, name, history } = Astro.props;
+const art = `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
+---
+
+<section class="history" data-scene="history" aria-labelledby="history-h">
+  <div class="inner">
+    <div class="copy">
+      <h2 id="history-h">
+        Git history<br />for your main.
+      </h2>
+      <p class="sub">
+        {name} has been touched <span class="num">{history.length}</span> times this
+        season. Every entry is a commit: exact values, exact date, source linked.
+      </p>
+      <a class="cta" href={`/champion/${championId.toLowerCase()}`}>Read {name}'s log →</a>
+    </div>
+    <div class="log" data-history-log>
+      <img class="art" src={art} alt="" width="308" height="560" loading="lazy" decoding="async" />
+      <ol class="rail">
+        {
+          history.map((h) => (
+            <li data-history-node>
+              <span class="node" aria-hidden="true"></span>
+              <a href={`/patch/${h.patchId}#${championId.toLowerCase()}`} class="entry">
+                <span class="pid num">{h.patchId}</span>
+                <DeltaGlyph kind={h.change.classification} />
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .history {
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .inner {
+    max-width: 88rem;
+    margin: 0 auto;
+    padding: var(--s8) var(--page-pad);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s7);
+    align-items: center;
+  }
+
+  h2 {
+    font-size: var(--text-display);
+    margin-bottom: var(--s4);
+  }
+
+  .sub {
+    color: var(--cream-dim);
+    max-width: 40ch;
+    line-height: 1.7;
+    margin-bottom: var(--s5);
+  }
+
+  .sub .num {
+    color: var(--gold-bright);
+  }
+
+  .cta {
+    color: var(--gold-bright);
+    font-weight: 600;
+  }
+
+  .cta:hover {
+    color: var(--cream);
+  }
+
+  .log {
+    position: relative;
+    display: flex;
+    gap: var(--s6);
+    align-items: center;
+  }
+
+  .art {
+    width: clamp(140px, 16vw, 220px);
+    height: auto;
+    border: 1px solid var(--line-strong);
+    filter: saturate(0.9);
+  }
+
+  .rail {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+
+  .rail::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .rail li {
+    position: relative;
+    padding-left: var(--s6);
+    margin-bottom: var(--s4);
+  }
+
+  .rail li:last-child {
+    margin-bottom: 0;
+  }
+
+  .node {
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--gold-deep);
+    background: var(--ink);
+  }
+
+  .entry {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--s4);
+  }
+
+  .entry:hover .pid {
+    color: var(--gold-bright);
+  }
+
+  .pid {
+    font-size: var(--text-lg);
+    color: var(--cream);
+  }
+
+  @media (max-width: 900px) {
+    .inner {
+      grid-template-columns: 1fr;
+    }
+
+    .art {
+      display: none;
+    }
+  }
+</style>

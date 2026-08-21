@@ -1,0 +1,106 @@
+---
+interface Props {
+  fragment: string;
+  seasonChangeTotal: number;
+  patchCount: number;
+}
+
+const { fragment, seasonChangeTotal, patchCount } = Astro.props;
+---
+
+<section class="oss" data-scene="oss" aria-labelledby="oss-h">
+  <div class="inner">
+    <div class="copy">
+      <h2 id="oss-h">RiftScry is open source.</h2>
+      <ul class="creed">
+        <li>Static.</li>
+        <li>Inspectable.</li>
+        <li>Versioned.</li>
+        <li>No account.</li>
+        <li>No paywall.</li>
+      </ul>
+      <p class="sub">
+        <span class="num">{seasonChangeTotal}</span> changes across
+        <span class="num">{patchCount}</span> patches, parsed from the official notes into
+        JSON you can read. Every patch is data you can inspect. Every correction can be a
+        pull request.
+      </p>
+      <a class="cta" href="https://github.com/riftscry/riftscry">View source on GitHub →</a>
+    </div>
+    <pre class="fragment num" aria-label="Example of RiftScry's normalized patch data"><code>{fragment}</code></pre>
+  </div>
+</section>
+
+<style>
+  .oss {
+    border-bottom: 1px solid var(--line);
+    background: var(--ink-2);
+  }
+
+  .inner {
+    max-width: 88rem;
+    margin: 0 auto;
+    padding: var(--s8) var(--page-pad);
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: var(--s7);
+    align-items: center;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--s4);
+  }
+
+  .creed {
+    list-style: none;
+    margin: 0 0 var(--s5);
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 550;
+    color: var(--gold-bright);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s4);
+  }
+
+  .sub {
+    color: var(--cream-dim);
+    line-height: 1.7;
+    max-width: 44ch;
+    margin-bottom: var(--s5);
+  }
+
+  .sub .num {
+    color: var(--cream);
+  }
+
+  .cta {
+    color: var(--gold-bright);
+    font-weight: 600;
+  }
+
+  .cta:hover {
+    color: var(--cream);
+  }
+
+  .fragment {
+    margin: 0;
+    padding: var(--s5);
+    background: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-top: 2px solid var(--gold);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--cream-dim);
+    overflow-x: auto;
+    max-height: 26rem;
+  }
+
+  @media (max-width: 900px) {
+    .inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

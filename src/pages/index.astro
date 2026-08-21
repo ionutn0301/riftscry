@@ -1,66 +1,184 @@
 ---
-// Placeholder home — replaced by the cinematic homepage in Task 19.
 import Layout from "../layouts/Layout.astro";
-import DeltaGlyph from "../components/DeltaGlyph.astro";
-import { getLatestPatch } from "../lib/data";
+import Hero from "../components/home/Hero.astro";
+import WallOfNotes from "../components/home/WallOfNotes.astro";
+import YourChampions from "../components/home/YourChampions.astro";
+import TheDelta from "../components/home/TheDelta.astro";
+import HistoryScene from "../components/home/HistoryScene.astro";
+import RoleImpact from "../components/home/RoleImpact.astro";
+import OpenSourceScene from "../components/home/OpenSourceScene.astro";
+import Closing from "../components/home/Closing.astro";
+import {
+  getAllPatches,
+  getChampionHistory,
+  getChampionMeta,
+  getLatestPatch,
+  getRoles,
+  getAssetVersion,
+  type Role,
+} from "../lib/data";
+import { parseValueSeries, relativeDelta, formatDelta } from "../lib/deltas";
+import type { NumericDelta } from "../lib/schema";
+
+/**
+ * Every number on this page is real, computed from the committed season data.
+ */
 
 const latest = getLatestPatch();
+const patches = getAllPatches();
+const meta = getChampionMeta();
+const roles = getRoles();
+const assetVersion = getAssetVersion();
+const previousId = patches[1]?.id ?? latest.id;
+
+// -- Hero: three short real deltas that orbit the patch number.
+type OrbitDelta = { label: string; before: string; after: string; direction: string };
+const orbitDeltas: OrbitDelta[] = [];
+for (const c of latest.champions) {
+  for (const a of c.abilities) {
+    for (const ch of a.changes) {
+      if (ch.kind !== "numeric" || ch.direction === "neutral") continue;
+      if (ch.before.length <= 8 && ch.after.length <= 8 && orbitDeltas.length < 4) {
+        orbitDeltas.push({ label: `${meta[c.championId]?.name ?? c.championId} ${ch.label}`, before: ch.before, after: ch.after, direction: ch.direction });
+      }
+    }
+  }
+}
+
+// -- Wall: every change line of the current patch, flattened to text.
+const wallLines: string[] = [];
+for (const c of latest.champions) {
+  for (const a of c.abilities) {
+    for (const ch of a.changes) {
+      const name = meta[c.championId]?.name ?? c.championId;
+      wallLines.push(
+        ch.kind === "numeric"
+          ? `${name} · ${a.name} — ${ch.label}: ${ch.before} ⇒ ${ch.after}`
+          : `${name} · ${a.name} — ${ch.label}: ${ch.text}`,
+      );
+    }
+  }
+}
+for (const i of latest.items) {
+  for (const ch of i.changes) {
+    wallLines.push(
+      ch.kind === "numeric"
+        ? `${i.name} — ${ch.label}: ${ch.before} ⇒ ${ch.after}`
+        : `${i.name} — ${ch.label}: ${ch.text}`,
+    );
+  }
+}
+const totalChanges = wallLines.length;
+
+// -- Exemplar pool (real data): the four champions + their relevant season entries.
+const EXEMPLAR = ["Ahri", "Jinx", "LeeSin", "Thresh"];
+const exemplarChanges = EXEMPLAR.reduce((n, id) => n + getChampionHistory(id).length, 0);
+
+// A field of champions for the portrait scene: exemplars + recently changed ones.
+const fieldIds = [
+  ...EXEMPLAR,
+  ...patches
+    .flatMap((p) => p.champions.map((c) => c.championId))
+    .filter((id, i, all) => all.indexOf(id) === i && !EXEMPLAR.includes(id))
+    .slice(0, 20),
+];
+
+// -- The Delta scene: three big single-value deltas from recent patches.
+type BigDelta = { champion: string; stat: string; patchId: string; before: string; after: string; direction: string; rel: string | null };
+const bigDeltas: BigDelta[] = [];
+outer: for (const p of patches) {
+  for (const c of p.champions) {
+    for (const a of c.abilities) {
+      for (const ch of a.changes) {
+        if (ch.kind !== "numeric" || ch.direction === "neutral") continue;
+        const b = parseValueSeries(ch.before);
+        const aft = parseValueSeries(ch.after);
+        if (b.length === 1 && aft.length === 1 && ch.before.length <= 5 && ch.after.length <= 5) {
+          bigDeltas.push({
+            champion: meta[c.championId]?.name ?? c.championId,
+            stat: ch.label,
+            patchId: p.id,
+            before: ch.before,
+            after: ch.after,
+            direction: ch.direction,
+            rel: formatDelta(relativeDelta(ch.before, ch.after)),
+          });
+          if (bigDeltas.length >= 3) break outer;
+        }
+      }
+    }
+  }
+}
+
+// -- History scene: the champion with the busiest season.
+const historyChampion = Object.keys(meta)
+  .map((id) => ({ id, history: getChampionHistory(id) }))
+  .sort((a, b) => b.history.length - a.history.length)[0]!;
+
+// -- Role impact: real counts per role for the current patch.
+const roleCounts = (["top", "jungle", "mid", "adc", "support"] as Role[]).map((role) => {
+  const members = latest.champions.filter((c) => (roles[c.championId] ?? []).includes(role));
+  return {
+    role,
+    buffs: members.filter((c) => c.classification === "buff").length,
+    nerfs: members.filter((c) => c.classification === "nerf").length,
+    adjusted: members.filter((c) => !["buff", "nerf"].includes(c.classification)).length,
+    champions: members.map((c) => c.championId),
+  };
+});
+
+// -- Open source scene: a real fragment of the current patch's data.
+const firstChampion = latest.champions[0]!;
+const schemaFragment = JSON.stringify(
+  {
+    id: latest.id,
+    releaseDate: latest.releaseDate,
+    sourceUrl: "…official Riot notes…",
+    champions: [
+      {
+        championId: firstChampion.championId,
+        classification: firstChampion.classification,
+        abilities: firstChampion.abilities.slice(0, 1),
+      },
+    ],
+  },
+  null,
+  2,
+);
+
+const seasonChangeTotal = patches.reduce(
+  (n, p) =>
+    n +
+    p.champions.reduce((m, c) => m + c.abilities.reduce((k, a) => k + a.changes.length, 0), 0),
+  0,
+);
 ---
 
-<Layout title="RiftScry — the patch notes, diffed." description="Structured League of Legends patch intelligence for the champions you actually play.">
-  <section class="placeholder">
-    <p class="kicker num">PATCH {latest.id}</p>
-    <h1>The patch notes, diffed.</h1>
-    <p class="sub">
-      {latest.champions.length} champion changes ·
-      {latest.items.length} item changes ·
-      {latest.systems.length} system changes
-    </p>
-    <p class="badges">
-      <DeltaGlyph kind="buff" />
-      <DeltaGlyph kind="nerf" />
-      <DeltaGlyph kind="adjustment" />
-      <DeltaGlyph kind="rework" />
-    </p>
-    <p class="sample num">45% <span class="arrow">→</span> 40%</p>
-  </section>
+<Layout
+  title="RiftScry — the patch notes, diffed."
+  description={`League patch ${latest.id}, structured: every buff and nerf as before/after deltas for the champions you actually play.`}
+>
+  <Hero
+    patchId={latest.id}
+    previousId={previousId}
+    releaseDate={latest.releaseDate}
+    orbitDeltas={orbitDeltas}
+  />
+  <WallOfNotes patchId={latest.id} lines={wallLines} totalChanges={totalChanges} />
+  <YourChampions
+    exemplar={EXEMPLAR}
+    fieldIds={fieldIds}
+    meta={meta}
+    assetVersion={assetVersion}
+    exemplarChanges={exemplarChanges}
+  />
+  <TheDelta deltas={bigDeltas} />
+  <HistoryScene
+    championId={historyChampion.id}
+    name={meta[historyChampion.id]?.name ?? historyChampion.id}
+    history={historyChampion.history}
+  />
+  <RoleImpact patchId={latest.id} roleCounts={roleCounts} />
+  <OpenSourceScene fragment={schemaFragment} seasonChangeTotal={seasonChangeTotal} patchCount={patches.length} />
+  <Closing patchId={latest.id} />
 </Layout>
-
-<style>
-  .placeholder {
-    padding: var(--s8) var(--page-pad);
-    max-width: var(--content-max);
-    margin: 0 auto;
-  }
-
-  .kicker {
-    color: var(--gold-bright);
-    letter-spacing: 0.2em;
-    margin-bottom: var(--s4);
-  }
-
-  h1 {
-    font-size: var(--text-display);
-    margin-bottom: var(--s5);
-  }
-
-  .sub {
-    color: var(--cream-dim);
-    margin-bottom: var(--s5);
-  }
-
-  .badges {
-    display: flex;
-    gap: var(--s5);
-    margin-bottom: var(--s6);
-  }
-
-  .sample {
-    font-size: var(--text-2xl);
-    color: var(--cream);
-  }
-
-  .arrow {
-    color: var(--gold);
-  }
-</style>
