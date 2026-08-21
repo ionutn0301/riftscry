@@ -1,14 +1,14 @@
-# RiftDelta Implementation Plan
+# RiftScry Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build RiftDelta — a static, zero-account League of Legends patch-intelligence site: Riot patch notes parsed into structured before→after deltas, personalized per champion pool, with history, compare, role lens, command palette, and a cinematic homepage.
+**Goal:** Build RiftScry — a static, zero-account League of Legends patch-intelligence site: Riot patch notes parsed into structured before→after deltas, personalized per champion pool, with history, compare, role lens, command palette, and a cinematic homepage.
 
 **Architecture:** Ingestion scripts parse official patch-notes HTML into Zod-validated JSON committed to git (patches 26.1–26.16). Astro 5 builds fully static pages from that JSON; React islands add interactivity (pool, palette, filters); vanilla GSAP + ScrollTrigger drives the homepage narrative. Cloudflare Pages hosts plain files; GitHub Actions watches for new patches and opens PRs.
 
 **Tech Stack:** TypeScript (strict), Astro 5 + @astrojs/react (React 19), GSAP + ScrollTrigger, Zod, nanostores (+persistent, +react), cmdk, node-html-parser, tsx, Vitest + happy-dom, Playwright, pnpm, GitHub Actions.
 
-**Spec:** `docs/superpowers/specs/2026-08-21-riftdelta-design.md` — read it before executing any task. The spec's §5 data model, §6 classification, §10 visual concept, and §29-equivalent anti-slop rules govern every task below.
+**Spec:** `docs/superpowers/specs/2026-08-21-riftscry-design.md` — read it before executing any task. The spec's §5 data model, §6 classification, §10 visual concept, and §29-equivalent anti-slop rules govern every task below.
 
 ## Global Constraints
 
@@ -40,7 +40,7 @@
 - Produces: working `pnpm dev` / `pnpm build` / `pnpm test` / `pnpm check` scripts every later task relies on. Directory skeleton per spec §15.
 
 - [ ] **Step 1:** `pnpm create astro@latest . --template minimal --no-git --no-install --yes`, then `pnpm add react react-dom @astrojs/react gsap zod nanostores @nanostores/persistent @nanostores/react cmdk` and `pnpm add -D typescript tsx vitest happy-dom @types/react @types/react-dom node-html-parser @playwright/test @astrojs/sitemap`
-- [ ] **Step 2:** Configure `astro.config.mjs`: `integrations: [react(), sitemap()]`, `site: "https://riftdelta.pages.dev"`, `output: "static"`. Configure `tsconfig.json` strict (`"strict": true, "noUncheckedIndexedAccess": true`). Add `.gitignore` entries: `node_modules/`, `dist/`, `.cache/`, `.astro/`, `test-results/`, `playwright-report/`. Add `.gitattributes`: `* text=auto eol=lf` plus `*.png binary`.
+- [ ] **Step 2:** Configure `astro.config.mjs`: `integrations: [react(), sitemap()]`, `site: "https://riftscry.pages.dev"`, `output: "static"`. Configure `tsconfig.json` strict (`"strict": true, "noUncheckedIndexedAccess": true`). Add `.gitignore` entries: `node_modules/`, `dist/`, `.cache/`, `.astro/`, `test-results/`, `playwright-report/`. Add `.gitattributes`: `* text=auto eol=lf` plus `*.png binary`.
 - [ ] **Step 3:** `package.json` scripts:
 
 ```json
@@ -356,7 +356,7 @@ export async function fetchChampionIndex(assetVersion: string): Promise<Record<s
 ```
 
 - [ ] **Step 1:** Failing tests for `notesUrlFor` (dot→dash mapping) and `resolveAssetVersion` (match, no-match → null, picks the listed version even when patch is `.1`-suffixed differently). Run — FAIL.
-- [ ] **Step 2:** Implement. `fetchWithCache`: `mkdir -p .cache` via `node:fs/promises`, read-if-exists, else `fetch` with `User-Agent: Mozilla/5.0 (RiftDelta ingestion; +https://github.com/<repo>)`, non-200 throws with status + url.
+- [ ] **Step 2:** Implement. `fetchWithCache`: `mkdir -p .cache` via `node:fs/promises`, read-if-exists, else `fetch` with `User-Agent: Mozilla/5.0 (RiftScry ingestion; +https://github.com/<repo>)`, non-200 throws with status + url.
 - [ ] **Step 3:** Run — PASS. Commit: `feat: notes/ddragon fetchers with cache and version resolver`
 
 ### Task 8: Ingestion CLI
@@ -456,13 +456,13 @@ export function filterChampions(changes: ChampionChange[], f: PatchFilters, role
 - Produces:
 
 ```ts
-export const $pool: WritableAtom<string[]>          // @nanostores/persistent, key "riftdelta:pool", JSON codec
+export const $pool: WritableAtom<string[]>          // @nanostores/persistent, key "riftscry:pool", JSON codec
 export function togglePool(championId: string): void
 export function inPool(pool: string[], championId: string): boolean
 ```
 
-- [ ] **Step 1:** Failing tests: toggle adds then removes; persists to `localStorage["riftdelta:pool"]`; fresh import with pre-seeded localStorage hydrates the atom; corrupted JSON in storage resets to `[]` without throwing. Run — FAIL.
-- [ ] **Step 2:** Implement with `persistentAtom<string[]>("riftdelta:pool", [], { encode: JSON.stringify, decode: safeParse })`. Run — PASS. Commit: `feat: localStorage-backed champion pool store`
+- [ ] **Step 1:** Failing tests: toggle adds then removes; persists to `localStorage["riftscry:pool"]`; fresh import with pre-seeded localStorage hydrates the atom; corrupted JSON in storage resets to `[]` without throwing. Run — FAIL.
+- [ ] **Step 2:** Implement with `persistentAtom<string[]>("riftscry:pool", [], { encode: JSON.stringify, decode: safeParse })`. Run — PASS. Commit: `feat: localStorage-backed champion pool store`
 
 ### Task 13: Design tokens, fonts, base layout
 
@@ -476,7 +476,7 @@ export function inPool(pool: string[], championId: string): boolean
 
 - [ ] **Step 1:** Download the three families (woff2, weights: display 500/600, UI 400/500/600, mono 400/500) into `src/assets/fonts/` with their license files. `@font-face` in `tokens.css`; `font-feature-settings: "tnum"` utility class `.num`.
 - [ ] **Step 2:** Fill `tokens.css`: palette derived from the logo set (sample the logo ink and gold; target AA contrast: cream-on-ink ≥ 7:1, gold used at display sizes only), semantic colors distinct from gold under deuteranopia simulation (verify with a contrast checker).
-- [ ] **Step 3:** Build `Layout.astro` (meta, OG tags, skip-link, `<slot/>`), `SiteHeader` (desktop: `logo-desktop-light.png` via `astro:assets` Image, height ≤ 28px, links: Patch, Champions, Compare, ⌘K hint; mobile: R-monogram crop or small wordmark), `SiteFooter` (Riot third-party disclaimer verbatim: "RiftDelta is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and League of Legends are trademarks or registered trademarks of Riot Games, Inc." + GitHub link + data provenance line).
+- [ ] **Step 3:** Build `Layout.astro` (meta, OG tags, skip-link, `<slot/>`), `SiteHeader` (desktop: `logo-desktop-light.png` via `astro:assets` Image, height ≤ 28px, links: Patch, Champions, Compare, ⌘K hint; mobile: R-monogram crop or small wordmark), `SiteFooter` (Riot third-party disclaimer verbatim: "RiftScry is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and League of Legends are trademarks or registered trademarks of Riot Games, Inc." + GitHub link + data provenance line).
 - [ ] **Step 4:** Verify: `pnpm dev`, screenshot header/footer desktop + 390px mobile; fonts load (Network tab, no layout shift); `pnpm build` clean. Commit: `feat: design tokens, self-hosted type system, base layout`
 
 ### Task 14: Patch page
@@ -585,7 +585,7 @@ export function buildSearchIndex(patches: Patch[], meta: Record<string, {name: s
 
 **Interfaces:**
 - Produces: `motion-utils.ts` exports `prefersReducedMotion(): boolean` and `initScene(name, fn)` registry so scenes register independently and all respect the same guard. Reduced motion or no-JS → static composition from Task 19 with simple opacity cuts only.
-- Motion spec (from spec §10, brief §12–13): hero patch number `26.15` → `26.16` numeral mask-transition scrubbed over the first ~120vh with small real deltas flashing during the transform; wall-of-notes: pinned section (≤ 150vh pin) where dense lines compress/mask away leaving structured deltas that snap into RiftDelta card form. Use Emil's `animate` guidance for durations/easing before implementing.
+- Motion spec (from spec §10, brief §12–13): hero patch number `26.15` → `26.16` numeral mask-transition scrubbed over the first ~120vh with small real deltas flashing during the transform; wall-of-notes: pinned section (≤ 150vh pin) where dense lines compress/mask away leaving structured deltas that snap into RiftScry card form. Use Emil's `animate` guidance for durations/easing before implementing.
 
 - [ ] **Step 1:** Invoke `animate` (Emil) for the two sequences; write the motion notes (target durations, easings, what property animates) as comments at the top of `home-motion.ts`.
 - [ ] **Step 2:** Implement hero + wall with GSAP ScrollTrigger; transform/opacity/clip-path only; `will-change` applied on scene enter and removed on leave.
@@ -641,7 +641,7 @@ export function buildSearchIndex(patches: Patch[], meta: Record<string, {name: s
 - Modify: `src/layouts/Layout.astro` (canonical URLs, og/twitter meta), patch/champion pages (per-page titles/descriptions)
 
 **Interfaces:**
-- Produces: titles per spec §9/§34 patterns — champion: `Ahri Patch History — RiftDelta` / `Every Ahri buff, nerf and adjustment across League patches.`; patch: `League Patch 26.16 Changes — RiftDelta`; compare: `League 26.16 vs 26.12 — RiftDelta`. `generate-og.ts` (run once, output committed): composes `logo-mobile-gold.png` on `--ink` background at 1200×630 via `sharp` (`pnpm add -D sharp` in this task) → `public/og-default.png`. Sitemap from @astrojs/sitemap (already integrated Task 1). 404: on-brand ("This page got removed in a patch."), links home + palette hint.
+- Produces: titles per spec §9/§34 patterns — champion: `Ahri Patch History — RiftScry` / `Every Ahri buff, nerf and adjustment across League patches.`; patch: `League Patch 26.16 Changes — RiftScry`; compare: `League 26.16 vs 26.12 — RiftScry`. `generate-og.ts` (run once, output committed): composes `logo-mobile-gold.png` on `--ink` background at 1200×630 via `sharp` (`pnpm add -D sharp` in this task) → `public/og-default.png`. Sitemap from @astrojs/sitemap (already integrated Task 1). 404: on-brand ("This page got removed in a patch."), links home + palette hint.
 
 - [ ] **Step 1:** Implement; run the OG script; verify meta with `pnpm build` + grep dist for `og:title` on 3 page types; sitemap exists in dist.
 - [ ] **Step 2:** Commit: `feat: seo metadata, og card, sitemap, 404`
@@ -667,7 +667,7 @@ export function buildSearchIndex(patches: Patch[], meta: Record<string, {name: s
 
 **Interfaces:**
 - Produces:
-  - `README.md` per spec §37: RIFTΔ hero (embed `logo-desktop-dark.png` — README renders on light GitHub bg), tagline, 2-sentence description, screenshot (from `docs/screenshots/`), `pnpm install / pnpm dev`, links to the three docs, Riot disclaimer, license.
+  - `README.md` per spec §37: RiftScry hero (embed `logo-desktop-dark.png` — README renders on light GitHub bg), tagline, 2-sentence description, screenshot (from `docs/screenshots/`), `pnpm install / pnpm dev`, links to the three docs, Riot disclaimer, license.
   - `docs/ARCHITECTURE.md`: the spec §4 diagram + build flow + island inventory + why-static rationale.
   - `docs/DATA.md`: schema reference (generated from the TS types, kept in sync manually with a pointer to `schema.ts` as source of truth), classification methodology table (render `STAT_SEMANTICS` rules in prose), provenance guarantees, how overrides work.
   - `CONTRIBUTING.md`: fix-a-patch walkthrough (override file example correcting a classification), add-a-patch (`pnpm ingest`), run tests, PR expectations, roles.json corrections.

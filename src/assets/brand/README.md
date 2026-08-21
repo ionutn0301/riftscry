@@ -1,7 +1,7 @@
 # RIFTΔ brand assets
 
 User-provided logo set (2026-08-21). Ink + gold + cream identity — these marks anchor
-the site's palette (see `docs/superpowers/specs/2026-08-21-riftdelta-design.md` §10).
+the site's palette (see `docs/superpowers/specs/2026-08-21-riftscry-design.md` §10).
 
 | File | Lockup | Use |
 |---|---|---|

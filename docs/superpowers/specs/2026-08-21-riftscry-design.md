@@ -1,15 +1,15 @@
-# RiftDelta — Design Specification
+# RiftScry — Design Specification
 
 **Date:** 2026-08-21
 **Status:** Approved (brainstorm phase complete)
-**Brand:** RiftDelta, wordmark **RIFTΔ**
+**Brand:** RiftScry (renamed from RiftDelta 2026-08-21; the user-provided logo marks render "RIFTΔ" and remain the visual identity)
 **Tagline:** The patch notes, diffed.
 
 ---
 
 ## 1. Product summary
 
-RiftDelta is an open-source, zero-account, statically hosted League of Legends patch
+RiftScry is an open-source, zero-account, statically hosted League of Legends patch
 intelligence site. It converts Riot's prose patch notes into structured before → after
 changes, personalized to the champions a player actually plays.
 
@@ -39,7 +39,7 @@ Verified facts this design rests on (checked 2026-08-21):
 **In scope**
 
 1. `/patch/:id` — any supported patch: champion/item/system changes, classification badges, numeric deltas with relative change, filters (champion, role, change type, "my pool"), search, hotfix markers, source link.
-2. **My Pool** — champion multi-select persisted to `localStorage` (`riftdelta:pool`), no account. Homepage and patch pages personalize from it.
+2. **My Pool** — champion multi-select persisted to `localStorage` (`riftscry:pool`), no account. Homepage and patch pages personalize from it.
 3. `/champion/:slug` — chronological patch timeline per champion; expanding a patch shows exact changes. "Git history for your main."
 4. `/compare/:a/:b` — structured diff between any two supported patches: added / removed / buffed / nerfed / modified.
 5. **Role lens** — Top / Jungle / Mid / ADC / Support filter from a curated static mapping, methodology labeled.
@@ -252,7 +252,7 @@ these marks; the logos are used as provided, never restyled.
    stat deltas flash around the transformation. Copy: "Your main got nerfed. You
    shouldn't need 8,000 words to find out." CTAs: *Pick your champions* / *Explore 26.16*.
 2. **Wall of notes** — dense typographic wall compresses; irrelevant lines mask away;
-   surviving deltas snap into RiftDelta's structured representation. "8,000 words → your
+   surviving deltas snap into RiftScry's structured representation. "8,000 words → your
    champions → 7 changes → done."
 3. **Your champions** — portrait field; unselected recede, selected advance;
    "4 champions. 6 relevant changes." Shared-element continuity into product UI.
@@ -305,7 +305,7 @@ No tests written to inflate count; each maps to a behavior above.
 
 ## 14. Riot compliance
 
-- Independent third-party product; Riot's required disclaimer ("RiftDelta isn't endorsed
+- Independent third-party product; Riot's required disclaimer ("RiftScry isn't endorsed
   by Riot Games…") visible in the footer of every page.
 - Assets exclusively from Data Dragon. No Riot logos as identity, no client UI imitation.
 - Patch prose: concise summaries + numeric structures + link to official source; full
@@ -314,7 +314,7 @@ No tests written to inflate count; each maps to a behavior above.
 ## 15. Repository layout
 
 ```text
-riftdelta/
+riftscry/
   README.md                    # §37 hero: brand, tagline, install, dev
   LICENSE                      # MIT
   CONTRIBUTING.md              # how to fix a patch, add an override, run tests

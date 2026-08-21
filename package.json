@@ -1,9 +1,9 @@
 {
-  "name": "riftdelta",
+  "name": "riftscry",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "RIFTΔ — the patch notes, diffed. Structured League of Legends patch intelligence.",
+  "description": "RiftScry — the patch notes, diffed. Structured League of Legends patch intelligence.",
   "license": "MIT",
   "engines": {
     "node": ">=22"

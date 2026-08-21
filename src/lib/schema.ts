@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Normalized patch schema — the single source of truth for RiftDelta data.
+ * Normalized patch schema — the single source of truth for RiftScry data.
  * Shared by the ingestion scripts (write side) and the site (read side).
  * Malformed patch data must fail the build: use validatePatch everywhere.
  */
