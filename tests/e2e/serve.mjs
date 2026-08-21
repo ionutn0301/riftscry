@@ -3,6 +3,7 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
+import { gzipSync } from "node:zlib";
 
 const ROOT = new URL("../../dist", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const PORT = 4321;
@@ -37,7 +38,15 @@ createServer(async (req, res) => {
       res.end(await readFile(join(ROOT, "404.html")).catch(() => "Not found"));
       return;
     }
-    res.writeHead(200, { "Content-Type": TYPES[extname(file)] ?? "application/octet-stream" });
+    const type = TYPES[extname(file)] ?? "application/octet-stream";
+    // Compress text like any real host would (parity for perf audits).
+    const compressible = /^(text\/|application\/(json|xml|javascript))/.test(type);
+    if (compressible && /\bgzip\b/.test(req.headers["accept-encoding"] ?? "")) {
+      res.writeHead(200, { "Content-Type": type, "Content-Encoding": "gzip" });
+      res.end(gzipSync(body));
+      return;
+    }
+    res.writeHead(200, { "Content-Type": type });
     res.end(body);
   } catch {
     res.writeHead(400);

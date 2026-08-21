@@ -3,6 +3,9 @@ import "../styles/global.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import CommandPalette from "../components/islands/CommandPalette";
+import clashUrl from "../assets/fonts/ClashDisplay-Variable.woff2?url";
+import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
+import splineUrl from "@fontsource/spline-sans-mono/files/spline-sans-mono-latin-500-normal.woff2?url";
 
 interface Props {
   title: string;
@@ -24,6 +27,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Display/numeric faces paint the LCP text — fetch them with the HTML. -->
+    <link rel="preload" as="font" type="font/woff2" href={clashUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={generalUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={splineUrl} crossorigin />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
