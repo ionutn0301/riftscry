@@ -4,12 +4,12 @@
   "assetVersion": "16.5.1",
   "releaseDate": "2026-03-03",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-5-notes/",
-  "ingestedAt": "2026-08-21T20:38:06.939Z",
+  "ingestedAt": "2026-08-21T21:18:48.248Z",
   "champions": [
     {
       "championId": "Akali",
       "classification": "adjustment",
-      "summary": "Currently, Akali’s re-stealth timer on her Shroud scales with game time. And since we’ve adjusted Summoner’s Rift’s pacing and League now has multiple modes with varying start times, we think everyone’s favorite ninja deserves a bit more flexibility when it comes to her sneakiness.",
+      "summary": "Currently, Akali’s re-stealth timer on her Shroud scales with game time.",
       "abilities": [
         {
           "ability": "W",
@@ -29,7 +29,7 @@
     {
       "championId": "Azir",
       "classification": "nerf",
-      "summary": "Azir does a lot of things very well when played at a high level, and we want to make sure we preserve that expression of mastery Azir players spend a lot of time developing. But with that in mind when he gets going he can feel very oppressive and unstoppable. In order to give his opponents some degree of counterplay we’re bringing his health in the late game down a notch so assassin type champions can have a chance to dethrone the Shuriman emperor.",
+      "summary": "Azir does a lot of things very well when played at a high level, and we want to make sure we preserve that expression of mastery Azir players spend a lot of time developing.",
       "abilities": [
         {
           "ability": "base",
@@ -49,7 +49,7 @@
     {
       "championId": "Garen",
       "classification": "buff",
-      "summary": "Garen is moderately popular but statistically underpowered, and we’d like it if he was as powerful as other straightforward top lane juggernauts. We’re continuing on the trend of making traditional fighter items more comparable to his crit builds and giving him better trading power before he has access to tools like Stridebreaker and Phantom Dancer.",
+      "summary": "Garen is moderately popular but statistically underpowered, and we’d like it if he was as powerful as other straightforward top lane juggernauts.",
       "abilities": [
         {
           "ability": "Q",
@@ -82,7 +82,7 @@
     {
       "championId": "Khazix",
       "classification": "nerf",
-      "summary": "Kha'Zix has evolved with the season changes and overcame all his worthy prey to take the top spot of solo queue junglers. We think he has room to go down in clear speed as the game progresses, as well as overkilling isolated targets without hurting him where he's already weak in teamfights. We're also making the bug less speedy to hit higher skill brackets.",
+      "summary": "Kha'Zix has evolved with the season changes and overcame all his worthy prey to take the top spot of solo queue junglers.",
       "abilities": [
         {
           "ability": "base",
@@ -135,7 +135,7 @@
     {
       "championId": "Lillia",
       "classification": "adjustment",
-      "summary": "We overshot Lillia’s Q nerf and historically gave her power in places she’s less likely to appreciate, all of which has led to the speedy deer feeling limp. We are reverting her ultimate buffs from 25.19, which were fairly small, as well as Q nerfs from 26.02, which were much more impactful. The hope here is that this net buff lets her live out her sustained fight fantasy as we believe that weaving in and out of fights doing damage with Q is closer to that rather than needing to land large scale R's.",
+      "summary": "We overshot Lillia’s Q nerf and historically gave her power in places she’s less likely to appreciate, all of which has led to the speedy deer feeling limp.",
       "abilities": [
         {
           "ability": "passive",
@@ -195,7 +195,7 @@
     {
       "championId": "Mel",
       "classification": "adjustment",
-      "summary": "Mel’s recent update and follow-up balance work has succeeded in creating more counterplay and thus reducing her frustration and ban rate with a similar win rate to the preceding patches. With the initial dust now settled, it’s time to bring her up to a more reasonable power level. We’re looking toward her proactive damage, especially with champion level, to skew these buffs strongly toward the mid lane. We’re also sliding in a small compensation to her passive’s minion mod in order to not push her Q-driven wave clear any higher than it already is.",
+      "summary": "Mel’s recent update and follow-up balance work has succeeded in creating more counterplay and thus reducing her frustration and ban rate with a similar win rate to the preceding patches.",
       "abilities": [
         {
           "ability": "passive",
@@ -248,7 +248,7 @@
     {
       "championId": "Neeko",
       "classification": "adjustment",
-      "summary": "Neeko has a lot of things going for her right now: strong laning, teamfight utility, and vision control. We like her explosive and high-spectacle teamfights, with the occasional 7th minion engage or wolf flank, but want to tap down the utility her clone provides. This change should still let her engage in trickery, while introducing a tradeoff to when clones stare people down from a bush on repeat, as we explore the best solution that limits her vision control but retains satisfying mechanics.",
+      "summary": "Neeko has a lot of things going for her right now: strong laning, teamfight utility, and vision control.",
       "abilities": [
         {
           "ability": "W",
@@ -271,7 +271,7 @@
     {
       "championId": "Nocturne",
       "classification": "buff",
-      "summary": "Nocturne’s underperforming considering how easy to pick up and play he is, so he’s made the cut for buffs in this patch. In an effort to help him succeed in moderate fight durations, we’re upgrading his ability to stick to his enemies under the Dusk Trail and run them down with basic attacks.",
+      "summary": "Nocturne’s underperforming considering how easy to pick up and play he is, so he’s made the cut for buffs in this patch.",
       "abilities": [
         {
           "ability": "passive",
@@ -304,7 +304,7 @@
     {
       "championId": "Orianna",
       "classification": "nerf",
-      "summary": "Orianna has been one of the strongest champions in the mid lane as of late, so strong that she’s head and shoulders above the rest of the competition. In the hands of a true expert, her laning phase can feel unassailable, so we’re focusing on her early game in the hope of opening up some weaknesses and making some space for other champions in the mid lane.",
+      "summary": "Orianna has been one of the strongest champions in the mid lane as of late, so strong that she’s head and shoulders above the rest of the competition.",
       "abilities": [
         {
           "ability": "Q",
@@ -324,7 +324,7 @@
     {
       "championId": "Samira",
       "classification": "adjustment",
-      "summary": "We’re giving Samira some love in the form of QoL and minor bugfixing around her Q! Sometimes Q doesn’t do what you want which can be a bit frustrating, and we’re hoping to fix some of the extreme end of feels-bad cases by adding some additional logic on the decision of when to use her Sword and when to use her Gun.",
+      "summary": "We’re giving Samira some love in the form of QoL and minor bugfixing around her Q!",
       "abilities": [
         {
           "ability": "Q",
@@ -352,7 +352,7 @@
     {
       "championId": "Taliyah",
       "classification": "adjustment",
-      "summary": "Taliyah’s powerful wave control in the early game means she consistently gets to be the first mid laner to every scuttle fight which can make it difficult to prioritize other picks over her. We’d like for this to not be as reliable a game plan as it currently is, so we’re bringing her early push power down and compensating jungle Taliyah with a bit more bonus damage to monsters.",
+      "summary": "Taliyah’s powerful wave control in the early game means she consistently gets to be the first mid laner to every scuttle fight which can make it difficult to prioritize other picks over her.",
       "abilities": [
         {
           "ability": "Q",
@@ -379,7 +379,7 @@
     {
       "championId": "Varus",
       "classification": "adjustment",
-      "summary": "Oh, Varus. Look, canonically you’re kinda three people at once, so having three times the balance changes of other champions is only fair, right? We’re nerfing Varus’s lethality build as it’s the most pro-dominant ADC in the current patch. However, because on-hit Varus in bot lane is weak, we’re compensating AD on-hit Varus to keep that build afloat.",
+      "summary": "Oh, Varus.",
       "abilities": [
         {
           "ability": "Q",
@@ -412,7 +412,7 @@
     {
       "championId": "Volibear",
       "classification": "buff",
-      "summary": "Volibear's last set of nerfs were effective at hitting jungle harder than top, but ended up a bit over the line still. We're aiming to make laning a bit more satisfying for top Volibear with mana changes, and still trying to open up some bruiser builds so it's not always wizard bear.",
+      "summary": "Volibear's last set of nerfs were effective at hitting jungle harder than top, but ended up a bit over the line still.",
       "abilities": [
         {
           "ability": "Q",

@@ -4,7 +4,7 @@
   "assetVersion": "16.11.1",
   "releaseDate": "2026-05-27",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-11-notes/",
-  "ingestedAt": "2026-08-21T20:38:07.024Z",
+  "ingestedAt": "2026-08-21T21:18:48.323Z",
   "champions": [
     {
       "championId": "Brand",
@@ -29,7 +29,7 @@
     {
       "championId": "Diana",
       "classification": "buff",
-      "summary": "Diana's feeling a bit underwhelming in the jungle after her previous adjustments due to the Dusk and Dawn changes. So we're giving her a little more moon-power in the jungle to return her to her former glory.",
+      "summary": "Diana's feeling a bit underwhelming in the jungle after her previous adjustments due to the Dusk and Dawn changes.",
       "abilities": [
         {
           "ability": "base",
@@ -82,7 +82,7 @@
     {
       "championId": "Heimerdinger",
       "classification": "buff",
-      "summary": "With the ranged minion aggro pull removed last patch, Heimerdinger mains ended up with some degraded functionality around how turret ranges interact with minion ranges—in the sense that ranged minions outrange Heimer's turrets and he had no way to pull them into their range. This makes for a pretty miserable experience where you just watch as your turrets tank minion autos without attacking back. Additionally, it was brought to our attention that his Evolution Turrets sometimes fail to follow up on his Storm Grenade when they lose vision of the target too quickly due to minor timing fluctuations around vision and turret logic, so we are increasing the vision duration slightly to resolve that.",
+      "summary": "With the ranged minion aggro pull removed last patch, Heimerdinger mains ended up with some degraded functionality around how turret ranges interact with minion ranges—in the sense that ranged…",
       "abilities": [
         {
           "ability": "Q",
@@ -127,7 +127,7 @@
     {
       "championId": "Kassadin",
       "classification": "buff",
-      "summary": "Our Void Walker has been limping around the Rift more than blinking. Stackable tear items have provided an additional cool late-game fantasy option besides pure AP, but his early game has been tougher than usual (in part due to our mid quest adjustment). These changes should help his laning, both in farming and trading.",
+      "summary": "Our Void Walker has been limping around the Rift more than blinking.",
       "abilities": [
         {
           "ability": "Q",
@@ -160,7 +160,7 @@
     {
       "championId": "Quinn",
       "classification": "buff",
-      "summary": "Quinngle (or Qungle [Kwun-gle]?) has been pretty popular and fun, even in a weak state. We know a lot of you will pick up more tricks and mastery over time, so for now we're just making sure her clear speed is more competitive without changing burst or dueling. This should help our trusty ranger more regularly undertake dangerous missions deep in enemy territory, whether she's looking for camps or champs.",
+      "summary": "Quinngle (or Qungle [Kwun-gle]?) has been pretty popular and fun, even in a weak state.",
       "abilities": [
         {
           "ability": "passive",
@@ -193,7 +193,7 @@
     {
       "championId": "Smolder",
       "classification": "nerf",
-      "summary": "The baby dragon has been absolutely blasting his opponents since getting his hands on Deathfire Touch. We've had to do an unfortunate number of micropatch nerfs back to back, and we are hopeful this will be the last one we need to do. Included in these changes are a continuation of the latest nerf's push towards bringing him back into primarily critical strike builds rather than just Essence Reaver into bruiser, which we think can sit stronger since at the end of the day, a squishier Smolder has more weaknesses to play around, like being burst by enemy spell rotations.",
+      "summary": "The baby dragon has been absolutely blasting his opponents since getting his hands on Deathfire Touch.",
       "abilities": [
         {
           "ability": "passive",
@@ -220,7 +220,7 @@
     {
       "championId": "Teemo",
       "classification": "nerf",
-      "summary": "We'd love (fear) a world where Teemo could be equally happy building AP, on-hit, and AD for his new ratios, but as it stands, Shiv is ahead of the pack. By hitting his Toxic Shot AD ratio, we're confident Teemo with Shiv can land in a good spot without forcing those of you who like other builds (e.g. Nashor's, Liandry, Malignance) to rely on it. Additionally, hits to his scaling durability should preserve his lane bully identity, while increasing your chance of getting the jump on him!",
+      "summary": "We'd love (fear) a world where Teemo could be equally happy building AP, on-hit, and AD for his new ratios, but as it stands, Shiv is ahead of the pack.",
       "abilities": [
         {
           "ability": "base",
@@ -253,7 +253,7 @@
     {
       "championId": "XinZhao",
       "classification": "adjustment",
-      "summary": "While AP Xin builds are not OP per se, the sheer amount of healing has been eye popping in an extremely expectation breaking way. Tamping that down with some compensation in the form of sustained damage.",
+      "summary": "While AP Xin builds are not OP per se, the sheer amount of healing has been eye popping in an extremely expectation breaking way.",
       "abilities": [
         {
           "ability": "passive",

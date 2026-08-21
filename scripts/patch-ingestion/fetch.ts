@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, access } from "node:fs/promises";
+import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 
 /**
@@ -44,12 +44,18 @@ export function resolveAssetVersion(id: string, ddragonVersions: string[]): stri
   return null;
 }
 
-export async function fetchWithCache(url: string, cacheKey: string): Promise<string> {
+export async function fetchWithCache(
+  url: string,
+  cacheKey: string,
+  opts: { maxAgeMs?: number } = {},
+): Promise<string> {
   await mkdir(CACHE_DIR, { recursive: true });
   const cachePath = join(CACHE_DIR, cacheKey);
   try {
-    await access(cachePath);
-    return await readFile(cachePath, "utf8");
+    const info = await stat(cachePath);
+    if (opts.maxAgeMs === undefined || Date.now() - info.mtimeMs < opts.maxAgeMs) {
+      return await readFile(cachePath, "utf8");
+    }
   } catch {
     // not cached yet
   }
@@ -63,7 +69,12 @@ export async function fetchWithCache(url: string, cacheKey: string): Promise<str
 }
 
 export async function fetchDdragonVersions(): Promise<string[]> {
-  const body = await fetchWithCache("https://ddragon.leagueoflegends.com/api/versions.json", "versions.json");
+  // 1h TTL — a stale versions.json would make new-patch detection blind.
+  const body = await fetchWithCache(
+    "https://ddragon.leagueoflegends.com/api/versions.json",
+    "versions.json",
+    { maxAgeMs: 60 * 60 * 1000 },
+  );
   return JSON.parse(body) as string[];
 }
 

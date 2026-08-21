@@ -23,3 +23,5 @@ it("formats with typographic minus", () => expect(formatDelta(-0.1111)).toBe("âˆ
 it("formats positive with sign", () => expect(formatDelta(0.125)).toBe("+12.5%"));
 it("trims trailing zero decimals", () => expect(formatDelta(0.25)).toBe("+25%"));
 it("formats null as null", () => expect(formatDelta(null)).toBeNull());
+it("suppresses zero deltas (rank-1 unchanged is not '+0%')", () =>
+  expect(formatDelta(0)).toBeNull());

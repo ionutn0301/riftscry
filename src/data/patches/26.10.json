@@ -4,12 +4,12 @@
   "assetVersion": "16.10.1",
   "releaseDate": "2026-05-12",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-10-notes/",
-  "ingestedAt": "2026-08-21T20:38:07.009Z",
+  "ingestedAt": "2026-08-21T21:18:48.311Z",
   "champions": [
     {
       "championId": "Ambessa",
       "classification": "adjustment",
-      "summary": "After getting to see the impact of last patch’s ultimate nerfs, they’ve been very effective at increasing counterplay at high skill levels. However, we still see an opportunity to shift some power from jungle into top while promoting a bruiser playstyle. As a result, we’re giving her some better early power, while keeping her jungle clear and general lategame potential the same.",
+      "summary": "After getting to see the impact of last patch’s ultimate nerfs, they’ve been very effective at increasing counterplay at high skill levels.",
       "abilities": [
         {
           "ability": "Q",
@@ -56,7 +56,7 @@
     {
       "championId": "Anivia",
       "classification": "nerf",
-      "summary": "The Ice Birb has been strong for quite some time, icing out opponents in top, mid, and support without much build or playstyle differentiation, which is why we’re opting for base stat adjustments. While the change will impact her across roles, we’re targeting her durability to allow for more all-in windows to crack the egg in top lane in particular.",
+      "summary": "The Ice Birb has been strong for quite some time, icing out opponents in top, mid, and support without much build or playstyle differentiation, which is why we’re opting for base stat adjustments.",
       "abilities": [
         {
           "ability": "base",
@@ -83,7 +83,7 @@
     {
       "championId": "Ashe",
       "classification": "adjustment",
-      "summary": "As one of our premier utility ADCs, Ashe is pumping out a bit too much damage. We’re giving her a minor nerf to her Q damage so she can’t have the best of both worlds.",
+      "summary": "As one of our premier utility ADCs, Ashe is pumping out a bit too much damage.",
       "abilities": [
         {
           "ability": "Q",
@@ -103,7 +103,7 @@
     {
       "championId": "Galio",
       "classification": "buff",
-      "summary": "Our favorite Demacian colossus has been quite sad between the removal of Phase Rush and the mid role quest adjustments. We’re flipping the script and helping him deliver justice by reducing some of his mana costs and tuning up the reward for a well-aimed Justice Punch. His ultimate is also lacking a bit of oomph in the damage department with how epic it is, so we’re helping it scale with his signature stat!",
+      "summary": "Our favorite Demacian colossus has been quite sad between the removal of Phase Rush and the mid role quest adjustments.",
       "abilities": [
         {
           "ability": "Q",
@@ -147,7 +147,7 @@
     {
       "championId": "LeeSin",
       "classification": "adjustment",
-      "summary": "Over time, Lee Sin has watched as other champs surpass him in both flair and mobility. We are looking to give him more opportunities to use the tools that allow him to fly around the map while making sure his high moments truly feel like such at all moments in the game.",
+      "summary": "Over time, Lee Sin has watched as other champs surpass him in both flair and mobility.",
       "abilities": [
         {
           "ability": "W",
@@ -203,7 +203,7 @@
     {
       "championId": "Naafiri",
       "classification": "adjustment",
-      "summary": "Naafiri has been top dog for a while now in both mid and jungle. We are looking to tame some of her power by reducing her damage output a bit.",
+      "summary": "Naafiri has been top dog for a while now in both mid and jungle.",
       "abilities": [
         {
           "ability": "Q",
@@ -243,7 +243,7 @@
     {
       "championId": "Quinn",
       "classification": "buff",
-      "summary": "Quinn has been struggling in the top lane environment due to a number of system changes across 2026. We’re looking to let her impact the map with her unique ultimate as a laner by reducing her high mana barrier and also want to open the door (bush?) to the jungle. We’re excited to see if she can thrive as a natural predator in the jungle, and see if she and Valor can prey on the latest new jungler we introduced, Fizz (birds like fish)!",
+      "summary": "Quinn has been struggling in the top lane environment due to a number of system changes across 2026.",
       "abilities": [
         {
           "ability": "other",
@@ -285,7 +285,7 @@
     {
       "championId": "Shyvana",
       "classification": "nerf",
-      "summary": "With the introduction of the most recent Shyvana changes, players have been finding success building more health and ability haste. As such, we’re looking to bring a bit of her innate defensive capabilities down to make taking down this dragon a bit more reasonable.",
+      "summary": "With the introduction of the most recent Shyvana changes, players have been finding success building more health and ability haste.",
       "abilities": [
         {
           "ability": "base",
@@ -325,7 +325,7 @@
     {
       "championId": "Smolder",
       "classification": "adjustment",
-      "summary": "Smolder's early game has been bolstered significantly after gaining access to Deathfire Touch. While we’re nerfing DFT, we still expect it to be his best keystone, so we’re also tapping him down to compensate. Update: Smolder continued to skyrocket in winrate this patch despite the previous nerfs as players adapted builds. We’re nerfing him again and will continue to monitor his performance after the Black Cleaver and Deathfire Touch interaction is changed in the next patch.",
+      "summary": "Smolder's early game has been bolstered significantly after gaining access to Deathfire Touch.",
       "abilities": [
         {
           "ability": "base",
@@ -391,7 +391,7 @@
     {
       "championId": "MonkeyKing",
       "classification": "buff",
-      "summary": "Across roles, Wukong has been struggling to find success as of late. We’re looking to help him turn things around by empowering his trickster playstyle to reward clever and creative uses of his clones.",
+      "summary": "Across roles, Wukong has been struggling to find success as of late.",
       "abilities": [
         {
           "ability": "W",
@@ -431,7 +431,7 @@
     {
       "championId": "Zed",
       "classification": "nerf",
-      "summary": "Zed has soared in power along with huge spikes in pickrate with Season 2’s changes, and we think he’s still going to be extremely solid despite systemic nerfs. We’d like to preserve his identity as a strong laner, but hit some of his most guaranteed damage.",
+      "summary": "Zed has soared in power along with huge spikes in pickrate with Season 2’s changes, and we think he’s still going to be extremely solid despite systemic nerfs.",
       "abilities": [
         {
           "ability": "other",
@@ -464,7 +464,7 @@
     {
       "championId": "Zeri",
       "classification": "buff",
-      "summary": "Zeri’s new direction and feel have seemed really promising across tiers, but with her winrate being lower as players take time to adjust their playstyle and itemization (looking at you Stormrazor, not looking at you Shiv!). We want to make Zeri speed gaming more accessible!",
+      "summary": "Zeri’s new direction and feel have seemed really promising across tiers, but with her winrate being lower as players take time to adjust their playstyle and itemization (looking at you Stormrazor,…",
       "abilities": [
         {
           "ability": "Q",

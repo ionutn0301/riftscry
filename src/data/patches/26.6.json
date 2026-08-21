@@ -4,12 +4,12 @@
   "assetVersion": "16.6.1",
   "releaseDate": "2026-03-17",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-6-notes/",
-  "ingestedAt": "2026-08-21T20:38:06.953Z",
+  "ingestedAt": "2026-08-21T21:18:48.263Z",
   "champions": [
     {
       "championId": "Ahri",
       "classification": "nerf",
-      "summary": "A moderate buff to Ahri back in 26.3 skyrocketed her to the top of the mid lane pool and pushed her power a bit too far. Her overall waveclear is quite powerful right now, so we're targeting her Q's base damage as it could stand to lose some power.",
+      "summary": "A moderate buff to Ahri back in 26.3 skyrocketed her to the top of the mid lane pool and pushed her power a bit too far.",
       "abilities": [
         {
           "ability": "Q",
@@ -29,7 +29,7 @@
     {
       "championId": "Azir",
       "classification": "adjustment",
-      "summary": "In this patch we're looking to make Azir a bit more powerful for players at home. These changes should be pretty appreciable for all Azir players, regardless of rank.",
+      "summary": "In this patch we're looking to make Azir a bit more powerful for players at home.",
       "abilities": [
         {
           "ability": "Q",
@@ -69,7 +69,7 @@
     {
       "championId": "Cassiopeia",
       "classification": "buff",
-      "summary": "We're looking to get more damage in Cassiopeia's poison this patch, particularly when for her mid lane players. We want to give her more freedom to look for trades and to feel rewarded when she finds successful ones, so we're bumping up her base Mana and empowered E scaling.",
+      "summary": "We're looking to get more damage in Cassiopeia's poison this patch, particularly when for her mid lane players.",
       "abilities": [
         {
           "ability": "base",
@@ -102,7 +102,7 @@
     {
       "championId": "Lissandra",
       "classification": "adjustment",
-      "summary": "The Queen of Ice has not ruled in a very, very long time... thankfully, a lot of her biggest problem children like Everfrost and Aftershock aren't in her toolkit anymore, so we're looking to give her some a chill buff. We want to do this by letting her get that 2nd Q off more reliably in those tighter combos. We think this is going to be a big power-up, so we want to make sure she's not icing out her AD melee matchups too hard without affecting her durability in others.",
+      "summary": "The Queen of Ice has not ruled in a very, very long time...",
       "abilities": [
         {
           "ability": "base",
@@ -135,7 +135,7 @@
     {
       "championId": "Olaf",
       "classification": "buff",
-      "summary": "Olaf top is fine but he's lagging behind in the jungle. As such, we're improving his clear, making his ganking stronger and leaning into his identity as a risky, low health fighter. We hope to keep top lane in a fairly stable place while boosting his jungle performance.",
+      "summary": "Olaf top is fine but he's lagging behind in the jungle.",
       "abilities": [
         {
           "ability": "base",
@@ -197,7 +197,7 @@
     {
       "championId": "Pyke",
       "classification": "nerf",
-      "summary": "Pyke has often toed the line around being strong enough to be worth playing in most skill brackets and being overbearing in Elite levels of play. Recently, he's crossed that line and is due for a power reduction. We want to keep his ability to strongly punish squishy lanes and deal tons of damage at the drop of a hat, so for this patch's nerf we're making him more easily counter-attacked when he makes a mistake or gets caught by a well-placed engage.",
+      "summary": "Pyke has often toed the line around being strong enough to be worth playing in most skill brackets and being overbearing in Elite levels of play.",
       "abilities": [
         {
           "ability": "base",
@@ -217,7 +217,7 @@
     {
       "championId": "Shen",
       "classification": "nerf",
-      "summary": "Shungle is performing better than he is in the top lane, not to mention he's also outperforming many other junglers with one of the best clear speeds in the game, reliable ganks, and a global presence starting at level 6. Given the latter two strengths, we think it's fair to reduce his clear speed in order to keep the other two intact.",
+      "summary": "Shungle is performing better than he is in the top lane, not to mention he's also outperforming many other junglers with one of the best clear speeds in the game, reliable ganks, and a global…",
       "abilities": [
         {
           "ability": "Q",
@@ -237,7 +237,7 @@
     {
       "championId": "Skarner",
       "classification": "buff",
-      "summary": "Our few Skarner top laners have gained tremendous empathy for their solitary Brackern, as their brethren scattered and left them to become the last of their kind. By letting him cast more freely in lane while also giving him some more trading power on his bread and butter ability, we hope some of our scorpion bros will come out of hiding in top lane (and jungle too!)",
+      "summary": "Our few Skarner top laners have gained tremendous empathy for their solitary Brackern, as their brethren scattered and left them to become the last of their kind.",
       "abilities": [
         {
           "ability": "Q",
@@ -264,7 +264,7 @@
     {
       "championId": "Tryndamere",
       "classification": "buff",
-      "summary": "We're back for another Tryndamere buff as he's still underperforming relative to other top laners. Arguably the highlight of Tryndamere is right clicking enemy champions and killing them with crits. He can already do that extremely well in the early game, so how about doing it in the late game, too?",
+      "summary": "We're back for another Tryndamere buff as he's still underperforming relative to other top laners.",
       "abilities": [
         {
           "ability": "base",
@@ -284,7 +284,7 @@
     {
       "championId": "Zaahen",
       "classification": "nerf",
-      "summary": "Zaahen has caught on as one of the strongest top laners and junglers in the game. In our view his jungle performance is farther over the line, so we're delivering some nerfs with a moderate jungle skew to them. His W is more core to his ganking than it is to his laning, and this E nerf is jungle-skewed and will reduce his ability to create and react to pressure early on.",
+      "summary": "Zaahen has caught on as one of the strongest top laners and junglers in the game.",
       "abilities": [
         {
           "ability": "W",

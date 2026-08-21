@@ -22,9 +22,12 @@ export function relativeDelta(before: string, after: string): number | null {
   return (a - b) / Math.abs(b);
 }
 
-/** "−11.1%" / "+12.5%" with a typographic minus (U+2212); null passes through. */
+/**
+ * "−11.1%" / "+12.5%" with a typographic minus (U+2212). Zero deltas return
+ * null — "+0%" beside a change whose later ranks moved is misleading.
+ */
 export function formatDelta(x: number | null): string | null {
-  if (x === null) return null;
+  if (x === null || x === 0) return null;
   const pct = Math.round(Math.abs(x) * 1000) / 10;
   const rendered = Number.isInteger(pct) ? String(pct) : pct.toFixed(1);
   return x < 0 ? `−${rendered}%` : `+${rendered}%`;

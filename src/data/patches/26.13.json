@@ -4,12 +4,12 @@
   "assetVersion": "16.13.1",
   "releaseDate": "2026-06-23",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-13-notes/",
-  "ingestedAt": "2026-08-21T20:38:07.050Z",
+  "ingestedAt": "2026-08-21T21:18:48.348Z",
   "champions": [
     {
       "championId": "Aphelios",
       "classification": "buff",
-      "summary": "Since his nerfs earlier this year, Aphelios has fallen in priority and win rate. With some power budget freed up, we're pulling back on some of those earlier nerfs to highlight each gun's unique strengths.",
+      "summary": "Since his nerfs earlier this year, Aphelios has fallen in priority and win rate.",
       "abilities": [
         {
           "ability": "other",
@@ -134,7 +134,7 @@
     {
       "championId": "Cassiopeia",
       "classification": "nerf",
-      "summary": "Cassiopeia has risen to the top of pro play presence, even before our 26.12 nerfs to her major competition. We would like to preserve some of her unique strengths, like her rewarding laning and slippery speed, but she should have a less gigantic health bar for when opponents actually lock her down!",
+      "summary": "Cassiopeia has risen to the top of pro play presence, even before our 26.12 nerfs to her major competition.",
       "abilities": [
         {
           "ability": "base",
@@ -154,7 +154,7 @@
     {
       "championId": "Draven",
       "classification": "buff",
-      "summary": "As the marksman meta has evolved around crit, on-hit, and caster builds, Draven has fallen behind. We're buffing his heavy-AD pattern instead of trying to redirect his itemization.",
+      "summary": "As the marksman meta has evolved around crit, on-hit, and caster builds, Draven has fallen behind.",
       "abilities": [
         {
           "ability": "E",
@@ -274,7 +274,7 @@
     {
       "championId": "Olaf",
       "classification": "adjustment",
-      "summary": "Olaf used to be a staple in the jungle but has been out of favor for a while now, despite our earlier attempts this season to help him out. We are looking to give him a bit more power to entice him back into the wilderness.",
+      "summary": "Olaf used to be a staple in the jungle but has been out of favor for a while now, despite our earlier attempts this season to help him out.",
       "abilities": [
         {
           "ability": "Q",
@@ -294,7 +294,7 @@
     {
       "championId": "Poppy",
       "classification": "buff",
-      "summary": "Jungle class diversity has been dominated almost exclusively by fighters for a while now, and we think Poppy is a good pick for a tankier counter option into many of the fighter junglers at the top of the meta. This buff is aimed at her jungle clear and gank windows while minimizing top and support impact.",
+      "summary": "Jungle class diversity has been dominated almost exclusively by fighters for a while now, and we think Poppy is a good pick for a tankier counter option into many of the fighter junglers at the top of the meta.",
       "abilities": [
         {
           "ability": "Q",
@@ -314,7 +314,7 @@
     {
       "championId": "Qiyana",
       "classification": "buff",
-      "summary": "Another class that's underrepresented in the jungle is assassins. We feel Qiyana is a great choice for a buff as she's recently been on the lower end of balanced in the jungle, so we're giving her a jungle-focused buff to help bring her back without meaningfully juicing mid lane.",
+      "summary": "Another class that's underrepresented in the jungle is assassins.",
       "abilities": [
         {
           "ability": "Q",
@@ -381,7 +381,7 @@
     {
       "championId": "Senna",
       "classification": "nerf",
-      "summary": "Senna players have moved over to a much stronger Bot lane farming pattern, so we're softening her farming and Shiv synergy while also tuning her DPS around having access to more souls. The Doran's Helm nerf should do the rest of the work necessary to get her to the right power level between roles.",
+      "summary": "Senna players have moved over to a much stronger Bot lane farming pattern, so we're softening her farming and Shiv synergy while also tuning her DPS around having access to more souls.",
       "abilities": [
         {
           "ability": "passive",

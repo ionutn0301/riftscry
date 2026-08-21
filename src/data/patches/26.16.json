@@ -4,12 +4,12 @@
   "assetVersion": "16.16.1",
   "releaseDate": "2026-08-11",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
-  "ingestedAt": "2026-08-21T20:38:07.088Z",
+  "ingestedAt": "2026-08-21T21:18:48.388Z",
   "champions": [
     {
       "championId": "Azir",
       "classification": "buff",
-      "summary": "We are continuing to monitor Azir, especially as players continue to pick up Press The Attack as his optimal keystone. For now however, we are going to give him a moderate buff to his laning to help him out.",
+      "summary": "We are continuing to monitor Azir, especially as players continue to pick up Press The Attack as his optimal keystone.",
       "abilities": [
         {
           "ability": "Q",
@@ -29,7 +29,7 @@
     {
       "championId": "Belveth",
       "classification": "adjustment",
-      "summary": "Bel'Veth has come out with the scaling curve of Kayle and Aurelion Sol. Her power is rapidly growing across all skill brackets and given her early game is already quite weak, we've opted to make her late game a bit less sharp.",
+      "summary": "Bel'Veth has come out with the scaling curve of Kayle and Aurelion Sol.",
       "abilities": [
         {
           "ability": "base",
@@ -67,7 +67,7 @@
     {
       "championId": "Camille",
       "classification": "adjustment",
-      "summary": "With roaming supports all the rage, Camille has been queen. We are simultaneously looking to nerf her support roaming power while keeping or (hopefully) actually buffing her top lane. This means trading the raw all in power behind her passive shield early game in favor of significantly lowered cooldowns for better repeatable trading.",
+      "summary": "With roaming supports all the rage, Camille has been queen.",
       "abilities": [
         {
           "ability": "base",
@@ -127,7 +127,7 @@
     {
       "championId": "Gwen",
       "classification": "buff",
-      "summary": "Gwen has remained slightly weak since her nerfs earlier this year. We are buffing her passive sustain back up towards where it has previously been, which should help her be a powerful threat in some of her stronger matchups without making her feel uncounterable.",
+      "summary": "Gwen has remained slightly weak since her nerfs earlier this year.",
       "abilities": [
         {
           "ability": "passive",
@@ -147,7 +147,7 @@
     {
       "championId": "Kennen",
       "classification": "buff",
-      "summary": "With the reshape to Hextech Rocketbelt to prevent it from becoming the ubiquitous mage legendary, Kennen came out behind the pack. We are buffing him to compensate, making sure he is rewarded well when he does find the right flanks for those huge team-deleting ults.",
+      "summary": "With the reshape to Hextech Rocketbelt to prevent it from becoming the ubiquitous mage legendary, Kennen came out behind the pack.",
       "abilities": [
         {
           "ability": "R",
@@ -181,7 +181,7 @@
     {
       "championId": "Nasus",
       "classification": "adjustment",
-      "summary": "Nasus has been a distinct jungle pick that we think is pretty exciting to see; however his top lane has lagged very far behind. We are adjusting his Q stack generation to bring these two roles closer to each other in raw power.",
+      "summary": "Nasus has been a distinct jungle pick that we think is pretty exciting to see; however his top lane has lagged very far behind.",
       "abilities": [
         {
           "ability": "Q",
@@ -201,7 +201,7 @@
     {
       "championId": "Poppy",
       "classification": "adjustment",
-      "summary": "Poppy is meant to be a tank whose gameplay has leaned too far into early game snowball fighter, to the point she's choosing Hail of Blades and Sundered Sky over more tank runes and items. We're looking to shift power out of her early game AD fighter pattern and enable her tank pattern by significantly increasing her scaling with durability and giving her enough mana growth that sustained combat doesn't immediately run her out of resources.",
+      "summary": "Poppy is meant to be a tank whose gameplay has leaned too far into early game snowball fighter, to the point she's choosing Hail of Blades and Sundered Sky over more tank runes and items.",
       "abilities": [
         {
           "ability": "base",

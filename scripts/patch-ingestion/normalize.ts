@@ -26,6 +26,10 @@ export type PatchOverride = {
   replaceChampions?: ChampionChange[];
   addChampions?: ChampionChange[];
   removeChampions?: string[];
+  /** Match by name — corrections for parser residue in items/systems. */
+  removeItems?: string[];
+  removeSystems?: string[];
+  replaceSystems?: SystemChange[];
   addHotfixes?: Hotfix[];
 };
 
@@ -80,6 +84,19 @@ function canonicalName(name: string): string {
   return name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]/g, "");
 }
 
+/**
+ * Compliance: we keep only a concise excerpt of Riot's context paragraph —
+ * the first sentence, capped — and link to the source for the rest. Full
+ * prose is never republished (spec §14, docs/DATA.md).
+ */
+export function summarizeContext(text: string | undefined): string | undefined {
+  if (!text) return undefined;
+  const clean = text.trim();
+  const firstSentence = clean.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? clean;
+  if (firstSentence.length <= 220) return firstSentence;
+  return `${firstSentence.slice(0, 200).replace(/\s+\S*$/, "")}…`;
+}
+
 function toChampion(section: RawSection, championIds: Record<string, string>): ChampionChange {
   const canon = new Map(Object.entries(championIds).map(([n, id]) => [canonicalName(n), id]));
   const championId = canon.get(canonicalName(section.name));
@@ -97,7 +114,7 @@ function toChampion(section: RawSection, championIds: Record<string, string>): C
   return {
     championId,
     classification: rollupChampion(allDirections),
-    summary: section.summary,
+    summary: summarizeContext(section.summary),
     abilities,
   };
 }
@@ -147,12 +164,28 @@ export function normalizePatch(
     });
   }
 
+  let items = raw.items.map(toItem);
+  if (override?.removeItems) {
+    const remove = new Set(override.removeItems);
+    items = items.filter((i) => !remove.has(i.name));
+  }
+
+  let systems = raw.systems.map(toSystem);
+  if (override?.removeSystems) {
+    const remove = new Set(override.removeSystems);
+    systems = systems.filter((s) => !remove.has(s.name));
+  }
+  if (override?.replaceSystems) {
+    const byName = new Map(override.replaceSystems.map((s) => [s.name, s]));
+    systems = systems.map((s) => byName.get(s.name) ?? s);
+  }
+
   const patch: Patch = {
     schemaVersion: 1,
     ...meta,
     champions,
-    items: raw.items.map(toItem),
-    systems: raw.systems.map(toSystem),
+    items,
+    systems,
     ...(override?.addHotfixes ? { hotfixes: override.addHotfixes } : {}),
   };
   return validatePatch(patch);

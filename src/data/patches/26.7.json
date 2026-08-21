@@ -4,12 +4,12 @@
   "assetVersion": "16.7.1",
   "releaseDate": "2026-03-31",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-7-notes/",
-  "ingestedAt": "2026-08-21T20:38:06.963Z",
+  "ingestedAt": "2026-08-21T21:18:48.274Z",
   "champions": [
     {
       "championId": "Cassiopeia",
       "classification": "buff",
-      "summary": "We're looking to give some mid-favored love to Cass, who hasn't found her… uh… footing in the new season. By bumping up her base mana and empowered E scaling, she should feel a bit more freedom to angle for trades as well as be more rewarded when she finds them.",
+      "summary": "We're looking to give some mid-favored love to Cass, who hasn't found her… uh… footing in the new season.",
       "abilities": [
         {
           "ability": "base",
@@ -42,7 +42,7 @@
     {
       "championId": "Graves",
       "classification": "nerf",
-      "summary": "Graves has seen a ton of play since his True Grit buffs, and even though he's found pretty solid success with more durable builds, players are understandably still chasing those high roll crits to great results. Rather than rolling back his E buffs or pushing him further towards one build, we figured the best thing we can do is make his early clear and skirmishing a bit less consistent by dusting off an old wrench we haven't used in half a decade, though we are keeping an eye on his 4-digit autos!",
+      "summary": "Graves has seen a ton of play since his True Grit buffs, and even though he's found pretty solid success with more durable builds, players are understandably still chasing those high roll crits to great results.",
       "abilities": [
         {
           "ability": "base",
@@ -62,7 +62,7 @@
     {
       "championId": "Kalista",
       "classification": "adjustment",
-      "summary": "Kalista and her players have been patiently awaiting buffs, and we're also ready to see her unleash her wrath once again. This change is aimed at making her hit harder when she finds an opening to stack up her spears.",
+      "summary": "Kalista and her players have been patiently awaiting buffs, and we're also ready to see her unleash her wrath once again.",
       "abilities": [
         {
           "ability": "E",
@@ -82,7 +82,7 @@
     {
       "championId": "Karma",
       "classification": "nerf",
-      "summary": "Karma has been a force to be reckoned with in high-skill support play for some time now. We think Karma's strong early game is healthy, but we're tuning down her midgame shields to be less inspiring, as it's the only ability actually worth empowering and her enchanter builds far outperform her mage ones. This change should bring her Mantra options closer to equilibrium!",
+      "summary": "Karma has been a force to be reckoned with in high-skill support play for some time now.",
       "abilities": [
         {
           "ability": "R",
@@ -102,7 +102,7 @@
     {
       "championId": "Nami",
       "classification": "adjustment",
-      "summary": "We're nerfing another one of the most powerful supports to bring her in line with other options. Nami often excels in extremely aggressive early lanes, utilizing W self cast to bounce damage to enemies and getting high value out of both effects in a single cast. Now she will need to be more intentional about whether she wants the heal or the damage more.",
+      "summary": "We're nerfing another one of the most powerful supports to bring her in line with other options.",
       "abilities": [
         {
           "ability": "W",
@@ -122,7 +122,7 @@
     {
       "championId": "Ornn",
       "classification": "nerf",
-      "summary": "Ornn has been a standout among top lane tanks across all player skill levels, helped by the new top lane role quest accelerating his access to Masterworks. We believe he has an appropriate amount of CC and durability, but we're lowering his personal damage threat, especially against other high health champions.",
+      "summary": "Ornn has been a standout among top lane tanks across all player skill levels, helped by the new top lane role quest accelerating his access to Masterworks.",
       "abilities": [
         {
           "ability": "W",
@@ -142,7 +142,7 @@
     {
       "championId": "Rell",
       "classification": "buff",
-      "summary": "In addition to our nerfs to Karma and Nami,, we're buffing one of our tank supports. Our hope here is to provide our favorite iron steed rider with a buff that drives excitement during her high points, so we're making the horse go fast and further rewarding her clutch engages.",
+      "summary": "In addition to our nerfs to Karma and Nami,, we're buffing one of our tank supports.",
       "abilities": [
         {
           "ability": "E",
@@ -175,13 +175,13 @@
     {
       "championId": "Shyvana",
       "classification": "adjustment",
-      "summary": "Ultimate haste no longer provides passive 0.015 passive fury generation per second but instead amplifies all fury generation by 1% per 1 ultimate haste. This should make ultimate haste function for Shyvana more similarly to how ability haste does for normal abilities. We also micropatched some Sylas interactions last week. He was dealing too much damage when stealing Shyvana's Q by applying her on-hit damage twice and essentially double-dipping on his total attack damage vs. his primary target.",
+      "summary": "Ultimate haste no longer provides passive 0.015 passive fury generation per second but instead amplifies all fury generation by 1% per 1 ultimate haste.",
       "abilities": []
     },
     {
       "championId": "Singed",
       "classification": "adjustment",
-      "summary": "Singed has been a big winner this season with free teleport, experience, Protoplasm, homeguards, weaker grubs…the list is almost as long as the number of ingredients in his Insanity Potion! Instead of making his early game even more vulnerable, we want to make Singed a bit more reliant on his own accumulated gold rather than his experience and free stats, especially now that he's also doing a better job tanking damage.",
+      "summary": "Singed has been a big winner this season with free teleport, experience, Protoplasm, homeguards, weaker grubs…the list is almost as long as the number of ingredients in his Insanity Potion!",
       "abilities": [
         {
           "ability": "R",
@@ -201,7 +201,7 @@
     {
       "championId": "Veigar",
       "classification": "nerf",
-      "summary": "Veigar has often been at the threshold of being considered overpowered in bot lane, and he's been maintaining enough of a play rate there that it's time to step in. One thing different between bot Veigar and mid Veigar is his scaling nature. In bot, he's actually even more of a snowball champion than in mid where his win rate steadily climbs over game time. So we're blunting that early-mid spike with a cooldown nerf that his mid players aren't as reliant upon and can more easily outscale.",
+      "summary": "Veigar has often been at the threshold of being considered overpowered in bot lane, and he's been maintaining enough of a play rate there that it's time to step in.",
       "abilities": [
         {
           "ability": "R",

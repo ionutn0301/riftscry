@@ -40,10 +40,13 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
   const [filters, setFilters] = useState<PatchFilters>(EMPTY_FILTERS);
   const [ready, setReady] = useState(false);
 
-  // Hydrate from the URL once.
+  // Hydrate from the URL, and follow browser history navigation.
   useEffect(() => {
     setFilters(parseFilters(window.location.search));
     setReady(true);
+    const onPop = () => setFilters(parseFilters(window.location.search));
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
 
   const { changes, roles, meta } = useMemo(() => {
@@ -80,8 +83,8 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
     if (count) count.textContent = String(shown);
 
     const qs = serializeFilters(filters);
-    const next = qs ? `?${qs}` : window.location.pathname;
     if (window.location.search !== (qs ? `?${qs}` : "")) {
+      const next = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
       window.history.replaceState(null, "", next);
     }
   }, [ready, filters, pool, changes, roles, meta]);

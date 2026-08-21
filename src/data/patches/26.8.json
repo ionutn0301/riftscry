@@ -4,12 +4,12 @@
   "assetVersion": "16.8.1",
   "releaseDate": "2026-04-14",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-8-notes/",
-  "ingestedAt": "2026-08-21T20:38:06.974Z",
+  "ingestedAt": "2026-08-21T21:18:48.283Z",
   "champions": [
     {
       "championId": "DrMundo",
       "classification": "nerf",
-      "summary": "Dr. Mundo has been able to more consistently reach his high points in the jungle where he is less concerned about his slow early game. We are looking to curb some of his clear speed to make sure he can’t go where he pleases too quickly and requires some more time to scale up.",
+      "summary": "Dr.",
       "abilities": [
         {
           "ability": "Q",
@@ -42,7 +42,7 @@
     {
       "championId": "Hwei",
       "classification": "buff",
-      "summary": "Hwei has remained on the weaker side since the nerfs to his waveclear last year, and we are fixing a bug that we expect to be a further minor nerf. We still believe those waveclear nerfs to be correct as we want Hwei League's coolest combo mage, not just a walking waveclear machine. Therefore, we’re buffing his combo casting output up through his passive.",
+      "summary": "Hwei has remained on the weaker side since the nerfs to his waveclear last year, and we are fixing a bug that we expect to be a further minor nerf.",
       "abilities": [
         {
           "ability": "passive",
@@ -72,7 +72,7 @@
     {
       "championId": "Karma",
       "classification": "nerf",
-      "summary": "Last patch we made some changes to Karma to reduce how generically powerful she was by reducing her midgame shield strength. Unfortunately those weren’t as effective as we had intended so we’re taking another swing at Karma by directly targeting her E power and reducing her base stats a tad so she is more reliant on skillful and intentional ability usage.",
+      "summary": "Last patch we made some changes to Karma to reduce how generically powerful she was by reducing her midgame shield strength.",
       "abilities": [
         {
           "ability": "base",
@@ -112,7 +112,7 @@
     {
       "championId": "Lillia",
       "classification": "buff",
-      "summary": "Our favorite bouncing deer has been a bit less than enthusiastic to prance from camp to camp as of late, it’s a scary jungle out there. We’re hoping to give Lillia players some more courage to bring her into the jungle by increasing her ability to have her high move speed translate into a faster clear.",
+      "summary": "Our favorite bouncing deer has been a bit less than enthusiastic to prance from camp to camp as of late, it’s a scary jungle out there.",
       "abilities": [
         {
           "ability": "passive",
@@ -132,7 +132,7 @@
     {
       "championId": "Lucian",
       "classification": "buff",
-      "summary": "Lucian has a unique role as an AD Carry that dashes in, out of, and around fights which is why many of his players enjoy him. Unfortunately, he hasn’t been doing that as effectively recently so we’re looking to remedy that. To get there, we’re lowering both the cooldown and mana cost of his dashes.",
+      "summary": "Lucian has a unique role as an AD Carry that dashes in, out of, and around fights which is why many of his players enjoy him.",
       "abilities": [
         {
           "ability": "E",
@@ -159,7 +159,7 @@
     {
       "championId": "Mel",
       "classification": "nerf",
-      "summary": "Since our recent adjustments to Mel, she’s been hitting too hard with her initial Q missile whether ahead or behind, even as opponents dodge the rest of the spell, so we’re looking to take her damage down a notch. We’re also aiming to reduce how frustrating her W can be by lowering the bonus mobility she gets and the spell’s uptime, with the movespeed now matching her shield and reflect duration.",
+      "summary": "Since our recent adjustments to Mel, she’s been hitting too hard with her initial Q missile whether ahead or behind, even as opponents dodge the rest of the spell, so we’re looking to take her damage down a notch.",
       "abilities": [
         {
           "ability": "Q",
@@ -199,7 +199,7 @@
     {
       "championId": "TahmKench",
       "classification": "nerf",
-      "summary": "As a champ in both Top and Support, Tahm Kench requires periodic maintenance as the meta shifts to ensure both roles of his roles are equally supported. In this case, Dusk and Dawn's addition to the game this season has shifted this balance in favor of top lane, so we’re adjusting how his passive scales to help balance him out.",
+      "summary": "As a champ in both Top and Support, Tahm Kench requires periodic maintenance as the meta shifts to ensure both roles of his roles are equally supported.",
       "abilities": [
         {
           "ability": "passive",
@@ -219,7 +219,7 @@
     {
       "championId": "Yuumi",
       "classification": "adjustment",
-      "summary": "We’re implementing a couple bugfixes to Yuumi’s ultimate, one of which will sometimes result in the magical cat outputting significantly more healing than she may have grown used to. As such, we’re throwing her a FISH by increasing her base healing and best friend healing to provide a stronger baseline effect.",
+      "summary": "We’re implementing a couple bugfixes to Yuumi’s ultimate, one of which will sometimes result in the magical cat outputting significantly more healing than she may have grown used to.",
       "abilities": [
         {
           "ability": "R",
@@ -274,7 +274,7 @@
     {
       "championId": "Zyra",
       "classification": "adjustment",
-      "summary": "Since the dawn of time Zyra’s have been accidentally putting a point into W and effectively doing nothing level 1. Well no more! We’re adding a small QoL change so Zyra can no longer put her first skill point into W to prevent this type of situation from being a thorn in your side and mental blooming.",
+      "summary": "Since the dawn of time Zyra’s have been accidentally putting a point into W and effectively doing nothing level 1.",
       "abilities": [
         {
           "ability": "W",

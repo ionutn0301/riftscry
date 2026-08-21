@@ -130,6 +130,41 @@ it("replaces a champion wholesale via override", () => {
   expect(p.champions[0]!.classification).toBe("buff");
 });
 
+it("truncates Riot context to a concise first-sentence summary", () => {
+  const long =
+    "Ever since the loss of Mobility Boots, Alistar has felt constrained. " +
+    "To the point he's failing to compete in the current meta even though it favors roaming supports.";
+  const r: RawPatch = { ...raw, champions: [{ ...raw.champions[0]!, summary: long }] };
+  const summary = normalizePatch(r, meta, ids).champions[0]!.summary!;
+  expect(summary).toBe("Ever since the loss of Mobility Boots, Alistar has felt constrained.");
+});
+
+it("hard-caps a single overlong sentence", () => {
+  const long = "A ".repeat(200) + "end.";
+  const r: RawPatch = { ...raw, champions: [{ ...raw.champions[0]!, summary: long }] };
+  const summary = normalizePatch(r, meta, ids).champions[0]!.summary!;
+  expect(summary.length).toBeLessThanOrEqual(221);
+  expect(summary.endsWith("…")).toBe(true);
+});
+
+it("removes and replaces systems via override", () => {
+  const r: RawPatch = {
+    ...raw,
+    systems: [
+      ...raw.systems,
+      { name: "Parser Residue", blocks: [{ header: "General", lines: [{ label: "X", text: "junk" }] }] },
+    ],
+  };
+  const p = normalizePatch(r, meta, ids, {
+    removeSystems: ["Parser Residue"],
+    replaceSystems: [
+      { name: "Fleet Footwork", classification: "system", changes: [{ kind: "prose", label: "Note", text: "Rewritten." }] },
+    ],
+  });
+  expect(p.systems.map((s) => s.name)).toEqual(["Fleet Footwork"]);
+  expect(p.systems[0]!.changes[0]).toMatchObject({ text: "Rewritten." });
+});
+
 it("adds hotfixes via override", () => {
   const p = normalizePatch(raw, meta, ids, {
     addHotfixes: [{ date: "2026-08-13", description: "Azir hotfix.", championIds: ["Azir"] }],

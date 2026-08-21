@@ -71,6 +71,14 @@ Rules that keep it honest:
 addHotfixes`). A wrong classification or a missed change is a small data PR — never a
 parser patch. See [CONTRIBUTING.md](../CONTRIBUTING.md) for a worked example.
 
+## Hotfix markers
+
+The schema, override path (`addHotfixes`), and patch-page UI all support mid-patch
+hotfix entries, but **no hotfixes are curated yet**: RiftScry only records data it can
+trace to a source, and Riot does not publish hotfixes in the patch-notes pages this
+pipeline ingests. Adding one is a five-line override PR with the source in the
+description — see [CONTRIBUTING.md](../CONTRIBUTING.md).
+
 ## Provenance guarantees
 
 - Every patch file records its official `sourceUrl`, `releaseDate`, and `ingestedAt`.

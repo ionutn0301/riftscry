@@ -13,7 +13,8 @@ test.describe("keyboard-only navigation", () => {
 
   test("palette: open with Ctrl+K, arrow to a result, Enter navigates", async ({ page }) => {
     await page.goto("/patch/26.16");
-    await page.waitForTimeout(1200); // client:idle hydration
+    // client:idle island is hydrated once its ssr attribute drops.
+    await page.waitForSelector("astro-island[component-url*='CommandPalette']:not([ssr])", { state: "attached" });
     await page.keyboard.press("Control+k");
     const input = page.locator("[cmdk-input]");
     await expect(input).toBeVisible();
@@ -25,7 +26,7 @@ test.describe("keyboard-only navigation", () => {
 
   test("palette closes on Escape and returns focus to the page", async ({ page }) => {
     await page.goto("/");
-    await page.waitForTimeout(1200);
+    await page.waitForSelector("astro-island[component-url*='CommandPalette']:not([ssr])", { state: "attached" });
     await page.keyboard.press("Control+k");
     await expect(page.locator("[cmdk-input]")).toBeVisible();
     await page.keyboard.press("Escape");

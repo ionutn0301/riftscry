@@ -68,6 +68,21 @@ it("skips out-of-scope sections but reports them", () => {
   expect(report.skippedSections).toMatchObject({ "patch-aram:-mayhem": 1 });
 });
 
+it("colon-suffixed h4s extend the current headerless section as sub-blocks", () => {
+  const questHtml = `
+    <h2 id="patch-role-quests">Role Quests</h2>
+    <div class="patch-change-block">
+      <h4 class="change-detail-title">Top Lane</h4>
+      <ul><li>Gold from minions reduced by 25% outside of top lane</li></ul>
+      <h4 class="change-detail-title">Quest Progress:</h4>
+      <ul><li><strong>Points required</strong>: 1200 &rArr; <strong>1000</strong></li></ul>
+    </div>`;
+  const { raw } = parsePatchHtml(questHtml);
+  expect(raw.systems).toHaveLength(1);
+  expect(raw.systems[0]!.name).toBe("Top Lane");
+  expect(raw.systems[0]!.blocks.map((b) => b.header)).toEqual(["General", "Quest Progress"]);
+});
+
 it("reports coverage counts", () => {
   const { report } = parsePatchHtml(html);
   expect(report.championCount).toBe(2);

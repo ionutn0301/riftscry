@@ -4,12 +4,12 @@
   "assetVersion": "16.9.1",
   "releaseDate": "2026-04-28",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-9-notes/",
-  "ingestedAt": "2026-08-21T20:38:06.993Z",
+  "ingestedAt": "2026-08-21T21:18:48.297Z",
   "champions": [
     {
       "championId": "Ambessa",
       "classification": "nerf",
-      "summary": "Ambessa has carried the Medarda legacy a bit too well. Her brutality and fantasy has resonated with her mains, but we believe her ult has felt slightly fast to the point that players hit by it often don't have clarity on what happened. We're extending her cast time to open up clearer counterplay, and will be keeping a watchful eye on opportunities for follow-up work.",
+      "summary": "Ambessa has carried the Medarda legacy a bit too well.",
       "abilities": [
         {
           "ability": "R",
@@ -29,7 +29,7 @@
     {
       "championId": "Briar",
       "classification": "nerf",
-      "summary": "Briar has one of the steepest mastery curves in League. However, as time has gone on, more and more players have ended up at the high end of that curve and have been finding a lot of success. So we're looking to nerf a bit of her survivability, but keep her ability to kill a target.",
+      "summary": "Briar has one of the steepest mastery curves in League.",
       "abilities": [
         {
           "ability": "base",
@@ -49,7 +49,7 @@
     {
       "championId": "Ezreal",
       "classification": "adjustment",
-      "summary": "We want to bring back some playstyles that have been lost to the sands of time. First up on that list is AP Ezreal. Bring out your global snipes—there's a lot of good mages out there but none of them are this skillful!",
+      "summary": "We want to bring back some playstyles that have been lost to the sands of time.",
       "abilities": [
         {
           "ability": "Q",
@@ -102,7 +102,7 @@
     {
       "championId": "Gragas",
       "classification": "adjustment",
-      "summary": "Gragas top is most impacted by the removal of Phase Rush, and only time will tell whether Grasp or Comet comes out on top. As we wait to see how his laning shakes out, this change should let Gragas players better frontline for their teams, and have a bigger impact in the late-game where they struggle most.",
+      "summary": "Gragas top is most impacted by the removal of Phase Rush, and only time will tell whether Grasp or Comet comes out on top.",
       "abilities": [
         {
           "ability": "W",
@@ -122,7 +122,7 @@
     {
       "championId": "Kennen",
       "classification": "adjustment",
-      "summary": "Our second lost playstyle is AD Kennen. In this case, we're adding critical strike synergy to Kennen's W and E. While a more attack speed focused on-hit hybrid build may stand out as a more intuitive choice for an auto-attack focused Kennen, we actually think it would spill over too hard into his standard AP builds and want to avoid adjustments to his typical playstyle just to enable this one.",
+      "summary": "Our second lost playstyle is AD Kennen.",
       "abilities": [
         {
           "ability": "W",
@@ -156,7 +156,7 @@
     {
       "championId": "Shyvana",
       "classification": "adjustment",
-      "summary": "With Shyvana having been out for a few patches, we've taken stock of where she's landed and identified two areas to address: broadening bruiser item viability and sharpening the distinction between AD and AP builds. On the bruiser side, we've reduced the emphasis on pure dps items like Kraken Slayer. Adjustments to her base stats, Q and W create more room for Sheen, ability haste, and health to meaningfully contribute to her kit. For build differentiation, AD Shyvana looks to engage in more sustained combat through auto attacks followed by big Q hits, using her W for sustain and sticking power and E for supplementary chase power. AP Shyvana, by contrast, centers damage around R and E, with W existing as a way to weave in and out of combat.",
+      "summary": "With Shyvana having been out for a few patches, we've taken stock of where she's landed and identified two areas to address: broadening bruiser item viability and sharpening the distinction between AD and AP builds.",
       "abilities": [
         {
           "ability": "base",
@@ -295,7 +295,7 @@
     {
       "championId": "TahmKench",
       "classification": "buff",
-      "summary": "Last patch's adjustment last patch ended up a very slight nerf (less than .5%) for both top and support. So we're making some support-focused improvements to compensate.",
+      "summary": "Last patch's adjustment last patch ended up a very slight nerf (less than .5%) for both top and support.",
       "abilities": [
         {
           "ability": "E",
@@ -328,7 +328,7 @@
     {
       "championId": "Taliyah",
       "classification": "adjustment",
-      "summary": "Taliyah is in the same spot as Gragas (RIP Phase Rush), except she was also taken down a notch from the pro mid meta in her last nerf. We don't expect her to be able to utilize the changes as well as a lot of her competition, so we're walking back our last hit to her, while also making sure she doesn't approach sub-2:30 clears.",
+      "summary": "Taliyah is in the same spot as Gragas (RIP Phase Rush), except she was also taken down a notch from the pro mid meta in her last nerf.",
       "abilities": [
         {
           "ability": "Q",
@@ -355,7 +355,7 @@
     {
       "championId": "Teemo",
       "classification": "adjustment",
-      "summary": "Our third lost playstyle—On-hit-focused Teemo builds have slowly fallen out of vogue as he's been tuned around Malignance and Liandries. We are adding bonus AD ratios to Teemo's E to open up itemization options for auto-attack builds featuring hybrid items like rageblade and the reworked Statikk Shiv.",
+      "summary": "Our third lost playstyle—On-hit-focused Teemo builds have slowly fallen out of vogue as he's been tuned around Malignance and Liandries.",
       "abilities": [
         {
           "ability": "E",
@@ -378,7 +378,7 @@
     {
       "championId": "Udyr",
       "classification": "buff",
-      "summary": "Currently, we feel that Udyr's AD Q builds are extremely one note—which makes sense when you look at their scaling. We want to broaden his AD Q bruiser builds by shifting some of his AD ratios out of his Q and into W and E so the stance swapper has more than one stance.",
+      "summary": "Currently, we feel that Udyr's AD Q builds are extremely one note—which makes sense when you look at their scaling.",
       "abilities": [
         {
           "ability": "Q",
@@ -456,7 +456,7 @@
     {
       "championId": "Warwick",
       "classification": "adjustment",
-      "summary": "Our favorite wolf-boy Warwick has been struggling to find his place over game time. We are looking to soften the blow of his transition into the late game by bringing up some of his scaling.",
+      "summary": "Our favorite wolf-boy Warwick has been struggling to find his place over game time.",
       "abilities": [
         {
           "ability": "other",
@@ -476,7 +476,7 @@
     {
       "championId": "XinZhao",
       "classification": "nerf",
-      "summary": "Our fourth lost playstyle is centered around Xin Zhao—particularly attack speed and AP Xin Zhao. Over the years Xin has moved off of auto attack builds solidly into bruiser AD-caster builds buying items like Sundered Sky or Black Cleaver. We think more attack speed-centric Xin Zhao builds offered an enjoyable melee fighter experience, and we want to bring it back. Whether it's full AP builds revolving around drain tanking, heavy attack speed on-hit carry builds, or just some minor pivots into Stridebreaker, Titanic Hydra, and Triforce, we want to see a bit more build options.",
+      "summary": "Our fourth lost playstyle is centered around Xin Zhao—particularly attack speed and AP Xin Zhao.",
       "abilities": [
         {
           "ability": "other",
@@ -529,7 +529,7 @@
     {
       "championId": "Zeri",
       "classification": "adjustment",
-      "summary": "Zeri's changes have pushed her over time to become more of a bursty assassin than the fantasy that initially called to many of her players. By moving power from her burst and late-game DPS towards her mobility and early laning, these changes should allow Zeri to shine once again as the zappy, speedy legend she is (while still doing ADC damage!)",
+      "summary": "Zeri's changes have pushed her over time to become more of a bursty assassin than the fantasy that initially called to many of her players.",
       "abilities": [
         {
           "ability": "other",

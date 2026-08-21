@@ -124,19 +124,29 @@ function parseBlock(
 
   // Item/system-style block: no h3 — each h4 IS a section name
   // (e.g. 26.4 items: <h4>Hexoptics C44</h4><blockquote/><ul/>).
+  // A colon-suffixed h4 ("Quest Progress:") is a SUB-header of the current
+  // section, not a new one (observed in 26.1's lane-quest systems).
   const sections: RawSection[] = [];
   let current: RawSection | null = null;
+  let currentBlock: RawBlock | null = null;
   for (const el of block.querySelectorAll("h4, ul, blockquote")) {
     if (el.tagName === "H4") {
-      current = { name: cleanText(el), blocks: [{ header: "General", lines: [] }] };
-      sections.push(current);
+      const text = cleanText(el);
+      if (/:$/.test(text) && current) {
+        currentBlock = { header: text.replace(/:$/, ""), lines: [] };
+        current.blocks.push(currentBlock);
+      } else {
+        currentBlock = { header: "General", lines: [] };
+        current = { name: text.replace(/:$/, ""), blocks: [currentBlock] };
+        sections.push(current);
+      }
     } else if (el.tagName === "BLOCKQUOTE") {
       if (current && !current.summary) current.summary = cleanText(el);
     } else {
-      if (!current) continue;
+      if (!currentBlock) continue;
       for (const li of el.querySelectorAll("li")) {
         const line = parseLine(li, report);
-        if (line) current.blocks[0]!.lines.push(line);
+        if (line) currentBlock.lines.push(line);
       }
     }
   }

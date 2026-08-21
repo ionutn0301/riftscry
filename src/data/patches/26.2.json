@@ -4,12 +4,12 @@
   "assetVersion": "16.2.1",
   "releaseDate": "2026-01-21",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-2-notes/",
-  "ingestedAt": "2026-08-21T20:38:06.064Z",
+  "ingestedAt": "2026-08-21T21:18:47.575Z",
   "champions": [
     {
       "championId": "Aatrox",
       "classification": "buff",
-      "summary": "Aatrox has struggled to find a place on the Rift in the new season with split pushing on the rise and fewer chances to flex his team fighting strengths. We're giving him some additional power this patch, primarily in the jungle, where his growing audience has been kneecapped, as well as in the top lane where he could use more ways to benefit from experience. We hope this satiates Aatrox players, especially those with Endless Hunger.",
+      "summary": "Aatrox has struggled to find a place on the Rift in the new season with split pushing on the rise and fewer chances to flex his team fighting strengths.",
       "abilities": [
         {
           "ability": "passive",
@@ -42,7 +42,7 @@
     {
       "championId": "Ashe",
       "classification": "buff",
-      "summary": "Ashe is underperforming in the new season so we’re here to bring her back up near her former power level. We like that she has a strong affinity for buying attack speed, so we’re just making those purchases multiply a little bit harder.",
+      "summary": "Ashe is underperforming in the new season so we’re here to bring her back up near her former power level.",
       "abilities": [
         {
           "ability": "base",
@@ -62,7 +62,7 @@
     {
       "championId": "Gwen",
       "classification": "nerf",
-      "summary": "Gwen jungle has skyrocketed in both pickrate and winrate. While we're excited to see her loving the new season and snipping from dusk til dawn, we need to make sure she's not turning all opponents (especially jungle camps) into paper.",
+      "summary": "Gwen jungle has skyrocketed in both pickrate and winrate.",
       "abilities": [
         {
           "ability": "passive",
@@ -82,7 +82,7 @@
     {
       "championId": "Jayce",
       "classification": "nerf",
-      "summary": "Jayce jungle (AKA Jungle Jayce) has become extremely popular and is also much too strong. One of those two things is awesome and the other isn’t. We’d like to retain JJ as a viable option in the jungle, but without him dominating the competition. So we’re delivering a light nerf that’s intended to bring him more in line with other junglers.",
+      "summary": "Jayce jungle (AKA Jungle Jayce) has become extremely popular and is also much too strong.",
       "abilities": [
         {
           "ability": "Q",
@@ -102,7 +102,7 @@
     {
       "championId": "Lillia",
       "classification": "nerf",
-      "summary": "Lillia has been in a dream since the changes to Rift. Unfortunately we need to wake her up as it’s become a nightmare for her opponents. We want her to maintain her spot as our premier in-and-out skirmisher in the jungle, but without her prancing out of control. We are looking to nerf her ability to stay topped up as well as bring down some of her late game damage.",
+      "summary": "Lillia has been in a dream since the changes to Rift.",
       "abilities": [
         {
           "ability": "passive",
@@ -135,7 +135,7 @@
     {
       "championId": "Malphite",
       "classification": "nerf",
-      "summary": "Malphite’s been a frontrunner on the Rift for a while, both in top and in the jungle. We’re actually very happy that he’s found a real audience in the jungle! That said, he’s still overperforming, so we need to bring him down now while still leaving him with two roles to play. To do that, we’re reducing some of his trading and clearing damage while retaining his high durability to physical damage and strong engage power. We’re also hitting jungle a little more as it’s meant to be slightly weaker than his top lane, as opposed to slightly stronger, which is currently the case.",
+      "summary": "Malphite’s been a frontrunner on the Rift for a while, both in top and in the jungle.",
       "abilities": [
         {
           "ability": "W",
@@ -188,7 +188,7 @@
     {
       "championId": "MasterYi",
       "classification": "buff",
-      "summary": "Master Yi has been struggling as a result of the changes in the new season. We’re looking to return some of his power so that he can keep up with other junglers and better live up to his full hyper carry potential.",
+      "summary": "Master Yi has been struggling as a result of the changes in the new season.",
       "abilities": [
         {
           "ability": "base",
@@ -221,7 +221,7 @@
     {
       "championId": "Nunu",
       "classification": "nerf",
-      "summary": "Nunu & Willump are devouring the competition in the new season, so we’re here to bring them back to a fairer level of power. To do that, we’re reducing a mix of the PvP and PvE power out in their kits to give opponents a fighting chance.",
+      "summary": "Nunu & Willump are devouring the competition in the new season, so we’re here to bring them back to a fairer level of power.",
       "abilities": [
         {
           "ability": "Q",
@@ -267,7 +267,7 @@
     {
       "championId": "Sivir",
       "classification": "nerf",
-      "summary": "Sivir has become an extremely dominant ADC pick, regardless of whether or not she buys Essence Reaver, so it’s time to bring her down a notch. Since she has very strong wave control and great damage scaling, we’re looking to bring down her top end a little.",
+      "summary": "Sivir has become an extremely dominant ADC pick, regardless of whether or not she buys Essence Reaver, so it’s time to bring her down a notch.",
       "abilities": [
         {
           "ability": "base",
@@ -294,7 +294,7 @@
     {
       "championId": "Smolder",
       "classification": "nerf",
-      "summary": "As expected Smolder has become much more powerful with the new Essence Reaver and increased minion counts. Since we’ve tuned our systems to our liking for now, it’s time to take stock of individual champions, Smolder being one. We want to make sure Smolder’s strong late-game damage has durability tradeoffs, even when buying the occasional HP item.",
+      "summary": "As expected Smolder has become much more powerful with the new Essence Reaver and increased minion counts.",
       "abilities": [
         {
           "ability": "base",
@@ -314,7 +314,7 @@
     {
       "championId": "Taliyah",
       "classification": "buff",
-      "summary": "Taliyah’s been missing from the jungle as of late and the gameplay changes for the new season didn’t help her, quite the opposite actually. To that end we want to get her rocking and rolling in the jungle again so we’re buffing up her mid game clear speed to help her out.",
+      "summary": "Taliyah’s been missing from the jungle as of late and the gameplay changes for the new season didn’t help her, quite the opposite actually.",
       "abilities": [
         {
           "ability": "Q",
@@ -380,7 +380,7 @@
     {
       "championId": "Viego",
       "classification": "buff",
-      "summary": "Viego is performing worse this season due to direct adjustments and overall game-wide changes. As a result he needs some power added back in, both compensating some crit scaling that he lost and generally just making him a better fighter.",
+      "summary": "Viego is performing worse this season due to direct adjustments and overall game-wide changes.",
       "abilities": [
         {
           "ability": "base",
@@ -420,7 +420,7 @@
     {
       "championId": "Zed",
       "classification": "nerf",
-      "summary": "Zed’s recent jungle changes didn't affect him as strongly as we had anticipated, and players have noticed, resulting in a resurgence of pick and ban rate. We’d like to slow his clear and lower his potency, this time with more accuracy now that we have a better understanding of how to tune him in the jungle.",
+      "summary": "Zed’s recent jungle changes didn't affect him as strongly as we had anticipated, and players have noticed, resulting in a resurgence of pick and ban rate.",
       "abilities": [
         {
           "ability": "passive",

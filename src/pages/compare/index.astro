@@ -1,0 +1,19 @@
+---
+import { getAllPatches } from "../../lib/data";
+
+const patches = getAllPatches();
+const target =
+  patches.length >= 2 ? `/compare/${patches[0]!.id}/${patches[1]!.id}` : "/patches";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RiftScry — compare patches</title>
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={new URL(target, Astro.site)} />
+  </head>
+  <body>
+    <p>Redirecting to <a href={target}>the latest comparison</a>…</p>
+  </body>
+</html>

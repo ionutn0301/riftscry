@@ -4,12 +4,12 @@
   "assetVersion": "16.14.1",
   "releaseDate": "2026-07-14",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-14-notes/",
-  "ingestedAt": "2026-08-21T20:38:07.063Z",
+  "ingestedAt": "2026-08-21T21:18:48.359Z",
   "champions": [
     {
       "championId": "Azir",
       "classification": "adjustment",
-      "summary": "Azir is feeling more headless chicken than valiant falcon right now. But rather than straight numerical buffs, we're preening his feathers of impactful bugs and changing some rune interactions that should make him start squawking about Shurima more often.",
+      "summary": "Azir is feeling more headless chicken than valiant falcon right now.",
       "abilities": [
         {
           "ability": "W",
@@ -48,7 +48,7 @@
     {
       "championId": "Corki",
       "classification": "buff",
-      "summary": "Everyone's favorite incoherent aviator is having trouble taking off in bot lane. So, we want to give a little more firepower to Corki's sorties later in the game, and really enhance his spell-weaving missile firing fantasy!",
+      "summary": "Everyone's favorite incoherent aviator is having trouble taking off in bot lane.",
       "abilities": [
         {
           "ability": "base",
@@ -81,7 +81,7 @@
     {
       "championId": "Garen",
       "classification": "nerf",
-      "summary": "Garen is dishing out too much justice across all skill brackets right now. So, we're going to tap down the Demacian Justice just a tad to make him a little less oppressive, while still rewarding well-timed target selection and inspiring fear in the hearts of those who shirk justice.",
+      "summary": "Garen is dishing out too much justice across all skill brackets right now.",
       "abilities": [
         {
           "ability": "R",
@@ -101,7 +101,7 @@
     {
       "championId": "Jayce",
       "classification": "nerf",
-      "summary": "Jayce quickly climbed the ranks after our 26.03 adjustments and has stayed at the top of the pack. Additionally, he has become a fairly comfortable blind pick champ due to his Rune flexibility, and is the most picked top laner in higher ranks. Right now he's building like an assassin, but playing like a fighter, which we prefer to the tank Jayce era. These changes should tap down on his speediness and high durability while preserving what makes him fun.",
+      "summary": "Jayce quickly climbed the ranks after our 26.03 adjustments and has stayed at the top of the pack.",
       "abilities": [
         {
           "ability": "passive",
@@ -134,7 +134,7 @@
     {
       "championId": "Locke",
       "classification": "nerf",
-      "summary": "Locke's release has gone relatively smoothly, and we are now tuning him down a bit as players have had time to pick him up. We want to open up more counterplay by reducing how long he can pressure with his Q. And we're bumping down the healing on his W because he's not an enchanter, after all.",
+      "summary": "Locke's release has gone relatively smoothly, and we are now tuning him down a bit as players have had time to pick him up.",
       "abilities": [
         {
           "ability": "Q",
@@ -214,7 +214,7 @@
     {
       "championId": "Nami",
       "classification": "adjustment",
-      "summary": "Nami has been feeling a bit like a fish out of water since the Mandate changes, especially when combined with her nerf in 26.7. We've targeted her E which has been feeling a bit underwhelming with her new builds, which should shift the tides a bit in her favor to help her make a bigger splash!",
+      "summary": "Nami has been feeling a bit like a fish out of water since the Mandate changes, especially when combined with her nerf in 26.7.",
       "abilities": [
         {
           "ability": "E",
@@ -234,7 +234,7 @@
     {
       "championId": "Senna",
       "classification": "nerf",
-      "summary": "Even after her nerfs last patch, Senna is still tearing through the darkness and the light. We're focusing on bringing down her passive and scaling power as she collects souls and takes names, which should impact her in support less, and more in bot where Shiv is rushed for AP ratios.",
+      "summary": "Even after her nerfs last patch, Senna is still tearing through the darkness and the light.",
       "abilities": [
         {
           "ability": "passive",
@@ -274,7 +274,7 @@
     {
       "championId": "Seraphine",
       "classification": "nerf",
-      "summary": "Seraphine's vocal lessons have paid off and she's hitting those High Notes more consistently. So much so that she's become one of the bot lane headliners. So, we're lowering her volume a little so she doesn't burst everyone's ear drums. We don't have any more immediate plans to adjust her Q hitbox, so are going to tune her around this current state going forward.",
+      "summary": "Seraphine's vocal lessons have paid off and she's hitting those High Notes more consistently.",
       "abilities": [
         {
           "ability": "Q",
@@ -294,7 +294,7 @@
     {
       "championId": "Yunara",
       "classification": "buff",
-      "summary": "Yunara's spirit is waning a little. So we're giving her a little more scaling power to help find more balance later in the game.",
+      "summary": "Yunara's spirit is waning a little.",
       "abilities": [
         {
           "ability": "base",

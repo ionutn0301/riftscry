@@ -4,12 +4,12 @@
   "assetVersion": "16.12.1",
   "releaseDate": "2026-06-09",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-12-notes/",
-  "ingestedAt": "2026-08-21T20:38:07.037Z",
+  "ingestedAt": "2026-08-21T21:18:48.334Z",
   "champions": [
     {
       "championId": "Aatrox",
       "classification": "buff",
-      "summary": "We're looking to give Aatrox some love as he's been sitting on the sidelines for some time now, even though signs point to the Darkin being a solid pick in the current meta. We're putting more power into his Q sweet spot to reward him for his core skill check and make him a real threat against lumbering tanks and squishies alike.",
+      "summary": "We're looking to give Aatrox some love as he's been sitting on the sidelines for some time now, even though signs point to the Darkin being a solid pick in the current meta.",
       "abilities": [
         {
           "ability": "Q",
@@ -29,7 +29,7 @@
     {
       "championId": "Gwen",
       "classification": "buff",
-      "summary": "Gwen has been cut out of the meta for quite some time across all skill brackets. She lost some power with 26.09's minor rework to Dusk and Dawn, so we're giving her some of that power back in the early game. She'll remain a scaling pick, but a weaker first item spike has cost her early game a bit too much. These changes should help Gwen players live that snip and skip fantasy at all stages!",
+      "summary": "Gwen has been cut out of the meta for quite some time across all skill brackets.",
       "abilities": [
         {
           "ability": "Q",
@@ -62,7 +62,7 @@
     {
       "championId": "Hwei",
       "classification": "buff",
-      "summary": "Hwei's 26.08 changes to how his ability slows stack and interact with other sources of slows had a larger negative impact than expected. While we had put in a compensation buff along with that change, it's clear after a few patches that he has ended up worse off from the change, so we are giving him some power spread between his Q and E to keep all his abilities feeling relevant.",
+      "summary": "Hwei's 26.08 changes to how his ability slows stack and interact with other sources of slows had a larger negative impact than expected.",
       "abilities": [
         {
           "ability": "Q",
@@ -109,7 +109,7 @@
     {
       "championId": "Jax",
       "classification": "buff",
-      "summary": "Our favorite Grandmaster at Angling has been patiently waiting for his time to strike. Jax is meant to be a high-damage threat who ramps up in fights, but currently he's been a (fish)bait pick against durable opponents. These changes should help with that, without pushing him over the (fishing) line.",
+      "summary": "Our favorite Grandmaster at Angling has been patiently waiting for his time to strike.",
       "abilities": [
         {
           "ability": "Q",
@@ -142,7 +142,7 @@
     {
       "championId": "LeeSin",
       "classification": "nerf",
-      "summary": "The recent changes taking away some of Lee Sin's kit restrictions have been cool for Lee players, but he's clearly just too powerful now. With more outplay potential, we are nerfing his raw damage to balance him out.",
+      "summary": "The recent changes taking away some of Lee Sin's kit restrictions have been cool for Lee players, but he's clearly just too powerful now.",
       "abilities": [
         {
           "ability": "base",
@@ -188,7 +188,7 @@
     {
       "championId": "Nocturne",
       "classification": "adjustment",
-      "summary": "Nocturne has been in quite a strong spot for a while, especially in the higher echelons of play. We like how distinct he feels to play with his relatively low ultimate cooldown, but that means we are going to pull power out of his 1v1 and farming since he has such strong tools to quickly create unequal fights.",
+      "summary": "Nocturne has been in quite a strong spot for a while, especially in the higher echelons of play.",
       "abilities": [
         {
           "ability": "Q",
@@ -208,7 +208,7 @@
     {
       "championId": "Orianna",
       "classification": "nerf",
-      "summary": "Often called League's \"perfect champ,\" Orianna in recent years has been doing it all and more: dominating lane, protecting allies, and outputting extremely reliable damage in teamfights. As the highest pro priority in recent patches, we feel like too much of her power is in early lane dominance. She should still show up - just more situationally and for 3k elo shockwaves rather than early game bullying.",
+      "summary": "Often called League's \"perfect champ,\" Orianna in recent years has been doing it all and more: dominating lane, protecting allies, and outputting extremely reliable damage in teamfights.",
       "abilities": [
         {
           "ability": "base",
@@ -254,7 +254,7 @@
     {
       "championId": "Ryze",
       "classification": "nerf",
-      "summary": "Ryze's early game trading has only gotten stronger with Deathfire Touch. For a champion known as a scaling combo mage, we feel his laning has gotten too unassailable. So like Orianna, we're tuning down his early game a bit to keep his power budget in the late game as he's intended to be.",
+      "summary": "Ryze's early game trading has only gotten stronger with Deathfire Touch.",
       "abilities": [
         {
           "ability": "base",
@@ -281,7 +281,7 @@
     {
       "championId": "Sylas",
       "classification": "adjustment",
-      "summary": "Sylas is one of the champions who has come out worse for wear since the start of Season 2. We think he is still a powerful early lane bully, but he's lost enough power that his scaling is critically low to the point he's completely one note, so we are helping him out there.",
+      "summary": "Sylas is one of the champions who has come out worse for wear since the start of Season 2.",
       "abilities": [
         {
           "ability": "Q",
@@ -314,7 +314,7 @@
     {
       "championId": "Syndra",
       "classification": "buff",
-      "summary": "Pass the ball, Ori! Syndra has had some of her more reliable damage stripped away recently in W and R, so we want to give her the tools to start pushing for that scaling fantasy with Dark Sphere, her highest variance bread and butter ability. We're hoping this mix of exciting and functional buffs gets players across skill brackets interested in her untapped power.",
+      "summary": "Pass the ball, Ori!",
       "abilities": [
         {
           "ability": "base",
@@ -347,7 +347,7 @@
     {
       "championId": "Tristana",
       "classification": "adjustment",
-      "summary": "it's been two years since we've seen marksmen run over the mid meta, and while we absolutely don't want to go back to that world, we do feel like some marksmen in mid make for an interesting flavor of game. Tristana makes for a good candidate as she's been absent since we added mana costs to her Q in a couple seasons back. We'll be pulling back on some of those nerfs here and improving her level scaling generally.",
+      "summary": "it's been two years since we've seen marksmen run over the mid meta, and while we absolutely don't want to go back to that world, we do feel like some marksmen in mid make for an interesting flavor of game.",
       "abilities": [
         {
           "ability": "base",
@@ -380,7 +380,7 @@
     {
       "championId": "Varus",
       "classification": "adjustment",
-      "summary": "Varus has steadily become the highest priority ADC & top laner over the course of the year among the top tiers of gameplay. While the changes to Experimental Hexplate should help alleviate his dominance in top lane, in bot lane, we're looking to further disincentivize oppressive early game focused lethality builds, while being relatively less impactful to the most common on-hit builds and helping them scale a bit better.",
+      "summary": "Varus has steadily become the highest priority ADC & top laner over the course of the year among the top tiers of gameplay.",
       "abilities": [
         {
           "ability": "passive",
@@ -440,7 +440,7 @@
     {
       "championId": "XinZhao",
       "classification": "nerf",
-      "summary": "AP Xin Zhao continues being far too strong in mid lane. We are following up last patch's adjustment with a straight nerf this time to his ability to sustain both his health and mana in lane.",
+      "summary": "AP Xin Zhao continues being far too strong in mid lane.",
       "abilities": [
         {
           "ability": "passive",
@@ -486,7 +486,7 @@
     {
       "championId": "Yuumi",
       "classification": "adjustment",
-      "summary": "As the only champion in the game with built in Heal/Shield power, Yuumi was hit hardest by the Moonstone Renewer mechanics changes in 26.09. We are giving her AP ratios a compensation buff to help keep enchanter items optimal for her.",
+      "summary": "As the only champion in the game with built in Heal/Shield power, Yuumi was hit hardest by the Moonstone Renewer mechanics changes in 26.09.",
       "abilities": [
         {
           "ability": "passive",

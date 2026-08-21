@@ -125,14 +125,15 @@ initScene(
 );
 
 // ---------------------------------------------------------------- yours
-initScene("yours", () => {
+/**
+ * Pool personalization is CONTENT, not motion — it runs regardless of
+ * reduced-motion. If the visitor has a pool and enough of it appears in the
+ * field, the field re-picks itself around THEIR champions.
+ */
+function personalizeYoursScene(): void {
   const scene = document.querySelector<HTMLElement>("[data-scene='yours']");
   if (!scene) return;
   const tiles = [...scene.querySelectorAll<HTMLElement>("[data-yours-tile]")];
-  if (tiles.length === 0) return;
-
-  // If the visitor has a pool and enough of it appears in the field, the
-  // field re-picks itself around THEIR champions (exemplar otherwise).
   try {
     const pool = JSON.parse(localStorage.getItem("riftscry:pool") ?? "[]") as string[];
     const inField = tiles.filter((t) => pool.includes(t.dataset.championId ?? ""));
@@ -156,6 +157,14 @@ initScene("yours", () => {
   } catch {
     // corrupted storage — exemplar composition stands
   }
+}
+personalizeYoursScene();
+
+initScene("yours", () => {
+  const scene = document.querySelector<HTMLElement>("[data-scene='yours']");
+  if (!scene) return;
+  const tiles = [...scene.querySelectorAll<HTMLElement>("[data-yours-tile]")];
+  if (tiles.length === 0) return;
 
   // Unpicked tiles recede as the scene passes; picked tiles arrive at their
   // advanced scale. Static markup is the end state; JS supplies the start.

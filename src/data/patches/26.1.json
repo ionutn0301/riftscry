@@ -4,12 +4,12 @@
   "assetVersion": "16.1.1",
   "releaseDate": "2026-01-07",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/",
-  "ingestedAt": "2026-08-21T20:38:05.128Z",
+  "ingestedAt": "2026-08-21T21:18:46.815Z",
   "champions": [
     {
       "championId": "Cassiopeia",
       "classification": "buff",
-      "summary": "While Cassiopeia's no boots passive is very thematic, the addition of more boot based systems over the years (like role quest rewards) has made it feel like a punishment at times instead of a boon. We think it's important for Cassio to have the opportunity to engage with these new systems so we're reworking the passive into a new movement based effect. (We also wanted to do Soobin a solid.)",
+      "summary": "While Cassiopeia's no boots passive is very thematic, the addition of more boot based systems over the years (like role quest rewards) has made it feel like a punishment at times instead of a boon.",
       "abilities": [
         {
           "ability": "base",
@@ -42,7 +42,7 @@
     {
       "championId": "Samira",
       "classification": "adjustment",
-      "summary": "We like that Samira's R and Q are almost direct auto-attack replacements and want to preserve as much of their crit damage as possible. However, with the value of crit going up, the value of AD must then go down.",
+      "summary": "We like that Samira's R and Q are almost direct auto-attack replacements and want to preserve as much of their crit damage as possible.",
       "abilities": [
         {
           "ability": "Q",
@@ -89,7 +89,7 @@
     {
       "championId": "Aphelios",
       "classification": "adjustment",
-      "summary": "Aphelios has a lot of intricacies and some of his abilities try to behave exactly like basic attacks. With that in mind, we're converting Severum's active to total attack damage in line with similar abilities and generally lowering the bonus AD ratios of several abilities that already scale well due to firing off basic attacks that can crit as part of their cast.",
+      "summary": "Aphelios has a lot of intricacies and some of his abilities try to behave exactly like basic attacks.",
       "abilities": [
         {
           "ability": "other",
@@ -176,7 +176,7 @@
     {
       "championId": "Caitlyn",
       "classification": "buff",
-      "summary": "Caitlyn's top-end Headshot damage has gotten out of hand and with the value of critical strikes going up it's about to get even stronger, so we're taking a heavy swing to Headshot's top end. We're also making her R scale with Infinity Edge, as it already scales with critical strike chance, but we're reducing its damage to make room for her stronger basic attacks.",
+      "summary": "Caitlyn's top-end Headshot damage has gotten out of hand and with the value of critical strikes going up it's about to get even stronger, so we're taking a heavy swing to Headshot's top end.",
       "abilities": [
         {
           "ability": "passive",
@@ -209,7 +209,7 @@
     {
       "championId": "Tristana",
       "classification": "nerf",
-      "summary": "Tristana's E is one of the sharpest-scaling abilities in the game, and considering her late game is already poised to be great with a strong attack speed steroid, long range, and lots of crit damage, we think the top end of her E can stand to go down a few pegs.",
+      "summary": "Tristana's E is one of the sharpest-scaling abilities in the game, and considering her late game is already poised to be great with a strong attack speed steroid, long range, and lots of crit damage,…",
       "abilities": [
         {
           "ability": "E",
@@ -236,7 +236,7 @@
     {
       "championId": "Nilah",
       "classification": "adjustment",
-      "summary": "Nilah's in an interesting place where her Q didn't scale with Infinity Edge, so unlocking that avenue marks a small power increase on top of her basic attacks getting better, so we sought to find other ways to slightly lower her late game scaling as compensation.",
+      "summary": "Nilah's in an interesting place where her Q didn't scale with Infinity Edge, so unlocking that avenue marks a small power increase on top of her basic attacks getting better, so we sought to find…",
       "abilities": [
         {
           "ability": "base",
@@ -296,7 +296,7 @@
     {
       "championId": "Jinx",
       "classification": "nerf",
-      "summary": "We like the overall shape of how Jinx functions and generally just want to preserve the value of her minigun's high attack speed, so we're making sure her two stances are more distinguished from one another and generally lowering a bit of spell damage to keep her attack-focused.",
+      "summary": "We like the overall shape of how Jinx functions and generally just want to preserve the value of her minigun's high attack speed, so we're making sure her two stances are more distinguished from one…",
       "abilities": [
         {
           "ability": "base",
@@ -446,7 +446,7 @@
     {
       "championId": "Lucian",
       "classification": "adjustment",
-      "summary": "Lucian's builds are pretty sensible and as a spell-focused ADC, but we want to make sure his spell scaling is good. We're updating R to fire even more bullets with crit damage, which will make crit scale his ult just as well as it scales basic attacks. Considering he's already got extremely strong AD scaling and we want to make sure that Navori Flickerblades feels good, we're bringing down some of his Q's AD scaling.",
+      "summary": "Lucian's builds are pretty sensible and as a spell-focused ADC, but we want to make sure his spell scaling is good.",
       "abilities": [
         {
           "ability": "base",
@@ -533,7 +533,7 @@
     {
       "championId": "Draven",
       "classification": "nerf",
-      "summary": "Draven is very auto-attack focused and averages about two crit items per game, so he's also in need of some compensation. Considering he's gaining direct auto-attack DPS, we're trying to compensate him directly on the same axis.",
+      "summary": "Draven is very auto-attack focused and averages about two crit items per game, so he's also in need of some compensation.",
       "abilities": [
         {
           "ability": "base",
@@ -566,7 +566,7 @@
     {
       "championId": "Yunara",
       "classification": "nerf",
-      "summary": "Yunara has a crit build and an on-hit build, but even her on-hit build almost always picks up Hurricane, so she's getting stronger no matter what she does next season. We're looking for nerfs that will skew more toward low-Attack Speed high-AD crit builds, as they'll be more directly buffed by the global crit damage increase.",
+      "summary": "Yunara has a crit build and an on-hit build, but even her on-hit build almost always picks up Hurricane, so she's getting stronger no matter what she does next season.",
       "abilities": [
         {
           "ability": "Q",
@@ -599,7 +599,7 @@
     {
       "championId": "Akshan",
       "classification": "adjustment",
-      "summary": "Akshan's abilities currently scale crit in three different ways and we're making that more consistent here. His passive auto, being functionally a true basic attack, will crit for 100% value. Meanwhile, the crit scaling on E and R are going down as compensation. We're also doing some discretionary adjustments to allow Q-max and E-max to perform at similar levels of power by adjusting their rank-up incentives.",
+      "summary": "Akshan's abilities currently scale crit in three different ways and we're making that more consistent here.",
       "abilities": [
         {
           "ability": "passive",
@@ -675,7 +675,7 @@
     {
       "championId": "Gangplank",
       "classification": "adjustment",
-      "summary": "Gangplank is one of two champions (alongside Smolder) who we think is going to gain extra power due to Essence Reaver once again building from Sheen. We expect him to perform much, much better with his increased critical strike damage, so we're pulling out many of the unique crit scalars that have been added over the years and delivering an extra hit to his E on top.",
+      "summary": "Gangplank is one of two champions (alongside Smolder) who we think is going to gain extra power due to Essence Reaver once again building from Sheen.",
       "abilities": [
         {
           "ability": "passive",
@@ -718,7 +718,7 @@
     {
       "championId": "Yone",
       "classification": "buff",
-      "summary": "Yone won't be much different this year. Considering he doubles how much critical strike chance he gets from each item, he just isn't allowed to crit for full damage.",
+      "summary": "Yone won't be much different this year.",
       "abilities": [
         {
           "ability": "base",
@@ -738,7 +738,7 @@
     {
       "championId": "Yasuo",
       "classification": "buff",
-      "summary": "Yasuo won't be much different this year. Considering he doubles how much critical strike chance he gets from each item, he just isn't allowed to crit for full damage.",
+      "summary": "Yasuo won't be much different this year.",
       "abilities": [
         {
           "ability": "base",
@@ -758,7 +758,7 @@
     {
       "championId": "MissFortune",
       "classification": "adjustment",
-      "summary": "Miss Fortune tends to build quite a lot of critical strike chance and we'd like it to stay that way, but she can't just be directly buffed so we're here to compensate some of that value by softening her Q crit mod. For her R, we want to make sure that critical strikes feel like they have some impact, so we're increasing the crit mod slightly, but in order to not push her scaling too hard, have compensated that with a new base damage and a lower AD ratio.",
+      "summary": "Miss Fortune tends to build quite a lot of critical strike chance and we'd like it to stay that way, but she can't just be directly buffed so we're here to compensate some of that value by softening her Q crit mod.",
       "abilities": [
         {
           "ability": "Q",
@@ -798,7 +798,7 @@
     {
       "championId": "Tryndamere",
       "classification": "adjustment",
-      "summary": "Tryndamere is getting some real gameplay updates with this patch and some very real nerfs due to how much critical strike chance he normally has. To weaken how incredible his early game all-ins can be with 200% crit damage, we're nerfing his early bonus AD from Q and nerfing his early E as well. However, he's also getting some new tools. First, his Q now gives full value at 10% remaining health, meaning he can get the full bonus attack damage during his ultimate and it no longer has a disincentive for ranking up. Second, his W will now slow enemies any time they are running away from Tryndamere, regardless of where they were looking when he cast it. We expect this substantial increase in reliability is a big buff, so we've preemptively nerfed the slow itself. Though the slow duration is going down, the AD reduction is still the full four seconds regardless of facing.",
+      "summary": "Tryndamere is getting some real gameplay updates with this patch and some very real nerfs due to how much critical strike chance he normally has.",
       "abilities": [
         {
           "ability": "Q",
@@ -984,7 +984,7 @@
     {
       "championId": "Kindred",
       "classification": "adjustment",
-      "summary": "Kindred's E mechanics are rather confusing and they build several critical strike items already. So we're updating the E to be much easier to understand and reducing the numbers. We're also modernizing the E's monster cap to allow for more damage when building AD and ranking up the ability.",
+      "summary": "Kindred's E mechanics are rather confusing and they build several critical strike items already.",
       "abilities": [
         {
           "ability": "E",
@@ -1018,7 +1018,7 @@
     {
       "championId": "Corki",
       "classification": "nerf",
-      "summary": "Corki isn't particularly strong at the moment, so while this is a nerf on paper, we expect Corki will be overall stronger at the start of the season. This nerf is aimed at weakening his ability to crush a minion wave right before a Recall.",
+      "summary": "Corki isn't particularly strong at the moment, so while this is a nerf on paper, we expect Corki will be overall stronger at the start of the season.",
       "abilities": [
         {
           "ability": "W",
@@ -1038,7 +1038,7 @@
     {
       "championId": "Shaco",
       "classification": "adjustment",
-      "summary": "When Shaco crits during a Backstab or a Deceive, everything crits along with it for his full crit damage, so his top end can be very, very high. We like that he builds for crit sometimes and want to let as many of these tools inherit the new higher base crit damage, but also want to modernize his other scalings to respect crit damage mods more consistently and generally preserve the total power level of Shaco builds that don't buy any critical strike chance.",
+      "summary": "When Shaco crits during a Backstab or a Deceive, everything crits along with it for his full crit damage, so his top end can be very, very high.",
       "abilities": [
         {
           "ability": "passive",
@@ -1085,7 +1085,7 @@
     {
       "championId": "Graves",
       "classification": "adjustment",
-      "summary": "The functional result of these Graves changes should be almost nothing. He'll deal about 1% more damage with his basic attacks when critically striking.",
+      "summary": "The functional result of these Graves changes should be almost nothing.",
       "abilities": [
         {
           "ability": "base",
@@ -1152,7 +1152,7 @@
     {
       "championId": "Garen",
       "classification": "nerf",
-      "summary": "Critical strike chance on Garen is pretty good since both his basic attacks and Judgment are improved by it. We want to continue to make space for non-crit Garen builds, so we're compensating the global critical strike damage increase and updating the calculation to properly discount bonus crit damage.",
+      "summary": "Critical strike chance on Garen is pretty good since both his basic attacks and Judgment are improved by it.",
       "abilities": [
         {
           "ability": "E",
@@ -1172,7 +1172,7 @@
     {
       "championId": "Rengar",
       "classification": "adjustment",
-      "summary": "Rengar is getting a heavy re-script. This is mostly intended to maintain current functionality and feel, while addressing bugs and tech debt. The list of bug fixes is too long to add here so it'll be added to the bugs section. Alongside the crit changes, we're looking to make Rengar's Q work more intuitively by letting the underlying attack itself roll for critical strikes, and if so, deal bonus damage based on his total AD. This removes an optimization around rushing Infinity Edge to enhance the old forced-crit mechanic and also makes him not immediately lose 30% of his damage if his opponents build Randuin's Omen. We'll keep an eye on lethality-vs-crit Rengar and how it performs next season as we suspect Essence Reaver will be a big deal on him.",
+      "summary": "Rengar is getting a heavy re-script.",
       "abilities": [
         {
           "ability": "other",
@@ -1263,7 +1263,7 @@
     {
       "championId": "Elise",
       "classification": "adjustment",
-      "summary": "Elise is in a silly spot where ability power quickly fails to scale her damage against monsters after the mid game. We're delivering a change that will be a slight buff on average but is primarily meant to let her damage scale up with AP like it would for anyone else.",
+      "summary": "Elise is in a silly spot where ability power quickly fails to scale her damage against monsters after the mid game.",
       "abilities": [
         {
           "ability": "Q",
@@ -1290,7 +1290,7 @@
     {
       "championId": "Jax",
       "classification": "adjustment",
-      "summary": "Now that the top lane quest can raise champion levels to 20, we're looking for any champions who intermittently scale their passives and giving them another breakpoint if they deserve one. Jax is one such champion who's gaining a bit more attack speed at level 19.",
+      "summary": "Now that the top lane quest can raise champion levels to 20, we're looking for any champions who intermittently scale their passives and giving them another breakpoint if they deserve one.",
       "abilities": [
         {
           "ability": "passive",
@@ -1337,13 +1337,7 @@
           "kind": "prose",
           "label": "Change",
           "text": "Gold and experience from minions reduced by 25% outside of top lane until level 3"
-        }
-      ]
-    },
-    {
-      "name": "Quest Progress:",
-      "classification": "system",
-      "changes": [
+        },
         {
           "kind": "prose",
           "label": "Change",
@@ -1378,13 +1372,7 @@
           "kind": "prose",
           "label": "Starting at 1",
           "text": "05, +1 per 3 seconds passively, increased to +8 per 5 seconds in and around top lane (Note: roughly, past your outermost living turret in your assigned lane.)"
-        }
-      ]
-    },
-    {
-      "name": "Quest Rewards:",
-      "classification": "system",
-      "changes": [
+        },
         {
           "kind": "prose",
           "label": "Change",
@@ -1457,13 +1445,7 @@
           "kind": "prose",
           "label": "Change",
           "text": "Gold and experience from minions reduced by 25% outside of mid lane until level 3"
-        }
-      ]
-    },
-    {
-      "name": "Quest Progress:",
-      "classification": "system",
-      "changes": [
+        },
         {
           "kind": "prose",
           "label": "Change",
@@ -1508,13 +1490,7 @@
           "kind": "prose",
           "label": "Starting at 1",
           "text": "05, +1 per 3 seconds passively, increased to +8 per 5 seconds in and around the mid lane"
-        }
-      ]
-    },
-    {
-      "name": "Quest Rewards:",
-      "classification": "system",
-      "changes": [
+        },
         {
           "kind": "prose",
           "label": "Change",
@@ -1706,13 +1682,7 @@
           "kind": "prose",
           "label": "Change",
           "text": "Gold and experience from minions reduced by 25% outside of bot lane until level 3"
-        }
-      ]
-    },
-    {
-      "name": "Quest Progress:",
-      "classification": "system",
-      "changes": [
+        },
         {
           "kind": "prose",
           "label": "Change",
@@ -1747,13 +1717,7 @@
           "kind": "prose",
           "label": "Starting at 1",
           "text": "05, +1 per 3 seconds passively, increased to +8 per 5 seconds in the Bot Lane playspace"
-        }
-      ]
-    },
-    {
-      "name": "Quest Rewards:",
-      "classification": "system",
-      "changes": [
+        },
         {
           "kind": "prose",
           "label": "Change",
