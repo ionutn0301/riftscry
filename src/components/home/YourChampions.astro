@@ -19,7 +19,12 @@ const portrait = (id: string) =>
     <div class="field" aria-hidden="true" data-yours-field>
       {
         fieldIds.map((id) => (
-          <span class={`tile ${exemplar.includes(id) ? "picked" : ""}`} data-yours-tile>
+          <span
+            class={`tile ${exemplar.includes(id) ? "picked" : ""}`}
+            data-yours-tile
+            data-champion-id={id}
+            data-name={meta[id]?.name ?? id}
+          >
             <img src={portrait(id)} alt="" width="72" height="72" loading="lazy" decoding="async" />
             {exemplar.includes(id) && <span class="tag">{meta[id]?.name ?? id}</span>}
           </span>
@@ -27,7 +32,7 @@ const portrait = (id: string) =>
       }
     </div>
     <div class="caption">
-      <h2 id="yours-h">
+      <h2 id="yours-h" data-yours-headline>
         <span class="num stat">{exemplar.length}</span> champions.<br />
         <span class="num stat gold">{exemplarChanges}</span> relevant changes all season.
       </h2>

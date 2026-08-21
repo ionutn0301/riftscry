@@ -124,4 +124,155 @@ initScene(
   { desktopOnly: true },
 );
 
+// ---------------------------------------------------------------- yours
+initScene("yours", () => {
+  const scene = document.querySelector<HTMLElement>("[data-scene='yours']");
+  if (!scene) return;
+  const tiles = [...scene.querySelectorAll<HTMLElement>("[data-yours-tile]")];
+  if (tiles.length === 0) return;
+
+  // If the visitor has a pool and enough of it appears in the field, the
+  // field re-picks itself around THEIR champions (exemplar otherwise).
+  try {
+    const pool = JSON.parse(localStorage.getItem("riftscry:pool") ?? "[]") as string[];
+    const inField = tiles.filter((t) => pool.includes(t.dataset.championId ?? ""));
+    if (inField.length >= 2) {
+      for (const t of tiles) {
+        t.classList.remove("picked");
+        t.querySelector(".tag")?.remove();
+      }
+      for (const t of inField) {
+        t.classList.add("picked");
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = t.dataset.name ?? "";
+        t.appendChild(tag);
+      }
+      const headline = scene.querySelector<HTMLElement>("[data-yours-headline]");
+      if (headline) {
+        headline.innerHTML = `<span class="num stat">${inField.length}</span> of your champions.<br /><span class="gold">Every patch page bends around them.</span>`;
+      }
+    }
+  } catch {
+    // corrupted storage — exemplar composition stands
+  }
+
+  // Unpicked tiles recede as the scene passes; picked tiles arrive at their
+  // advanced scale. Static markup is the end state; JS supplies the start.
+  const picked = tiles.filter((t) => t.classList.contains("picked"));
+  const unpicked = tiles.filter((t) => !t.classList.contains("picked"));
+  gsap.from(unpicked, {
+    opacity: 0.9,
+    scrollTrigger: { trigger: scene, start: "top 75%", end: "center 45%", scrub: 0.5 },
+    ease: "none",
+  });
+  gsap.from(picked, {
+    scale: 1,
+    scrollTrigger: { trigger: scene, start: "top 75%", end: "center 45%", scrub: 0.5 },
+    ease: "none",
+  });
+});
+
+// ---------------------------------------------------------------- delta
+initScene(
+  "delta",
+  () => {
+    const scene = document.querySelector<HTMLElement>("[data-scene='delta']");
+    if (!scene) return;
+    const pairs = [...scene.querySelectorAll<HTMLElement>("[data-delta-pair]")];
+    if (pairs.length === 0) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: scene,
+        start: "top top",
+        end: "+=110%",
+        scrub: 0.5,
+        pin: true,
+      },
+    });
+    pairs.forEach((pair, i) => {
+      const after = pair.querySelector<HTMLElement>("[data-delta-after]");
+      const before = pair.querySelector<HTMLElement>("[data-delta-before]");
+      const caption = pair.querySelector<HTMLElement>("figcaption");
+      gsap.set(after, { clipPath: "inset(0 100% 0 0)", xPercent: -6 });
+      gsap.set(caption, { opacity: 0 });
+      const at = 0.08 + i * 0.3;
+      tl.to(after, { clipPath: "inset(0 0% 0 0)", xPercent: 0, ease: "power3.out", duration: 0.22 }, at)
+        .to(before, { opacity: 0.55, ease: "power2.out", duration: 0.18 }, at)
+        .to(caption, { opacity: 1, ease: "power2.out", duration: 0.14 }, at + 0.1);
+    });
+  },
+  { desktopOnly: true },
+);
+
+// Mobile fallback for the delta scene: once-per-pair entrance reveal.
+initScene("delta-mobile", () => {
+  if (!window.matchMedia("(max-width: 800px)").matches) return;
+  const pairs = document.querySelectorAll<HTMLElement>("[data-delta-pair]");
+  pairs.forEach((pair) => {
+    const after = pair.querySelector<HTMLElement>("[data-delta-after]");
+    gsap.from(after, {
+      clipPath: "inset(0 100% 0 0)",
+      ease: "power3.out",
+      duration: 0.6,
+      scrollTrigger: { trigger: pair, start: "top 80%", once: true },
+    });
+  });
+});
+
+// ---------------------------------------------------------------- history
+initScene("history", () => {
+  const scene = document.querySelector<HTMLElement>("[data-scene='history']");
+  const log = scene?.querySelector<HTMLElement>("[data-history-log]");
+  if (!scene || !log) return;
+  const rail = log.querySelector<HTMLElement>(".rail");
+  const nodes = [...log.querySelectorAll<HTMLElement>("[data-history-node]")];
+
+  if (rail) {
+    gsap.from(rail, {
+      "--rail-scale": 0,
+      scrollTrigger: { trigger: log, start: "top 80%", end: "center 50%", scrub: 0.5 },
+      ease: "none",
+    } as gsap.TweenVars);
+  }
+  gsap.from(nodes, {
+    opacity: 0,
+    y: 10,
+    stagger: 0.12,
+    ease: "power3.out",
+    scrollTrigger: { trigger: log, start: "top 75%", end: "center 45%", scrub: 0.5 },
+  });
+});
+
+// ---------------------------------------------------------------- roles
+initScene("roles", () => {
+  const rows = document.querySelectorAll<HTMLElement>("[data-role-row]");
+  if (rows.length === 0) return;
+  gsap.from(rows, {
+    opacity: 0,
+    x: -24,
+    stagger: 0.07,
+    duration: 0.5,
+    ease: "power3.out",
+    scrollTrigger: { trigger: "[data-scene='roles']", start: "top 70%", once: true },
+  });
+});
+
+// ------------------------------------------------------------- oss: still.
+// The open-source scene is the deliberate cinematic break — no motion.
+
+// ---------------------------------------------------------------- closing
+initScene("closing", () => {
+  const line = document.querySelector<HTMLElement>("[data-closing-line]");
+  if (!line) return;
+  gsap.from(line, {
+    clipPath: "inset(0 0 100% 0)",
+    y: 24,
+    duration: 0.8,
+    ease: "power3.out",
+    scrollTrigger: { trigger: "[data-scene='closing']", start: "top 65%", once: true },
+  });
+});
+
 runAll();
