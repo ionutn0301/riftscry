@@ -1,0 +1,192 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import TimelineEntry from "../../components/TimelineEntry.astro";
+import DeltaGlyph from "../../components/DeltaGlyph.astro";
+import { getAllPatches, getChampionHistory, getChampionMeta, getRoles } from "../../lib/data";
+
+export function getStaticPaths() {
+  const meta = getChampionMeta();
+  return Object.keys(meta).map((championId) => ({
+    params: { slug: championId.toLowerCase() },
+    props: { championId },
+  }));
+}
+
+const { championId } = Astro.props;
+const meta = getChampionMeta()[championId]!;
+const roles = getRoles()[championId] ?? [];
+const history = getChampionHistory(championId);
+const totalPatches = getAllPatches().length;
+const loading = `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
+
+const counts = {
+  buff: history.filter((h) => h.change.classification === "buff").length,
+  nerf: history.filter((h) => h.change.classification === "nerf").length,
+  other: history.filter((h) => !["buff", "nerf"].includes(h.change.classification)).length,
+};
+const ROLE_LABEL: Record<string, string> = {
+  top: "Top",
+  jungle: "Jungle",
+  mid: "Mid",
+  adc: "ADC",
+  support: "Support",
+};
+---
+
+<Layout
+  title={`${meta.name} Patch History — RiftScry`}
+  description={`Every ${meta.name} buff, nerf and adjustment across League of Legends patches, with exact before/after values.`}
+>
+  <div class="page">
+    <header class="champ-header">
+      <img src={loading} alt="" width="308" height="560" loading="eager" decoding="async" class="art" />
+      <div class="intro">
+        <p class="eyebrow">Champion history</p>
+        <h1>{meta.name}</h1>
+        <p class="title">{meta.title}</p>
+        <p class="roles">
+          {roles.map((r) => <span class="role">{ROLE_LABEL[r]}</span>)}
+          <a class="roles-note" href="https://github.com/riftscry/riftscry/blob/main/CONTRIBUTING.md"
+            >curated mapping — corrections welcome</a
+          >
+        </p>
+        <p class="season num">
+          {`${history.length} ${history.length === 1 ? "patch" : "patches"} this season`} ·{" "}
+          <span class="c-buff">{`${counts.buff} buffs`}</span> ·{" "}
+          <span class="c-nerf">{`${counts.nerf} nerfs`}</span> · {`${counts.other} other`}
+        </p>
+      </div>
+    </header>
+
+    {
+      history.length > 0 ? (
+        <ol class="timeline">
+          {history.map((h, i) => (
+            <TimelineEntry
+              patchId={h.patchId}
+              releaseDate={h.releaseDate}
+              change={h.change}
+              open={i === 0}
+            />
+          ))}
+        </ol>
+      ) : (
+        <div class="untouched">
+          <p class="big">Untouched all season.</p>
+          <p>
+            {meta.name} hasn't appeared in any 2026 patch notes. Sometimes stability is the
+            strongest statement — <DeltaGlyph kind="neutral" showLabel={false} /> zero changes
+            across {totalPatches} patches.
+          </p>
+        </div>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .page {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--s6) var(--page-pad) 0;
+  }
+
+  .champ-header {
+    display: flex;
+    gap: var(--s6);
+    align-items: flex-end;
+    margin-bottom: var(--s7);
+  }
+
+  .art {
+    width: clamp(120px, 18vw, 200px);
+    height: auto;
+    border: 1px solid var(--line-strong);
+  }
+
+  .eyebrow {
+    color: var(--cream-faint);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--s2);
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    line-height: 0.95;
+    margin-bottom: var(--s2);
+  }
+
+  .title {
+    color: var(--cream-dim);
+    margin-bottom: var(--s4);
+  }
+
+  .roles {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    margin-bottom: var(--s4);
+  }
+
+  .role {
+    border: 1px solid var(--line-strong);
+    padding: 2px var(--s2);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+  }
+
+  .roles-note {
+    font-size: var(--text-xs);
+    color: var(--cream-faint);
+    border-bottom: 1px dotted var(--line-strong);
+  }
+
+  .season {
+    font-size: var(--text-sm);
+    color: var(--cream-dim);
+  }
+
+  .c-buff {
+    color: var(--buff);
+  }
+
+  .c-nerf {
+    color: var(--nerf);
+  }
+
+  .timeline {
+    margin: 0;
+    padding: 0;
+    max-width: 56rem;
+  }
+
+  .untouched {
+    padding: var(--s7) 0 var(--s8);
+    max-width: 48ch;
+  }
+
+  .untouched .big {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--s4);
+  }
+
+  .untouched p {
+    color: var(--cream-dim);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 640px) {
+    .champ-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--s4);
+    }
+  }
+</style>

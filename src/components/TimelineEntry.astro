@@ -1,0 +1,210 @@
+---
+import type { ChampionChange } from "../lib/schema";
+import DeltaGlyph from "./DeltaGlyph.astro";
+import DeltaRow from "./DeltaRow.astro";
+
+interface Props {
+  patchId: string;
+  releaseDate: string;
+  change: ChampionChange;
+  open?: boolean;
+}
+
+const { patchId, releaseDate, change, open = false } = Astro.props;
+const changeCount = change.abilities.reduce((n, a) => n + a.changes.length, 0);
+const date = new Date(releaseDate + "T00:00:00Z").toLocaleDateString("en-US", {
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+});
+
+const ABILITY_LABEL: Record<string, string> = {
+  base: "Base",
+  passive: "P",
+  Q: "Q",
+  W: "W",
+  E: "E",
+  R: "R",
+  other: "",
+};
+---
+
+<li class={`timeline-entry mark-${change.classification}`}>
+  <details open={open}>
+    <summary>
+      <span class="node" aria-hidden="true"></span>
+      <span class="pid num">{patchId}</span>
+      <span class="date">{date}</span>
+      <DeltaGlyph kind={change.classification} />
+      <span class="count num">{changeCount || "—"} {changeCount === 1 ? "change" : "changes"}</span>
+      <span class="chev" aria-hidden="true">▾</span>
+    </summary>
+    <div class="body">
+      {change.summary && <p class="summary">{change.summary}</p>}
+      {
+        change.abilities.map((a) => (
+          <section class="ability">
+            <h3>
+              {ABILITY_LABEL[a.ability] && <span class="slot num">{ABILITY_LABEL[a.ability]}</span>}
+              {a.ability !== "base" && <span>{a.name}</span>}
+            </h3>
+            {a.changes.map((c) => (
+              <DeltaRow change={c} />
+            ))}
+          </section>
+        ))
+      }
+      <p class="src">
+        <a href={`/patch/${patchId}#${change.championId.toLowerCase()}`}>View in patch {patchId} →</a>
+      </p>
+    </div>
+  </details>
+</li>
+
+<style>
+  .timeline-entry {
+    position: relative;
+    list-style: none;
+  }
+
+  /* the git-log rail */
+  .timeline-entry::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .timeline-entry:first-child::before {
+    top: 14px;
+  }
+
+  .timeline-entry:last-child::before {
+    bottom: auto;
+    height: 14px;
+  }
+
+  summary {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s4);
+    padding: var(--s3) 0 var(--s3) var(--s6);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:hover .pid {
+    color: var(--gold-bright);
+  }
+
+  .node {
+    position: absolute;
+    left: 0;
+    top: 18px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--line-strong);
+    background: var(--ink);
+  }
+
+  .mark-buff .node {
+    border-color: var(--buff);
+  }
+
+  .mark-nerf .node {
+    border-color: var(--nerf);
+  }
+
+  .mark-rework .node {
+    border-color: var(--gold-bright);
+    background: var(--gold-deep);
+  }
+
+  .pid {
+    font-size: var(--text-lg);
+    color: var(--cream);
+    min-width: 5.5ch;
+    transition: color var(--t-fast) var(--ease-out);
+  }
+
+  .date {
+    color: var(--cream-faint);
+    font-size: var(--text-sm);
+    min-width: 5.5ch;
+  }
+
+  .count {
+    color: var(--cream-faint);
+    font-size: var(--text-sm);
+    margin-left: auto;
+  }
+
+  .chev {
+    color: var(--cream-faint);
+    transition: transform var(--t-fast) var(--ease-out);
+  }
+
+  details[open] .chev {
+    transform: rotate(180deg);
+  }
+
+  .body {
+    padding: 0 0 var(--s5) var(--s6);
+  }
+
+  .summary {
+    color: var(--cream-dim);
+    font-size: var(--text-sm);
+    max-width: 68ch;
+    line-height: 1.7;
+    margin-bottom: var(--s4);
+  }
+
+  .ability {
+    margin-bottom: var(--s4);
+  }
+
+  .ability h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-bottom: var(--s2);
+  }
+
+  .slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6em;
+    height: 1.6em;
+    padding: 0 0.3em;
+    border: 1px solid var(--gold-deep);
+    font-size: var(--text-xs);
+  }
+
+  .src {
+    font-size: var(--text-sm);
+  }
+
+  .src a {
+    color: var(--cream-dim);
+  }
+
+  .src a:hover {
+    color: var(--gold-bright);
+  }
+</style>

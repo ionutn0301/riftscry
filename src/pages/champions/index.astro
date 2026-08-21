@@ -1,0 +1,96 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getAssetVersion, getChampionHistory, getChampionMeta } from "../../lib/data";
+
+const meta = getChampionMeta();
+const assetVersion = getAssetVersion();
+const champions = Object.entries(meta)
+  .map(([id, m]) => ({ id, ...m, changes: getChampionHistory(id).length }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<Layout
+  title="Champions — RiftScry"
+  description="Season-long patch history for every League of Legends champion: buffs, nerfs and adjustments as structured data."
+>
+  <div class="page">
+    <h1>Pick a main. See its history.</h1>
+    <ul class="grid">
+      {
+        champions.map((c) => (
+          <li>
+            <a href={`/champion/${c.id.toLowerCase()}`}>
+              <img
+                src={`https://ddragon.leagueoflegends.com/cdn/${assetVersion}/img/champion/${c.id}.png`}
+                alt=""
+                width="64"
+                height="64"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="name">{c.name}</span>
+              <span class="changes num">
+                {c.changes > 0 ? `${c.changes} ${c.changes === 1 ? "patch" : "patches"}` : "untouched"}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Layout>
+
+<style>
+  .page {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--s7) var(--page-pad) 0;
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--s6);
+  }
+
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: var(--s3);
+  }
+
+  .grid a {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding: var(--s3);
+    border: 1px solid var(--line);
+    transition:
+      border-color var(--t-fast) var(--ease-out),
+      background-color var(--t-fast) var(--ease-out);
+  }
+
+  .grid a:hover {
+    border-color: var(--gold-deep);
+    background: var(--ink-2);
+    color: inherit;
+  }
+
+  .grid img {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line-strong);
+  }
+
+  .name {
+    font-weight: 600;
+    font-size: var(--text-sm);
+  }
+
+  .changes {
+    font-size: var(--text-xs);
+    color: var(--cream-faint);
+  }
+</style>
