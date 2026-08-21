@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import CommandPalette from "../components/islands/CommandPalette";
 
 interface Props {
   title: string;
@@ -36,5 +37,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
     <SiteFooter />
+    <CommandPalette client:idle />
   </body>
 </html>

@@ -1,0 +1,108 @@
+.palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--ink) 72%, transparent);
+  backdrop-filter: blur(3px);
+  z-index: 90;
+}
+
+.palette {
+  position: fixed;
+  z-index: 100;
+  top: clamp(3rem, 14vh, 9rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(38rem, calc(100vw - 2rem));
+  background: var(--ink-2);
+  border: 1px solid var(--line-strong);
+  border-top: 2px solid var(--gold);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.55);
+}
+
+.palette-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--line);
+}
+
+.palette-caret {
+  color: var(--gold-bright);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.palette [cmdk-input] {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--cream);
+  font: inherit;
+  font-size: var(--text-base);
+}
+
+.palette [cmdk-input]::placeholder {
+  color: var(--cream-faint);
+}
+
+.palette-head kbd {
+  font-size: var(--text-xs);
+  color: var(--cream-faint);
+  border: 1px solid var(--line-strong);
+  padding: 1px var(--s2);
+  border-radius: 2px;
+}
+
+.palette [cmdk-list] {
+  max-height: min(50vh, 22rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--s2) 0 var(--s3);
+  scroll-padding-block: var(--s6);
+}
+
+.palette [cmdk-empty] {
+  padding: var(--s5) var(--s4);
+  color: var(--cream-dim);
+  font-size: var(--text-sm);
+}
+
+.palette [cmdk-group-heading] {
+  padding: var(--s3) var(--s4) var(--s1);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.palette [cmdk-item] {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s2) var(--s4);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+}
+
+.palette [cmdk-item][data-selected="true"] {
+  background: var(--ink-3);
+  border-left-color: var(--gold);
+}
+
+.palette .item-label {
+  color: var(--cream);
+  font-size: var(--text-sm);
+}
+
+.palette .item-sub {
+  color: var(--cream-faint);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 14rem;
+}
