@@ -1,0 +1,52 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PoolPicker, { type PoolChampion } from "../components/islands/PoolPicker";
+import { getAssetVersion, getChampionMeta, getLatestPatch, getRoles } from "../lib/data";
+
+const meta = getChampionMeta();
+const roles = getRoles();
+const assetVersion = getAssetVersion();
+const latest = getLatestPatch();
+
+const champions: PoolChampion[] = Object.entries(meta)
+  .map(([id, m]) => ({ id, name: m.name, title: m.title, roles: roles[id] ?? [] }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<Layout
+  title="My Pool — RiftScry"
+  description="Pick the champions you play. RiftScry remembers them on this device and shows you only the patch changes that matter to you."
+>
+  <div class="page">
+    <header>
+      <h1>Pick your champions.</h1>
+      <p class="sub">
+        Stored on this device — no account. Every patch page gets a "your pool" lens.
+      </p>
+    </header>
+    <PoolPicker
+      client:load
+      champions={champions}
+      assetVersion={assetVersion}
+      latestPatchId={latest.id}
+    />
+  </div>
+</Layout>
+
+<style>
+  .page {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--s7) var(--page-pad) 0;
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--s3);
+  }
+
+  .sub {
+    color: var(--cream-dim);
+    margin-bottom: var(--s6);
+  }
+</style>

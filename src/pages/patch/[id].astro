@@ -4,6 +4,7 @@ import ChangeCard from "../../components/ChangeCard.astro";
 import ClassificationBadge from "../../components/ClassificationBadge.astro";
 import DeltaRow from "../../components/DeltaRow.astro";
 import PatchFilterBar, { type FilterEntry } from "../../components/islands/PatchFilterBar";
+import PoolStrip from "../../components/islands/PoolStrip";
 import { getAllPatches, getChampionMeta, getRoles, getLatestPatch } from "../../lib/data";
 
 export function getStaticPaths() {
@@ -34,6 +35,17 @@ const counts = {
   buff: patch.champions.filter((c) => c.classification === "buff").length,
   nerf: patch.champions.filter((c) => c.classification === "nerf").length,
 };
+
+const names = Object.fromEntries(Object.entries(meta).map(([id, m]) => [id, m.name]));
+const changed = Object.fromEntries(
+  patch.champions.map((c) => [
+    c.championId,
+    {
+      classification: c.classification,
+      changes: c.abilities.reduce((n, a) => n + a.changes.length, 0),
+    },
+  ]),
+);
 ---
 
 <Layout
@@ -63,6 +75,14 @@ const counts = {
         ))}
       </section>
     )}
+
+    <PoolStrip
+      client:load
+      patchId={patch.id}
+      assetVersion={patch.assetVersion}
+      names={names}
+      changed={changed}
+    />
 
     <section aria-labelledby="champions-h">
       <div class="section-head">

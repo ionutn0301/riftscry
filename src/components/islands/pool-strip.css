@@ -1,0 +1,119 @@
+.pool-strip {
+  margin-bottom: var(--s6);
+  border: 1px solid var(--gold-deep);
+  background: color-mix(in srgb, var(--gold) 5%, var(--ink));
+  padding: var(--s4);
+}
+
+.pool-strip header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin-bottom: var(--s3);
+}
+
+.pool-strip h2 {
+  font-size: var(--text-sm);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+
+.pool-strip .dash {
+  color: var(--gold-deep);
+}
+
+.pool-strip .edit {
+  font-size: var(--text-xs);
+  color: var(--cream-faint);
+  border-bottom: 1px dotted var(--line-strong);
+}
+
+.pool-strip .edit:hover {
+  color: var(--gold-bright);
+}
+
+.pool-strip ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+}
+
+.pool-strip li {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  background: var(--ink-2);
+}
+
+.pool-strip li.is-unchanged {
+  opacity: 0.75;
+}
+
+.pool-strip li > a {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s2) var(--s3) var(--s2) var(--s2);
+}
+
+.pool-strip img {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+}
+
+.pool-strip .who {
+  display: flex;
+  flex-direction: column;
+}
+
+.pool-strip .name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.pool-strip .state {
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pool-strip .state.buff {
+  color: var(--buff);
+}
+
+.pool-strip .state.nerf {
+  color: var(--nerf);
+}
+
+.pool-strip .state.neutral {
+  color: var(--neutral);
+}
+
+.pool-strip .state.gold {
+  color: var(--gold-bright);
+}
+
+.pool-strip .state.unchanged {
+  color: var(--cream-faint);
+}
+
+.pool-strip .add {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--gold-bright);
+  border-left: 1px solid var(--line);
+  padding: var(--s3);
+  white-space: nowrap;
+}
+
+.pool-strip .add:hover {
+  background: var(--ink-3);
+}
