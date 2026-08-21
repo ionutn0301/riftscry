@@ -1,8 +1,7 @@
 import { it, expect } from "vitest";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, writeFileSync, readFileSync, existsSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { existsSync, readdirSync } from "node:fs";
 import { validateAllPatches } from "../../scripts/patch-ingestion/validate";
 
 it("flags malformed patch files", () => {
@@ -39,4 +38,28 @@ it("all committed patch data is schema-valid", () => {
   const results = validateAllPatches(dataDir);
   const failures = results.filter((r) => !r.ok);
   expect(failures).toEqual([]);
+});
+
+// Referential integrity: every championId in every patch must exist in
+// champions.json (catches ddragon junk entries like "Jade_Alistar").
+it("all patch championIds resolve to known champions", () => {
+  const dataDir = "src/data/patches";
+  if (!existsSync(dataDir)) return;
+  const known = new Set(
+    Object.keys(
+      (JSON.parse(readFileSync("src/data/champions.json", "utf8")) as {
+        champions: Record<string, unknown>;
+      }).champions,
+    ),
+  );
+  const unknown: string[] = [];
+  for (const file of readdirSync(dataDir).filter((f) => f.endsWith(".json"))) {
+    const patch = JSON.parse(readFileSync(join(dataDir, file), "utf8")) as {
+      champions: { championId: string }[];
+    };
+    for (const c of patch.champions) {
+      if (!known.has(c.championId)) unknown.push(`${file}: ${c.championId}`);
+    }
+  }
+  expect(unknown).toEqual([]);
 });

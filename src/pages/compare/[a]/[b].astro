@@ -1,0 +1,279 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComparePicker from "../../../components/islands/ComparePicker";
+import DeltaGlyph from "../../../components/DeltaGlyph.astro";
+import { comparePatches } from "../../../lib/compare";
+import { getAllPatches, getAssetVersion, getChampionMeta } from "../../../lib/data";
+import type { Classification } from "../../../lib/schema";
+
+export function getStaticPaths() {
+  const ids = getAllPatches().map((p) => p.id);
+  const paths = [];
+  for (const a of ids) {
+    for (const b of ids) {
+      if (a !== b) paths.push({ params: { a, b } });
+    }
+  }
+  return paths;
+}
+
+const { a, b } = Astro.params;
+const patches = getAllPatches();
+const result = comparePatches(a!, b!, patches);
+const meta = getChampionMeta();
+const assetVersion = getAssetVersion();
+const ids = patches.map((p) => p.id);
+
+const groups: { key: Classification; title: string }[] = [
+  { key: "buff", title: "Buffed" },
+  { key: "nerf", title: "Nerfed" },
+  { key: "rework", title: "Reworked" },
+  { key: "adjustment", title: "Adjusted" },
+];
+const grouped = groups
+  .map((g) => ({ ...g, champions: result.champions.filter((c) => c.net === g.key) }))
+  .filter((g) => g.champions.length > 0);
+---
+
+<Layout
+  title={`League ${result.newer} vs ${result.older} — RiftScry`}
+  description={`Everything that changed in League of Legends between patch ${result.older} and ${result.newer}: champions, items and systems.`}
+>
+  <div class="page">
+    <header class="compare-header">
+      <p class="eyebrow">
+        {`What changed since ${result.older} — ${result.span.length} ${result.span.length === 1 ? "patch" : "patches"} of balance`}
+      </p>
+      <h1 class="num">
+        {result.newer}
+        <span class="delta" aria-hidden="true"> Δ </span>
+        <span class="visually-hidden">compared to</span>
+        {result.older}
+      </h1>
+      <ComparePicker client:idle ids={ids} newer={result.newer} older={result.older} />
+    </header>
+
+    {
+      grouped.map((g) => (
+        <section aria-labelledby={`h-${g.key}`}>
+          <h2 id={`h-${g.key}`}>
+            <DeltaGlyph kind={g.key} showLabel={false} /> {g.title}
+            <span class="count num">{g.champions.length}</span>
+          </h2>
+          <ul class="champ-rows">
+            {g.champions.map((c) => (
+              <li>
+                <a href={`/champion/${c.championId.toLowerCase()}`} class="champ">
+                  <img
+                    src={`https://ddragon.leagueoflegends.com/cdn/${assetVersion}/img/champion/${c.championId}.png`}
+                    alt=""
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span class="name">{meta[c.championId]?.name ?? c.championId}</span>
+                </a>
+                <span class="trail num">
+                  {c.patches.map((p, i) => (
+                    <>
+                      {i > 0 && <span class="sep" aria-hidden="true">→</span>}
+                      <a href={`/patch/${p.patchId}#${c.championId.toLowerCase()}`} class={`step step-${p.classification}`}>
+                        {p.patchId} {p.classification}
+                      </a>
+                    </>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    {
+      result.items.length > 0 && (
+        <section aria-labelledby="h-items">
+          <h2 id="h-items">Items <span class="count num">{result.items.length}</span></h2>
+          <ul class="flat-rows">
+            {result.items.map((i) => (
+              <li>
+                <span class="name">{i.name}</span>
+                <span class="trail num">
+                  {i.patches.map((pid) => (
+                    <a href={`/patch/${pid}`} class="step">
+                      {pid}
+                    </a>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      result.systems.length > 0 && (
+        <section aria-labelledby="h-systems">
+          <h2 id="h-systems">Systems <span class="count num">{result.systems.length}</span></h2>
+          <ul class="flat-rows">
+            {result.systems.map((s) => (
+              <li>
+                <span class="name">{s.name}</span>
+                <span class="trail num">
+                  {s.patches.map((pid) => (
+                    <a href={`/patch/${pid}`} class="step">
+                      {pid}
+                    </a>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      result.champions.length === 0 && result.items.length === 0 && result.systems.length === 0 && (
+        <p class="empty">Nothing changed between these patches. A quiet stretch of the Rift.</p>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .page {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0 var(--page-pad);
+  }
+
+  .compare-header {
+    padding: var(--s7) 0 var(--s6);
+  }
+
+  .eyebrow {
+    color: var(--cream-dim);
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: var(--s3);
+  }
+
+  h1 {
+    font-family: var(--font-num);
+    font-weight: 500;
+    font-size: var(--text-2xl);
+    margin-bottom: var(--s5);
+  }
+
+  .delta {
+    color: var(--gold);
+    font-family: var(--font-display);
+  }
+
+  section {
+    margin-bottom: var(--s6);
+  }
+
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s3);
+    font-size: var(--text-xl);
+    margin-bottom: var(--s4);
+  }
+
+  .count {
+    color: var(--cream-faint);
+    font-size: var(--text-base);
+  }
+
+  .champ-rows,
+  .flat-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .champ-rows li,
+  .flat-rows li {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s3) var(--s4);
+    padding: var(--s3) 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .champ {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    min-width: 12rem;
+  }
+
+  .champ img {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line-strong);
+  }
+
+  .name {
+    font-weight: 600;
+  }
+
+  .trail {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    font-size: var(--text-xs);
+    margin-left: auto;
+  }
+
+  .sep {
+    color: var(--cream-faint);
+  }
+
+  .step {
+    border: 1px solid var(--line-strong);
+    padding: 2px var(--s2);
+    color: var(--cream-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .step:hover {
+    color: var(--gold-bright);
+    border-color: var(--gold-deep);
+  }
+
+  .step-buff {
+    color: var(--buff);
+    border-color: var(--buff-dim);
+  }
+
+  .step-nerf {
+    color: var(--nerf);
+    border-color: var(--nerf-dim);
+  }
+
+  .step-rework {
+    color: var(--gold-bright);
+    border-color: var(--gold-deep);
+  }
+
+  .empty {
+    padding: var(--s7) 0;
+    color: var(--cream-dim);
+  }
+
+  @media (max-width: 640px) {
+    .trail {
+      margin-left: 0;
+    }
+  }
+</style>

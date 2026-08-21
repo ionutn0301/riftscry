@@ -80,6 +80,10 @@ export async function fetchChampionIndex(
   };
   const byName: Record<string, ChampionIndexEntry> = {};
   for (const entry of Object.values(json.data)) {
+    // ddragon occasionally ships variant/test entries ("Jade_Alistar") whose
+    // display name collides with the real champion — real ids never contain
+    // an underscore.
+    if (entry.id.includes("_")) continue;
     byName[entry.name] = { id: entry.id, name: entry.name, title: entry.title };
   }
   return byName;

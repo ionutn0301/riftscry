@@ -1,0 +1,27 @@
+---
+import { getAllPatches } from "../../../lib/data";
+
+export function getStaticPaths() {
+  return getAllPatches().map((p) => ({ params: { a: p.id } }));
+}
+
+const { a } = Astro.params;
+const patches = getAllPatches();
+const current = patches.find((p) => p.id === a)!;
+// Default comparison target: the previous patch (or the next-newer if a is oldest).
+const idx = patches.findIndex((p) => p.id === a);
+const other = patches[idx + 1] ?? patches[idx - 1];
+const target = other ? `/compare/${current.id}/${other.id}` : "/patches";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RiftScry — compare {a}</title>
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={new URL(target, Astro.site)} />
+  </head>
+  <body>
+    <p>Redirecting to <a href={target}>comparison</a>…</p>
+  </body>
+</html>
