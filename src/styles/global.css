@@ -1,0 +1,12 @@
+/* RIFTΔ global styles — reset shell; completed in Task 13. */
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}

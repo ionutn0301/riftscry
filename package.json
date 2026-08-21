@@ -1,0 +1,45 @@
+{
+  "name": "riftdelta",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "RIFTΔ — the patch notes, diffed. Structured League of Legends patch intelligence.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "ingest": "tsx scripts/patch-ingestion/index.ts"
+  },
+  "dependencies": {
+    "@astrojs/react": "^6.0.4",
+    "@astrojs/sitemap": "^3.7.3",
+    "@nanostores/persistent": "^1.3.5",
+    "@nanostores/react": "^1.1.0",
+    "astro": "^7.2.4",
+    "cmdk": "^1.1.1",
+    "gsap": "^3.15.0",
+    "nanostores": "^1.5.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.62.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "happy-dom": "^20.11.6",
+    "node-html-parser": "^9.0.1",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}
