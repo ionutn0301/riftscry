@@ -245,3 +245,17 @@ const date = new Date(releaseDate + "T00:00:00Z").toLocaleDateString("en-US", {
     }
   }
 </style>
+
+<style is:global>
+  /* Digit-swap spans are created by home-motion.ts (motion-active only). */
+  [data-hero-number] .hn-swap {
+    position: relative;
+    display: inline-block;
+  }
+
+  [data-hero-number] .hn-new {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+</style>
