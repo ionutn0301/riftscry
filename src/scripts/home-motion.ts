@@ -75,8 +75,8 @@ initScene(
       },
     });
 
-    tl.to(oldDigit, { yPercent: -55, opacity: 0, clipPath: "inset(0 0 100% 0)", ease: "power2.in", duration: 0.4 }, 0.05)
-      .to(newDigit, { yPercent: 0, opacity: 1, clipPath: "inset(0% 0 0 0)", ease: "power3.out", duration: 0.45 }, 0.22)
+    tl.to(oldDigit, { yPercent: -55, opacity: 0, clipPath: "inset(0 0 100% 0)", ease: "power2.in", duration: 0.3 }, 0.05)
+      .to(newDigit, { yPercent: 0, opacity: 1, clipPath: "inset(0% 0 0 0)", ease: "power3.out", duration: 0.45 }, 0.24)
       .to(orbits, { opacity: 1, y: 0, ease: "power3.out", duration: 0.3, stagger: 0.07 }, 0.35)
       .to(cue, { opacity: 0, duration: 0.15 }, 0.1);
   },

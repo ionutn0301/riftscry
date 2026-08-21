@@ -56,8 +56,6 @@
 }
 
 .filter-bar .seg button[aria-pressed="true"] {
-  background: var(--gold-deep);
-  color: var(--ink);
   color: var(--cream);
   background: color-mix(in srgb, var(--gold) 26%, var(--ink));
 }

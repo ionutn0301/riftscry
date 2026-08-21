@@ -160,6 +160,18 @@ const ABILITY_LABEL: Record<string, string> = {
     padding: 0 0 var(--s5) var(--s6);
   }
 
+  /* Soften the details-open teleport; occasional-frequency, 160ms ease-out. */
+  details[open] .body {
+    animation: entry-reveal 160ms var(--ease-out);
+  }
+
+  @keyframes entry-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
   .summary {
     color: var(--cream-dim);
     font-size: var(--text-sm);

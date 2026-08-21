@@ -31,7 +31,7 @@ const cols = [0, 1, 2].map((i) => lines.filter((_, idx) => idx % 3 === i));
         <span class="gold">Why read every change?</span>
       </h2>
       <ol class="funnel num" data-wall-funnel>
-        <li><span class="n">{totalChanges}</span> changes in patch {patchId}</li>
+        <li><span class="n">{totalChanges}</span> changes in {patchId}</li>
         <li><span class="n">→</span> your champions</li>
         <li><span class="n">→</span> the handful that matter</li>
         <li class="done"><span class="n">Δ</span> done before queue pops</li>
@@ -126,7 +126,14 @@ const cols = [0, 1, 2].map((i) => lines.filter((_, idx) => idx % 3 === i));
     gap: var(--s2);
     font-size: var(--text-lg);
     color: var(--cream-dim);
-    max-width: 24ch;
+    max-width: 28ch;
+  }
+
+  @media (max-width: 800px) {
+    .signal {
+      background: color-mix(in srgb, var(--ink) 78%, transparent);
+      backdrop-filter: blur(2px);
+    }
   }
 
   .funnel .n {
