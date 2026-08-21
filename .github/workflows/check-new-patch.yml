@@ -1,0 +1,63 @@
+name: Check for new patch
+
+on:
+  schedule:
+    # Riot ships patches Tuesday/Wednesday; check those mornings (UTC).
+    - cron: "0 6 * * 2,3"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Detect new patches
+        id: detect
+        run: pnpm exec tsx scripts/check-new-patch.ts
+
+      - name: Ingest new patches
+        id: ingest
+        if: steps.detect.outputs.has_new == 'true'
+        # Riot's site may block CI runners; keep going so the PR still opens
+        # with instructions to run ingestion locally.
+        continue-on-error: true
+        run: pnpm ingest ${{ steps.detect.outputs.new_patches }}
+
+      - name: Validate ingested data
+        if: steps.detect.outputs.has_new == 'true' && steps.ingest.outcome == 'success'
+        run: pnpm test
+
+      - name: Open or update pull request
+        if: steps.detect.outputs.has_new == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: data/new-patch
+          title: "data: ingest patch ${{ steps.detect.outputs.new_patches }}"
+          commit-message: "data: ingest patch ${{ steps.detect.outputs.new_patches }}"
+          body: |
+            Automated patch detection found: **${{ steps.detect.outputs.new_patches }}**
+
+            - Ingestion outcome: `${{ steps.ingest.outcome }}`
+            - If ingestion failed (Riot may block CI fetches), run locally:
+              `pnpm ingest ${{ steps.detect.outputs.new_patches }}` and push to this branch.
+            - Review the generated JSON diff below before merging — classification
+              corrections belong in `src/data/overrides/<id>.json`.
+
+            This PR never merges automatically.
