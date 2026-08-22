@@ -40,6 +40,13 @@ const links = [
     border-bottom: 1px solid var(--line);
   }
 
+  :global(body.is-home) .site-header {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 100;
+    border-bottom-color: transparent;
+  }
+
   .brand {
     display: inline-flex;
     align-items: center;

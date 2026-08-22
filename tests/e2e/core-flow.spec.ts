@@ -5,10 +5,10 @@ test("land → pick pool → see personalized patch → persists → share link"
   browser,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Your main got nerfed");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Something changed");
 
   // CTA to the pool picker.
-  await page.getByRole("link", { name: "Pick your champions" }).click();
+  await page.getByRole("link", { name: "Choose champions" }).first().click();
   await expect(page).toHaveURL(/\/pool/);
 
   // Select two champions.

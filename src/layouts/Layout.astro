@@ -15,6 +15,7 @@ interface Props {
 
 const { title, description, ogImage = "/og-default.png" } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const isHome = Astro.url.pathname === "/";
 ---
 
 <html lang="en">
@@ -39,7 +40,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
   </head>
-  <body>
+  <body class:list={[isHome && "is-home"]}>
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteHeader />
     <main id="main">

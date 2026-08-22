@@ -19,7 +19,7 @@ const latest = getLatestPatch();
   </div>
   <p class="provenance">
     Patch data is parsed from the
-    <a href={latest.sourceUrl}>official Riot patch notes</a> and versioned in the open — every
+    <a href={latest.sourceUrl}>official Riot patch notes</a> and versioned in the open &mdash; every
     value traces to its source. Champion assets via Riot's Data Dragon.
   </p>
   <p class="legal">
@@ -36,6 +36,12 @@ const latest = getLatestPatch();
     border-top: 1px solid var(--line);
     color: var(--cream-dim);
     font-size: var(--text-sm);
+  }
+
+  :global(body.is-home) .site-footer {
+    margin-top: 0;
+    border-top-color: var(--gold-deep);
+    background: var(--ink);
   }
 
   .cols {

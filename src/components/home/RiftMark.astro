@@ -1,0 +1,26 @@
+---
+import { Image } from "astro:assets";
+// 2x supersample of the supplied mobile lockup (scripts: sharp lanczos3) —
+// the emblem magnifies to ~5x during the threshold, so it needs the headroom.
+import logo from "../../assets/brand/logo-mark-2x.png";
+
+interface Props {
+  class?: string;
+  label?: string;
+  eager?: boolean;
+}
+
+const { class: className = "", label = "RiftScry emblem", eager = false } = Astro.props;
+---
+
+<div class:list={["rift-mark", className]} data-rift-mark>
+  <span class="rift-mark__layer rift-mark__layer--rear" aria-hidden="true">
+    <Image src={logo} alt="" width={2244} quality={72} loading={eager ? "eager" : "lazy"} decoding="async" />
+  </span>
+  <span class="rift-mark__layer rift-mark__layer--mid" aria-hidden="true">
+    <Image src={logo} alt="" width={2244} quality={72} loading={eager ? "eager" : "lazy"} decoding="async" />
+  </span>
+  <span class="rift-mark__layer rift-mark__layer--face">
+    <Image src={logo} alt={label} width={2244} quality={72} loading={eager ? "eager" : "lazy"} decoding="async" />
+  </span>
+</div>

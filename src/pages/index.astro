@@ -1,22 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Hero from "../components/home/Hero.astro";
-import WallOfNotes from "../components/home/WallOfNotes.astro";
-import YourChampions from "../components/home/YourChampions.astro";
-import TheDelta from "../components/home/TheDelta.astro";
-import HistoryScene from "../components/home/HistoryScene.astro";
-import RoleImpact from "../components/home/RoleImpact.astro";
-import OpenSourceScene from "../components/home/OpenSourceScene.astro";
-import Closing from "../components/home/Closing.astro";
+import CinematicHome from "../components/home/CinematicHome.astro";
+import HeroPortal from "../components/home/HeroPortal.astro";
+import SignalField from "../components/home/SignalField.astro";
+import DeltaStage from "../components/home/DeltaStage.astro";
+import HistoryWeave from "../components/home/HistoryWeave.astro";
+import SourceReturn from "../components/home/SourceReturn.astro";
 import {
   getAllPatches,
   getChampionHistory,
   getChampionMeta,
   getLatestPatch,
   getRoles,
-  getAssetVersion,
   type Role,
 } from "../lib/data";
+import { comparePatches } from "../lib/compare";
 import { parseValueSeries, relativeDelta, formatDelta } from "../lib/deltas";
 
 /**
@@ -27,22 +25,7 @@ const latest = getLatestPatch();
 const patches = getAllPatches();
 const meta = getChampionMeta();
 const roles = getRoles();
-const assetVersion = getAssetVersion();
 const previousId = patches[1]?.id ?? latest.id;
-
-// -- Hero: three short real deltas that orbit the patch number.
-type OrbitDelta = { label: string; before: string; after: string; direction: string };
-const orbitDeltas: OrbitDelta[] = [];
-for (const c of latest.champions) {
-  for (const a of c.abilities) {
-    for (const ch of a.changes) {
-      if (ch.kind !== "numeric" || ch.direction === "neutral") continue;
-      if (ch.before.length <= 8 && ch.after.length <= 8 && orbitDeltas.length < 4) {
-        orbitDeltas.push({ label: `${meta[c.championId]?.name ?? c.championId} ${ch.label}`, before: ch.before, after: ch.after, direction: ch.direction });
-      }
-    }
-  }
-}
 
 // -- Wall: every change line of the current patch, flattened to text.
 const wallLines: string[] = [];
@@ -52,8 +35,8 @@ for (const c of latest.champions) {
       const name = meta[c.championId]?.name ?? c.championId;
       wallLines.push(
         ch.kind === "numeric"
-          ? `${name} · ${a.name} — ${ch.label}: ${ch.before} ⇒ ${ch.after}`
-          : `${name} · ${a.name} — ${ch.label}: ${ch.text}`,
+          ? `${name} / ${a.name} / ${ch.label}: ${ch.before} → ${ch.after}`
+          : `${name} / ${a.name} / ${ch.label}: ${ch.text}`,
       );
     }
   }
@@ -62,8 +45,8 @@ for (const i of latest.items) {
   for (const ch of i.changes) {
     wallLines.push(
       ch.kind === "numeric"
-        ? `${i.name} — ${ch.label}: ${ch.before} ⇒ ${ch.after}`
-        : `${i.name} — ${ch.label}: ${ch.text}`,
+        ? `${i.name} / ${ch.label}: ${ch.before} → ${ch.after}`
+        : `${i.name} / ${ch.label}: ${ch.text}`,
     );
   }
 }
@@ -81,6 +64,13 @@ const fieldIds = [
     .filter((id, i, all) => all.indexOf(id) === i && !EXEMPLAR.includes(id))
     .slice(0, 20),
 ];
+const signalCandidates = fieldIds.map((id) => ({
+  id,
+  name: meta[id]?.name ?? id,
+  art: `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`,
+  historyCount: getChampionHistory(id).length,
+}));
+const signalChampions = EXEMPLAR.map((id) => signalCandidates.find((champion) => champion.id === id)!);
 
 // -- The Delta scene: three big single-value deltas from recent patches.
 type BigDelta = { champion: string; stat: string; patchId: string; before: string; after: string; direction: string; rel: string | null };
@@ -122,9 +112,18 @@ const roleCounts = (["top", "jungle", "mid", "adc", "support"] as Role[]).map((r
     buffs: members.filter((c) => c.classification === "buff").length,
     nerfs: members.filter((c) => c.classification === "nerf").length,
     adjusted: members.filter((c) => !["buff", "nerf"].includes(c.classification)).length,
-    champions: members.map((c) => c.championId),
   };
 });
+
+const comparisonResult = comparePatches(latest.id, previousId, patches);
+const comparison = {
+  newer: comparisonResult.newer,
+  older: comparisonResult.older,
+  patchCount: comparisonResult.span.length,
+  championCount: comparisonResult.champions.length,
+  itemCount: comparisonResult.items.length,
+  systemCount: comparisonResult.systems.length,
+};
 
 // -- Open source scene: a real fragment of the current patch's data.
 const firstChampion = latest.champions[0]!;
@@ -132,7 +131,7 @@ const schemaFragment = JSON.stringify(
   {
     id: latest.id,
     releaseDate: latest.releaseDate,
-    sourceUrl: "…official Riot notes…",
+    sourceUrl: latest.sourceUrl,
     champions: [
       {
         championId: firstChampion.championId,
@@ -154,32 +153,38 @@ const seasonChangeTotal = patches.reduce(
 ---
 
 <Layout
-  title="RiftScry — the patch notes, diffed."
+  title={"RiftScry " + String.fromCharCode(8212) + " the patch notes, diffed."}
   description={`League patch ${latest.id}, structured: every buff and nerf as before/after deltas for the champions you actually play.`}
 >
-  <Hero
-    patchId={latest.id}
-    previousId={previousId}
-    releaseDate={latest.releaseDate}
-    orbitDeltas={orbitDeltas}
-  />
-  <WallOfNotes patchId={latest.id} lines={wallLines} totalChanges={totalChanges} />
-  <YourChampions
-    exemplar={EXEMPLAR}
-    fieldIds={fieldIds}
-    meta={meta}
-    assetVersion={assetVersion}
-    exemplarChanges={exemplarChanges}
-  />
-  <TheDelta deltas={bigDeltas} />
-  <HistoryScene
-    championId={historyChampion.id}
-    name={meta[historyChampion.id]?.name ?? historyChampion.id}
-    history={historyChampion.history}
-  />
-  <RoleImpact patchId={latest.id} roleCounts={roleCounts} />
-  <OpenSourceScene fragment={schemaFragment} seasonChangeTotal={seasonChangeTotal} patchCount={patches.length} />
-  <Closing patchId={latest.id} />
+  <CinematicHome patchIds={patches.slice(0, 3).map((patch) => patch.id)}>
+    <HeroPortal patchId={latest.id} previousId={previousId} releaseDate={latest.releaseDate} />
+    <SignalField
+      patchId={latest.id}
+      lines={wallLines}
+      totalChanges={totalChanges}
+      champions={signalChampions}
+      candidates={signalCandidates}
+      exemplarChanges={exemplarChanges}
+      handoff={bigDeltas[0]}
+    />
+    <DeltaStage deltas={bigDeltas} />
+    <HistoryWeave
+      patchId={latest.id}
+      championId={historyChampion.id}
+      name={meta[historyChampion.id]?.name ?? historyChampion.id}
+      history={historyChampion.history}
+      art={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${historyChampion.id}_0.jpg`}
+      roles={roleCounts}
+      comparison={comparison}
+    />
+    <SourceReturn
+      patchId={latest.id}
+      fragment={schemaFragment}
+      seasonChangeTotal={seasonChangeTotal}
+      patchCount={patches.length}
+      sourceUrl={latest.sourceUrl}
+    />
+  </CinematicHome>
 </Layout>
 
 <script>

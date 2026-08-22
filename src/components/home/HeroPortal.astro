@@ -1,0 +1,32 @@
+---
+interface Props {
+  patchId: string;
+  previousId: string;
+  releaseDate: string;
+}
+
+const { patchId, previousId, releaseDate } = Astro.props;
+const date = new Date(releaseDate + "T00:00:00Z").toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  timeZone: "UTC",
+});
+---
+
+<section class="station st-hero" data-station="hero" data-scene="hero" aria-labelledby="hero-title">
+  <p class="st-hero__meta num" data-hero-meta>Patch {patchId} / live {date}</p>
+
+  <div class="st-hero__versions num" aria-label={`Patch ${previousId} changed to ${patchId}`}>
+    <span class="st-hero__version st-hero__version--old" data-version-old>{previousId}</span>
+    <span class="st-hero__version st-hero__version--current" data-version-current>{patchId}</span>
+  </div>
+
+  <div class="st-hero__copy" data-hero-copy>
+    <h1 id="hero-title">Something changed.</h1>
+    <p>The patch notes, diffed for the champions you play.</p>
+    <div class="home-actions">
+      <a class="home-action home-action--primary" href={`/patch/${patchId}`}>Explore {patchId}</a>
+      <a class="home-action" href="/pool">Choose champions</a>
+    </div>
+  </div>
+</section>

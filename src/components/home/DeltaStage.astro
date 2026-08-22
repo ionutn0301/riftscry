@@ -1,0 +1,54 @@
+---
+interface Delta {
+  champion: string;
+  stat: string;
+  patchId: string;
+  before: string;
+  after: string;
+  direction: string;
+  rel: string | null;
+}
+
+interface Props {
+  deltas: Delta[];
+}
+
+const { deltas } = Astro.props;
+---
+
+<!-- One before/after state occupies the camera plane at a time; the retired
+     state recedes past the lens and the next arrives from depth. -->
+<section class="station st-delta" data-station="delta" data-scene="delta" aria-labelledby="delta-title">
+  <div class="st-delta__copy" data-delta-copy>
+    <h2 id="delta-title">Before becomes after.</h2>
+    <p>Exact values. No interpretation layer.</p>
+  </div>
+
+  <div class="st-delta__frames" data-delta-frames>
+    {
+      deltas.map((delta, index) => (
+        <figure
+          class:list={["delta-frame", `delta-frame--${delta.direction}`, index === 0 && "is-current"]}
+          data-delta-frame
+          data-frame-index={index}
+        >
+          <a href={`/patch/${delta.patchId}`} aria-label={`${delta.champion} ${delta.stat}, ${delta.before} to ${delta.after}`}>
+            <span class="delta-frame__value num">
+              <span class="delta-frame__before" data-delta-before>{delta.before}</span>
+              <span class="delta-frame__arrow" data-delta-arrow aria-hidden="true">→</span>
+              <span class="delta-frame__after" data-delta-after>{delta.after}</span>
+            </span>
+            <figcaption>
+              <strong>{delta.champion}</strong>
+              <span>{delta.stat}</span>
+              <span class="num">patch {delta.patchId}{delta.rel ? ` / ${delta.rel}` : ""}</span>
+              <span class={`delta-frame__direction delta-frame__direction--${delta.direction}`}>
+                {delta.direction === "buff" ? "▲ Buff" : "▼ Nerf"}
+              </span>
+            </figcaption>
+          </a>
+        </figure>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,43 @@
+---
+interface Props {
+  patchId: string;
+  fragment: string;
+  seasonChangeTotal: number;
+  patchCount: number;
+  sourceUrl: string;
+}
+
+const { patchId, fragment, seasonChangeTotal, patchCount, sourceUrl } = Astro.props;
+---
+
+<!-- Role paths align into these indentation guides; the code collapses back
+     into the seam and the stage emblem reassembles from the frame edges. -->
+<section class="station st-source" data-station="source" data-scene="source" aria-labelledby="source-title">
+  <div class="st-source__copy" data-source-copy>
+    <h2 id="source-title">See the source. Then see your patch.</h2>
+    <p class="st-source__proof">Static. Inspectable. Versioned.</p>
+    <p>
+      <span class="num">{seasonChangeTotal}</span> changes across <span class="num">{patchCount}</span> patches.
+      Every value traces to the official notes.
+    </p>
+    <div class="st-source__links">
+      <a class="home-action" href="https://github.com/riftscry/riftscry">View source on GitHub</a>
+      <a class="home-action" href={sourceUrl}>Official patch notes</a>
+    </div>
+  </div>
+
+  <div class="st-source__ledger" data-source-ledger>
+    <div class="st-source__guides" aria-hidden="true" data-source-guides>
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <pre class="st-source__code num" aria-label="Example of normalized RiftScry patch data" data-source-code><code>{fragment}</code></pre>
+  </div>
+
+  <div class="st-source__closing" data-source-closing>
+    <p>Queue informed.</p>
+    <div class="home-actions">
+      <a class="home-action home-action--primary" href={`/patch/${patchId}`}>Explore {patchId}</a>
+      <a class="home-action" href="/pool">Choose champions</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,56 @@
+---
+/**
+ * THESIS: one traceable line of change, never a feature-section stack.
+ * OWN WORLD: warm ink, cream enamel, restrained gold, monumental patch numerals.
+ * STORY: cross the mark, isolate a pool, read the delta, trace the source.
+ * FIRST VIEWPORT: live patch and actions counterweight an architectural monogram.
+ * FORM: ONE sticky stage inside one tall track; every scene is a layer of the
+ * same composition, driven by a single master timeline. Persistent matter (the
+ * gold seam, the archive numerals, the emblem) are single DOM nodes that
+ * transform across every beat — nothing hands off by fading.
+ */
+import "../../styles/home.css";
+import RiftMark from "./RiftMark.astro";
+
+interface Props {
+  patchIds: string[];
+}
+
+const { patchIds } = Astro.props;
+---
+
+<div class="cinematic-home" data-home-world>
+  <div class="journey" data-journey-track>
+    <div class="journey__stage" data-journey-stage>
+      <!-- Persistent environment: the version archive. Lives across every beat. -->
+      <div class="journey__env" aria-hidden="true" data-env>
+        {
+          patchIds.slice(0, 3).map((patchId, index) => (
+            <span
+              class:list={["env-num", "num", index === 1 && "env-num--engraved"]}
+              data-env-num
+              style={`--i:${index}`}
+            >
+              {patchId}
+            </span>
+          ))
+        }
+        <span class="env-stratum" data-env-stratum style="--i:0"></span>
+        <span class="env-stratum" data-env-stratum style="--i:1"></span>
+        <span class="env-echo" data-env-echo style="--i:0"></span>
+        <span class="env-echo" data-env-echo style="--i:1"></span>
+        <span class="env-echo" data-env-echo style="--i:2"></span>
+      </div>
+
+      <slot />
+
+      <!-- The emblem: opening object, architecture, threshold, final reconstruction. -->
+      <div class="journey__emblem" data-emblem aria-hidden="true">
+        <RiftMark eager />
+      </div>
+
+      <!-- THE seam. One element. It never fades and it never leaves the frame. -->
+      <div class="journey__seam" data-seam aria-hidden="true"><span></span></div>
+    </div>
+  </div>
+</div>

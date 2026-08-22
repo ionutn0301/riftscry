@@ -1,0 +1,110 @@
+---
+interface SignalChampion {
+  id: string;
+  name: string;
+  art: string;
+  historyCount: number;
+}
+
+interface HandoffDelta {
+  champion: string;
+  stat: string;
+  patchId: string;
+  before: string;
+  after: string;
+  direction: string;
+}
+
+interface Props {
+  patchId: string;
+  lines: string[];
+  totalChanges: number;
+  champions: SignalChampion[];
+  candidates: SignalChampion[];
+  exemplarChanges: number;
+  handoff?: HandoffDelta;
+}
+
+const { patchId, lines, totalChanges, champions, candidates, exemplarChanges, handoff } = Astro.props;
+const ghost = champions[0]!;
+---
+
+<!-- The world behind the emblem. Revealed through the mark's negative space;
+     its clip window is driven by the master timeline in lockstep with the
+     emblem's scale, so the crossing is a real passage, not a swap. -->
+<section class="station st-signal" data-station="signal" data-scene="signal" aria-labelledby="signal-title">
+  <div class="st-signal__backdrop" aria-hidden="true" data-signal-backdrop></div>
+
+  <img
+    class="st-signal__ghost"
+    src={ghost.art}
+    alt=""
+    width="308"
+    height="560"
+    loading="eager"
+    decoding="async"
+    data-signal-ghost
+  />
+
+  <div class="st-signal__noise" data-signal-noise aria-hidden="true">
+    {
+      lines.slice(0, 18).map((line, index) => (
+        <span class="signal-strip num" data-signal-strip style={`--strip-index:${index}`}>{line}</span>
+      ))
+    }
+  </div>
+
+  <div
+    class="st-signal__champions"
+    data-champion-apertures
+    data-pool-candidates={JSON.stringify(candidates)}
+  >
+    {
+      champions.map((champion, index) => (
+        <a
+          class:list={["champion-aperture", index === 0 && "is-front"]}
+          href={`/champion/${champion.id.toLowerCase()}`}
+          data-champion-aperture
+          data-champion-id={champion.id}
+        >
+          <img
+            src={champion.art}
+            alt={`${champion.name} champion art`}
+            width="308"
+            height="560"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="champion-aperture__veil" aria-hidden="true"></span>
+          <span class="champion-aperture__name" data-champion-name>{champion.name}</span>
+          <span class="champion-aperture__trace num" data-champion-trace>
+            {champion.historyCount} season entries
+          </span>
+          {
+            index === 0 && handoff && (
+              <span class:list={["champion-aperture__handoff", `champion-aperture__handoff--${handoff.direction}`]} data-handoff-ui>
+                <span class="champion-aperture__handoff-label">Resolved signal</span>
+                <span class="champion-aperture__handoff-value num">
+                  <s>{handoff.before}</s><i aria-hidden="true">→</i><b>{handoff.after}</b>
+                </span>
+                <span class="champion-aperture__handoff-meta num">
+                  {handoff.champion} / {handoff.stat} / {handoff.patchId}
+                </span>
+              </span>
+            )
+          }
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="st-signal__copy" data-signal-copy>
+    <h2 id="signal-title">Only your champions survive the cut.</h2>
+    <p>Your pool lives in this browser. Every patch bends around it.</p>
+    <p class="st-signal__measure num" data-signal-status>
+      {totalChanges} changes in {patchId} / {champions.length} champions / {exemplarChanges} season entries
+    </p>
+  </div>
+
+  <a class="st-signal__pool-link home-action" href="/pool" data-signal-action>Build your pool</a>
+</section>

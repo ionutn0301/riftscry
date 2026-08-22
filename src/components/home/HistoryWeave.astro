@@ -1,0 +1,104 @@
+---
+import type { HistoryEntry } from "../../lib/data";
+
+interface RoleCount {
+  role: string;
+  buffs: number;
+  nerfs: number;
+  adjusted: number;
+}
+
+interface Comparison {
+  newer: string;
+  older: string;
+  patchCount: number;
+  championCount: number;
+  itemCount: number;
+  systemCount: number;
+}
+
+interface Props {
+  patchId: string;
+  championId: string;
+  name: string;
+  history: HistoryEntry[];
+  art: string;
+  roles: RoleCount[];
+  comparison: Comparison;
+}
+
+const { patchId, championId, name, history, art, roles, comparison } = Astro.props;
+const roleLabel: Record<string, string> = {
+  top: "Top",
+  jungle: "Jungle",
+  mid: "Mid",
+  adc: "ADC",
+  support: "Support",
+};
+---
+
+<!-- The seam is the rail here: history nodes ride it, two version planes cross
+     it for comparison, and the role paths fork away from it. -->
+<section class="station st-history" data-station="history" data-scene="history" aria-labelledby="history-title">
+  <img
+    class="st-history__portrait"
+    src={art}
+    alt=""
+    width="308"
+    height="560"
+    loading="lazy"
+    decoding="async"
+    data-history-portrait
+  />
+
+  <div class="st-history__copy" data-history-copy>
+    <h2 id="history-title">Every patch leaves a trace.</h2>
+    <p>
+      {name} changed in <span class="num">{history.length}</span> season patches. Follow every value back to its source.
+    </p>
+    <a class="home-action" href={`/champion/${championId.toLowerCase()}`}>Read {name}'s history</a>
+  </div>
+
+  <div class="st-history__timeline-field" data-history-field>
+    <ol class="st-history__timeline" data-history-timeline aria-label={`${name} patch history`}>
+      {
+        history.map((entry) => (
+          <li data-history-node>
+            <a href={`/patch/${entry.patchId}#${championId.toLowerCase()}`}>
+              <span class="num">{entry.patchId}</span>
+              <span>{entry.change.classification}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <a
+    class="st-history__compare"
+    href={`/compare/${comparison.newer}/${comparison.older}`}
+    data-compare-plane
+  >
+    <span class="st-history__compare-versions num">
+      <b>{comparison.older}</b><i aria-hidden="true">→</i><b>{comparison.newer}</b>
+    </span>
+    <span>Compare {comparison.patchCount} {comparison.patchCount === 1 ? "patch" : "patches"}</span>
+    <span class="num">
+      {comparison.championCount} champions / {comparison.itemCount} items / {comparison.systemCount} systems
+    </span>
+  </a>
+
+  <nav class="st-history__roles" aria-label={`Patch ${patchId} by role`} data-role-paths>
+    {
+      roles.map((role, index) => (
+        <a href={`/patch/${patchId}?role=${role.role}`} data-role-path style={`--path-index:${index}`}>
+          <span class="st-history__role-fork" aria-hidden="true"></span>
+          <span class="st-history__role-name">{roleLabel[role.role]}</span>
+          <span class="num" aria-label={`${role.buffs} buffs, ${role.nerfs} nerfs, ${role.adjusted} adjusted`}>
+            ▲ {role.buffs} / ▼ {role.nerfs} / ◆ {role.adjusted}
+          </span>
+        </a>
+      ))
+    }
+  </nav>
+</section>

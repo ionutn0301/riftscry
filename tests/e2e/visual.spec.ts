@@ -5,13 +5,15 @@ import { test, expect } from "@playwright/test";
 // `pnpm exec playwright test tests/e2e/visual.spec.ts --update-snapshots`.
 test.skip(process.platform !== "win32", "visual baselines are win32-rendered");
 
-// Mask everything non-deterministic: ddragon portraits (network) and
-// latest-patch-dependent hero content (changes every ingestion).
+// Mask remote imagery on product routes. The homepage baseline intentionally
+// renders its committed patch data: the patch numerals are core composition,
+// and masking them would conceal the emblem aperture we need to review.
 const maskRemote = (page: import("@playwright/test").Page) => [
   page.locator("img[src*='ddragon']"),
-  page.locator("[data-hero-number]"),
-  page.locator("[data-hero-kicker]"),
-  page.locator("[data-hero-orbit]"),
+  page.locator("[data-version-current]"),
+  page.locator("[data-version-old]"),
+  page.locator("[data-hero-meta]"),
+  page.locator("[data-portal-preview]"),
 ];
 
 test("homepage hero end state", async ({ page }) => {
@@ -20,7 +22,6 @@ test("homepage hero end state", async ({ page }) => {
   await page.waitForTimeout(300);
   await expect(page).toHaveScreenshot("hero.png", {
     maxDiffPixelRatio: 0.02,
-    mask: maskRemote(page),
   });
 });
 

@@ -3,12 +3,11 @@ import { readdirSync } from "node:fs";
 
 test.use({ contextOptions: { reducedMotion: "reduce" } });
 
-// Latest patch id from the committed data — never hardcode it, or every
-// automated data PR would fail this suite.
+// Latest patch id from the committed data so data PRs do not stale this suite.
 function latestPatchId(): string {
   return readdirSync("src/data/patches")
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => f.replace(/\.json$/, ""))
+    .filter((file) => file.endsWith(".json"))
+    .map((file) => file.replace(/\.json$/, ""))
     .sort((a, b) => {
       const [am = 0, an = 0] = a.split(".").map(Number);
       const [bm = 0, bn = 0] = b.split(".").map(Number);
@@ -16,25 +15,24 @@ function latestPatchId(): string {
     })[0]!;
 }
 
-test("reduced motion: full content readable, no pinned scrubbing", async ({ page }) => {
+test("reduced motion: full journey is readable without camera travel", async ({ page }) => {
   await page.goto("/");
-  // No ScrollTrigger pin spacers in the DOM.
   await expect(page.locator(".pin-spacer")).toHaveCount(0);
-  // The patch number shows its final state.
-  await expect(page.locator("[data-hero-number]")).toContainText(latestPatchId());
-  // All eight scene headings reachable by plain scrolling.
+  await expect(page.locator("[data-version-current]")).toContainText(latestPatchId());
+
   for (const heading of [
-    /Your main got nerfed/,
-    /You don't play every champion/,
-    /champions\./,
-    /See the delta/,
-    /Git history/,
-    /Your lane felt it too/,
-    /open source/,
-    /Queue informed/,
+    /Something changed/,
+    /Only your champions survive the cut/,
+    /Before becomes after/,
+    /Every patch leaves a trace/,
+    /See the source/,
   ]) {
-    const h = page.getByRole("heading", { name: heading }).first();
-    await h.scrollIntoViewIfNeeded();
-    await expect(h).toBeVisible();
+    const element = page.getByRole("heading", { name: heading }).first();
+    await element.scrollIntoViewIfNeeded();
+    await expect(element).toBeVisible();
   }
+
+  const closing = page.getByText("Queue informed.", { exact: true });
+  await closing.scrollIntoViewIfNeeded();
+  await expect(closing).toBeVisible();
 });
