@@ -24,12 +24,13 @@ describe("real dataset", () => {
   it("loads all season patches sorted desc", () => {
     const all = getAllPatches();
     expect(all.length).toBeGreaterThanOrEqual(16);
-    expect(all[0]!.id).toBe("26.16");
+    const ids = all.map((patch) => patch.id);
+    expect(ids).toEqual(sortPatchIds(ids));
     expect(all[all.length - 1]!.id).toBe("26.1");
   });
 
-  it("getLatestPatch returns 26.16", () => {
-    expect(getLatestPatch().id).toBe("26.16");
+  it("getLatestPatch returns the first patch", () => {
+    expect(getLatestPatch()).toEqual(getAllPatches()[0]);
   });
 
   it("getPatch finds by id and misses gracefully", () => {
