@@ -1,0 +1,576 @@
+{
+  "schemaVersion": 1,
+  "id": "26.20",
+  "assetVersion": "16.20.1",
+  "releaseDate": "2026-10-06",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+  "ingestedAt": "2026-10-07T12:47:45.820Z",
+  "champions": [
+    {
+      "championId": "Ambessa",
+      "classification": "adjustment",
+      "summary": "Ambessa has been too reliable in her late game output for players with high mastery in all brackets, but especially pro-play.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Drakehound's Step",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "5 - 30 (+25% bonus AD)",
+              "after": "5 - 25 (+20% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ashe",
+      "classification": "nerf",
+      "summary": "Ashe is one of the premier marksmen in pro play at the moment, and we're seeing her output too much raw damage given her position as the highest utility marksman in the game.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage per Level",
+              "before": "3.5",
+              "after": "3",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Cassiopeia",
+      "classification": "nerf",
+      "summary": "Our changes two patches ago to Cassiopeia have been pretty good directionally, with most players being proportionally less impacted from those adjustments than pros.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Health",
+              "before": "630",
+              "after": "610",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Base Mana",
+              "before": "480",
+              "after": "450",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Diana",
+      "classification": "buff",
+      "summary": "While Diana's assassin build shines, her bruiser builds tend to be lagging a good bit behind.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Pale Cascade",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Shield Bonus Health Ratio",
+              "before": "11%",
+              "after": "14%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kennen",
+      "classification": "buff",
+      "summary": "Stacking the odds a bit more in his favor with his signature spell (in Riftbound) and offsetting Rocketbelt changes that he'll be a bit less excited about.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Lightning Rush",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Attack Speed",
+              "before": "40 / 50 / 60 / 70 / 80%",
+              "after": "50 / 60 / 70 / 80 / 90%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kindred",
+      "classification": "buff",
+      "summary": "Kindred is currently a bit weak, so we're giving them buffs in areas that won't make them much more overwhelming in early invades.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Wolf's Frenzy",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Mod",
+              "before": "150%",
+              "after": "165%",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Mounting Dread",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Slow Duration",
+              "before": "1s",
+              "after": "1.5s",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Small Monster Targeting",
+              "before": "Enabled",
+              "after": "Removed",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "KSante",
+      "classification": "nerf",
+      "summary": "Warding off this warden from being as reliable as a blind pick in coordinated play - hurting early mana and consistent W damage reduction, which should be skewed for elite audiences.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Path Maker",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "40 / 45 / 50 / 55 / 60",
+              "after": "45 / 50 / 55 / 60 / 65",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "W Base/All-Out Damage Reduction",
+              "before": "30 / 75%",
+              "after": "25 / 70%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Lillia",
+      "classification": "adjustment",
+      "summary": "Last patch we looked to inject a bit more power into the deer, but didn't quite see the movement we were looking for.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Lilting Lullaby",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Duration",
+              "before": "2.5s",
+              "after": "2.5 / 2.75 / 3s",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Lucian",
+      "classification": "adjustment",
+      "summary": "Last patch's adjustment to help normalize mid and bot performance ended up landing as a nerf for bot lane, so we're following up with a buff to make up for the lost power.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage",
+              "before": "60 + 2.5/Level",
+              "after": "60 + 2.9/Level",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Mordekaiser",
+      "classification": "buff",
+      "summary": "Windows between Mordekaiser's ultimates make it hard to keep up with the pace of much of his opposition.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Obliterate",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Scaling Level 10-20",
+              "before": "(+5/lvl)",
+              "after": "(+7/lvl)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Realm of Death",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "140 / 120 / 100s",
+              "after": "120 / 110 / 100s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Neeko",
+      "classification": "buff",
+      "summary": "Rocketbelt's adjustment this patch will probably land as a small nerf for Neeko, so we're giving her some minor compensation",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Tangle-Barbs",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "70 / 105 / 140 / 175 / 210 (+65% AP)",
+              "after": "80 / 115 / 150 / 185 / 220 (+65% AP)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Empowered Root Duration",
+              "before": "1.8 / 2.1 / 2.4 / 2.7 / 3s",
+              "after": "2 / 2.25 / 2.5 / 2.75 / 3s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Smolder",
+      "classification": "adjustment",
+      "summary": "Smolder has lost quite a bit of power over the last few patches, with the Cleaver ranged nerf and bot lane meta changes disfavoring him significantly.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Dragon Practice",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Super Scorcher Bonus Magic Damage",
+              "before": "25 - 55% (+0-9% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+              "after": "25 - 60% (+0-10.5% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Flap Flap Flap Bonus Magic Damage",
+              "before": "8 - 12.8% (+0-1.44% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+              "after": "8 - 14% (+0-1.8% with IE) of Dragon Practice Stacks, scaling with Crit Chance",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Mmooommmm!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Self Heal",
+              "before": "100 / 135 / 170 (+50% bonus AD) (+75% AP)",
+              "after": "100 / 175 / 250 (+75% bonus AD) (+75% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Swain",
+      "classification": "adjustment",
+      "summary": "We're giving Swain mid a moderate buff this patch while also making an adjustment that should help normalize his mid and bot lane performance.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Magic Resistance",
+              "before": "31",
+              "after": "34",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Base Armor",
+              "before": "25",
+              "after": "23",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Vision of Empire",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "70 / 105 / 140 / 175 / 210 (+60%)",
+              "after": "70 / 115 / 160 / 205 / 250 (+60%)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "22 / 21 / 20 / 19 / 18s",
+              "after": "20 / 19 / 18 / 17 / 16s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "TahmKench",
+      "classification": "adjustment",
+      "summary": "As one of the tank supports with the lowest health regen, and many health scaling values on his abilities, Tahm Kench lost out on the recent adjustments to the support item.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Tongue Lash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Healing",
+              "before": "10 / 13.75 / 17.5 / 21.25 / 25",
+              "after": "10 / 20 / 30 / 40 / 50",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Vayne",
+      "classification": "buff",
+      "summary": "Vayne has settled into a fairly weak spot, and while we still aren't totally happy with her top vs bot skew, we're getting closer.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health per 5",
+              "before": "4 + .5/Level",
+              "after": "5.5 +.4/Level",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Tumble",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "46 / 42 / 38 / 34 / 30",
+              "after": "30",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yunara",
+      "classification": "nerf",
+      "summary": "Yunara is the leading candidate for \"handshake hyperscaler do nothing\" and we want to avoid that becoming the dominant meta, especially heading into worlds.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Cultivation of Spirit",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Passive On Hit Damage",
+              "before": "5 / 10 / 15 / 20 / 25 (+20% AP)",
+              "after": "3 / 8 / 13 / 18 / 23 (+20% AP)",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Active On Hit Damage",
+              "before": "5 / 10 / 15 / 20 / 25 (+20% AP)",
+              "after": "3 / 8 / 13 / 18 / 23 (+20% AP)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Arc of Judgement",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Slow Stacking",
+              "before": "Stacks with other slows",
+              "after": "No longer stacks with other slows",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Experimental Hexplate",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Ranged Mod",
+          "before": "70% of Value (35% Attack Speed, 14% Move Speed)",
+          "after": "50% of Value (25% Attack Speed, 10% Move Speed)",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Ability Haste",
+          "before": "20",
+          "after": "10",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Active Damage",
+          "before": "100 (+10% AP)",
+          "after": "135 (+15% AP)",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Attack Damage per Bolt",
+          "before": "65%",
+          "after": "60%",
+          "direction": "nerf"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Death's Dance"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Haunting Guise"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Liandry's Torment"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Riftmaker"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Kraken Slayer"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Terminus"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Guinsoo's Rageblade"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fiendhunter Bolts"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Echoes of Helia"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Dead Man's Plate"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Spear of Shojin"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Overlord's Bloodmail"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Hullbreaker"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Jak'sho the Protean"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Force of Nature"
+        }
+      ]
+    }
+  ],
+  "systems": []
+}

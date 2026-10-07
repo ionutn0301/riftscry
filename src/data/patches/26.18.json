@@ -1,0 +1,639 @@
+{
+  "schemaVersion": 1,
+  "id": "26.18",
+  "assetVersion": "16.18.1",
+  "releaseDate": "2026-09-09",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-18-notes/",
+  "ingestedAt": "2026-10-07T12:47:46.351Z",
+  "champions": [
+    {
+      "championId": "Bard",
+      "classification": "nerf",
+      "summary": "Bard has been a meta staple for much of the year.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor",
+              "before": "34 + 5/Level",
+              "after": "32 + 4.7/Level",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Cassiopeia",
+      "classification": "adjustment",
+      "summary": "Cassio has always scaled with skill, but this year has propelled her to new heights of pro play dominance despite being weaker for average players.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Serpentine Grace",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Move Speed Bonus",
+              "before": "6% - 40% (based on level)",
+              "after": "5% - 36% (based on level)",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Noxious Blast",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "75 / 110 / 145 / 180 / 215",
+              "after": "65 / 100 / 135 / 170 / 205",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Ability Power Ratio",
+              "before": "65%",
+              "after": "75%",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Twin Fang",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "40",
+              "after": "45",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Base Ability Power Ratio",
+              "before": "10%",
+              "after": "20%",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Enhanced Ability Power Ratio",
+              "before": "55%",
+              "after": "45%",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total Ability Power Ratio",
+              "before": "65%",
+              "after": "65%",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "52 - 120",
+              "after": "50 - 120",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Petrifying Gaze",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "150 / 250 / 350",
+              "after": "125 / 225 / 325",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Ability Power Ratio",
+              "before": "50%",
+              "after": "75%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ekko",
+      "classification": "buff",
+      "summary": "As one of our assassins that offer opponents a wider mix of gameplay options, Ekko has found a slightly weak steady state since Dusk & Dawn's update mid year.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Timewinder",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "50 / 60 / 70 / 80 / 90",
+              "after": "40 / 50 / 60 / 70 / 80",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Return Damage Ability Power Ratio",
+              "before": "60%",
+              "after": "70%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kassadin",
+      "classification": "buff",
+      "summary": "Kassadin had a strong start to 2026 but hasn't regained his…footing…since our earlier nerfs.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Null Sphere",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Ability Power Ratio",
+              "before": "70% AP",
+              "after": "80% AP",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Riftwalk",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "70 / 90 / 110",
+              "after": "80 / 95 / 110",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "MasterYi",
+      "classification": "buff",
+      "summary": "Yi drew the short end of the stick on the Rageblade bugfix from earlier this year due to his double strike interactions.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor Growth",
+              "before": "33 + 4.5/Level",
+              "after": "33 + 5/Level",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Highlander",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Move Speed",
+              "before": "35 / 45 / 55%",
+              "after": "40 / 50 / 60%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nautilus",
+      "classification": "nerf",
+      "summary": "Nautilus has been sitting near the top of the meta for the entire year, even before our work to bring other tank supports up in power, and we feel nerfing him will open up room for a more variety.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage",
+              "before": "61 + 3.3/Level",
+              "after": "58 + 3.3/Level",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Dredge Line",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "85 / 130 / 175 / 220 / 265 (+90% AP)",
+              "after": "85 / 125 / 165 / 205 / 245 (+90% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Seraphine",
+      "classification": "adjustment",
+      "summary": "Seraphine bot has been a source of frustration for opponents for some time, despite a minor nerf a few patches ago.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Beat Drop",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "11 / 10.5 / 10 / 9.5 / 9s",
+              "after": "11s",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Syndra",
+      "classification": "nerf",
+      "summary": "Our MSI changes were effective at pulling her to the forefront of pro play for the first time in years, but unfortunately she's too performant in specific solo queue settings.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Transcendent",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Splinter Mana",
+              "before": "20 - 255",
+              "after": "20 - 199",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Force of Will",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "12 / 11 / 10 / 9 / 8s",
+              "after": "13 / 12 / 11 / 10 / 9s",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Viego",
+      "classification": "buff",
+      "summary": "Viego's winrate has been on a downward trend recently, and his players have noticed and begun dropping him.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage Growth",
+              "before": "3.5",
+              "after": "4",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Sovereign's Domination",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Heal",
+              "before": "2% (+…. )",
+              "after": "2% (+ 2.5% per 100 bonus AD) (+ 2% per 100 AP) (+ 5% per 100% bonus attack speed) (+ 2% per 500 bonus HP) of the target's maximum health",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zaahen",
+      "classification": "buff",
+      "summary": "We're using a QoL change here as an opportunity to give Zaahen some love!",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "The Darkin Glaive",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Cooldown Behavior",
+              "text": "If Q is active, it is now placed on Cooldown immediately upon being put in Resurrection"
+            },
+            {
+              "kind": "numeric",
+              "label": "Q2 Damage",
+              "before": "25 / 50 / 75 / 100 / 125 (+20 / 25 / 30 / 35 / 40% bonus AD)",
+              "after": "30 / 60 / 90 / 120 / 150 (+20 / 25 / 30 / 35 / 40% bonus AD)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zeri",
+      "classification": "adjustment",
+      "summary": "Zeri has been slowly climbing in winrate with the recent Runaan's Hurricane and Yun Tal Wildarrows buffs.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Ultrashock Laser",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "30 / 70 / 110 / 150 / 190 (+120% tAD)",
+              "after": "30 / 70 / 110 / 150 / 190 (+100% tAD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Wall Damage",
+              "before": "45 / 105 / 165 / 225 / 285 (+180% tAD)",
+              "after": "45 / 105 / 165 / 225 / 285 (+150% tAD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Critical Strike",
+              "text": "150% (+15% IE)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Guinsoo's Rageblade",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Seething Strike Stack Duration",
+          "before": "3s",
+          "after": "4s",
+          "direction": "buff"
+        }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Council - Poll 1 Results",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Reviving all 3 proposed items."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Adding modern jungle timers."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Turtle, Duck."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. Way too short - 1.87%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. Too short - 5.88%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "3. About right - 52.80%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "4. Too long - 26.21%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "5. Way too long - 13.24%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. 30 minutes - 16.75%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. 40 minutes - 32.68%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "3. 50 minutes - 29.29%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "4. 60 minutes - 11.64%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "5. No preferred maximum - 9.63%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. Zz'Rot Portal - 16.16%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. Cloak and Dagger - 3.75%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "3. Moonflair Spellblade - 5.11%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "4. All 3 - 60.67%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "5. None - 14.32%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. Yes – Add modern jungle timers that are always visible on the minimap - 45.74%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. Yes – Only when the scoreboard is open - 23.46%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "3. No – Keep the current minimap - 30.79%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. Yes - 55.03%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. No - 44.97%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. Significantly too snowbally - 8.89%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. Slightly too snowbally - 24.99%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "3. About right - 48.82%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "4. Slightly not snowbally enough - 12.24%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "5. Significantly not snowbally enough - 5.06%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. Yes, I like them - 69.72%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. No, I don't like them - 30.28%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "1. Turtle, Turtle - 11.31%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "2. Turtle, Duck- 52.09%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "3. Duck, Turtle - 28.39%"
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "4. Duck, Duck - 8.21%"
+        }
+      ]
+    },
+    {
+      "name": "Systems",
+      "classification": "system",
+      "changes": []
+    },
+    {
+      "name": "Bugfixes",
+      "classification": "system",
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed a bug where Teemo's traps did not last the appropriate 10 minutes."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed a bug where Akali's Q cast indicator did not accurately reflect its cast range."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed a bug where Akali's W could be cast while moving."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed a bug where Akali's R cast indicator did not accurately reflect its cast range."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed a bug where Skarner's E could heal for less than the full amount."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed a bug where Nidalee's Cougar E hit range was 310 instead of 350."
+        },
+        {
+          "kind": "prose",
+          "label": "Change",
+          "text": "Fixed a bug where Nidalee's Human E cast range was 900 instead of 600."
+        }
+      ]
+    }
+  ]
+}

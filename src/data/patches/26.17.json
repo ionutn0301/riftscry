@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "id": "26.17",
+  "assetVersion": "16.17.1",
+  "releaseDate": "2026-08-25",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+  "ingestedAt": "2026-10-07T12:47:46.583Z",
+  "champions": [
+    {
+      "championId": "AurelionSol",
+      "classification": "buff",
+      "summary": "Aurelion Sol has come out the loser of last patch's mage adjustments, so we are giving him a buff to help him out.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Breath of Light",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost Per Second",
+              "before": "35 / 40 / 45 / 50 / 55",
+              "after": "30 / 35 / 40 / 45 / 50",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Astral Flight",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "22 / 20.5 / 19 / 17.5 / 16s",
+              "after": "22 / 20 / 18 / 16 / 14s",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Chogath",
+      "classification": "buff",
+      "summary": "Cho's early game has lost pizzazz with Hail of Blades and Hextech Rocketbelt nerfs, so we are making it up with a bit of early damage when he does get those autos off.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Vorpal Spikes",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage (x3 attacks)",
+              "before": "20 / 40 / 60 / 80 / 100 (+30% AP) (+2.5% - 3.9% (+.5% Per Feast) Target Max HP)",
+              "after": "30 / 50 / 70 / 90 / 110 (+30% AP) (+2.5% - 3.9% (+.5% Per Feast) Target Max HP)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Graves",
+      "classification": "adjustment",
+      "summary": "Graves has had a number of indirect buffs over the last few patches and this has put him in a pretty strong spot.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "End of the Line",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Initial Damage",
+              "before": "50 / 75 / 100 / 125 / 150 (+65% bonus AD)",
+              "after": "50 / 75 / 100 / 125 / 150 (+55% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Return Damage",
+              "before": "80 / 125 / 170 / 215 / 260 (+55 / 70 / 85 / 100 / 115% bonus AD)",
+              "after": "80 / 125 / 170 / 215 / 260 (+45 / 60 / 75 / 90 / 105% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Irelia",
+      "classification": "buff",
+      "summary": "Irelia is one of League’s highest stakes snowballing dependant skirmishers, but we feel like even when ahead she is failing to scale into a real carry threat",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Bladesurge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "5 / 25 / 45 / 65 / 85 (+70% AD)",
+              "after": "5 / 25 / 45 / 65 / 85 (+80% AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Defiant Dance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage Reduction Ability Power Ratio",
+              "before": "7% per 100 AP (Halved for Magic Damage) (reduced to 75% value for Magic Damage in Arena)",
+              "after": "8% per 100 AP (Halved for Magic Damage) (reduced to 75% value for Magic Damage in Arena)",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Vanguard's Edge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Ability Power Ratio",
+              "before": "70%",
+              "after": "100% (It is already 100% in Arena, so this is standardizing the value)",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Leblanc",
+      "classification": "adjustment",
+      "summary": "With the previous version of Statikk Shiv that drove nerfing her AS ratios no longer in the game, we’re bringing these closer to a typical champion’s baseline.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Ratio",
+              "before": "0.4",
+              "after": "0.625",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Growth",
+              "before": "2.35%",
+              "after": "1.5%",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Distortion",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "75 / 115 / 155 / 195 / 235 (+80% AP)",
+              "after": "75 / 115 / 155 / 195 / 235 (+90% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "other",
+          "name": "RW - Mimic: Distortion",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "150 / 315 / 480 (+80% AP)",
+              "after": "150 / 315 / 480 (+90% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nasus",
+      "classification": "nerf",
+      "summary": "Nasus top has been able to benefit from the shift in his stacking paradigm.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Soul Eater",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Life Steal",
+              "before": "12 / 18 / 24%",
+              "after": "10 / 15 / 20%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nocturne",
+      "classification": "nerf",
+      "summary": "Nocturne has been sitting in a pretty strong state across skill levels for a while.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor",
+              "before": "38",
+              "after": "36",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Health",
+              "before": "655",
+              "after": "640",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Qiyana",
+      "classification": "adjustment",
+      "summary": "Qiyana's play has moved out of primarily mid to jungle.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Elemental Wrath",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "70 / 100 / 130 / 160 / 190 (+85% bonus AD)",
+              "after": "80 / 110 / 140 / 170 / 200 (+90% bonus AD)",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Monster Damage Modifier",
+              "before": "175% against Monsters",
+              "after": "160% against Monsters",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Thresh",
+      "classification": "nerf",
+      "summary": "Thresh has been quietly sitting at a high winrate and picking up playrate over the year.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Flay",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Active Damage",
+              "before": "75 / 120 / 165 / 210 / 255 (+70% AP)",
+              "after": "65 / 110 / 155 / 200 / 245 (+60% AP)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Trundle",
+      "classification": "adjustment",
+      "summary": "Sometimes you just wanna club your opponents to death, and while Trundle has been a resilient utility pick for his pillar and ult, we feel his personal clubbing power has actually been a bit limp.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Frozen Domain",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed",
+              "before": "30 / 45 / 60 / 75 / 90%",
+              "after": "30 / 50 / 70 / 90 / 110%",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Vayne",
+      "classification": "adjustment",
+      "summary": "We believe Vayne may need larger scope work in the future to help out her bot lane, but for now are prioritizing constraining her top lane power.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health",
+              "before": "550 + 103/Level",
+              "after": "580 + 98/Level",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Health Regeneration",
+              "before": "3.5 + .55/Level",
+              "after": "4 + .5/Level",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Ratio",
+              "before": ".658 + 3.3%/Level",
+              "after": ".67 + 2.8%/Level",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Tumble",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "30",
+              "after": "46 / 42 / 38 / 34 / 30",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Silver Bolts",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "True Damage",
+              "before": "6 / 7 / 8 / 9 / 10% Target Max HP",
+              "after": "4 / 5.5 / 7 / 8.5 / 10% Target Max HP",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Minimum Damage",
+              "before": "50 / 65 / 80 / 95 / 110",
+              "after": "40 / 55 / 70 / 85 / 100",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Xerath",
+      "classification": "nerf",
+      "summary": "Xerath has rested slightly high in power both mid and bot, and after last patch's adjustments to mages has come out on top in mid lane compared to others.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health",
+              "before": "596",
+              "after": "575",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Arcanopulse",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "75 / 115 / 155 / 195 / 235 (+90% AP)",
+              "after": "70 / 110 / 150 / 190 / 230 (+90% AP)",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yasuo",
+      "classification": "buff",
+      "summary": "While Yasuo has definitely been able to snowball and carry games, we believe that similar to Irelia, he is too reliant on snowballing rather than just being a proper scaling carry.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Way of the Wanderer",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Critical Strike Damage Reduction",
+              "before": "-10%",
+              "after": "-5%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yone",
+      "classification": "buff",
+      "summary": "Similar to Yasuo, Yone has also been an excessively snowball reliant carry, though less so.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Way of the Hunter",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Critical Strike Damage Reduction",
+              "before": "-10%",
+              "after": "-5%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Stormrazor",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Speed",
+          "before": "20%",
+          "after": "25%",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Sundered Sky",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Health",
+          "before": "450",
+          "after": "400",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "45",
+          "after": "40",
+          "direction": "nerf"
+        }
+      ]
+    }
+  ],
+  "systems": []
+}
