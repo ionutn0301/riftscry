@@ -1,3 +1,6 @@
+overrides:
+  '@monogrid/gainmap-js': 3.6.1
+
 allowBuilds:
   esbuild: true
   sharp: true
