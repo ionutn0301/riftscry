@@ -1,192 +1,23 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import CinematicHome from "../components/home/CinematicHome.astro";
-import HeroPortal from "../components/home/HeroPortal.astro";
-import SignalField from "../components/home/SignalField.astro";
-import DeltaStage from "../components/home/DeltaStage.astro";
-import HistoryWeave from "../components/home/HistoryWeave.astro";
-import SourceReturn from "../components/home/SourceReturn.astro";
-import {
-  getAllPatches,
-  getChampionHistory,
-  getChampionMeta,
-  getLatestPatch,
-  getRoles,
-  type Role,
-} from "../lib/data";
-import { comparePatches } from "../lib/compare";
-import { parseValueSeries, relativeDelta, formatDelta } from "../lib/deltas";
-
-/**
- * Every number on this page is real, computed from the committed season data.
- */
-
-const latest = getLatestPatch();
+import Layout from '../layouts/Layout.astro';
+import Observatory from '../components/home/Observatory';
+import { getAllPatches, getChampionHistory, getChampionMeta } from '../lib/data';
+import type { ObservatoryData } from '../lib/observatory';
+import '../styles/observatory.css';
 const patches = getAllPatches();
+const latest = patches[0]!;
 const meta = getChampionMeta();
-const roles = getRoles();
-const previousId = patches[1]?.id ?? latest.id;
-
-// -- Wall: every change line of the current patch, flattened to text.
-const wallLines: string[] = [];
-for (const c of latest.champions) {
-  for (const a of c.abilities) {
-    for (const ch of a.changes) {
-      const name = meta[c.championId]?.name ?? c.championId;
-      wallLines.push(
-        ch.kind === "numeric"
-          ? `${name} / ${a.name} / ${ch.label}: ${ch.before} → ${ch.after}`
-          : `${name} / ${a.name} / ${ch.label}: ${ch.text}`,
-      );
-    }
-  }
-}
-for (const i of latest.items) {
-  for (const ch of i.changes) {
-    wallLines.push(
-      ch.kind === "numeric"
-        ? `${i.name} / ${ch.label}: ${ch.before} → ${ch.after}`
-        : `${i.name} / ${ch.label}: ${ch.text}`,
-    );
-  }
-}
-const totalChanges = wallLines.length;
-
-// -- Exemplar pool (real data): the four champions + their relevant season entries.
-const EXEMPLAR = ["Ahri", "Jinx", "LeeSin", "Thresh"];
-const exemplarChanges = EXEMPLAR.reduce((n, id) => n + getChampionHistory(id).length, 0);
-
-// A field of champions for the portrait scene: exemplars + recently changed ones.
-const fieldIds = [
-  ...EXEMPLAR,
-  ...patches
-    .flatMap((p) => p.champions.map((c) => c.championId))
-    .filter((id, i, all) => all.indexOf(id) === i && !EXEMPLAR.includes(id))
-    .slice(0, 20),
-];
-const signalCandidates = fieldIds.map((id) => ({
-  id,
-  name: meta[id]?.name ?? id,
-  art: `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`,
-  historyCount: getChampionHistory(id).length,
-}));
-const signalChampions = EXEMPLAR.map((id) => signalCandidates.find((champion) => champion.id === id)!);
-
-// -- The Delta scene: three big single-value deltas from recent patches.
-type BigDelta = { champion: string; stat: string; patchId: string; before: string; after: string; direction: string; rel: string | null };
-const bigDeltas: BigDelta[] = [];
-outer: for (const p of patches) {
-  for (const c of p.champions) {
-    for (const a of c.abilities) {
-      for (const ch of a.changes) {
-        if (ch.kind !== "numeric" || ch.direction === "neutral") continue;
-        const b = parseValueSeries(ch.before);
-        const aft = parseValueSeries(ch.after);
-        if (b.length === 1 && aft.length === 1 && ch.before.length <= 5 && ch.after.length <= 5) {
-          bigDeltas.push({
-            champion: meta[c.championId]?.name ?? c.championId,
-            stat: ch.label,
-            patchId: p.id,
-            before: ch.before,
-            after: ch.after,
-            direction: ch.direction,
-            rel: formatDelta(relativeDelta(ch.before, ch.after)),
-          });
-          if (bigDeltas.length >= 3) break outer;
-        }
-      }
-    }
-  }
-}
-
-// -- History scene: the champion with the busiest season.
-const historyChampion = Object.keys(meta)
-  .map((id) => ({ id, history: getChampionHistory(id) }))
-  .sort((a, b) => b.history.length - a.history.length)[0]!;
-
-// -- Role impact: real counts per role for the current patch.
-const roleCounts = (["top", "jungle", "mid", "adc", "support"] as Role[]).map((role) => {
-  const members = latest.champions.filter((c) => (roles[c.championId] ?? []).includes(role));
-  return {
-    role,
-    buffs: members.filter((c) => c.classification === "buff").length,
-    nerfs: members.filter((c) => c.classification === "nerf").length,
-    adjusted: members.filter((c) => !["buff", "nerf"].includes(c.classification)).length,
-  };
-});
-
-const comparisonResult = comparePatches(latest.id, previousId, patches);
-const comparison = {
-  newer: comparisonResult.newer,
-  older: comparisonResult.older,
-  patchCount: comparisonResult.span.length,
-  championCount: comparisonResult.champions.length,
-  itemCount: comparisonResult.items.length,
-  systemCount: comparisonResult.systems.length,
+const ids = [...new Set([...latest.champions.map(c => c.championId), 'Ahri', 'Jinx', 'Thresh', 'LeeSin'])].slice(0, 6);
+const data: ObservatoryData = {
+  latest: latest.id, date: latest.releaseDate, source: latest.sourceUrl,
+  champions: ids.map(id => {
+    const entry = getChampionHistory(id)[0];
+    return { id, name: meta[id]?.name ?? id, title: meta[id]?.title ?? '', patch: entry?.patchId ?? latest.id, classification: entry?.change.classification ?? 'unchanged', changes: entry?.change.abilities.flatMap(a => a.changes.map(c => c.kind === 'numeric' ? { label: `${a.name} · ${c.label}`, before: c.before, after: c.after } : { label: `${a.name} · ${c.label}`, text: c.text })) ?? [] };
+  }),
+  patches: patches.slice(0, 8).map(p => ({ id: p.id, date: p.releaseDate, count: p.champions.length }))
 };
-
-// -- Open source scene: a real fragment of the current patch's data.
-const firstChampion = latest.champions[0]!;
-const schemaFragment = JSON.stringify(
-  {
-    id: latest.id,
-    releaseDate: latest.releaseDate,
-    sourceUrl: latest.sourceUrl,
-    champions: [
-      {
-        championId: firstChampion.championId,
-        classification: firstChampion.classification,
-        abilities: firstChampion.abilities.slice(0, 1),
-      },
-    ],
-  },
-  null,
-  2,
-);
-
-const seasonChangeTotal = patches.reduce(
-  (n, p) =>
-    n +
-    p.champions.reduce((m, c) => m + c.abilities.reduce((k, a) => k + a.changes.length, 0), 0),
-  0,
-);
 ---
-
-<Layout
-  title={"RiftScry " + String.fromCharCode(8212) + " Enter the Rift."}
-  description={`Journey through League patch ${latest.id}. Follow the changes, discover your champions’ before-and-after deltas, and trace every shift to its source.`}
->
-  <CinematicHome patchIds={patches.slice(0, 3).map((patch) => patch.id)}>
-    <HeroPortal patchId={latest.id} previousId={previousId} releaseDate={latest.releaseDate} />
-    <SignalField
-      patchId={latest.id}
-      lines={wallLines}
-      totalChanges={totalChanges}
-      champions={signalChampions}
-      candidates={signalCandidates}
-      exemplarChanges={exemplarChanges}
-      handoff={bigDeltas[0]}
-    />
-    <DeltaStage deltas={bigDeltas} />
-    <HistoryWeave
-      patchId={latest.id}
-      championId={historyChampion.id}
-      name={meta[historyChampion.id]?.name ?? historyChampion.id}
-      history={historyChampion.history}
-      art={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${historyChampion.id}_0.jpg`}
-      roles={roleCounts}
-      comparison={comparison}
-    />
-    <SourceReturn
-      patchId={latest.id}
-      fragment={schemaFragment}
-      seasonChangeTotal={seasonChangeTotal}
-      patchCount={patches.length}
-      sourceUrl={latest.sourceUrl}
-    />
-  </CinematicHome>
+<Layout title="RiftScry — A new perspective on the Rift" description={`An interactive observatory of League of Legends patch ${latest.id}. Explore your champions, inspect every change, and trace the history.`}>
+  <Observatory client:load data={data} />
+  <noscript><section class="observatory-static"><h1>A new perspective on the Rift.</h1><p>Explore the latest recorded patch, {latest.id}.</p><a href={`/patch/${latest.id}`}>Read patch {latest.id}</a><a href="/pool">Explore champions</a></section></noscript>
 </Layout>
-
-<script>
-  import "../scripts/home-motion";
-</script>
