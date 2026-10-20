@@ -22,8 +22,10 @@ const date = new Date(releaseDate + "T00:00:00Z").toLocaleDateString("en-US", {
   </div>
 
   <div class="st-hero__copy" data-hero-copy>
-    <h1 id="hero-title">Something changed.</h1>
-    <p>The patch notes, diffed for the champions you play.</p>
+    <span class="st-hero__eyebrow">The Rift never stands still</span>
+    <h1 id="hero-title">Something<br />changed.</h1>
+    <p>Every shift leaves a trace.<br />Follow it. Know what comes next.</p>
+    <a class="journey-enter" href="#signal-title" data-enter-journey><span>Enter the Rift</span><span aria-hidden="true">→</span></a>
     <div class="home-actions">
       <a class="home-action home-action--primary" href={`/patch/${patchId}`}>Explore {patchId}</a>
       <a class="home-action" href="/pool">Choose champions</a>

@@ -6,5 +6,6 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://riftscry.pages.dev",
   output: "static",
+  devToolbar: { enabled: false },
   integrations: [react(), sitemap()],
 });
