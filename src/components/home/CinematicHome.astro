@@ -10,7 +10,10 @@
  * transform across every beat — nothing hands off by fading.
  */
 import "../../styles/home.css";
+import "../../styles/journey-world.css";
 import RiftMark from "./RiftMark.astro";
+import RiftEnvironment from "./RiftEnvironment.astro";
+import JourneyControls from "./JourneyControls.astro";
 
 interface Props {
   patchIds: string[];
@@ -22,6 +25,8 @@ const { patchIds } = Astro.props;
 <div class="cinematic-home" data-home-world>
   <div class="journey" data-journey-track>
     <div class="journey__stage" data-journey-stage>
+      <RiftEnvironment />
+      <JourneyControls />
       <!-- Persistent environment: the version archive. Lives across every beat. -->
       <div class="journey__env" aria-hidden="true" data-env>
         {

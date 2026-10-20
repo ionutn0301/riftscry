@@ -1,0 +1,14 @@
+<div class="rift-environment" aria-hidden="true">
+  <div class="rift-environment__camera" data-world-camera>
+    <img class="rift-environment__landscape" src="/images/rift-world.webp" alt="" width="1376" height="768" fetchpriority="high" decoding="async" />
+    <div class="rift-environment__mist" data-world-mist></div>
+  </div>
+  <div class="rift-environment__foreground" data-world-foreground>
+    <span class="rift-rock rift-rock--left"></span>
+    <span class="rift-rock rift-rock--right"></span>
+  </div>
+  <div class="rift-environment__embers" data-world-embers>
+    {Array.from({ length: 24 }, (_, i) => <i style={`--x:${(i * 37 + 11) % 100}%;--y:${(i * 23 + 9) % 100}%;--delay:${i * -0.71}s;--duration:${6 + i % 5}s`} />)}
+  </div>
+  <div class="rift-environment__shade"></div>
+</div>

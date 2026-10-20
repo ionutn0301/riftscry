@@ -208,10 +208,11 @@ const MOBILE_AMP: Amplitude = {
 /* Initial (pre-arrival) states. Timeline time 0 must render the opening
    composition; static CSS holds each station's RESOLVED still instead. */
 function setInitialStates(r: Refs, a: Amplitude): void {
-  gsap.set([r.hero, r.signal], { autoAlpha: 1 });
-  gsap.set([r.delta, r.history, r.source], { autoAlpha: 0 });
+  gsap.set(r.hero, { autoAlpha: 1 });
+  gsap.set([r.signal, r.delta, r.history, r.source], { autoAlpha: 0 });
 
   gsap.set(r.seam, {
+    opacity: 0,
     y: vh(a.seamStart),
     rotation: window.innerWidth <= 800 ? -16 : -14,
     force3D: true,
@@ -289,6 +290,24 @@ function buildJourney(world: HTMLElement, a: Amplitude): void {
 
   for (const [name, time] of Object.entries(B)) tl.addLabel(name, time);
 
+  const camera = world.querySelector("[data-world-camera]");
+  const foreground = world.querySelector("[data-world-foreground]");
+  const embers = world.querySelector("[data-world-embers]");
+  const mist = world.querySelector("[data-world-mist]");
+  tl.to(camera, { scale: 1.3, xPercent: -4, duration: 2.2 }, B.approach)
+    .to(foreground, { scale: 2.5, yPercent: 20, duration: 2.6 }, B.approach)
+    .to(camera, { scale: 2.1, xPercent: -12, yPercent: 6, duration: 1.2, ease: "power1.inOut" }, B.threshold)
+    .to(embers, { scale: 1.8, yPercent: -20, duration: 3.5 }, B.approach)
+    .to(camera, { scale: 2.4, xPercent: -20, yPercent: 12, opacity: 0.42, duration: 2.2 }, B.signal)
+    .to(mist, { xPercent: -18, scale: 1.8, duration: 4 }, B.landing)
+    .to(camera, { scale: 2, xPercent: 12, yPercent: -4, opacity: 0.3, duration: 2.6 }, B.delta)
+    .to(embers, { xPercent: 12, yPercent: -36, duration: 3 }, B.delta)
+    .to(camera, { scale: 1.5, xPercent: -5, yPercent: 2, opacity: 0.55, duration: 2.6 }, B.history)
+    .to(camera, { scale: 1.2, xPercent: 0, yPercent: 0, opacity: 0.38, duration: 1.4 }, B.source)
+    .to(camera, { scale: 1, opacity: 0.9, duration: 1.2, ease: "power2.inOut" }, B.return)
+    .to(foreground, { scale: 1, yPercent: 0, duration: 1.2 }, B.return)
+    .to(embers, { scale: 1, xPercent: 0, yPercent: 0, duration: 1.2 }, B.return);
+
   /* ---------------------------------------------------- approach + macro */
   /* Information leaves fast and decisively; the monument (numeral + emblem)
      carries the long camera move. */
@@ -299,7 +318,7 @@ function buildJourney(world: HTMLElement, a: Amplitude): void {
     .to(r.emblem, { scale: a.emblemScale[0], duration: 1.2 }, B.approach)
     .to(r.emblemLayers[0]!, { xPercent: -3.4, yPercent: 2.8, z: -150, duration: 1.2 }, B.approach)
     .to(r.emblemLayers[1]!, { xPercent: -1.6, yPercent: 1.4, z: -70, duration: 1.2 }, B.approach)
-    .to(r.signal, { clipPath: a.apertureClip[0], duration: 1.2 }, B.approach)
+    .to(r.signal, { autoAlpha: 1, clipPath: a.apertureClip[0], duration: 1.2 }, B.approach)
     .to(r.seam, { y: () => vh(a.seamStart - 4), rotation: -11, duration: 1.2 }, B.approach)
     .to(r.envNums, { xPercent: (i: number) => -6 - i * 4, z: (i: number) => -50 - i * 120, duration: 1.2 }, B.approach)
     .to(r.versionCurrent, { xPercent: -46, yPercent: -34, scale: 1.9, autoAlpha: 0, duration: 0.35 }, B.macro)
@@ -321,7 +340,7 @@ function buildJourney(world: HTMLElement, a: Amplitude): void {
     }, B.threshold + 0.45)
     .to(r.emblemLayers[0]!, { xPercent: -5, yPercent: 4.2, z: -230, duration: 1.0 }, B.threshold)
     .to(r.signal, { clipPath: a.apertureClip[2], duration: 1.0 }, B.threshold)
-    .to(r.seam, { y: () => vh(58), rotation: -5, scaleY: 0.9, duration: 1.4, ease: "power1.inOut" }, B.threshold)
+    .to(r.seam, { opacity: 0.55, y: () => vh(58), rotation: -5, scaleY: 0.9, duration: 1.4, ease: "power1.inOut" }, B.threshold)
     .to(r.ghost, { scale: 1.05, xPercent: 0, opacity: 0.22, duration: 1.2 }, B.threshold + 0.2)
     .set(r.emblem, { autoAlpha: 0 }, B.landing)
     .set(r.signal, { clipPath: "none" }, B.landing);
@@ -549,6 +568,10 @@ function buildJourney(world: HTMLElement, a: Amplitude): void {
 
   const labels: Record<string, number> = {};
   for (const [name, time] of Object.entries(B)) labels[name] = time / DURATION;
+  labels.signal = (B.signal + 1.25) / DURATION;
+  labels.delta = (B.delta + 0.4) / DURATION;
+  labels.history = (B.history + 0.5) / DURATION;
+  labels.source = (B.source + 1.2) / DURATION;
   window.__riftscryJourney = { labels };
 }
 
