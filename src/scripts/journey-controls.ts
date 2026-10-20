@@ -101,3 +101,41 @@ window.addEventListener("pageshow", () => {
 window.addEventListener("scroll", requestUpdate, { passive: true });
 window.addEventListener("resize", requestUpdate, { passive: true });
 update();
+
+const pointerMotion = matchMedia("(prefers-reduced-motion: no-preference) and (pointer: fine)");
+let lookFrame = 0;
+let targetX = 0;
+let targetY = 0;
+let lookX = 0;
+let lookY = 0;
+
+function animateLook(): void {
+  lookX += (targetX - lookX) * 0.1;
+  lookY += (targetY - lookY) * 0.1;
+  world?.style.setProperty("--look-x", lookX.toFixed(4));
+  world?.style.setProperty("--look-y", lookY.toFixed(4));
+  lookFrame = Math.abs(targetX - lookX) + Math.abs(targetY - lookY) > 0.001
+    ? requestAnimationFrame(animateLook) : 0;
+}
+
+function resetLook(): void {
+  cancelAnimationFrame(lookFrame);
+  lookFrame = 0;
+  lookX = lookY = targetX = targetY = 0;
+  world?.style.removeProperty("--look-x");
+  world?.style.removeProperty("--look-y");
+}
+
+world?.addEventListener("pointermove", (event) => {
+  if (!pointerMotion.matches || !world.classList.contains("motion-ready")) return;
+  targetX = Math.max(-1, Math.min(1, event.clientX / innerWidth * 2 - 1));
+  targetY = Math.max(-1, Math.min(1, event.clientY / innerHeight * 2 - 1));
+  if (!lookFrame) lookFrame = requestAnimationFrame(animateLook);
+}, { passive: true });
+world?.addEventListener("pointerleave", () => {
+  targetX = targetY = 0;
+  if (pointerMotion.matches && !lookFrame) lookFrame = requestAnimationFrame(animateLook);
+});
+pointerMotion.addEventListener("change", resetLook);
+window.addEventListener("pagehide", resetLook);
+document.addEventListener("visibilitychange", () => { if (document.hidden) resetLook(); });

@@ -1,6 +1,15 @@
 .rift-environment { position: absolute; inset: 0; height: 100svh; min-height: 42rem; overflow: hidden; pointer-events: none; background: #100f0d; }
 .rift-environment__camera { position: absolute; inset: -3%; transform-origin: 63% 44%; }
 .rift-environment__landscape { width: 100%; height: 100%; object-fit: cover; object-position: 62% center; opacity: .9; }
+@media (prefers-reduced-motion: no-preference) and (pointer: fine) {
+  .motion-ready .rift-environment__landscape { transform: translate3d(calc(var(--look-x, 0) * -12px), calc(var(--look-y, 0) * -9px), 0) scale(1.035); }
+  .motion-ready .rift-rock { translate: calc(var(--look-x, 0) * -30px) calc(var(--look-y, 0) * -20px); }
+  .motion-ready .rift-environment__embers i { translate: calc(var(--look-x, 0) * 20px) calc(var(--look-y, 0) * 14px); }
+}
+@media (min-width: 2400px) {
+  .cinematic-home .st-hero h1 { font-size: clamp(9.5rem, 7vw, 18rem); }
+  .cinematic-home .st-hero__copy p { font-size: clamp(.95rem, .65vw, 1.6rem); }
+}
 .rift-environment__mist { position: absolute; inset: 25% -20% -15%; background: radial-gradient(ellipse at 62% 50%, #c99a4c24, transparent 65%); mix-blend-mode: screen; }
 .rift-environment__shade { position: absolute; inset: 0; background: linear-gradient(90deg, #100f0de6, #100f0d22 60%, transparent), linear-gradient(0deg, #100f0d 0%, transparent 32%, transparent 75%, #100f0d99); }
 .rift-environment__foreground { position: absolute; inset: 0; transform-origin: 63% 45%; }
