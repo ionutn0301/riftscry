@@ -1,6 +1,6 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Stars } from '@react-three/drei';
+import { Float, Stars, PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
 import type { ObservatoryData } from '../../lib/observatory';
 
@@ -9,11 +9,14 @@ function Director({ progress }: { progress: number }) {
     new THREE.Vector3(0, 1.2, 10), new THREE.Vector3(8, 2, 8), new THREE.Vector3(2, .6, 4.7), new THREE.Vector3(-9, 6, 7), new THREE.Vector3(0, 3, 13)
   ]), []);
   const position = useRef(0);
-  useFrame(({ camera, pointer }, dt) => {
-    position.current = THREE.MathUtils.damp(position.current, progress / 4, 3, dt);
+  useFrame(({ camera, pointer, size }, dt) => {
+    const portrait = size.width < size.height;
+    position.current = THREE.MathUtils.damp(position.current, progress / 4, 2.2, Math.min(dt, .05));
     const point = path.getPoint(THREE.MathUtils.clamp(position.current, 0, 1));
-    camera.position.set(point.x + pointer.x * .18, point.y + pointer.y * .12, point.z);
-    camera.lookAt(0, .2, 0);
+    const distance = portrait ? Math.max(1.35, Math.min(1.85, size.height / size.width)) : 1;
+    const parallax = portrait ? 0 : 1;
+    camera.position.set(point.x * distance + pointer.x * .18 * parallax, point.y * distance + pointer.y * .12 * parallax, point.z * distance);
+    camera.lookAt(0, portrait ? -1.6 : .2, 0);
   });
   return null;
 }
@@ -49,5 +52,6 @@ function World({ progress, split, data, select, inspect, archive }: { progress: 
   </>;
 }
 export default function ObservatoryWorld(props: Parameters<typeof World>[0] & { onFailure: () => void }) {
-  return <Canvas dpr={[1, 1.6]} camera={{ fov: 43, position: [0, 1.2, 10] }} gl={{ antialias: true, powerPreference: 'high-performance' }} onCreated={({ gl }) => { gl.domElement.addEventListener('webglcontextlost', props.onFailure, { once: true }); }}><World {...props} /></Canvas>;
+  const [dpr, setDpr] = useState(() => matchMedia('(pointer: coarse)').matches ? 1.25 : 1.6);
+  return <Canvas dpr={dpr} camera={{ fov: 43, position: [0, 1.2, 10] }} gl={{ antialias: true, powerPreference: 'high-performance' }} onCreated={({ gl }) => { gl.domElement.addEventListener('webglcontextlost', props.onFailure, { once: true }); }}><PerformanceMonitor flipflops={2} onDecline={() => setDpr(1)} onFallback={() => setDpr(1)} /><World {...props} /></Canvas>;
 }
