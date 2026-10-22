@@ -2,7 +2,8 @@ import { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
-import type { ObservatoryData } from '../../lib/observatory';
+import { chapterAt, type ObservatoryData } from '../../lib/observatory';
+import { ChapterEntrance, ChapterEnvironment } from './ChapterEnvironment';
 
 type Props = { selected: number; progress: number; split: number; data: ObservatoryData; select: (n: number) => void; inspect: () => void; archive: (n: number) => void };
 function Director({ progress }: { progress: number }) {
@@ -65,17 +66,24 @@ function EnergyOrbit() {
   return <group ref={group}>{Array.from({ length: 36 }, (_, i) => <mesh key={i} position={[Math.cos(i * 2.4) * (3 + i % 3), Math.sin(i * 1.7) * 2, Math.sin(i * 2.4) * (3 + i % 3)]}><sphereGeometry args={[.018 + (i % 3) * .008, 6, 6]} /><meshBasicMaterial color={i % 2 ? '#207f87' : '#ae8742'} /></mesh>)}</group>;
 }
 function World({ progress, split, selected, data, select, inspect, archive }: Props) {
+  const chapter = chapterAt(progress);
+  const atmosphere = ['#e9e8e2', '#dce7e2', '#d6e0de', '#e7dfcf', '#dfe8de'][chapter] ?? '#e9e8e2';
   return <>
-    <color attach="background" args={['#e9e8e2']} /><fog attach="fog" args={['#e9e8e2', 20, 45]} />
+    <color attach="background" args={[atmosphere]} /><fog attach="fog" args={[atmosphere, 20, 55]} />
     <ambientLight intensity={.8} /><directionalLight position={[4, 9, 6]} intensity={3} color="#fff6e8" />
     <Environment resolution={128}><Lightformer position={[0, 5, -5]} scale={[10, 8, 1]} intensity={3} /><Lightformer position={[-6, 1, 3]} rotation={[0, Math.PI / 2, 0]} scale={[5, 10, 1]} intensity={2} /><Lightformer position={[5, 3, 4]} rotation={[0, -Math.PI / 3, 0]} scale={[3, 7, 1]} intensity={4} /></Environment>
-    <Director progress={progress} /><Sculpture split={split} inspect={inspect} />
+    <Director progress={chapter} />
+    <ChapterEntrance key={chapter} chapter={chapter}>
+      <ChapterEnvironment chapter={chapter} data={data} archive={archive} split={split} />
+      {(chapter === 0 || chapter === 2) && <Sculpture split={chapter === 2 ? split : 0} inspect={inspect} />}
+      {chapter === 1 && data.champions.map((c, i) => <ChampionShard key={c.id} index={i} count={data.champions.length} selected={selected === i} onSelect={() => select(i)} />)}
+    </ChapterEntrance>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow><planeGeometry args={[200, 200]} /><meshStandardMaterial color="#e4e3dc" roughness={.9} /></mesh>
     <ContactShadows position={[0, -2.99, 0]} opacity={.32} scale={24} blur={3} far={10} resolution={256} frames={1} />
     <EnergyOrbit />
-    {data.champions.map((c, i) => <ChampionShard key={c.id} index={i} count={data.champions.length} selected={selected === i} onSelect={() => select(i)} />)}
+
     {[3.4, 5.9, 7.4].map(radius => <mesh key={radius} rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.98, 0]}><torusGeometry args={[radius, .016, 6, 120]} /><meshStandardMaterial color="#8a754d" roughness={.4} metalness={.6} /></mesh>)}
-    {data.patches.map((p, i) => <mesh key={p.id} position={[-4.8 + i * 1.2, -2.6, -5]} rotation={[0, .2, -.12]} onClick={e => { e.stopPropagation(); archive(i); }}><boxGeometry args={[.8, .8 + i * .23, .3]} /><meshStandardMaterial color="#b1b7ac" roughness={.6} /></mesh>)}
+
   </>;
 }
 export default function ObservatoryWorld(props: Props & { onFailure: () => void }) {
