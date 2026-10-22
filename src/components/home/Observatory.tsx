@@ -1,6 +1,8 @@
 import { Component, Suspense, lazy, useEffect, useRef, useState, type ReactNode } from 'react';
 import { chapters, chapterAt, type ObservatoryData } from '../../lib/observatory';
 import '../../styles/observatory-mobile.css';
+import '../../styles/sculptural-world.css';
+import brandLogo from '../../assets/brand/logo-desktop-light.png';
 const World = lazy(() => import('./ObservatoryWorld'));
 class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
   state = { failed: false };
@@ -100,7 +102,7 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
   return <div className={`observatory ${staticMode ? 'is-static' : ''}`} ref={root}>
     <div className="observatory-canvas" aria-hidden="true">{ready && !staticMode && <SceneBoundary onFailure={() => setStaticMode(true)}><Suspense fallback={null}><World data={data} progress={progress} split={chapter === 2 ? split : 0} select={select} inspect={() => go(2)} archive={i => { setPatch(i); go(3); }} onFailure={() => setStaticMode(true)} /></Suspense></SceneBoundary>}</div>
     <div className="observatory-vignette" />
-    <header className="film-header"><a className="film-brand" href="/" aria-label="RiftScry home"><span className="brand-sigil" aria-hidden="true">◇</span> RIFTSCRY<span className="brand-caption">THE PATCH OBSERVATORY</span></a><a className="film-tool" href={`/patch/${data.latest}`}>Patch {data.latest}<span aria-hidden="true">↗</span></a></header>
+    <header className="film-header"><a className="film-brand" href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /><span className="brand-caption">A NEW PERSPECTIVE ON THE RIFT</span></a><a className="film-tool" href={`/patch/${data.latest}`}>Patch {data.latest}<span aria-hidden="true">↗</span></a></header>
     <div className="film-coordinate">RS—{data.latest}<span>AN EVER-CHANGING WORLD</span><a href="/pool">Choose champions ↗</a></div>
     <section key={chapter} className={`film-story chapter-${chapter}`} aria-label={chapters[chapter]}>
       <div className="film-kicker"><span /> {String(chapter + 1).padStart(2, '0')} / {chapters[chapter]}</div>
