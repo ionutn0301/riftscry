@@ -1,16 +1,10 @@
-import { Component, Suspense, lazy, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { chapters, chapterAt, type ObservatoryData } from '../../lib/observatory';
 import '../../styles/observatory-mobile.css';
 import '../../styles/sculptural-world.css';
 import '../../styles/cinematic-clarity.css';
 import brandLogo from '../../assets/brand/logo-desktop-light.png';
-const World = lazy(() => import('./ObservatoryWorld'));
-class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch() { this.props.onFailure(); }
-  render() { return this.state.failed ? null : this.props.children; }
-}
+import CinematicStage from './CinematicStage';
 export default function Observatory({ data }: { data: ObservatoryData }) {
   const [progress, setProgress] = useState(0);
   const [watch, setWatch] = useState(false);
@@ -20,7 +14,6 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
   const [patch, setPatch] = useState(0);
   const [split, setSplit] = useState(.35);
   const [staticMode, setStaticMode] = useState(true);
-  const [ready, setReady] = useState(false);
   const [sound, setSound] = useState(false);
   const audio = useRef<AudioContext | null>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -32,7 +25,7 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
   useEffect(() => {
     const media = matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => { setStaticMode(media.matches); setWatch(false); };
-    update(); setReady(true); media.addEventListener('change', update);
+    update(); media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
   }, []);
   useEffect(() => {
@@ -99,9 +92,8 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
       await audio.current.resume(); setSound(true);
     } catch { setSound(false); }
   }
-  const select = (i: number) => { setSelected(i); go(1); };
   return <div className={`observatory ${staticMode ? 'is-static' : ''}`} ref={root}>
-    <div className="observatory-canvas" aria-hidden="true">{ready && !staticMode && <SceneBoundary onFailure={() => setStaticMode(true)}><Suspense fallback={null}><World data={data} selected={selected} progress={progress} split={chapter === 2 ? split : 0} select={select} inspect={() => go(2)} archive={i => { setPatch(i); go(3); }} onFailure={() => setStaticMode(true)} /></Suspense></SceneBoundary>}</div>
+    <div className="observatory-canvas"><CinematicStage chapter={chapter} reduced={staticMode} /></div>
     <div className="observatory-vignette" />
     <div className="scene-cue" role="status">{chapter === 0 ? 'ACTIVATE THE CORE · CLICK THE SCULPTURE' : chapter === 1 ? `${champion.name.toUpperCase()} SELECTED · CHOOSE A FLOATING SHARD` : chapter === 2 ? 'DRAG THE LENS · REVEAL THE SHIFT' : chapter === 3 ? 'SELECT A STONE · EXPLORE A PATCH' : 'THE NEXT MOVE IS YOURS'}</div>
     <header className="film-header"><a className="film-brand" href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /><span className="brand-caption">A NEW PERSPECTIVE ON THE RIFT</span></a><a className="film-tool" href={`/patch/${data.latest}`}>Patch {data.latest}<span aria-hidden="true">↗</span></a></header>
@@ -109,10 +101,11 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
     <section key={chapter} className={`film-story chapter-${chapter}`} aria-label={chapters[chapter]}>
       <div className="film-kicker"><span /> {String(chapter + 1).padStart(2, '0')} / {chapters[chapter]}</div>
       {chapter === 0 && <><h1>Nothing stays.<br /><em>Know what shifts.</em></h1><p>The Rift is never the same twice.<br />A journey through the changes that shape your game.</p><div className="film-actions"><button className="film-primary" onClick={() => go(1)}>Enter the observatory <span>↗</span></button><button onClick={() => { setProgress(0); setWatch(true); }} disabled={staticMode}>Watch the journey <span>▷</span></button></div></>}
-      {chapter === 1 && <><h2>Your champions.<br /><em>Your constellation.</em></h2><p>Choose an artifact. Discover what changed.<br />Build a small pool for this visit.</p></>}
-      {chapter === 2 && <><h2>A small shift.<br /><em>A different game.</em></h2><p>Move the lens. Inspect the difference.<br />Every value comes from the recorded patch.</p></>}
-      {chapter === 3 && <><h2>Every change<br /><em>leaves a trace.</em></h2><p>Travel through the archive.<br />Understand the game beyond a single patch.</p></>}
+      {chapter === 1 && <><h2>Your champions.<br /><em>Your constellation.</em></h2><p>The signal leads to the sanctuary.<br />Choose the champion whose future you will follow.</p></>}
+      {chapter === 2 && <><h2>A small shift.<br /><em>A different game.</em></h2><p>{champion.name}&apos;s record reveals the fracture.<br />Compare what was with what comes next.</p></>}
+      {chapter === 3 && <><h2>Every change<br /><em>leaves a trace.</em></h2><p>One change is only part of the story.<br />Trace the records that brought us here.</p></>}
       {chapter === 4 && <><h2>Return to the Rift.<br /><em>See it differently.</em></h2><p>{pool.length ? `Your constellation: ${pool.map(id => data.champions.find(c => c.id === id)?.name).join(', ')}.` : 'A clearer perspective. A more informed next game.'}</p><div className="film-actions"><a className="film-primary" href={`/patch/${data.latest}`}>Explore patch {data.latest} ↗</a><button onClick={() => { setProgress(0); setWatch(!staticMode); }}>Replay journey ↺</button></div></>}
+      {chapter > 0 && chapter < 4 && <button className="story-next" onClick={() => go(chapter + 1)}>{chapter === 1 ? `Follow ${champion.name}’s signal` : chapter === 2 ? 'Trace the origin' : 'Carry this knowledge back'} <span aria-hidden="true">→</span></button>}
     </section>
     {chapter > 0 && chapter < 4 && <aside className={`exhibit-panel ${exhibitOpen ? 'is-expanded' : ''}`} onPointerDown={() => setWatch(false)}>
       <button className="mobile-exhibit-toggle" aria-expanded={exhibitOpen} aria-controls="exhibit-content" onClick={() => { setWatch(false); setExhibitOpen(v => !v); }}><span>{chapter === 3 ? `Patch ${data.patches[patch]?.id}` : champion.name}<small>{exhibitOpen ? 'Return to the scene' : 'Tap to explore the record'}</small></span><span aria-hidden="true">{exhibitOpen ? '−' : '+'}</span></button>
@@ -123,6 +116,6 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
     </aside>}
     <footer className="film-footer"><div className="playback"><button aria-label={watch ? 'Pause journey' : 'Play journey'} disabled={staticMode} onClick={() => { if (progress >= 4) setProgress(0); setWatch(v => !v); }}>{watch ? 'Ⅱ' : '▷'}</button><button aria-pressed={sound} onClick={toggleSound}>SOUND {sound ? 'ON' : 'OFF'}</button></div><nav aria-label="Journey chapters">{chapters.map((name, i) => <button key={name} aria-label={`Chapter ${i + 1}: ${name}`} aria-current={chapter === i ? 'step' : undefined} onClick={() => go(i)}><span>{String(i + 1).padStart(2, '0')}</span><i /></button>)}</nav><div className="film-scroll">{staticMode ? 'CHOOSE A CHAPTER' : <><span className="desktop-travel">SCROLL TO TRAVEL</span><span className="mobile-travel">SWIPE TO TRAVEL</span></>} <span>↓</span></div></footer>
     <div className="film-progress" style={{ transform: `scaleX(${progress / 4})` }} />
-    <details className="film-credits"><summary>Credits & information</summary><p>Original procedural environment. Patch data from Riot Games. No Riot artwork, models or audio are used in this scene. RiftScry isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.</p><a href={data.source}>Official patch source ↗</a><button onClick={() => { setStaticMode(v => !v); setWatch(false); }}>{staticMode ? 'Enable 3D' : 'Disable 3D'}</button></details>
+    <details className="film-credits"><summary>Credits & information</summary><p>Original AI-generated cinematic environment artwork; these are layered images, not playable 3D environments. Patch data from Riot Games. No Riot artwork, models or audio are used in this scene. RiftScry isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.</p><a href={data.source}>Official patch source ↗</a><button onClick={() => { setStaticMode(v => !v); setWatch(false); }}>{staticMode ? 'Enable motion' : 'Reduce motion'}</button></details>
   </div>;
 }
