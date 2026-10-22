@@ -4,10 +4,10 @@ import { ContactShadows, Environment, Lightformer, PerformanceMonitor } from '@r
 import * as THREE from 'three';
 import type { ObservatoryData } from '../../lib/observatory';
 
-type Props = { progress: number; split: number; data: ObservatoryData; select: (n: number) => void; inspect: () => void; archive: (n: number) => void };
+type Props = { selected: number; progress: number; split: number; data: ObservatoryData; select: (n: number) => void; inspect: () => void; archive: (n: number) => void };
 function Director({ progress }: { progress: number }) {
   const path = useMemo(() => new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, 2, 12), new THREE.Vector3(7, 3, 9), new THREE.Vector3(2, 1.4, 7), new THREE.Vector3(-7, 5, 8), new THREE.Vector3(0, 3.2, 13)
+    new THREE.Vector3(0, 1, 11), new THREE.Vector3(8, 2, 7), new THREE.Vector3(1, .1, 6.8), new THREE.Vector3(-7, 6, 7), new THREE.Vector3(0, 4, 13)
   ]), []);
   const travel = useRef(0);
   const target = useRef(new THREE.Vector3());
@@ -25,9 +25,12 @@ function Director({ progress }: { progress: number }) {
 function Sculpture({ split, inspect }: { split: number; inspect: () => void }) {
   const group = useRef<THREE.Group>(null);
   const [hover, setHover] = useState(false);
-  useFrame((_, dt) => {
+  const core = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }, dt) => {
     if (!group.current) return;
-    group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, hover ? .35 : -.2, 2, dt);
+    group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, hover ? .55 : -.2 + Math.sin(clock.elapsedTime * .2) * .12, 2, dt);
+    group.current.position.y = Math.sin(clock.elapsedTime * .6) * .1;
+    if (core.current) { core.current.rotation.y += dt * .4; core.current.rotation.z += dt * .16; core.current.scale.setScalar(1 + Math.sin(clock.elapsedTime * 2) * .045 + split * .25); }
   });
   return <group ref={group} rotation={[.13, -.2, -.16]} onPointerOver={e => { e.stopPropagation(); setHover(true); }} onPointerOut={() => setHover(false)} onClick={e => { e.stopPropagation(); inspect(); }}>
     {[0, 1].map(i => <mesh key={i} position={[(i ? 1 : -1) * split * .65, 0, 0]} rotation={[0, 0, i * Math.PI + .08]} castShadow>
@@ -35,10 +38,33 @@ function Sculpture({ split, inspect }: { split: number; inspect: () => void }) {
       <meshPhysicalMaterial color="#e5e1d5" roughness={.32} metalness={.08} clearcoat={.25} />
     </mesh>)}
     <mesh rotation={[.4, -.5, -.5]} castShadow><torusGeometry args={[2.05, .075, 20, 160]} /><meshStandardMaterial color="#b5914d" metalness={.92} roughness={.23} /></mesh>
-    <mesh rotation={[.2, .3, .4]} castShadow><octahedronGeometry args={[.8, 0]} /><meshPhysicalMaterial color={hover ? '#dfbd70' : '#b39758'} metalness={.9} roughness={.18} clearcoat={1} /></mesh>
+    <mesh ref={core} rotation={[.2, .3, .4]} castShadow><octahedronGeometry args={[.8, 0]} /><meshPhysicalMaterial color="#38a8aa" emissive="#167e83" emissiveIntensity={hover ? 1.4 : .5} metalness={.65} roughness={.18} clearcoat={1} /></mesh>
+    <pointLight color="#46d9d0" intensity={hover ? 18 : 8} distance={7} />
   </group>;
 }
-function World({ progress, split, data, select, inspect, archive }: Props) {
+function ChampionShard({ index, count, selected, onSelect }: { index: number; count: number; selected: boolean; onSelect: () => void }) {
+  const shard = useRef<THREE.Mesh>(null);
+  const [hover, setHover] = useState(false);
+  const angle = index / count * Math.PI * 2;
+  useFrame(({ clock }, dt) => {
+    if (!shard.current) return;
+    shard.current.position.y = Math.sin(clock.elapsedTime * .8 + index) * .18 + (selected ? .35 : 0);
+    shard.current.rotation.y += dt * (hover ? 1 : .22);
+    const scale = THREE.MathUtils.damp(shard.current.scale.x, hover || selected ? 1.25 : 1, 5, dt);
+    shard.current.scale.setScalar(scale);
+  });
+  return <group position={[Math.cos(angle) * 4.7, -1.6, Math.sin(angle) * 4.7]} onClick={e => { e.stopPropagation(); onSelect(); }} onPointerOver={e => { e.stopPropagation(); setHover(true); }} onPointerOut={() => setHover(false)}>
+    <mesh position={[0, -.8, 0]}><cylinderGeometry args={[.65, .75, .9, 32]} /><meshStandardMaterial color="#c1baab" roughness={.5} /></mesh>
+    <mesh ref={shard}><octahedronGeometry args={[.6, 0]} /><meshStandardMaterial color={selected ? '#208e91' : '#ad8947'} emissive={selected || hover ? '#145f65' : '#000000'} emissiveIntensity={.5} roughness={.22} metalness={.65} /></mesh>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.32, 0]}><torusGeometry args={[.8, selected ? .035 : .012, 8, 64]} /><meshBasicMaterial color={selected ? '#168b90' : '#8e713e'} /></mesh>
+  </group>;
+}
+function EnergyOrbit() {
+  const group = useRef<THREE.Group>(null);
+  useFrame((_, dt) => { if (group.current) group.current.rotation.y += dt * .12; });
+  return <group ref={group}>{Array.from({ length: 36 }, (_, i) => <mesh key={i} position={[Math.cos(i * 2.4) * (3 + i % 3), Math.sin(i * 1.7) * 2, Math.sin(i * 2.4) * (3 + i % 3)]}><sphereGeometry args={[.018 + (i % 3) * .008, 6, 6]} /><meshBasicMaterial color={i % 2 ? '#207f87' : '#ae8742'} /></mesh>)}</group>;
+}
+function World({ progress, split, selected, data, select, inspect, archive }: Props) {
   return <>
     <color attach="background" args={['#e9e8e2']} /><fog attach="fog" args={['#e9e8e2', 20, 45]} />
     <ambientLight intensity={.8} /><directionalLight position={[4, 9, 6]} intensity={3} color="#fff6e8" />
@@ -46,10 +72,9 @@ function World({ progress, split, data, select, inspect, archive }: Props) {
     <Director progress={progress} /><Sculpture split={split} inspect={inspect} />
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow><planeGeometry args={[200, 200]} /><meshStandardMaterial color="#e4e3dc" roughness={.9} /></mesh>
     <ContactShadows position={[0, -2.99, 0]} opacity={.32} scale={24} blur={3} far={10} resolution={256} frames={1} />
-    {data.champions.map((c, i) => { const a = i / data.champions.length * Math.PI * 2; return <group key={c.id} position={[Math.cos(a) * 5, -1.7, Math.sin(a) * 5]} onClick={e => { e.stopPropagation(); select(i); }}>
-      <mesh position={[0, -.6, 0]}><cylinderGeometry args={[.7, .75, 1.3, 48]} /><meshStandardMaterial color="#d9d6cc" roughness={.6} /></mesh>
-      <mesh rotation={[0, a, .2]}><octahedronGeometry args={[.6, 0]} /><meshStandardMaterial color={i % 2 ? '#b09a6d' : '#8a9d91'} roughness={.22} metalness={.7} /></mesh>
-    </group>; })}
+    <EnergyOrbit />
+    {data.champions.map((c, i) => <ChampionShard key={c.id} index={i} count={data.champions.length} selected={selected === i} onSelect={() => select(i)} />)}
+    {[3.4, 5.9, 7.4].map(radius => <mesh key={radius} rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.98, 0]}><torusGeometry args={[radius, .016, 6, 120]} /><meshStandardMaterial color="#8a754d" roughness={.4} metalness={.6} /></mesh>)}
     {data.patches.map((p, i) => <mesh key={p.id} position={[-4.8 + i * 1.2, -2.6, -5]} rotation={[0, .2, -.12]} onClick={e => { e.stopPropagation(); archive(i); }}><boxGeometry args={[.8, .8 + i * .23, .3]} /><meshStandardMaterial color="#b1b7ac" roughness={.6} /></mesh>)}
   </>;
 }
