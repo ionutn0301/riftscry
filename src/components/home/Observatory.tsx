@@ -93,7 +93,7 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
     } catch { setSound(false); }
   }
   return <div className={`observatory ${staticMode ? 'is-static' : ''}`} ref={root}>
-    <div className="observatory-canvas"><CinematicStage chapter={chapter} reduced={staticMode} /></div>
+    <div className="observatory-canvas"><CinematicStage chapter={chapter} reduced={staticMode} split={split} selected={selected} names={data.champions.map(c => c.name)} patch={patch} patches={data.patches.map(p => p.id)} onTravel={go} onSelect={i => { setSelected(i); setWatch(false); }} onPatch={i => { setPatch(i); setWatch(false); }} /></div>
     <div className="observatory-vignette" />
     <div className="scene-cue" role="status">{chapter === 0 ? 'ACTIVATE THE CORE · CLICK THE SCULPTURE' : chapter === 1 ? `${champion.name.toUpperCase()} SELECTED · CHOOSE A FLOATING SHARD` : chapter === 2 ? 'DRAG THE LENS · REVEAL THE SHIFT' : chapter === 3 ? 'SELECT A STONE · EXPLORE A PATCH' : 'THE NEXT MOVE IS YOURS'}</div>
     <header className="film-header"><a className="film-brand" href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /><span className="brand-caption">A NEW PERSPECTIVE ON THE RIFT</span></a><a className="film-tool" href={`/patch/${data.latest}`}>Patch {data.latest}<span aria-hidden="true">↗</span></a></header>
