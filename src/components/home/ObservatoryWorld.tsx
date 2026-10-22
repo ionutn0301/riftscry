@@ -68,16 +68,23 @@ function EnergyOrbit() {
 function World({ progress, split, selected, data, select, inspect, archive }: Props) {
   const chapter = chapterAt(progress);
   const atmosphere = ['#e9e8e2', '#dce7e2', '#d6e0de', '#e7dfcf', '#dfe8de'][chapter] ?? '#e9e8e2';
+  const tint = useMemo(() => new THREE.Color(), []);
+  useFrame(({ scene }, dt) => {
+    tint.set(atmosphere);
+    const blend = 1 - Math.exp(-Math.min(dt, .05) * 1.8);
+    if (scene.background instanceof THREE.Color) scene.background.lerp(tint, blend);
+    if (scene.fog) scene.fog.color.lerp(tint, blend);
+  });
   return <>
-    <color attach="background" args={[atmosphere]} /><fog attach="fog" args={[atmosphere, 20, 55]} />
+    <color attach="background" args={['#e9e8e2']} /><fog attach="fog" args={['#e9e8e2', 20, 55]} />
     <ambientLight intensity={.8} /><directionalLight position={[4, 9, 6]} intensity={3} color="#fff6e8" />
     <Environment resolution={128}><Lightformer position={[0, 5, -5]} scale={[10, 8, 1]} intensity={3} /><Lightformer position={[-6, 1, 3]} rotation={[0, Math.PI / 2, 0]} scale={[5, 10, 1]} intensity={2} /><Lightformer position={[5, 3, 4]} rotation={[0, -Math.PI / 3, 0]} scale={[3, 7, 1]} intensity={4} /></Environment>
     <Director progress={chapter} />
-    <ChapterEntrance key={chapter} chapter={chapter}>
-      <ChapterEnvironment chapter={chapter} data={data} archive={archive} split={split} />
-      {(chapter === 0 || chapter === 2) && <Sculpture split={chapter === 2 ? split : 0} inspect={inspect} />}
-      {chapter === 1 && data.champions.map((c, i) => <ChampionShard key={c.id} index={i} count={data.champions.length} selected={selected === i} onSelect={() => select(i)} />)}
-    </ChapterEntrance>
+    {[0, 1, 2, 3, 4].map(stage => <ChapterEntrance key={stage} chapter={stage} active={chapter === stage}>
+      <ChapterEnvironment chapter={stage} data={data} archive={n => { if (chapter === stage) archive(n); }} split={split} />
+      {(stage === 0 || stage === 2) && <Sculpture split={stage === 2 ? split : 0} inspect={() => { if (chapter === stage) inspect(); }} />}
+      {stage === 1 && data.champions.map((c, i) => <ChampionShard key={c.id} index={i} count={data.champions.length} selected={selected === i} onSelect={() => { if (chapter === stage) select(i); }} />)}
+    </ChapterEntrance>)}
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow><planeGeometry args={[200, 200]} /><meshStandardMaterial color="#e4e3dc" roughness={.9} /></mesh>
     <ContactShadows position={[0, -2.99, 0]} opacity={.32} scale={24} blur={3} far={10} resolution={256} frames={1} />
     <EnergyOrbit />
