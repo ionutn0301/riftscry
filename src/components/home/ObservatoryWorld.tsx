@@ -7,7 +7,7 @@ import { createWorldMaterials } from './world-materials';
 import { createJourneyPath } from '../../lib/journey-path';
 import { advanceJourney, createJourney, requestJourney, type JourneyPhase } from '../../lib/journey-director';
 
-export type WorldProps = { chapter: number; reduced: boolean; skipVersion: number; paused: boolean; selected: number; count: number; split: number; patch: number; patchCount: number; onSelect: (n: number) => void; onPatch: (n: number) => void; onTravel: (n: number) => void; onArrival: (n: number) => void; onPhase: (phase: JourneyPhase) => void; onReady: () => void; onFailure: () => void };
+export type WorldProps = { chapter: number; reduced: boolean; skipVersion: number; paused: boolean; selected: number; count: number; split: number; onSplit: (value: number) => void; patch: number; patchCount: number; onSelect: (n: number) => void; onPatch: (n: number) => void; onTravel: (n: number) => void; onArrival: (n: number) => void; onPhase: (phase: JourneyPhase) => void; onReady: () => void; onFailure: () => void };
 function World(props: WorldProps) {
   const { chapter, reduced, onArrival, onPhase, onReady, onFailure } = props;
   const materials = useMemo(createWorldMaterials, []);
@@ -24,11 +24,13 @@ function World(props: WorldProps) {
     const target = new THREE.CatmullRomCurve3(stations.map(([x, y, z]) => new THREE.Vector3(x - (portrait ? 0 : 1.8), y + .5, z - 1)), false, 'catmullrom', .2);
     return { camera, target };
   }, [size.width, size.height]);
-  const vectors = useMemo(() => ({ camera: new THREE.Vector3(), target: new THREE.Vector3(), direction: new THREE.Vector3() }), []);
+  const vectors = useMemo(() => ({ camera: new THREE.Vector3(), target: new THREE.Vector3(), direction: new THREE.Vector3(), aim: new THREE.Vector3(), pointer: new THREE.Vector2() }), []);
+  const initialized = useRef(false);
   const lastSkip = useRef(props.skipVersion);
   useEffect(() => {
     const skip = lastSkip.current !== props.skipVersion;
     lastSkip.current = props.skipVersion;
+    if (skip) initialized.current = false;
     journey.current = requestJourney(journey.current, chapter, reduced || skip);
     invalidate();
   }, [chapter, reduced, props.skipVersion, invalidate]);
@@ -48,9 +50,17 @@ function World(props: WorldProps) {
     if (state.phase === 'ready') onArrival(state.destination);
     paths.camera.sample(state.position, vectors.camera);
     paths.target.getPoint(state.position / 4, vectors.target);
-    if (!reduced && state.phase === 'ready') { vectors.camera.x += pointer.x * .18; vectors.camera.y += pointer.y * .12; }
+    paths.camera.guide(state.position, state.destination, vectors.direction);
+    const moving = state.phase !== 'ready';
+    const distance = vectors.direction.distanceTo(vectors.camera);
+    if (moving && distance > .25) vectors.target.lerp(vectors.direction, Math.min(1, distance / 1.2));
+    vectors.pointer.x = THREE.MathUtils.damp(vectors.pointer.x, reduced || moving ? 0 : pointer.x, 4, dt);
+    vectors.pointer.y = THREE.MathUtils.damp(vectors.pointer.y, reduced || moving ? 0 : pointer.y, 4, dt);
+    vectors.camera.x += vectors.pointer.x * .18; vectors.camera.y += vectors.pointer.y * .12;
     camera.position.copy(vectors.camera);
-    camera.lookAt(vectors.target);
+    if (!initialized.current || reduced || lastSkip.current !== props.skipVersion) { vectors.aim.copy(vectors.target); initialized.current = true; }
+    else vectors.aim.lerp(vectors.target, 1 - Math.exp(-5 * dt));
+    camera.lookAt(vectors.aim);
     if (sun.current) {
       sunTarget.position.copy(vectors.target);
       sun.current.position.set(vectors.target.x + 9, vectors.target.y + 16, vectors.target.z + 7);
@@ -62,9 +72,13 @@ function World(props: WorldProps) {
       camera.updateProjectionMatrix();
     }
     if (signal.current) {
-      paths.camera.guide(state.position, state.destination, vectors.direction);
+      if (!moving || distance < 1.2) {
+        vectors.direction.copy(vectors.aim).sub(vectors.camera).normalize().multiplyScalar(2).add(vectors.camera);
+        vectors.direction.y -= .35;
+      }
       signal.current.position.copy(vectors.direction);
-      signal.current.visible = state.phase !== 'ready' && vectors.direction.distanceTo(vectors.camera) > 1.2;
+      signal.current.scale.setScalar(moving && distance >= 1.2 ? .65 : .24);
+      signal.current.visible = true;
       if (!reduced) signal.current.rotation.y += dt * .45;
     }
   });
@@ -74,7 +88,7 @@ function World(props: WorldProps) {
     <primitive object={sunTarget} />
     <directionalLight ref={sun} target={sunTarget} position={[10, 20, 8]} intensity={3.4} color="#fff0d2" castShadow shadow-mapSize={size.width < 700 ? [512, 512] : [1024, 1024]} shadow-camera-left={-18} shadow-camera-right={18} shadow-camera-top={18} shadow-camera-bottom={-18} shadow-camera-near={1} shadow-camera-far={60} shadow-normalBias={.04} />
     <Environment resolution={128} frames={1}><Lightformer intensity={3} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[30, 30, 1]} /><Lightformer intensity={2} position={[-10, 2, 0]} rotation={[0, Math.PI / 2, 0]} scale={[12, 25, 1]} /></Environment>
-    {stations.map((_, stage) => <ChapterEnvironment key={stage} stage={stage} materials={materials} position={position} selected={props.selected} count={props.count} active={phase.current === 'ready' && chapter === stage} onSelect={props.onSelect} onTravel={() => props.onTravel(1)} split={props.split} patch={props.patch} patchCount={props.patchCount} onPatch={props.onPatch} />)}
+    {stations.map((_, stage) => <ChapterEnvironment key={stage} stage={stage} materials={materials} position={position} selected={props.selected} count={props.count} active={phase.current === 'ready' && chapter === stage} onSelect={props.onSelect} onTravel={() => props.onTravel(1)} split={props.split} onSplit={props.onSplit} patch={props.patch} patchCount={props.patchCount} onPatch={props.onPatch} />)}
     <group ref={signal}><Signal materials={materials} /></group>
   </>;
 }

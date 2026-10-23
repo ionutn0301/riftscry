@@ -32,7 +32,9 @@ export function createJourneyPath(portrait = false) {
     sample(position: number, out: THREE.Vector3) {
       const p = THREE.MathUtils.clamp(position, 0, 4);
       const segment = Math.min(3, Math.floor(p));
-      return routes[segment]!.getPointAt(p - segment, out);
+      const t = p - segment;
+      const eased = t * t * (3 - 2 * t);
+      return routes[segment]!.getPointAt(eased, out);
     },
     guide(position: number, destination: number, out: THREE.Vector3) {
       const direction = Math.sign(destination - position);
