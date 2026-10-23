@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import type { JourneyPhase } from '../../lib/journey-director';
 import { chapters, chapterAt, type ObservatoryData } from '../../lib/observatory';
-import '../../styles/observatory-mobile.css';
-import '../../styles/sculptural-world.css';
-import '../../styles/cinematic-clarity.css';
+
 import brandLogo from '../../assets/brand/logo-desktop-light.png';
 import CinematicStage from './CinematicStage';
 export default function Observatory({ data }: { data: ObservatoryData }) {
   const [progress, setProgress] = useState(0);
   const [watch, setWatch] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [skipVersion, setSkipVersion] = useState(0);
   const [exhibitOpen, setExhibitOpen] = useState(false);
   const [selected, setSelected] = useState(0);
   const [pool, setPool] = useState<string[]>([]);
@@ -17,11 +18,22 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
   const [sound, setSound] = useState(false);
   const audio = useRef<AudioContext | null>(null);
   const root = useRef<HTMLDivElement>(null);
-  const chapter = chapterAt(progress);
+  const destination = chapterAt(progress);
+  const [chapter, setChapter] = useState(0);
+  const [phase, setPhase] = useState<JourneyPhase>('ready');
   const champion = data.champions[selected]!;
   const numeric = champion.changes.find(c => c.before !== undefined);
-  const go = (n: number) => { setWatch(false); setProgress(n); };
+  const go = (n: number) => { setWatch(false); setPaused(false); setProgress(n); };
   useEffect(() => { setExhibitOpen(false); }, [chapter]);
+  useEffect(() => {
+    const key = (event: KeyboardEvent) => {
+      if (event.target instanceof Element && event.target.closest('input, textarea, button, a, summary, [contenteditable]')) return;
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+      event.preventDefault(); setWatch(false);
+      setProgress(p => Math.max(0, Math.min(4, Math.round(p) + (event.key === 'ArrowRight' ? 1 : -1))));
+    };
+    window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
+  }, []);
   useEffect(() => {
     const media = matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => { setStaticMode(media.matches); setWatch(false); };
@@ -92,13 +104,14 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
       await audio.current.resume(); setSound(true);
     } catch { setSound(false); }
   }
-  return <div className={`observatory ${staticMode ? 'is-static' : ''}`} ref={root}>
-    <div className="observatory-canvas"><CinematicStage chapter={chapter} reduced={staticMode} split={split} selected={selected} names={data.champions.map(c => c.name)} patch={patch} patches={data.patches.map(p => p.id)} onTravel={go} onSelect={i => { setSelected(i); setWatch(false); }} onPatch={i => { setPatch(i); setWatch(false); }} /></div>
+  return <div className={`observatory ${staticMode ? 'is-static' : ''}`} data-phase={phase} data-chapter={chapter} ref={root}>
+    <div className="observatory-canvas"><CinematicStage chapter={destination} skipVersion={skipVersion} paused={paused} reduced={staticMode} split={split} selected={selected} count={data.champions.length} patch={patch} patchCount={data.patches.length} onTravel={go} onSelect={i => { setSelected(i); setWatch(false); }} onPatch={i => { setPatch(i); setWatch(false); }} onArrival={setChapter} onPhase={setPhase} /></div>
+    {phase !== 'ready' && <button className="skip-travel" onClick={() => { setSkipVersion(v => v + 1); setPaused(false); }}>Skip travel</button>}
     <div className="observatory-vignette" />
     <div className="scene-cue" role="status">{chapter === 0 ? 'ACTIVATE THE CORE · CLICK THE SCULPTURE' : chapter === 1 ? `${champion.name.toUpperCase()} SELECTED · CHOOSE A FLOATING SHARD` : chapter === 2 ? 'DRAG THE LENS · REVEAL THE SHIFT' : chapter === 3 ? 'SELECT A STONE · EXPLORE A PATCH' : 'THE NEXT MOVE IS YOURS'}</div>
     <header className="film-header"><a className="film-brand" href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /><span className="brand-caption">A NEW PERSPECTIVE ON THE RIFT</span></a><a className="film-tool" href={`/patch/${data.latest}`}>Patch {data.latest}<span aria-hidden="true">↗</span></a></header>
     <div className="film-coordinate">RS—{data.latest}<span>AN EVER-CHANGING WORLD</span><a href="/pool">Choose champions ↗</a></div>
-    <section key={chapter} className={`film-story chapter-${chapter}`} aria-label={chapters[chapter]}>
+    <section key={chapter} className={`film-story chapter-${chapter}`} aria-label={chapters[chapter]} inert={phase === 'travelling'}>
       <div className="film-kicker"><span /> {String(chapter + 1).padStart(2, '0')} / {chapters[chapter]}</div>
       {chapter === 0 && <><h1>Nothing stays.<br /><em>Know what shifts.</em></h1><p>The Rift is never the same twice.<br />A journey through the changes that shape your game.</p><div className="film-actions"><button className="film-primary" onClick={() => go(1)}>Enter the observatory <span>↗</span></button><button onClick={() => { setProgress(0); setWatch(true); }} disabled={staticMode}>Watch the journey <span>▷</span></button></div></>}
       {chapter === 1 && <><h2>Your champions.<br /><em>Your constellation.</em></h2><p>The signal leads to the sanctuary.<br />Choose the champion whose future you will follow.</p></>}
@@ -107,15 +120,15 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
       {chapter === 4 && <><h2>Return to the Rift.<br /><em>See it differently.</em></h2><p>{pool.length ? `Your constellation: ${pool.map(id => data.champions.find(c => c.id === id)?.name).join(', ')}.` : 'A clearer perspective. A more informed next game.'}</p><div className="film-actions"><a className="film-primary" href={`/patch/${data.latest}`}>Explore patch {data.latest} ↗</a><button onClick={() => { setProgress(0); setWatch(!staticMode); }}>Replay journey ↺</button></div></>}
       {chapter > 0 && chapter < 4 && <button className="story-next" onClick={() => go(chapter + 1)}>{chapter === 1 ? `Follow ${champion.name}’s signal` : chapter === 2 ? 'Trace the origin' : 'Carry this knowledge back'} <span aria-hidden="true">→</span></button>}
     </section>
-    {chapter > 0 && chapter < 4 && <aside className={`exhibit-panel ${exhibitOpen ? 'is-expanded' : ''}`} onPointerDown={() => setWatch(false)}>
+    {chapter > 0 && chapter < 4 && <aside inert={phase === 'travelling'} className={`exhibit-panel ${exhibitOpen ? 'is-expanded' : ''}`} onPointerDown={() => setWatch(false)}>
       <button className="mobile-exhibit-toggle" aria-expanded={exhibitOpen} aria-controls="exhibit-content" onClick={() => { setWatch(false); setExhibitOpen(v => !v); }}><span>{chapter === 3 ? `Patch ${data.patches[patch]?.id}` : champion.name}<small>{exhibitOpen ? 'Return to the scene' : 'Tap to explore the record'}</small></span><span aria-hidden="true">{exhibitOpen ? '−' : '+'}</span></button>
       <div id="exhibit-content" className="exhibit-content">
       {chapter !== 3 ? <><div className="exhibit-meta">CHAMPION RECORD <span>{champion.classification}</span></div><h3>{champion.name}</h3><p className="exhibit-title">{champion.title}</p><div className="champion-picker" aria-label="Select champion">{data.champions.map((c, i) => <button key={c.id} aria-pressed={selected === i} onClick={() => { setSelected(i); setWatch(false); }}>{c.name}</button>)}</div>
       {chapter === 1 ? <><p className="record-label">MOST RECENT RECORD · {champion.patch}</p><p>{champion.changes[0]?.label ?? 'No changes in the recorded history.'}</p><button className="pool-button" aria-pressed={pool.includes(champion.id)} onClick={() => setPool(p => p.includes(champion.id) ? p.filter(id => id !== champion.id) : [...p, champion.id])}>{pool.includes(champion.id) ? '− Remove from constellation' : '+ Add to constellation'}</button><button className="inspect-button" onClick={() => go(2)}>Inspect the change ↗</button></> : <><p className="record-label">PATCH {champion.patch} · {numeric?.label ?? 'Qualitative change'}</p>{numeric ? <><div className="delta-values"><div><small>BEFORE</small>{numeric.before}</div><span>→</span><div><small>AFTER</small>{numeric.after}</div></div><label className="lens-label">Separate the lens<input aria-label="Separate the lens" type="range" min="0" max="1" step=".01" value={split} onChange={e => { setSplit(Number(e.target.value)); setWatch(false); }} /></label></> : <p>{champion.changes[0]?.text ?? 'No numeric comparison is available.'}</p>}<a href={`/champion/${champion.id.toLowerCase()}`}>Full champion history ↗</a></> }</> : <><div className="exhibit-meta">THE RECORDED ARCHIVE</div><h3>Patch {data.patches[patch]?.id}</h3><p>{data.patches[patch]?.date} · {data.patches[patch]?.count} champions changed</p><div className="archive-picker">{data.patches.map((p, i) => <button key={p.id} aria-pressed={patch === i} onClick={() => setPatch(i)}>{p.id}</button>)}</div><a className="inspect-button" href={`/patch/${data.patches[patch]?.id}`}>Open this record ↗</a></>}
       </div>
     </aside>}
-    <footer className="film-footer"><div className="playback"><button aria-label={watch ? 'Pause journey' : 'Play journey'} disabled={staticMode} onClick={() => { if (progress >= 4) setProgress(0); setWatch(v => !v); }}>{watch ? 'Ⅱ' : '▷'}</button><button aria-pressed={sound} onClick={toggleSound}>SOUND {sound ? 'ON' : 'OFF'}</button></div><nav aria-label="Journey chapters">{chapters.map((name, i) => <button key={name} aria-label={`Chapter ${i + 1}: ${name}`} aria-current={chapter === i ? 'step' : undefined} onClick={() => go(i)}><span>{String(i + 1).padStart(2, '0')}</span><i /></button>)}</nav><div className="film-scroll">{staticMode ? 'CHOOSE A CHAPTER' : <><span className="desktop-travel">SCROLL TO TRAVEL</span><span className="mobile-travel">SWIPE TO TRAVEL</span></>} <span>↓</span></div></footer>
+    <footer className="film-footer"><div className="playback"><button aria-label={(watch || phase !== 'ready') && !paused ? 'Pause journey' : 'Play journey'} disabled={staticMode} onClick={() => { if (phase !== 'ready') { setPaused(v => !v); setWatch(false); } else { setPaused(false); if (progress >= 4) setProgress(0); setWatch(v => !v); } }}>{(watch || phase !== 'ready') && !paused ? 'Ⅱ' : '▷'}</button><button aria-pressed={sound} onClick={toggleSound}>SOUND {sound ? 'ON' : 'OFF'}</button></div><nav aria-label="Journey chapters">{chapters.map((name, i) => <button key={name} aria-label={`Chapter ${i + 1}: ${name}`} aria-current={chapter === i ? 'step' : undefined} onClick={() => go(i)}><span>{String(i + 1).padStart(2, '0')}</span><i /></button>)}</nav><div className="film-scroll">{staticMode ? 'CHOOSE A CHAPTER' : <><span className="desktop-travel">SCROLL TO TRAVEL</span><span className="mobile-travel">SWIPE TO TRAVEL</span></>} <span>↓</span></div></footer>
     <div className="film-progress" style={{ transform: `scaleX(${progress / 4})` }} />
-    <details className="film-credits"><summary>Credits & information</summary><p>Original AI-generated cinematic environment artwork; these are layered images, not playable 3D environments. Patch data from Riot Games. No Riot artwork, models or audio are used in this scene. RiftScry isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.</p><a href={data.source}>Official patch source ↗</a><button onClick={() => { setStaticMode(v => !v); setWatch(false); }}>{staticMode ? 'Enable motion' : 'Reduce motion'}</button></details>
+    <details className="film-credits"><summary>Credits & information</summary><p>Original real-time 3D architecture, procedural stone and brass materials, and a continuous camera journey. Patch data from Riot Games. No Riot artwork, models or audio are used in this scene. RiftScry isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.</p><a href={data.source}>Official patch source ↗</a><button onClick={() => { setStaticMode(v => !v); setWatch(false); }}>{staticMode ? 'Enable motion' : 'Reduce motion'}</button></details>
   </div>;
 }

@@ -4,6 +4,7 @@ test.use({ viewport: { width: 359, height: 603 } });
 
 test('compact journey keeps navigation visible and records expandable', async ({ page }) => {
   await page.goto('/');
+  await expect(page.locator('.world-stage')).toHaveAttribute('data-ready', 'true', { timeout: 20000 });
   await page.getByRole('button', { name: /Enter the observatory/ }).click();
   await expect(page.getByRole('heading', { name: /Your constellation/ })).toBeVisible();
   const toggle = page.getByRole('button', { name: /Tap to explore the record/ });
@@ -15,6 +16,7 @@ test('compact journey keeps navigation visible and records expandable', async ({
   await page.getByRole('button', { name: '+ Add to constellation', exact: true }).click();
   await expect(page.getByRole('button', { name: /Remove from constellation/ })).toBeVisible();
   await page.getByRole('button', { name: /Inspect the change/ }).click();
+  await expect(page.locator('.observatory')).toHaveAttribute('data-chapter', '2', { timeout: 10000 });
   await expect(page.getByRole('button', { name: /Tap to explore the record/ })).toHaveAttribute('aria-expanded', 'false');
   await page.getByRole('button', { name: /Tap to explore the record/ }).click();
   await expect(page.getByRole('slider', { name: 'Separate the lens' })).toBeVisible();
