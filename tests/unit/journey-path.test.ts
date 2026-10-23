@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Vector3 } from 'three';
 import { createJourneyPath } from '../../src/lib/journey-path';
 
-const stations = [[0, 0, 0], [0, 0, -28], [14, 2, -54], [14, -8, -82], [0, 4, -112]];
+const stations = [[0, 0, 0], [0, 0, -28], [14, 2, -54], [14, 2, -82], [0, 4, -112]];
 const radius = .6;
 function assertClear(p: Vector3) {
   for (const [x = 0, y = 0, z = 0] of stations) {
@@ -12,7 +12,7 @@ function assertClear(p: Vector3) {
   if (Math.abs(p.z - .4) < 1.1) expect(Math.hypot(p.x, p.y - 1.4)).toBeLessThan(2.5);
   for (let i = 0; i < 5; i++) {
     if (Math.abs(p.z - (-82 - i * 4)) < 1) {
-      const distance = Math.hypot(p.x - 14, p.y + 5);
+      const distance = Math.hypot(p.x - 14, p.y - 5);
       expect(distance < 5 || distance > 6.7, `archive ring clearance at ${p.toArray()}`).toBe(true);
     }
   }
@@ -35,7 +35,9 @@ describe('journey clearance', () => {
       }
     });
     it('keeps the archive arrival inside the tunnel and below neither platform', () => {
-      expect(createJourneyPath(portrait).sample(3, new Vector3()).toArray()).toEqual([14, -5, -76]);
+      const out = new Vector3(999, 999, 999);
+      expect(createJourneyPath(portrait).sample(3, out)).toBe(out);
+      expect(out.toArray()).toEqual([14, 5, -76]);
     });
     it('has continuous chapter boundaries', () => {
       const route = createJourneyPath(portrait);

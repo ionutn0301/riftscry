@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Observatory from '../components/home/Observatory';
-import { getAllPatches, getChampionHistory, getChampionMeta } from '../lib/data';
+import { getAllPatches, getChampionHistory, getChampionMeta, getAssetVersion } from '../lib/data';
 import type { ObservatoryData } from '../lib/observatory';
 import '../styles/observatory.css';
 const patches = getAllPatches();
@@ -9,7 +9,7 @@ const latest = patches[0]!;
 const meta = getChampionMeta();
 const ids = [...new Set([...latest.champions.map(c => c.championId), 'Ahri', 'Jinx', 'Thresh', 'LeeSin'])].slice(0, 6);
 const data: ObservatoryData = {
-  latest: latest.id, date: latest.releaseDate, source: latest.sourceUrl,
+  assetVersion: getAssetVersion(), latest: latest.id, date: latest.releaseDate, source: latest.sourceUrl,
   champions: ids.map(id => {
     const entry = getChampionHistory(id)[0];
     return { id, name: meta[id]?.name ?? id, title: meta[id]?.title ?? '', patch: entry?.patchId ?? latest.id, classification: entry?.change.classification ?? 'unchanged', changes: entry?.change.abilities.flatMap(a => a.changes.map(c => c.kind === 'numeric' ? { label: `${a.name} · ${c.label}`, before: c.before, after: c.after } : { label: `${a.name} · ${c.label}`, text: c.text })) ?? [] };

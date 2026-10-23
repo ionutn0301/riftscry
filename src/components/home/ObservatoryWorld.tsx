@@ -7,7 +7,7 @@ import { createWorldMaterials } from './world-materials';
 import { createJourneyPath } from '../../lib/journey-path';
 import { advanceJourney, createJourney, requestJourney, type JourneyPhase } from '../../lib/journey-director';
 
-export type WorldProps = { chapter: number; reduced: boolean; skipVersion: number; paused: boolean; selected: number; count: number; split: number; onSplit: (value: number) => void; patch: number; patchCount: number; onSelect: (n: number) => void; onPatch: (n: number) => void; onTravel: (n: number) => void; onArrival: (n: number) => void; onPhase: (phase: JourneyPhase) => void; onReady: () => void; onFailure: () => void };
+export type WorldProps = { champions: { id: string; name: string }[]; patches: { id: string; date: string }[]; assetVersion?: string; chapter: number; reduced: boolean; skipVersion: number; paused: boolean; selected: number; count: number; split: number; onSplit: (value: number) => void; patch: number; patchCount: number; onSelect: (n: number) => void; onPatch: (n: number) => void; onTravel: (n: number) => void; onArrival: (n: number) => void; onPhase: (phase: JourneyPhase) => void; onReady: () => void; onFailure: () => void };
 function World(props: WorldProps) {
   const { chapter, reduced, onArrival, onPhase, onReady, onFailure } = props;
   const materials = useMemo(createWorldMaterials, []);
@@ -57,7 +57,8 @@ function World(props: WorldProps) {
     vectors.dock.copy(vectors.target).sub(vectors.camera).normalize().multiplyScalar(2).add(vectors.camera);
     vectors.dock.y -= .35;
     vectors.direction.lerp(vectors.dock, 1 - travelWeight);
-    vectors.target.lerp(vectors.direction, travelWeight);
+    // Keep a forward-facing view: following the guide through bends caused abrupt yaw.
+    vectors.target.set(vectors.camera.x - (size.width < size.height ? 0 : 2), vectors.camera.y - 2.5, vectors.camera.z - 16);
     vectors.pointer.x = THREE.MathUtils.damp(vectors.pointer.x, reduced || moving ? 0 : pointer.x, 4, dt);
     vectors.pointer.y = THREE.MathUtils.damp(vectors.pointer.y, reduced || moving ? 0 : pointer.y, 4, dt);
     vectors.camera.x += vectors.pointer.x * .18; vectors.camera.y += vectors.pointer.y * .12;
@@ -71,7 +72,7 @@ function World(props: WorldProps) {
       sunTarget.updateMatrixWorld();
     }
     if (camera instanceof THREE.PerspectiveCamera) {
-      const lens = THREE.MathUtils.lerp(43, 52, travelWeight);
+      const lens = 43;
       camera.fov = THREE.MathUtils.damp(camera.fov, lens, 2, dt);
       camera.updateProjectionMatrix();
     }
@@ -93,7 +94,7 @@ function World(props: WorldProps) {
     <primitive object={sunTarget} />
     <directionalLight ref={sun} target={sunTarget} position={[10, 20, 8]} intensity={3.4} color="#fff0d2" castShadow shadow-mapSize={size.width < 700 ? [512, 512] : [1024, 1024]} shadow-camera-left={-18} shadow-camera-right={18} shadow-camera-top={18} shadow-camera-bottom={-18} shadow-camera-near={1} shadow-camera-far={60} shadow-normalBias={.04} />
     <Environment resolution={128} frames={1}><Lightformer intensity={3} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[30, 30, 1]} /><Lightformer intensity={2} position={[-10, 2, 0]} rotation={[0, Math.PI / 2, 0]} scale={[12, 25, 1]} /></Environment>
-    {stations.map((_, stage) => <ChapterEnvironment key={stage} stage={stage} materials={materials} position={position} selected={props.selected} count={props.count} active={phase.current === 'ready' && chapter === stage} onSelect={props.onSelect} onTravel={() => props.onTravel(1)} split={props.split} onSplit={props.onSplit} patch={props.patch} patchCount={props.patchCount} onPatch={props.onPatch} />)}
+    {stations.map((_, stage) => <ChapterEnvironment champions={props.champions} patches={props.patches} assetVersion={props.assetVersion} key={stage} stage={stage} materials={materials} position={position} selected={props.selected} count={props.count} active={phase.current === 'ready' && chapter === stage} onSelect={props.onSelect} onTravel={() => props.onTravel(1)} split={props.split} onSplit={props.onSplit} patch={props.patch} patchCount={props.patchCount} onPatch={props.onPatch} />)}
     <group ref={signal}><Signal materials={materials} /></group>
   </>;
 }
