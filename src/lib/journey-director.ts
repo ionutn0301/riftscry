@@ -11,7 +11,7 @@ export function requestJourney(state: JourneyState, destination: number, reduced
 }
 export function advanceJourney(state: JourneyState, dt: number): JourneyState {
   if (state.phase === 'ready') return state;
-  const elapsed = Math.min(state.duration, state.elapsed + Math.max(0, Math.min(dt, .05)));
+  const elapsed = Math.min(state.duration, state.elapsed + Math.max(0, Math.min(dt, .5)));
   const t = elapsed / state.duration;
   const ease = t * t * t * (t * (t * 6 - 15) + 10);
   return { ...state, elapsed, position: state.from + (state.destination - state.from) * ease, phase: t >= 1 ? 'ready' : t < .18 ? 'departing' : t > .82 ? 'arriving' : 'travelling' };
