@@ -4,12 +4,14 @@ import { chapters, chapterAt, type ObservatoryData } from '../../lib/observatory
 
 import brandLogo from '../../assets/brand/logo-desktop-light.png';
 import CinematicStage from './CinematicStage';
+import { JourneyArrival } from './JourneyArrival';
 export default function Observatory({ data }: { data: ObservatoryData }) {
   const [progress, setProgress] = useState(0);
   const [watch, setWatch] = useState(false);
   const [paused, setPaused] = useState(false);
   const [skipVersion, setSkipVersion] = useState(0);
   const [exhibitOpen, setExhibitOpen] = useState(false);
+  const [inspecting, setInspecting] = useState(false);
   const [selected, setSelected] = useState(0);
   const [pool, setPool] = useState<string[]>([]);
   const [patch, setPatch] = useState(0);
@@ -104,11 +106,11 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
       await audio.current.resume(); setSound(true);
     } catch { setSound(false); }
   }
-  return <div className={`observatory ${staticMode ? 'is-static' : ''}`} data-phase={phase} data-chapter={chapter} ref={root}>
-    <div className="observatory-canvas"><CinematicStage champions={data.champions} patches={data.patches} assetVersion={data.assetVersion} chapter={destination} skipVersion={skipVersion} paused={paused} reduced={staticMode} split={split} onSplit={value => { setSplit(value); setWatch(false); }} selected={selected} count={data.champions.length} patch={patch} patchCount={data.patches.length} onTravel={go} onSelect={i => { setSelected(i); setWatch(false); }} onPatch={i => { setPatch(i); setWatch(false); }} onArrival={setChapter} onPhase={setPhase} /></div>
+  return <div className={`observatory ${staticMode ? 'is-static' : ''}`} data-phase={phase} data-inspecting={inspecting} data-chapter={chapter} ref={root}>
+    <div className="observatory-canvas"><CinematicStage onInspectionChange={setInspecting} record={{ patch: champion.patch, name: champion.name, before: String(numeric?.before ?? 'Before'), after: String(numeric?.after ?? 'After'), label: numeric?.label ?? champion.changes[0]?.label ?? 'Champion record' }} champions={data.champions} patches={data.patches} assetVersion={data.assetVersion} chapter={destination} skipVersion={skipVersion} paused={paused} reduced={staticMode} split={split} onSplit={value => { setSplit(value); setWatch(false); }} selected={selected} count={data.champions.length} patch={patch} patchCount={data.patches.length} onTravel={go} onSelect={i => { setSelected(i); setWatch(false); }} onPatch={i => { setPatch(i); setWatch(false); }} onArrival={setChapter} onPhase={setPhase} /></div>
     {phase !== 'ready' && <button className="skip-travel" onClick={() => { setSkipVersion(v => v + 1); setPaused(false); }}>Skip travel</button>}
     <div className="observatory-vignette" />
-    <div className="scene-cue" role="status">{chapter === 0 ? 'ACTIVATE THE CORE · CLICK THE SCULPTURE' : chapter === 1 ? `${champion.name.toUpperCase()} SELECTED · CHOOSE A FLOATING SHARD` : chapter === 2 ? 'CLICK THE RINGS OR DRAG THE LENS · REVEAL THE SHIFT' : chapter === 3 ? 'SELECT A STONE · EXPLORE A PATCH' : 'THE NEXT MOVE IS YOURS'}</div>
+    <div className="scene-cue" role="status">{chapter === 0 ? 'ACTIVATE THE CORE · CLICK THE SCULPTURE' : chapter === 1 ? `${champion.name.toUpperCase()} SELECTED · CHOOSE A FLOATING SHARD` : chapter === 2 ? 'SELECT AN INSCRIBED RECORD · BRING IT CLOSER' : chapter === 3 ? 'SELECT A TABLET · INSPECT THE PATCH' : 'THE NEXT MOVE IS YOURS'}</div>
     <header className="film-header"><a className="film-brand" href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /><span className="brand-caption">A NEW PERSPECTIVE ON THE RIFT</span></a><a className="film-tool" href={`/patch/${data.latest}`}>Patch {data.latest}<span aria-hidden="true">↗</span></a></header>
     <div className="film-coordinate">RS—{data.latest}<span>AN EVER-CHANGING WORLD</span><a href="/pool">Choose champions ↗</a></div>
     <section key={chapter} className={`film-story chapter-${chapter}`} aria-label={chapters[chapter]} inert={phase === 'travelling'}>
@@ -117,7 +119,7 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
       {chapter === 1 && <><h2>Your champions.<br /><em>Your constellation.</em></h2><p>The signal leads to the sanctuary.<br />Choose the champion whose future you will follow.</p></>}
       {chapter === 2 && <><h2>A small shift.<br /><em>A different game.</em></h2><p>{champion.name}&apos;s record reveals the fracture.<br />Compare what was with what comes next.</p></>}
       {chapter === 3 && <><h2>Every change<br /><em>leaves a trace.</em></h2><p>One change is only part of the story.<br />Trace the records that brought us here.</p></>}
-      {chapter === 4 && <><h2>Return to the Rift.<br /><em>See it differently.</em></h2><p>{pool.length ? `Your constellation: ${pool.map(id => data.champions.find(c => c.id === id)?.name).join(', ')}.` : 'A clearer perspective. A more informed next game.'}</p><div className="film-actions"><a className="film-primary" href={`/patch/${data.latest}`}>Explore patch {data.latest} ↗</a><button onClick={() => { setProgress(0); setWatch(!staticMode); }}>Replay journey ↺</button></div></>}
+      {chapter === 4 && <><h2>Return to the Rift.<br /><em>See it differently.</em></h2><JourneyArrival champion={champion.name} patch={data.latest} records={data.patches.length} />{pool.length > 0 && <p>{`Your constellation: ${pool.map(id => data.champions.find(c => c.id === id)?.name).join(', ')}.`}</p>}<div className="film-actions"><a className="film-primary" href={`/patch/${data.latest}`}>Explore patch {data.latest} ↗</a><button onClick={() => { setProgress(0); setWatch(!staticMode); }}>Replay journey ↺</button></div></>}
       {chapter > 0 && chapter < 4 && <button className="story-next" onClick={() => go(chapter + 1)}>{chapter === 1 ? `Follow ${champion.name}’s signal` : chapter === 2 ? 'Trace the origin' : 'Carry this knowledge back'} <span aria-hidden="true">→</span></button>}
     </section>
     {chapter > 0 && chapter < 4 && <aside inert={phase === 'travelling'} className={`exhibit-panel ${exhibitOpen ? 'is-expanded' : ''}`} onPointerDown={() => setWatch(false)}>
@@ -129,6 +131,6 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
     </aside>}
     <footer className="film-footer"><div className="playback"><button aria-label={(watch || phase !== 'ready') && !paused ? 'Pause journey' : 'Play journey'} disabled={staticMode} onClick={() => { if (phase !== 'ready') { setPaused(v => !v); setWatch(false); } else { setPaused(false); if (progress >= 4) setProgress(0); setWatch(v => !v); } }}>{(watch || phase !== 'ready') && !paused ? 'Ⅱ' : '▷'}</button><button aria-pressed={sound} onClick={toggleSound}>SOUND {sound ? 'ON' : 'OFF'}</button></div><nav aria-label="Journey chapters">{chapters.map((name, i) => <button key={name} aria-label={`Chapter ${i + 1}: ${name}`} aria-current={chapter === i ? 'step' : undefined} onClick={() => go(i)}><span>{String(i + 1).padStart(2, '0')}</span><i /></button>)}</nav><div className="film-scroll">{staticMode ? 'CHOOSE A CHAPTER' : <><span className="desktop-travel">SCROLL TO TRAVEL</span><span className="mobile-travel">SWIPE TO TRAVEL</span></>} <span>↓</span></div></footer>
     <div className="film-progress" style={{ transform: `scaleX(${progress / 4})` }} />
-    <details className="film-credits"><summary>Credits & information</summary><p>Original real-time 3D architecture, procedural stone and brass materials, and a continuous camera journey. Patch data from Riot Games. No Riot artwork, models or audio are used in this scene. RiftScry isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.</p><a href={data.source}>Official patch source ↗</a><button onClick={() => { setStaticMode(v => !v); setWatch(false); }}>{staticMode ? 'Enable motion' : 'Reduce motion'}</button></details>
+    <details className="film-credits"><summary>Credits & information</summary><p>Original real-time 3D architecture, procedural stone and brass materials, and a continuous camera journey. Patch data from Riot Games. Champion portraits are provided by Riot Games Data Dragon. Architecture and audio are original. RiftScry isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.</p><a href={data.source}>Official patch source ↗</a><button onClick={() => { setStaticMode(v => !v); setWatch(false); }}>{staticMode ? 'Enable motion' : 'Reduce motion'}</button></details>
   </div>;
 }

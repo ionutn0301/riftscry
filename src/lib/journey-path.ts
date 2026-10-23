@@ -19,7 +19,7 @@ function roundedRoute(points: Point[]) {
 }
 
 export function createJourneyPath(portrait = false) {
-  const poses: Point[] = [[portrait ? 0 : 4, 3, portrait ? 17 : 13], [portrait ? 0 : 4, 3, portrait ? -11 : -15], [portrait ? 14 : 20, 5, portrait ? -37 : -41], [14, 5, -76], [portrait ? 0 : 4, 7, -104]];
+  const poses: Point[] = [[portrait ? 0 : 4, 3, portrait ? 17 : 13], [portrait ? 0 : 4, 3, portrait ? -11 : -15], [portrait ? 14 : 18, 5, portrait ? -37 : -41], [portrait ? 14 : 18, 5, portrait ? -64 : -68], [portrait ? 0 : 4, 7, -98]];
   // Route through apertures and around the comparison platform before descending.
   // Rounded corners stay inside their waypoint hull, unlike an overshooting spline.
   const routes = [

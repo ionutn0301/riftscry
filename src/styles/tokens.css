@@ -1,8 +1,8 @@
 /*
- * RiftScry design tokens — "The Balance Ledger".
- * Ink + gold + cream, derived from the brand marks in src/assets/brand.
+ * RiftScry design tokens — pale stone, forest ink, restrained brass.
+ * Legacy token names remain stable for existing pages.
  * Semantic buff/nerf colors are never the only signal (always paired with
- * glyph + label) and gold is never used as a semantic change color.
+ * glyph + label) and brand accents are never used as semantic change colors.
  */
 
 @font-face {
@@ -21,28 +21,28 @@
 
 :root {
   /* Environment */
-  --ink: #131110;
-  --ink-2: #1c1916;
-  --ink-3: #262119;
-  --line: #322b22;
-  --line-strong: #4a3f30;
+  --ink: #e9e8e2;
+  --ink-2: #f6f5ef;
+  --ink-3: #dce1d6;
+  --line: #bac2b5;
+  --line-strong: #778572;
 
   /* Text */
-  --cream: #f1e9da;
-  --cream-dim: #b5aa96;
-  --cream-faint: #837a69;
+  --cream: #25372d;
+  --cream-dim: #445748;
+  --cream-faint: #52634f;
 
   /* Brand accent — gold, from the logo rift slashes */
-  --gold: #c99a4c;
-  --gold-bright: #e3b761;
-  --gold-deep: #8a6a2f;
+  --gold: #394f3c;
+  --gold-bright: #283e2d;
+  --gold-deep: #586b4e;
 
   /* Semantic change colors (CVD-safe pairings with ▲/▼ glyphs + labels) */
-  --buff: #74b8ab;
+  --buff: #23604d;
   --buff-dim: #3f6b62;
-  --nerf: #d98a75;
+  --nerf: #963d2b;
   --nerf-dim: #7d4a3c;
-  --neutral: #8a8378;
+  --neutral: #52634f;
 
   /* Type */
   --font-display: "Clash Display", "Georgia", serif;

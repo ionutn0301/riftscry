@@ -7,10 +7,16 @@ import { createWorldMaterials } from './world-materials';
 import { createJourneyPath } from '../../lib/journey-path';
 import { advanceJourney, createJourney, requestJourney, type JourneyPhase } from '../../lib/journey-director';
 
-export type WorldProps = { champions: { id: string; name: string }[]; patches: { id: string; date: string }[]; assetVersion?: string; chapter: number; reduced: boolean; skipVersion: number; paused: boolean; selected: number; count: number; split: number; onSplit: (value: number) => void; patch: number; patchCount: number; onSelect: (n: number) => void; onPatch: (n: number) => void; onTravel: (n: number) => void; onArrival: (n: number) => void; onPhase: (phase: JourneyPhase) => void; onReady: () => void; onFailure: () => void };
+export type WorldProps = { onInspectionChange: (value: boolean) => void; record: { patch: string; name: string; before: string; after: string; label: string }; champions: { id: string; name: string }[]; patches: { id: string; date: string }[]; assetVersion?: string; chapter: number; reduced: boolean; skipVersion: number; paused: boolean; selected: number; count: number; split: number; onSplit: (value: number) => void; patch: number; patchCount: number; onSelect: (n: number) => void; onPatch: (n: number) => void; onTravel: (n: number) => void; onArrival: (n: number) => void; onPhase: (phase: JourneyPhase) => void; onReady: () => void; onFailure: () => void };
 function World(props: WorldProps) {
   const { chapter, reduced, onArrival, onPhase, onReady, onFailure } = props;
   const materials = useMemo(createWorldMaterials, []);
+  const flightMaterials = useMemo(() => {
+    const copies = { stone: materials.stone.clone(), metal: materials.metal.clone(), dark: materials.dark.clone(), light: materials.light.clone() };
+    Object.values(copies).forEach(material => { material.depthTest = false; material.depthWrite = false; });
+    return { ...copies, dispose: () => Object.values(copies).forEach(material => material.dispose()) };
+  }, [materials]);
+  useEffect(() => () => flightMaterials.dispose(), [flightMaterials]);
   const journey = useRef(createJourney(chapter));
   const phase = useRef<JourneyPhase>('ready');
   const signal = useRef<THREE.Group>(null);
@@ -21,10 +27,10 @@ function World(props: WorldProps) {
   const paths = useMemo(() => {
     const portrait = size.width < size.height;
     const camera = createJourneyPath(portrait);
-    const target = new THREE.CatmullRomCurve3(stations.map(([x, y, z]) => new THREE.Vector3(x - (portrait ? 0 : 1.8), y + .5, z - 1)), false, 'catmullrom', .2);
-    return { camera, target };
+    return { camera };
   }, [size.width, size.height]);
   const vectors = useMemo(() => ({ camera: new THREE.Vector3(), target: new THREE.Vector3(), direction: new THREE.Vector3(), dock: new THREE.Vector3(), aim: new THREE.Vector3(), pointer: new THREE.Vector2() }), []);
+  const bank = useRef(0);
   const initialized = useRef(false);
   const lastSkip = useRef(props.skipVersion);
   useEffect(() => {
@@ -42,30 +48,22 @@ function World(props: WorldProps) {
     return () => canvas.removeEventListener('webglcontextlost', lost);
   }, [gl, onReady, onFailure]);
   useEffect(() => () => materials.dispose(), [materials]);
-  useFrame(({ camera, pointer }, dt) => {
+  useFrame(({ camera }, dt) => {
     if (!props.paused) journey.current = advanceJourney(journey.current, dt);
     const state = journey.current;
     if (phase.current !== state.phase) { phase.current = state.phase; onPhase(state.phase); }
     if (Math.abs(position - state.position) > .08 || (state.phase === 'ready' && position !== state.position)) setPosition(state.position);
     if (state.phase === 'ready') onArrival(state.destination);
     paths.camera.sample(state.position, vectors.camera);
-    paths.target.getPoint(state.position / 4, vectors.target);
-    paths.camera.guide(state.position, state.destination, vectors.direction);
-    const moving = state.phase !== 'ready';
-    const distance = vectors.direction.distanceTo(vectors.camera);
-    const travelWeight = THREE.MathUtils.smoothstep(distance, 1.2, 4);
-    vectors.dock.copy(vectors.target).sub(vectors.camera).normalize().multiplyScalar(2).add(vectors.camera);
-    vectors.dock.y -= .35;
-    vectors.direction.lerp(vectors.dock, 1 - travelWeight);
-    // Keep a forward-facing view: following the guide through bends caused abrupt yaw.
-    vectors.target.set(vectors.camera.x - (size.width < size.height ? 0 : 2), vectors.camera.y - 2.5, vectors.camera.z - 16);
-    vectors.pointer.x = THREE.MathUtils.damp(vectors.pointer.x, reduced || moving ? 0 : pointer.x, 4, dt);
-    vectors.pointer.y = THREE.MathUtils.damp(vectors.pointer.y, reduced || moving ? 0 : pointer.y, 4, dt);
-    vectors.camera.x += vectors.pointer.x * .18; vectors.camera.y += vectors.pointer.y * .12;
-    camera.position.copy(vectors.camera);
-    if (!initialized.current || reduced || lastSkip.current !== props.skipVersion) { vectors.aim.copy(vectors.target); initialized.current = true; }
-    else vectors.aim.lerp(vectors.target, 1 - Math.exp(-5 * dt));
-    camera.lookAt(vectors.aim);
+    const frameTime = Math.min(dt, .05);
+    const snap = !initialized.current || reduced;
+    if (snap) camera.position.copy(vectors.camera);
+    else camera.position.lerp(vectors.camera, 1 - Math.exp(-3.5 * frameTime));
+    initialized.current = true;
+    // A fixed horizon avoids the yaw and zoom changes that made bends disorienting.
+    vectors.target.copy(camera.position).add(vectors.dock.set(size.width < size.height ? 0 : -3.5, -2.5, -16));
+    camera.lookAt(vectors.target);
+    vectors.direction.set(size.width < size.height ? 1.55 * size.width / size.height : 0, -.65, -5).applyQuaternion(camera.quaternion).add(camera.position);
     if (sun.current) {
       sunTarget.position.copy(vectors.target);
       sun.current.position.set(vectors.target.x + 9, vectors.target.y + 16, vectors.target.z + 7);
@@ -77,15 +75,12 @@ function World(props: WorldProps) {
       camera.updateProjectionMatrix();
     }
     if (signal.current) {
-      if (reduced || !signal.current.userData.placed) {
-        signal.current.position.copy(vectors.direction);
-        signal.current.userData.placed = true;
-      } else {
-        signal.current.position.lerp(vectors.direction, 1 - Math.exp(-6 * dt));
-      }
-      signal.current.scale.setScalar(THREE.MathUtils.damp(signal.current.scale.x, THREE.MathUtils.lerp(.24, .65, travelWeight), 6, dt));
+      signal.current.position.copy(vectors.direction);
+      signal.current.quaternion.copy(camera.quaternion);
+      bank.current = THREE.MathUtils.damp(bank.current, reduced ? 0 : THREE.MathUtils.clamp((camera.position.x - vectors.camera.x) * .15, -.2, .2), 3, frameTime);
+      signal.current.rotateZ(bank.current);
+      signal.current.scale.setScalar(size.width < size.height ? .18 : .42);
       signal.current.visible = true;
-      if (!reduced) signal.current.rotation.y += dt * .45;
     }
   });
   return <>
@@ -94,12 +89,12 @@ function World(props: WorldProps) {
     <primitive object={sunTarget} />
     <directionalLight ref={sun} target={sunTarget} position={[10, 20, 8]} intensity={3.4} color="#fff0d2" castShadow shadow-mapSize={size.width < 700 ? [512, 512] : [1024, 1024]} shadow-camera-left={-18} shadow-camera-right={18} shadow-camera-top={18} shadow-camera-bottom={-18} shadow-camera-near={1} shadow-camera-far={60} shadow-normalBias={.04} />
     <Environment resolution={128} frames={1}><Lightformer intensity={3} position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[30, 30, 1]} /><Lightformer intensity={2} position={[-10, 2, 0]} rotation={[0, Math.PI / 2, 0]} scale={[12, 25, 1]} /></Environment>
-    {stations.map((_, stage) => <ChapterEnvironment champions={props.champions} patches={props.patches} assetVersion={props.assetVersion} key={stage} stage={stage} materials={materials} position={position} selected={props.selected} count={props.count} active={phase.current === 'ready' && chapter === stage} onSelect={props.onSelect} onTravel={() => props.onTravel(1)} split={props.split} onSplit={props.onSplit} patch={props.patch} patchCount={props.patchCount} onPatch={props.onPatch} />)}
-    <group ref={signal}><Signal materials={materials} /></group>
+    {stations.map((_, stage) => <ChapterEnvironment onInspectionChange={props.onInspectionChange} record={props.record} reduced={reduced} champions={props.champions} patches={props.patches} assetVersion={props.assetVersion} key={stage} stage={stage} materials={materials} position={position} selected={props.selected} count={props.count} active={phase.current === 'ready' && chapter === stage} onSelect={props.onSelect} onTravel={() => props.onTravel(1)} split={props.split} onSplit={props.onSplit} patch={props.patch} patchCount={props.patchCount} onPatch={props.onPatch} />)}
+    <group ref={signal} renderOrder={100}><Signal materials={flightMaterials} /></group>
   </>;
 }
 export default function ObservatoryWorld(props: WorldProps) {
   const [visible, setVisible] = useState(true);
   useEffect(() => { const update = () => setVisible(!document.hidden); document.addEventListener('visibilitychange', update); return () => document.removeEventListener('visibilitychange', update); }, []);
-  return <Canvas shadows dpr={[1, 1.5]} frameloop={visible ? 'always' : 'never'} camera={{ position: [4, 3, 13], fov: 43, near: .2, far: 160 }} gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}><World {...props} /></Canvas>;
+  return <Canvas dpr={1} frameloop={visible ? 'always' : 'never'} camera={{ position: [4, 3, 13], fov: 43, near: .2, far: 160 }} gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}><World {...props} /></Canvas>;
 }

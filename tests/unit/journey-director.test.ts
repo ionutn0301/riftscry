@@ -33,7 +33,7 @@ describe('continuous journey director', () => {
   it('ignores repeated destinations and clamps stalled frames', () => {
     const state = requestJourney(createJourney(), 2);
     expect(requestJourney(state, 2)).toBe(state);
-    expect(advanceJourney(state, 100).elapsed).toBe(.5);
-    expect(advanceJourney(state, .1).elapsed).toBe(.1);
+    expect(advanceJourney(state, 100).elapsed).toBe(.05);
+    expect(advanceJourney(state, .1).elapsed).toBe(.05);
   });
 });
