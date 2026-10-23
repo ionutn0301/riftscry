@@ -24,7 +24,7 @@ function World(props: WorldProps) {
     const target = new THREE.CatmullRomCurve3(stations.map(([x, y, z]) => new THREE.Vector3(x - (portrait ? 0 : 1.8), y + .5, z - 1)), false, 'catmullrom', .2);
     return { camera, target };
   }, [size.width, size.height]);
-  const vectors = useMemo(() => ({ camera: new THREE.Vector3(), target: new THREE.Vector3(), direction: new THREE.Vector3(), aim: new THREE.Vector3(), pointer: new THREE.Vector2() }), []);
+  const vectors = useMemo(() => ({ camera: new THREE.Vector3(), target: new THREE.Vector3(), direction: new THREE.Vector3(), dock: new THREE.Vector3(), aim: new THREE.Vector3(), pointer: new THREE.Vector2() }), []);
   const initialized = useRef(false);
   const lastSkip = useRef(props.skipVersion);
   useEffect(() => {
@@ -53,7 +53,11 @@ function World(props: WorldProps) {
     paths.camera.guide(state.position, state.destination, vectors.direction);
     const moving = state.phase !== 'ready';
     const distance = vectors.direction.distanceTo(vectors.camera);
-    if (moving && distance > .25) vectors.target.lerp(vectors.direction, Math.min(1, distance / 1.2));
+    const travelWeight = THREE.MathUtils.smoothstep(distance, 1.2, 4);
+    vectors.dock.copy(vectors.target).sub(vectors.camera).normalize().multiplyScalar(2).add(vectors.camera);
+    vectors.dock.y -= .35;
+    vectors.direction.lerp(vectors.dock, 1 - travelWeight);
+    vectors.target.lerp(vectors.direction, travelWeight);
     vectors.pointer.x = THREE.MathUtils.damp(vectors.pointer.x, reduced || moving ? 0 : pointer.x, 4, dt);
     vectors.pointer.y = THREE.MathUtils.damp(vectors.pointer.y, reduced || moving ? 0 : pointer.y, 4, dt);
     vectors.camera.x += vectors.pointer.x * .18; vectors.camera.y += vectors.pointer.y * .12;
@@ -67,17 +71,18 @@ function World(props: WorldProps) {
       sunTarget.updateMatrixWorld();
     }
     if (camera instanceof THREE.PerspectiveCamera) {
-      const lens = state.phase === 'travelling' ? 52 : 43;
+      const lens = THREE.MathUtils.lerp(43, 52, travelWeight);
       camera.fov = THREE.MathUtils.damp(camera.fov, lens, 2, dt);
       camera.updateProjectionMatrix();
     }
     if (signal.current) {
-      if (!moving || distance < 1.2) {
-        vectors.direction.copy(vectors.aim).sub(vectors.camera).normalize().multiplyScalar(2).add(vectors.camera);
-        vectors.direction.y -= .35;
+      if (reduced || !signal.current.userData.placed) {
+        signal.current.position.copy(vectors.direction);
+        signal.current.userData.placed = true;
+      } else {
+        signal.current.position.lerp(vectors.direction, 1 - Math.exp(-6 * dt));
       }
-      signal.current.position.copy(vectors.direction);
-      signal.current.scale.setScalar(moving && distance >= 1.2 ? .65 : .24);
+      signal.current.scale.setScalar(THREE.MathUtils.damp(signal.current.scale.x, THREE.MathUtils.lerp(.24, .65, travelWeight), 6, dt));
       signal.current.visible = true;
       if (!reduced) signal.current.rotation.y += dt * .45;
     }
