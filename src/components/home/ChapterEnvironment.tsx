@@ -1,11 +1,13 @@
 import { useMemo, useRef } from 'react';
+import { Html } from '@react-three/drei';
+import '../../styles/world-choices.css';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { WorldMaterials } from './world-materials';
 import { ObservatoryClock } from './ObservatoryClock';
 
 type M = { materials: WorldMaterials };
-export const stations: [number, number, number][] = [[0, 0, 0], [0, 0, -28], [14, 2, -54], [14, -8, -82], [0, 4, -112]];
+export const stations: [number, number, number][] = [[0, 0, 0], [0, 0, -28], [14, 2, -54], [14, 2, -82], [0, 4, -112]];
 
 function Ring({ radius, width = .12, depth = .12, material }: { radius: number; width?: number; depth?: number; material: THREE.Material }) {
   const shape = useMemo(() => {
@@ -48,7 +50,7 @@ function Gateway({ materials: m, opening, active, onTravel }: M & { opening: num
     {Array.from({ length: 6 }, (_, i) => <mesh key={i} position={[0, -2.8 - i * .18, 1.2 + i * .6]} material={m.stone} receiveShadow><boxGeometry args={[9 + i * .5, .25, .65]} /></mesh>)}
   </group>;
 }
-function Reliquary({ materials: m, selected, onSelect }: M & { selected: boolean; onSelect?: () => void }) {
+function Reliquary({ materials: m, selected, onSelect, champion, assetVersion }: M & { selected: boolean; onSelect?: () => void; champion?: { id: string; name: string }; assetVersion?: string }) {
   const frame = useRef<THREE.Group>(null);
   useFrame((_, dt) => { if (frame.current) frame.current.rotation.y = THREE.MathUtils.damp(frame.current.rotation.y, selected ? .55 : -.25, 3, dt); });
   return <group onClick={onSelect ? e => { e.stopPropagation(); onSelect(); } : undefined}>
@@ -56,12 +58,15 @@ function Reliquary({ materials: m, selected, onSelect }: M & { selected: boolean
     <group position={[0, 2.2, 0]} ref={frame}>
       <Ring radius={1} width={.1} depth={.12} material={m.metal} />
       <group rotation={[0, Math.PI / 2, 0]}><Ring radius={.9} width={.06} depth={.06} material={m.dark} /></group>
-      <group rotation={[.4, .2, .4]}><mesh material={selected ? m.light : m.dark} castShadow><octahedronGeometry args={[.55, 0]} /></mesh></group>
+      {onSelect && champion && <Html center position={[0, 0, .25]} distanceFactor={16} zIndexRange={[20, 10]}><button className="world-choice champion-choice" aria-pressed={selected} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); onSelect(); }}>
+        {assetVersion && <img src={`https://ddragon.leagueoflegends.com/cdn/${assetVersion}/img/champion/${champion.id}.png`} alt="" width={64} height={64} />}
+        <strong>{champion.name}</strong><span>{selected ? 'Selected · view changes' : 'Select champion →'}</span>
+      </button></Html>}
       {[-1, 1].map(s => <mesh key={s} position={[s * .7, 0, 0]} material={m.metal}><boxGeometry args={[.45, .045, .045]} /></mesh>)}
     </group>
   </group>;
 }
-export function ChapterEnvironment({ stage, materials: m, position, selected, count, active, onSelect, onTravel, split, onSplit, patch, patchCount, onPatch }: M & { stage: number; position: number; selected: number; count: number; active: boolean; onSelect: (n: number) => void; onTravel: () => void; split: number; onSplit: (value: number) => void; patch: number; patchCount: number; onPatch: (n: number) => void }) {
+export function ChapterEnvironment({ champions, patches, assetVersion, stage, materials: m, position, selected, count, active, onSelect, onTravel, split, onSplit, patch, patchCount, onPatch }: M & { champions: { id: string; name: string }[]; patches: { id: string; date: string }[]; assetVersion?: string; stage: number; position: number; selected: number; count: number; active: boolean; onSelect: (n: number) => void; onTravel: () => void; split: number; onSplit: (value: number) => void; patch: number; patchCount: number; onPatch: (n: number) => void }) {
   const rings = useRef<(THREE.Group | null)[]>([]);
   useFrame((_, dt) => { rings.current.forEach((ring, i) => {
     if (!ring) return;
@@ -75,7 +80,7 @@ export function ChapterEnvironment({ stage, materials: m, position, selected, co
     {[-3.5, 3.5].map(x => <mesh key={x} position={[x, -2.94, -4]} material={m.metal}><boxGeometry args={[.035, .018, 28]} /></mesh>)}
     {stage === 0 && <Gateway materials={m} opening={Math.min(1, position * 3)} active={active} onTravel={onTravel} />}
     {stage === 1 && <>
-      {Array.from({ length: count }, (_, i) => { const a = (i / Math.max(1, count - 1) - .5) * Math.PI * 1.15; return <group key={i} position={[Math.sin(a) * 5, -2.95, -Math.cos(a) * 4]}><Reliquary materials={m} selected={selected === i} onSelect={active ? () => onSelect(i) : undefined} /></group>; })}
+      {Array.from({ length: count }, (_, i) => { const a = (i / Math.max(1, count - 1) - .5) * Math.PI * 1.15; return <group key={i} position={[Math.sin(a) * 5, -2.95, -Math.cos(a) * 4]}><Reliquary champion={champions[i]} assetVersion={assetVersion} materials={m} selected={selected === i} onSelect={active ? () => onSelect(i) : undefined} /></group>; })}
       {[-8, 8].map(x => [-7, 2].map(z => <group key={`${x}-${z}`} position={[x, -3, z]}><Column materials={m} height={11} /></group>))}
       <group rotation={[Math.PI / 2, 0, 0]} position={[0, -2.92, -2]}><Ring radius={6.8} width={.07} material={m.metal} /></group>
     </>}
@@ -91,6 +96,7 @@ export function ChapterEnvironment({ stage, materials: m, position, selected, co
     {stage === 3 && <>
       {Array.from({ length: 5 }, (_, i) => <group key={i} position={[0, 3, -i * 4]}><Ring radius={6} width={.3} depth={.35} material={m.stone} /><group position={[0, 0, .4]}><Ring radius={5.65} width={.035} material={m.metal} /></group></group>)}
       {Array.from({ length: patchCount }, (_, i) => <group key={i} position={[(i % 2 ? 1 : -1) * 4.8, -2.9, -Math.floor(i / 2) * 3]} rotation={[0, (i % 2 ? -1 : 1) * .7 + (patch === i ? .35 : 0), 0]} onClick={active ? e => { e.stopPropagation(); onPatch(i); } : undefined}>
+        {active && <Html center position={[0, 2, .3]} distanceFactor={14} zIndexRange={[20, 10]}><button className="world-choice archive-choice" aria-pressed={patch === i} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); onPatch(i); }}><strong>Patch {patches[i]?.id}</strong><span>{patches[i]?.date}</span><b>{patch === i ? 'Selected record' : 'Open record →'}</b></button></Html>}
         <Pedestal materials={m} /><mesh position={[0, 2, 0]} material={patch === i ? m.metal : m.dark} castShadow><boxGeometry args={[1.1, 1.8, .2]} /></mesh>
         {Array.from({ length: 5 }, (_, j) => <mesh key={j} position={[0, 1.4 + j * .25, .12]} material={patch === i ? m.light : m.metal}><boxGeometry args={[.72, .025, .025]} /></mesh>)}
       </group>)}
