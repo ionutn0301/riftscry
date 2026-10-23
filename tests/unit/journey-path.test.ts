@@ -34,10 +34,11 @@ describe('journey clearance', () => {
         for (const destination of [0, 1, 2, 3, 4]) assertClear(route.guide(position, destination, p));
       }
     });
-    it('keeps the archive arrival inside the tunnel and below neither platform', () => {
+    it('frames the whole archive collection from its entrance', () => {
       const out = new Vector3(999, 999, 999);
       expect(createJourneyPath(portrait).sample(3, out)).toBe(out);
-      expect(out.toArray()).toEqual([14, 5, -76]);
+      expect(out.toArray()).toEqual(portrait ? [14, 5, -64] : [18, 5, -68]);
+      assertClear(out);
     });
     it('has continuous chapter boundaries', () => {
       const route = createJourneyPath(portrait);
