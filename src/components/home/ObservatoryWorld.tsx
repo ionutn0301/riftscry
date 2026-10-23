@@ -4,6 +4,7 @@ import { Environment, Lightformer } from '@react-three/drei';
 import * as THREE from 'three';
 import { ChapterEnvironment, Signal, stations } from './ChapterEnvironment';
 import { createWorldMaterials } from './world-materials';
+import { createJourneyPath } from '../../lib/journey-path';
 import { advanceJourney, createJourney, requestJourney, type JourneyPhase } from '../../lib/journey-director';
 
 export type WorldProps = { chapter: number; reduced: boolean; skipVersion: number; paused: boolean; selected: number; count: number; split: number; patch: number; patchCount: number; onSelect: (n: number) => void; onPatch: (n: number) => void; onTravel: (n: number) => void; onArrival: (n: number) => void; onPhase: (phase: JourneyPhase) => void; onReady: () => void; onFailure: () => void };
@@ -19,9 +20,7 @@ function World(props: WorldProps) {
   const { gl, size, invalidate } = useThree();
   const paths = useMemo(() => {
     const portrait = size.width < size.height;
-    const points = stations.map(([x, y, z], i) => new THREE.Vector3(x + (portrait ? 0 : i === 2 ? 6 : 4), y + (i === 3 ? 2 : 3), z + (portrait ? 17 : 13)));
-    const route = [points[0]!, new THREE.Vector3(0, 1.4, -1), points[1]!, new THREE.Vector3(12, 7, -31), points[2]!, new THREE.Vector3(16, 2, -62), points[3]!, new THREE.Vector3(10, 8, -88), points[4]!];
-    const camera = new THREE.CatmullRomCurve3(route, false, 'catmullrom', .25);
+    const camera = createJourneyPath(portrait);
     const target = new THREE.CatmullRomCurve3(stations.map(([x, y, z]) => new THREE.Vector3(x - (portrait ? 0 : 1.8), y + .5, z - 1)), false, 'catmullrom', .2);
     return { camera, target };
   }, [size.width, size.height]);
@@ -47,7 +46,7 @@ function World(props: WorldProps) {
     if (phase.current !== state.phase) { phase.current = state.phase; onPhase(state.phase); }
     if (Math.abs(position - state.position) > .08 || (state.phase === 'ready' && position !== state.position)) setPosition(state.position);
     if (state.phase === 'ready') onArrival(state.destination);
-    paths.camera.getPoint(state.position / 4, vectors.camera);
+    paths.camera.sample(state.position, vectors.camera);
     paths.target.getPoint(state.position / 4, vectors.target);
     if (!reduced && state.phase === 'ready') { vectors.camera.x += pointer.x * .18; vectors.camera.y += pointer.y * .12; }
     camera.position.copy(vectors.camera);
@@ -63,10 +62,9 @@ function World(props: WorldProps) {
       camera.updateProjectionMatrix();
     }
     if (signal.current) {
-      vectors.direction.subVectors(vectors.target, vectors.camera).normalize();
-      signal.current.position.copy(vectors.camera).addScaledVector(vectors.direction, 8);
-      signal.current.position.y -= .7;
-      signal.current.visible = state.phase !== 'ready';
+      paths.camera.guide(state.position, state.destination, vectors.direction);
+      signal.current.position.copy(vectors.direction);
+      signal.current.visible = state.phase !== 'ready' && vectors.direction.distanceTo(vectors.camera) > 1.2;
       if (!reduced) signal.current.rotation.y += dt * .45;
     }
   });
