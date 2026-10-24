@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { RecordArtifact } from './RecordArtifact';
 import { Html } from '@react-three/drei';
-import '../../styles/world-choices.css';
+import { ChampionMedallion } from './ChampionMedallion';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { WorldMaterials } from './world-materials';
@@ -60,11 +60,9 @@ function Reliquary({ materials: m, selected, onSelect, champion, assetVersion }:
     <Pedestal materials={m} />
     <group position={[0, 2.2, 0]} ref={frame}>
       <Ring radius={1} width={.1} depth={.12} material={m.metal} />
-      <group rotation={[0, Math.PI / 2, 0]}><Ring radius={.9} width={.06} depth={.06} material={m.dark} /></group>
-      {onSelect && champion && <Html center position={[0, 0, .25]} distanceFactor={16} zIndexRange={[20, 10]}><button className="world-choice champion-choice" aria-pressed={selected} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); onSelect(); }}>
-        {assetVersion && <img src={`https://ddragon.leagueoflegends.com/cdn/${assetVersion}/img/champion/${champion.id}.png`} alt="" width={64} height={64} />}
-        <strong>{champion.name}</strong><span>{selected ? 'Selected · view changes' : 'Select champion →'}</span>
-      </button></Html>}
+      <group position={[0, 0, .13]}><Ring radius={.86} width={.06} depth={.04} material={selected ? m.light : m.dark} /></group>
+      {champion && <ChampionMedallion champion={champion} assetVersion={assetVersion} selected={selected} />}
+      {onSelect && champion && <Html center position={[0, -1.6, .25]} zIndexRange={[20, 10]}><button className="artifact-keyboard" aria-pressed={selected} onClick={e => { e.stopPropagation(); onSelect(); }}>Select {champion.name}</button></Html>}
       {[-1, 1].map(s => <mesh key={s} position={[s * .7, 0, 0]} material={m.metal}><boxGeometry args={[.45, .045, .045]} /></mesh>)}
     </group>
   </group>;

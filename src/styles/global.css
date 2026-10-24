@@ -59,6 +59,16 @@ button {
   cursor: pointer;
 }
 
+input, select, textarea {
+  font: inherit;
+  color: var(--cream);
+  accent-color: var(--gold);
+}
+button:disabled { cursor: not-allowed; }
+@media (pointer: coarse) {
+  button, input, select { min-height: 44px; }
+}
+
 img {
   max-width: 100%;
   display: block;

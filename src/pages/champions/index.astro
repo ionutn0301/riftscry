@@ -14,7 +14,9 @@ const champions = Object.entries(meta)
   description="Season-long patch history for every League of Legends champion: buffs, nerfs and adjustments as structured data."
 >
   <div class="page">
+    <p class="eyebrow">THE CHAMPION ARCHIVE</p>
     <h1>Pick a main. See its history.</h1>
+    <p class="intro">Every champion. Every recorded shift. Explore the changes behind your next game.</p>
     <ul class="grid">
       {
         champions.map((c) => (
@@ -49,8 +51,10 @@ const champions = Object.entries(meta)
 
   h1 {
     font-size: var(--text-2xl);
-    margin-bottom: var(--s6);
+    margin-bottom: var(--s3);
   }
+  .eyebrow { color: var(--cream-dim); font-size: var(--text-xs); letter-spacing: .16em; margin-bottom: var(--s3); }
+  .intro { color: var(--cream-dim); max-width: 60ch; margin-bottom: var(--s6); }
 
   .grid {
     list-style: none;
@@ -65,8 +69,11 @@ const champions = Object.entries(meta)
     display: flex;
     flex-direction: column;
     gap: var(--s2);
-    padding: var(--s3);
+    padding: var(--s4);
     border: 1px solid var(--line);
+    border-top: 2px solid var(--gold-deep);
+    background: var(--ink-2);
+    box-shadow: 0 3px 12px #25372d08;
     transition:
       border-color var(--t-fast) var(--ease-out),
       background-color var(--t-fast) var(--ease-out);

@@ -19,14 +19,14 @@ function roundedRoute(points: Point[]) {
 }
 
 export function createJourneyPath(portrait = false) {
-  const poses: Point[] = [[portrait ? 0 : 4, 3, portrait ? 17 : 13], [portrait ? 0 : 4, 3, portrait ? -11 : -15], [portrait ? 14 : 18, 5, portrait ? -37 : -41], [portrait ? 14 : 18, 5, portrait ? -64 : -68], [portrait ? 0 : 4, 7, -98]];
+  const poses: Point[] = [[portrait ? 0 : 4, 3, portrait ? 17 : 13], [portrait ? 0 : 4, 3, portrait ? -11 : -15], [portrait ? 14 : 18, 5, portrait ? -37 : -41], [portrait ? 14 : 18, 5, portrait ? -64 : -68], [portrait ? 0 : 4, 7, -106]];
   // Route through apertures and around the comparison platform before descending.
   // Rounded corners stay inside their waypoint hull, unlike an overshooting spline.
   const routes = [
     roundedRoute([poses[0]!, [0, 1.4, 3], [0, 1.4, -3], [0, 4, -8], poses[1]!]),
-    roundedRoute([poses[1]!, [0, 5, -20], [0, 5, -35], [20, 7, -38], poses[2]!]),
-    roundedRoute([poses[2]!, [27, 7, -48], [27, 7, -65], poses[3]!]),
-    roundedRoute([poses[3]!, [14, 5, -92], [12, 6, -101], poses[4]!]),
+    roundedRoute([poses[1]!, [0, 5, -20], [0, 5, -37], [14, 7, -37], poses[2]!]),
+    roundedRoute([poses[2]!, [27, 7, -48], [27, 7, -60], poses[3]!]),
+    roundedRoute([poses[3]!, [14, 5, -98], [14, 7, -101], poses[4]!]),
   ];
   return {
     sample(position: number, out: THREE.Vector3) {
