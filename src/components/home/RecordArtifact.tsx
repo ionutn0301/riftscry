@@ -37,10 +37,10 @@ export function RecordArtifact({ materials, title, subtitle, detail = 'SELECT TO
     const words = detail.split(' '); let line = ''; let y = 590;
     words.forEach(word => { const next = `${line} ${word}`.trim(); if (ctx.measureText(next).width > 570 && line) { ctx.fillText(line, 384, y); y += 44; line = word; } else line = next; });
     ctx.fillText(line, 384, y);
-    ctx.font = '25px sans-serif'; ctx.fillStyle = '#42563e'; ctx.fillText('INSPECT  +', 384, 900);
+    ctx.font = '25px sans-serif'; ctx.fillStyle = '#42563e'; ctx.fillText(focused ? 'RETURN TO COLLECTION  −' : 'INSPECT  +', 384, 900);
     const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace; setTexture(map);
     return () => map.dispose();
-  }, [title, subtitle, detail]);
+  }, [title, subtitle, detail, focused]);
   useFrame(({ camera, size }, dt) => {
     const node = group.current; if (!node?.parent) return;
     if (focused && active) {
@@ -54,11 +54,11 @@ export function RecordArtifact({ materials, title, subtitle, detail = 'SELECT TO
     const scale = focused && active ? Math.min(1.05, size.width / size.height * 1.65) : hovered && active ? .78 : .72;
     node.scale.setScalar(THREE.MathUtils.lerp(node.scale.x, scale, blend));
   });
-  return <group ref={group} position={home} scale={.72} onPointerOver={active ? e => { e.stopPropagation(); setHovered(true); } : undefined} onPointerOut={() => setHovered(false)} onClick={active ? e => { e.stopPropagation(); onInspect(); } : undefined}>
+  return <group ref={group} position={home} scale={.72} onPointerOver={active ? e => { e.stopPropagation(); setHovered(true); } : undefined} onPointerOut={() => setHovered(false)} onClick={active ? e => { e.stopPropagation(); focused ? onClose() : onInspect(); } : undefined}>
     <mesh material={hovered || focused ? materials.metal : materials.dark} castShadow><boxGeometry args={[2.35, 3.15, .24]} /></mesh>
-    <mesh position={[0, 0, .126]}><planeGeometry args={[2.2, 3]} /><meshBasicMaterial key={texture?.uuid ?? 'loading'} map={texture} color={texture ? '#ffffff' : '#eeeade'} toneMapped={false} /></mesh>
+    <mesh position={[0, 0, .126]}><planeGeometry args={[2.2, 3]} /><meshBasicMaterial key={texture?.uuid ?? 'loading'} map={texture} color={texture ? '#ffffff' : '#eeeade'} toneMapped={false} fog={false} /></mesh>
     {active && <Html center position={[0, -1.8, .15]} zIndexRange={[25, 20]}>
-      <button className={focused ? 'artifact-close' : 'artifact-keyboard'} aria-label={focused ? 'Return artifact to its place' : `Inspect ${title}`} onClick={e => { e.stopPropagation(); focused ? onClose() : onInspect(); }}>{focused ? 'Return to collection · Esc' : `Inspect ${title}`}</button>
+      <button className="artifact-keyboard" aria-label={focused ? 'Return artifact to its place' : `Inspect ${title}`} onClick={e => { e.stopPropagation(); focused ? onClose() : onInspect(); }}>{focused ? 'Return to collection · Esc' : `Inspect ${title}`}</button>
     </Html>}
   </group>;
 }

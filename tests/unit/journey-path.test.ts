@@ -40,6 +40,15 @@ describe('journey clearance', () => {
       expect(out.toArray()).toEqual(portrait ? [14, 5, -64] : [18, 5, -68]);
       assertClear(out);
     });
+    it('never reverses forward travel within a chapter', () => {
+      const route = createJourneyPath(portrait);
+      let previous = Infinity;
+      for (let i = 0; i <= 1600; i++) {
+        const z = route.sample(i / 400, new Vector3()).z;
+        expect(z).toBeLessThanOrEqual(previous + .00001);
+        previous = z;
+      }
+    });
     it('has continuous chapter boundaries', () => {
       const route = createJourneyPath(portrait);
       for (const chapter of [1, 2, 3]) expect(route.sample(chapter - .00001, new Vector3()).distanceTo(route.sample(chapter + .00001, new Vector3()))).toBeLessThan(.01);

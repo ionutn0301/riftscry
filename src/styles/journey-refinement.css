@@ -35,6 +35,14 @@
 .arrival-log dd { margin: 0; font-size: 20px; color: #25372d; }
 .arrival-log a { display: inline-flex; gap: 20px; align-items: center; min-height: 44px; text-decoration: underline; font-size: 13px; pointer-events: auto; }
 .observatory .film-story.chapter-4 { top: 20%; max-height: 65vh; overflow: auto; pointer-events: auto; }
+@media (min-width: 761px) and (max-height: 760px) {
+  .observatory .film-story { top: 20%; padding: 16px; max-width: 285px; }
+  .observatory .film-story h1, .observatory .film-story h2 { font-size: 32px; }
+  .observatory .film-story.chapter-1 p { display: none; }
+  .observatory .film-story.chapter-1 .story-next { margin-top: 14px; }
+  .observatory .scene-cue { bottom: 175px; font-size: 10px; padding: 7px 12px; }
+  .observatory .exhibit-panel { bottom: 115px; max-width: 290px; }
+}
 @media (max-width: 760px) {
   .observatory .film-brand img { width: 130px; }
   .observatory .film-story { top: 14%; padding: 14px; margin-left: -14px; max-width: 78%; }

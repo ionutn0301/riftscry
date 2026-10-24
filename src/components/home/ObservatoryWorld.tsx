@@ -49,6 +49,7 @@ function World(props: WorldProps) {
   }, [gl, onReady, onFailure]);
   useEffect(() => () => materials.dispose(), [materials]);
   useFrame(({ camera }, dt) => {
+    if (props.paused && initialized.current) return;
     if (!props.paused) journey.current = advanceJourney(journey.current, dt);
     const state = journey.current;
     if (phase.current !== state.phase) { phase.current = state.phase; onPhase(state.phase); }
@@ -69,9 +70,8 @@ function World(props: WorldProps) {
       sun.current.position.set(vectors.target.x + 9, vectors.target.y + 16, vectors.target.z + 7);
       sunTarget.updateMatrixWorld();
     }
-    if (camera instanceof THREE.PerspectiveCamera) {
-      const lens = 43;
-      camera.fov = THREE.MathUtils.damp(camera.fov, lens, 2, dt);
+    if (camera instanceof THREE.PerspectiveCamera && camera.fov !== 43) {
+      camera.fov = 43;
       camera.updateProjectionMatrix();
     }
     if (signal.current) {
