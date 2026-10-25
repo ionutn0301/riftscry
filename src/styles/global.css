@@ -11,7 +11,14 @@
 
 html {
   color-scheme: light;
-  /* No smooth-scroll: it fights scrubbed pins and adds inertia. */
+  scroll-behavior: auto;
+  --surface-canvas: #e8ebe5;
+  --surface-panel: #f4f5ef;
+  --surface-instrument: #162e2b;
+  --accent-signal: #b69759;
+  --accent-live: #7bc5a8;
+  --text-quiet: #5b685d;
+  /* Keep motion authored by the journey director, not browser inertia. */
 }
 
 body {
