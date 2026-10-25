@@ -15,9 +15,9 @@ const scenes = [
  <ArcaneInstrument />
  <button class="cinema-motion" type="button" aria-pressed="false">Pause motion</button>
  <div class="cinema-content">
- {scenes.map((scene, index) => <section class="cinema-story" data-scene={scene.asset} hidden={index !== 0} aria-label={scene.label}>
+ {scenes.map((scene, index) => <section class="cinema-story" data-scene={scene.asset} id={`chapter-${index}`} aria-label={scene.label}>
   <p class="cinema-kicker">RIFTSCRY / {scene.label}</p><h1>{scene.title}</h1><p class="cinema-description">{scene.description}</p>
-  {index === 0 ? <a class="cinema-action" href={`/patch/${data.latest}`}>Discover the latest patch <span aria-hidden="true">&#8599;&#65038;</span></a> : <div class="cinema-exhibit">
+  {index === 0 ? <a class="cinema-action" href="#chapter-1">Enter the champion chamber <span aria-hidden="true">↓</span></a> : <div class="cinema-exhibit">
    <label for={`selection-${index}`}>{index === 1 ? 'Choose your champion' : 'Choose a patch'}</label>
    <select id={`selection-${index}`} aria-label={index === 1 ? 'Choose your champion' : 'Choose a patch'}>
     {index === 1 ? data.champions.map(item => <option value={`/champion/${item.id.toLowerCase()}`}>{item.name}</option>) : data.patches.map(item => <option value={`/patch/${item.id}`}>Patch {item.id}</option>)}
@@ -52,14 +52,29 @@ const scenes = [
   const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-scene]'));
   const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-chapter-button]'));
   buttons.forEach((button, index) => button.addEventListener('click', () => {
-   if (root.dataset.chapter === String(index)) return;
-   root.dataset.chapter = String(index);
-   panels.forEach((panel, i) => { panel.hidden = i !== index; });
-   buttons.forEach((item, i) => { if (i === index) item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current'); });
-   const asset = panels[index]!.dataset.scene;
-   root.querySelector('source')!.srcset = `/images/journey/${asset}-mobile.webp`;
-   root.querySelector<HTMLImageElement>('.cinema-art img')!.src = `/images/journey/${asset}-wide.webp`;
+   panels[index]?.scrollIntoView({ behavior: preference.matches ? 'instant' : 'smooth', block: 'start' });
   }));
+  let scheduled = false;
+  const updateJourney = () => {
+   scheduled = false;
+   const progress = Math.max(0, Math.min(2, -root.getBoundingClientRect().top / innerHeight));
+   const chapter = Math.min(2, Math.round(progress));
+   root.dataset.chapter = String(chapter);
+   root.style.setProperty('--travel', String(progress));
+   const moving = !preference.matches && root.dataset.motion !== 'paused';
+   const camera = moving ? progress : chapter;
+   root.style.setProperty('--camera-scale', String(1 + Math.sin(camera * Math.PI / 2) * 2.2));
+   root.style.setProperty('--camera-turn', `${camera * 110 - 22}deg`);
+   root.style.setProperty('--camera-x', `${Math.sin(camera * Math.PI) * -18}vw`);
+   root.style.setProperty('--journey-progress', `${progress / 2 * 100}%`);
+   buttons.forEach((item, i) => { if (i === chapter) item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current'); });
+  };
+  const schedule = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(updateJourney); } };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+  motion.addEventListener('click', schedule);
+  preference.addEventListener('change', schedule);
+  updateJourney();
   root.querySelectorAll<HTMLSelectElement>('select').forEach(select => select.addEventListener('change', () => {
    const link = select.parentElement?.querySelector<HTMLAnchorElement>('[data-selection-link]');
    if (link && select.value.startsWith('/')) link.href = select.value;
