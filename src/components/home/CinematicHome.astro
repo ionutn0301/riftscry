@@ -13,6 +13,9 @@ const scenes = [
  <div class="cinema-art" aria-hidden="true"><picture><source media="(max-width: 760px)" srcset="/images/journey/gateway-mobile.webp" /><img src="/images/journey/gateway-wide.webp" width="1376" height="768" alt="" fetchpriority="high" /></picture></div>
  <header class="cinema-header"><a href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /></a><a href={`/patch/${data.latest}`}>Patch {data.latest} <span aria-hidden="true">&#8599;&#65038;</span></a></header>
  <ArcaneInstrument />
+ <div class="cinema-constellation" aria-label="Journey chapters">
+  {scenes.map((scene, index) => <button class="constellation-node" type="button" data-chapter-button={index} aria-current={index === 0 ? 'step' : undefined} style={`--node-index:${index}`}><span class="node-line" aria-hidden="true"></span><span class="node-index">0{index + 1}</span><span class="node-label">{scene.label}</span></button>)}
+ </div>
  <button class="cinema-motion" type="button" aria-pressed="false">Pause motion</button>
  <div class="cinema-content">
  {scenes.map((scene, index) => <section class="cinema-story" data-scene={scene.asset} id={`chapter-${index}`} aria-label={scene.label}>
@@ -50,10 +53,17 @@ const scenes = [
   }, { passive: true });
   root.addEventListener('pointerleave', () => { root.style.setProperty('--tilt-x', '0deg'); root.style.setProperty('--tilt-y', '0deg'); });
   const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-scene]'));
-  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-chapter-button]'));
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('.constellation-node'));
   buttons.forEach((button, index) => button.addEventListener('click', () => {
    panels[index]?.scrollIntoView({ behavior: preference.matches ? 'instant' : 'smooth', block: 'start' });
   }));
+  root.addEventListener('keydown', event => {
+   if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'].includes(event.key)) return;
+   event.preventDefault();
+   const current = Number(root.dataset.chapter ?? 0);
+   const direction = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1;
+   panels[Math.max(0, Math.min(panels.length - 1, current + direction))]?.scrollIntoView({ behavior: preference.matches ? 'instant' : 'smooth', block: 'start' });
+  });
   let scheduled = false;
   const updateJourney = () => {
    scheduled = false;
