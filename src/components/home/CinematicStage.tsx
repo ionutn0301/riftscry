@@ -16,6 +16,6 @@ export default function CinematicStage(props: Omit<WorldProps, 'onReady' | 'onFa
   const onFailure = useCallback(() => { setFailed(true); setReady(false); }, []);
   return <div className="world-stage" data-ready={ready} data-failed={failed}>
     {!failed && <SceneBoundary key={attempt} onFailure={onFailure}><Suspense fallback={null}><World {...props} onReady={onReady} onFailure={onFailure} /></Suspense></SceneBoundary>}
-    {!ready && <div className="world-status" role="status"><span>{failed ? 'The 3D scene is unavailable. All records remain accessible below.' : 'Preparing the observatory…'}</span>{failed && <button onClick={() => { setFailed(false); setAttempt(v => v + 1); }}>Retry scene</button>}</div>}
+    {!ready && <div className="world-status" role="status"><span>{failed ? 'The 3D scene is unavailable. Use the patch link or browse champions in About RiftScry.' : 'Preparing the observatory…'}</span>{failed && <button onClick={() => { setFailed(false); setAttempt(v => v + 1); }}>Retry scene</button>}</div>}
   </div>;
 }

@@ -47,7 +47,7 @@ const isHome = Astro.url.pathname === "/";
     <main id="main">
       <slot />
     </main>
-    <SiteFooter />
+    {!isHome && <SiteFooter />}
     <CommandPalette client:idle />
   </body>
 </html>
