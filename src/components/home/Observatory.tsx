@@ -59,6 +59,6 @@ export default function Observatory({ data }: { data: ObservatoryData }) {
     </section>
     {phase !== 'ready' && <div className="journey-transit" role="status"><span>Travelling to {chapters[destination]}</span><button onClick={() => setPaused(value => !value)}>{paused ? 'Resume' : 'Pause'}</button><button onClick={() => { setSkipVersion(value => value + 1); setPaused(false); }}>Skip travel</button></div>}
     <JourneyNavigation chapter={chapter} destination={destination} onTravel={travel} reduced={reduced} onToggleMotion={() => setReduced(value => !value)} />
-    <details className="journey-credits"><summary>About RiftScry</summary><p>An independent League of Legends patch observatory. Champion artwork and game data belong to Riot Games. RiftScry is not endorsed by Riot Games.</p><a href={data.source}>Official patch source ↗</a><a href="/champions">Browse all champions ↗</a></details>
+    <details className="journey-credits"><summary>About & settings</summary><button className="journey-mobile-motion" aria-pressed={reduced} onClick={() => setReduced(value => !value)}>{reduced ? 'Enable flight motion' : 'Reduce flight motion'}</button><p>An independent League of Legends patch observatory. Champion artwork and game data belong to Riot Games. RiftScry is not endorsed by Riot Games.</p><a href={data.source}>Official patch source ↗</a><a href="/champions">Browse all champions ↗</a></details>
   </div>;
 }
