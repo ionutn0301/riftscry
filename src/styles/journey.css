@@ -29,8 +29,13 @@
 .artifact-keyboard { width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); position: absolute; }
 .artifact-keyboard:focus-visible { clip-path: none; width: max-content; height: auto; background: #f6f5ef; color: #25372d; padding: 12px 18px; border: 1px solid #445748; }
 .journey-mobile-motion { display: none; }
-@media (max-width: 600px) {
- .journey { height: 100svh; min-height: 660px; display: grid; grid-template-rows: 64px minmax(220px, 1fr) 190px 72px 44px; padding-bottom: env(safe-area-inset-bottom); }
+.mobile-scene { width: 100%; height: 100%; position: relative; background: #e9e8e2; }
+.mobile-scene > img { width: 100%; height: 100%; object-fit: cover; object-position: 65% center; }
+.mobile-scene-control { position: absolute; bottom: 12px; left: 16px; right: 16px; display: grid; gap: 4px; padding: 12px 16px; background: #f6f5ef; color: #25372d; font-size: 11px; border: 1px solid #a89b70; }
+.mobile-scene-control select { width: 100%; min-height: 44px; background: transparent; color: inherit; border: 0; font: inherit; font-size: 15px; }
+.mobile-scene-control strong { font-size: 20px; }
+@media (max-width: 760px), (pointer: coarse) {
+ .journey { height: 100svh; min-height: 580px; display: grid; grid-template-rows: 56px minmax(200px, 1fr) 180px 64px 44px; padding-bottom: env(safe-area-inset-bottom); }
  .journey-header { position: relative; inset: auto; grid-row: 1; margin: 0 24px; }
  .journey-header img { width: 96px; }
  .journey-header > a:last-child { font-size: 10px; }
@@ -52,7 +57,7 @@
  .journey-credits { position: relative; inset: auto; grid-row: 5; margin: 0 24px; align-self: start; text-align: center; }
  .journey-credits summary { min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
  .journey-credits[open] { position: absolute; grid-row: auto; align-self: auto; inset: auto 16px 16px; margin: 0; width: auto; text-align: left; max-height: calc(100% - 96px); overflow: auto; }
- .journey-mobile-motion { display: block; width: 100%; min-height: 44px; color: #25372d; background: #e9e8e2; border: 1px solid #778572; font: inherit; }
+ .journey-mobile-motion { display: none; }
  .journey-transit { bottom: 140px; left: 24px; right: 24px; transform: none; flex-wrap: wrap; justify-content: center; gap: 4px 16px; padding: 12px; white-space: normal; text-align: center; }
  .journey-transit > span { flex-basis: 100%; }
  .journey[data-inspecting="true"] .journey-world { grid-row: 2 / 4; }

@@ -7,8 +7,8 @@ import JourneyNavigation from './JourneyNavigation';
 
 const introductions = [
   ['The Rift, in perspective.', 'Follow the signal. Discover what changed.'],
-  ['Find your constellation.', 'Select a champion medallion to follow its story.'],
-  ['Small changes. New possibilities.', 'Touch an inscribed record to bring it closer.'],
+  ['Find your constellation.', 'Choose a champion. Follow its story.'],
+  ['Small changes. New possibilities.', 'A closer look at what changed.'],
   ['Every patch leaves a trace.', 'Explore the tablets. Discover the history.'],
   ['Your next move starts here.', 'Take a clearer perspective back to the Rift.'],
 ];
