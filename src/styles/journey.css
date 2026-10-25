@@ -28,20 +28,34 @@
 .world-status { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: #25372d; background: #e9e8e2; font-size: 13px; }
 .artifact-keyboard { width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); position: absolute; }
 .artifact-keyboard:focus-visible { clip-path: none; width: max-content; height: auto; background: #f6f5ef; color: #25372d; padding: 12px 18px; border: 1px solid #445748; }
+.journey-mobile-motion { display: none; }
 @media (max-width: 600px) {
- .journey-header { inset: 18px 22px auto; }
- .journey-header img { width: 110px; }
- .journey-intro { top: 110px; left: 22px; width: calc(100% - 44px); }
- .journey-intro h1 { font-size: 30px; max-width: 14ch; margin-bottom: 10px; }
- .journey-eyebrow { margin-bottom: 10px; }
- .journey-intro > p:not(.journey-eyebrow) { max-width: 34ch; font-size: 12px; }
- .journey-link { margin-top: 5px; padding: 10px 0; }
- .journey-navigation { left: 22px; right: 22px; bottom: 40px; gap: 5px; }
+ .journey { height: 100svh; min-height: 660px; display: grid; grid-template-rows: 64px minmax(220px, 1fr) 190px 72px 44px; padding-bottom: env(safe-area-inset-bottom); }
+ .journey-header { position: relative; inset: auto; grid-row: 1; margin: 0 24px; }
+ .journey-header img { width: 96px; }
+ .journey-header > a:last-child { font-size: 10px; }
+ .journey-header a span { margin-left: 6px; }
+ .journey-world { position: relative; inset: auto; grid-row: 2; min-height: 0; margin: 0 12px; overflow: hidden; border-radius: 50% 50% 8px 8px / 22% 22% 8px 8px; }
+ .journey-intro { position: relative; inset: auto; grid-row: 3; width: auto; margin: 0; padding: 20px 28px 0; text-align: center; align-self: start; }
+ .journey-eyebrow { font-size: 9px; letter-spacing: .18em; margin-bottom: 10px; }
+ .journey-intro h1 { font-size: clamp(25px, 7vw, 32px); line-height: 1.1; max-width: 20ch; margin: 0 auto 10px; }
+ .journey-intro > p:not(.journey-eyebrow) { max-width: 32ch; margin: 0 auto; font-size: 12px; line-height: 1.5; }
+ .journey-link { margin-top: 2px; padding: 10px 0; min-height: 44px; font-size: 11px; border: 0; }
+ .journey[data-chapter="0"] .journey-link { display: none; }
+ .journey-navigation { position: relative; inset: auto; grid-row: 4; margin: 0 24px; padding: 0; gap: 12px; border-top: 1px solid #77857240; }
+ .journey-motion { display: none; }
  .journey-navigation nav { gap: 0; }
- .journey-navigation nav button { width: 30px; }
- .journey-motion { min-width: 60px; }
- .journey-next { gap: 6px; }
- .journey-credits { left: 22px; bottom: 8px; }
- .journey-transit { bottom: 120px; gap: 10px; font-size: 10px; }
+ .journey-navigation nav button { width: 28px; min-height: 48px; }
+ .journey-navigation nav button span { display: none; }
+ .journey-navigation i { width: 5px; height: 5px; }
+ .journey-next { justify-content: center; gap: 14px; padding: 0 18px; min-height: 44px; background: #25372d !important; color: #f6f5ef !important; border-radius: 2px; }
+ .journey-credits { position: relative; inset: auto; grid-row: 5; margin: 0 24px; align-self: start; text-align: center; }
+ .journey-credits summary { min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+ .journey-credits[open] { position: absolute; grid-row: auto; align-self: auto; inset: auto 16px 16px; margin: 0; width: auto; text-align: left; max-height: calc(100% - 96px); overflow: auto; }
+ .journey-mobile-motion { display: block; width: 100%; min-height: 44px; color: #25372d; background: #e9e8e2; border: 1px solid #778572; font: inherit; }
+ .journey-transit { bottom: 140px; left: 24px; right: 24px; transform: none; flex-wrap: wrap; justify-content: center; gap: 4px 16px; padding: 12px; white-space: normal; text-align: center; }
+ .journey-transit > span { flex-basis: 100%; }
+ .journey[data-inspecting="true"] .journey-world { grid-row: 2 / 4; }
+ .journey[data-inspecting="true"] .journey-intro { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .journey * { transition: none !important; } }
