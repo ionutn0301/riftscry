@@ -1,0 +1,48 @@
+---
+import type { ObservatoryData } from '../../lib/observatory';
+import brandLogo from '../../assets/brand/logo-desktop-light.png';
+const { data } = Astro.props as { data: ObservatoryData };
+const scenes = [
+ { asset: 'gateway', label: 'The observatory', title: 'A different view of the Rift.', description: 'Beyond the patch notes. Discover the changes that shape your next game.' },
+ { asset: 'sanctuary', label: 'The champions', title: 'Find your constant.', description: 'Your champion. Their evolution. A clearer view of what comes next.' },
+ { asset: 'archive', label: 'The archive', title: 'Every change leaves a trace.', description: 'Explore the records. Understand how the Rift arrived here.' },
+];
+---
+<div class="cinema" data-chapter="0">
+ <div class="cinema-art" aria-hidden="true"><picture><source media="(max-width: 760px)" srcset="/images/journey/gateway-mobile.webp" /><img src="/images/journey/gateway-wide.webp" width="1376" height="768" alt="" fetchpriority="high" /></picture></div>
+ <header class="cinema-header"><a href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /></a><a href={`/patch/${data.latest}`}>Patch {data.latest} <span aria-hidden="true">&#8599;&#65038;</span></a></header>
+ <div class="cinema-content">
+ {scenes.map((scene, index) => <section class="cinema-story" data-scene={scene.asset} hidden={index !== 0} aria-label={scene.label}>
+  <p class="cinema-kicker">RIFTSCRY / {scene.label}</p><h1>{scene.title}</h1><p class="cinema-description">{scene.description}</p>
+  {index === 0 ? <a class="cinema-action" href={`/patch/${data.latest}`}>Discover the latest patch <span aria-hidden="true">&#8599;&#65038;</span></a> : <div class="cinema-exhibit">
+   <label for={`selection-${index}`}>{index === 1 ? 'Choose your champion' : 'Choose a patch'}</label>
+   <select id={`selection-${index}`} aria-label={index === 1 ? 'Choose your champion' : 'Choose a patch'}>
+    {index === 1 ? data.champions.map(item => <option value={`/champion/${item.id.toLowerCase()}`}>{item.name}</option>) : data.patches.map(item => <option value={`/patch/${item.id}`}>Patch {item.id}</option>)}
+   </select>
+   <a class="cinema-action" data-selection-link href={index === 1 ? (data.champions[0] ? `/champion/${data.champions[0].id.toLowerCase()}` : '/champions') : `/patch/${data.patches[0]?.id ?? data.latest}`}>{index === 1 ? 'Explore champion history' : 'Read the patch'} <span aria-hidden="true">&#8599;&#65038;</span></a>
+  </div>}
+ </section>)}
+ </div>
+ <footer class="cinema-footer"><nav aria-label="Explore the observatory">{scenes.map((scene, index) => <button type="button" data-chapter-button={index} aria-current={index === 0 ? 'step' : undefined}><span class="cinema-number">0{index + 1}</span><span>{scene.label}</span></button>)}</nav><a class="cinema-all" href="/champions">All champions <span aria-hidden="true">&#8599;&#65038;</span></a></footer>
+ <p class="cinema-disclaimer">An independent League of Legends observatory. Not endorsed by Riot Games.</p>
+</div>
+<script>
+ const root = document.querySelector<HTMLElement>('.cinema');
+ if (root) {
+  const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-scene]'));
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-chapter-button]'));
+  buttons.forEach((button, index) => button.addEventListener('click', () => {
+   if (root.dataset.chapter === String(index)) return;
+   root.dataset.chapter = String(index);
+   panels.forEach((panel, i) => { panel.hidden = i !== index; });
+   buttons.forEach((item, i) => { if (i === index) item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current'); });
+   const asset = panels[index]!.dataset.scene;
+   root.querySelector('source')!.srcset = `/images/journey/${asset}-mobile.webp`;
+   root.querySelector<HTMLImageElement>('.cinema-art img')!.src = `/images/journey/${asset}-wide.webp`;
+  }));
+  root.querySelectorAll<HTMLSelectElement>('select').forEach(select => select.addEventListener('change', () => {
+   const link = select.parentElement?.querySelector<HTMLAnchorElement>('[data-selection-link]');
+   if (link && select.value.startsWith('/')) link.href = select.value;
+  }));
+ }
+</script>

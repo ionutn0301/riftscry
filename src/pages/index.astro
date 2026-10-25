@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Observatory from '../components/home/Observatory';
+import CinematicHome from '../components/home/CinematicHome.astro';
 import { getAllPatches, getChampionHistory, getChampionMeta, getAssetVersion } from '../lib/data';
 import type { ObservatoryData } from '../lib/observatory';
 import '../styles/journey.css';
@@ -18,6 +18,6 @@ const data: ObservatoryData = {
 };
 ---
 <Layout title="RiftScry — A new perspective on the Rift" description={`An interactive observatory of League of Legends patch ${latest.id}. Explore your champions, inspect every change, and trace the history.`}>
-  <Observatory client:load data={data} />
+  <CinematicHome data={data} />
   <noscript><section class="observatory-static"><h1>A new perspective on the Rift.</h1><p>Explore the latest recorded patch, {latest.id}.</p><a href={`/patch/${latest.id}`}>Read patch {latest.id}</a><a href="/pool">Explore champions</a></section></noscript>
 </Layout>
