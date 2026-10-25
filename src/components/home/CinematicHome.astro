@@ -1,6 +1,7 @@
 ---
 import type { ObservatoryData } from '../../lib/observatory';
 import brandLogo from '../../assets/brand/logo-desktop-light.png';
+import ArcaneInstrument from './ArcaneInstrument.astro';
 const { data } = Astro.props as { data: ObservatoryData };
 const scenes = [
  { asset: 'gateway', label: 'The observatory', title: 'A different view of the Rift.', description: 'Beyond the patch notes. Discover the changes that shape your next game.' },
@@ -11,6 +12,8 @@ const scenes = [
 <div class="cinema" data-chapter="0">
  <div class="cinema-art" aria-hidden="true"><picture><source media="(max-width: 760px)" srcset="/images/journey/gateway-mobile.webp" /><img src="/images/journey/gateway-wide.webp" width="1376" height="768" alt="" fetchpriority="high" /></picture></div>
  <header class="cinema-header"><a href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /></a><a href={`/patch/${data.latest}`}>Patch {data.latest} <span aria-hidden="true">&#8599;&#65038;</span></a></header>
+ <ArcaneInstrument />
+ <button class="cinema-motion" type="button" aria-pressed="false">Pause motion</button>
  <div class="cinema-content">
  {scenes.map((scene, index) => <section class="cinema-story" data-scene={scene.asset} hidden={index !== 0} aria-label={scene.label}>
   <p class="cinema-kicker">RIFTSCRY / {scene.label}</p><h1>{scene.title}</h1><p class="cinema-description">{scene.description}</p>
@@ -29,6 +32,23 @@ const scenes = [
 <script>
  const root = document.querySelector<HTMLElement>('.cinema');
  if (root) {
+  const motion = root.querySelector<HTMLButtonElement>('.cinema-motion')!;
+  const preference = matchMedia('(prefers-reduced-motion: reduce)');
+  const setPaused = (paused: boolean) => {
+   root.dataset.motion = paused ? 'paused' : 'playing';
+   motion.setAttribute('aria-pressed', String(paused));
+   motion.textContent = paused ? 'Resume motion' : 'Pause motion';
+  };
+  setPaused(preference.matches);
+  preference.addEventListener('change', () => setPaused(preference.matches));
+  motion.addEventListener('click', () => setPaused(root.dataset.motion !== 'paused'));
+  document.addEventListener('visibilitychange', () => root.classList.toggle('cinema-inactive', document.hidden));
+  root.addEventListener('pointermove', event => {
+   if (event.pointerType !== 'mouse' || preference.matches || root.dataset.motion === 'paused') return;
+   root.style.setProperty('--tilt-x', `${(event.clientX / innerWidth - .5) * 12}deg`);
+   root.style.setProperty('--tilt-y', `${(event.clientY / innerHeight - .5) * -8}deg`);
+  }, { passive: true });
+  root.addEventListener('pointerleave', () => { root.style.setProperty('--tilt-x', '0deg'); root.style.setProperty('--tilt-y', '0deg'); });
   const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-scene]'));
   const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-chapter-button]'));
   buttons.forEach((button, index) => button.addEventListener('click', () => {

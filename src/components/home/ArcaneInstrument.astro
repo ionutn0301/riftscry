@@ -1,0 +1,28 @@
+<div class="instrument-stage" aria-hidden="true">
+ <div class="instrument-shadow"></div>
+ <div class="instrument-perspective"><div class="instrument-pose"><div class="instrument-orbit">
+  <div class="instrument-ring ring-one"></div><div class="instrument-ring ring-two"></div><div class="instrument-ring ring-three"></div>
+  <div class="instrument-core"><span></span></div>
+ </div></div></div>
+ <div class="instrument-coordinate">THE SCRYING ENGINE <span>EST. RUNETERRA</span></div>
+</div>
+<style>
+.instrument-stage{position:absolute;inset:15% 2% 16% 36%;pointer-events:none;perspective:1000px;}
+.instrument-perspective{position:absolute;inset:0;display:grid;place-items:center;transform:rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg));transition:transform .6s ease-out;transform-style:preserve-3d;}
+.instrument-pose{width:min(36vw,430px);aspect-ratio:1;transform:rotateZ(-22deg);transition:transform 1.5s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d;}
+:global(.cinema[data-chapter="1"]) .instrument-pose{transform:rotateZ(28deg) scale(.92);}
+:global(.cinema[data-chapter="2"]) .instrument-pose{transform:rotateZ(-65deg) scale(1.07);}
+.instrument-orbit{width:100%;height:100%;transform-style:preserve-3d;animation:orbit 48s linear infinite;}
+.instrument-ring{position:absolute;inset:0;border-radius:50%;border:12px solid #9f8c5c;box-shadow:inset 2px 2px 2px #ecdeb1,inset -4px -4px 3px #443d2b,2px 2px 2px #e5d7ac,-3px -3px 2px #4b4739;transform-style:preserve-3d;}
+.ring-one{transform:rotateY(64deg);}
+.ring-two{inset:8%;transform:rotateX(67deg);border-width:9px;}
+.ring-three{inset:17%;transform:rotateY(-36deg) rotateX(24deg);border-width:5px;}
+.instrument-core{position:absolute;inset:35%;background:linear-gradient(135deg,#e6fff1,#85b7a5 30%,#274e48 65%,#122e2c);clip-path:polygon(50% 0,90% 27%,100% 70%,50% 100%,0 70%,10% 27%);transform:rotateZ(22deg);box-shadow:inset 12px 0 30px #bfe9d9;}
+.instrument-core span{position:absolute;inset:0;background:linear-gradient(70deg,transparent 45%,#e9fff560 46%,transparent 52%);}
+.instrument-shadow{position:absolute;bottom:8%;left:26%;width:48%;height:10%;background:radial-gradient(ellipse,#263f3435,transparent 70%);transform:scaleX(1.5);}
+.instrument-coordinate{position:absolute;bottom:0;left:22%;right:12%;display:flex;justify-content:space-between;font:8px var(--font-ui);letter-spacing:.16em;color:#556558;}
+@keyframes orbit{from{transform:rotateY(0deg) rotateX(12deg)}to{transform:rotateY(360deg) rotateX(12deg)}}
+:global(.cinema[data-motion="paused"]) .instrument-orbit{animation-play-state:paused;}
+@media(max-width:760px){.instrument-stage{inset:80px 0 auto;height:32svh;min-height:200px}.instrument-pose{width:190px}.instrument-coordinate{display:none}.instrument-ring{border-width:7px}.ring-two{border-width:5px}.ring-three{border-width:3px}}
+@media(prefers-reduced-motion:reduce){.instrument-orbit{animation:none}.instrument-pose,.instrument-perspective{transition:none}}
+</style>
