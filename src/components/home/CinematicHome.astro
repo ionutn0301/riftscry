@@ -13,8 +13,13 @@ const scenes = [
  <div class="cinema-art" aria-hidden="true"><picture><source media="(max-width: 760px)" srcset="/images/journey/gateway-mobile.webp" /><img src="/images/journey/gateway-wide.webp" width="1376" height="768" alt="" fetchpriority="high" /></picture></div>
  <header class="cinema-header"><a href="/" aria-label="RiftScry home"><img src={brandLogo.src} width="240" height="80" alt="RiftScry" /></a><a href={`/patch/${data.latest}`}>Patch {data.latest} <span aria-hidden="true">&#8599;&#65038;</span></a></header>
  <ArcaneInstrument />
- <div class="cinema-constellation" aria-label="Journey chapters">
-  {scenes.map((scene, index) => <button class="constellation-node" type="button" data-chapter-button={index} aria-current={index === 0 ? 'step' : undefined} style={`--node-index:${index}`}><span class="node-line" aria-hidden="true"></span><span class="node-index">0{index + 1}</span><span class="node-label">{scene.label}</span></button>)}
+ <div class="cinema-constellation" aria-label="Champion constellation">
+  <div class="constellation-orbit constellation-orbit-one" aria-hidden="true"></div><div class="constellation-orbit constellation-orbit-two" aria-hidden="true"></div>
+  <div class="constellation-core" aria-hidden="true"><span>RIFT<br />SIGNAL</span></div>
+  <div class="constellation-champions">
+   {data.champions.slice(0, 12).map((champion, index) => <a class="champion-star" href={`/champion/${champion.id.toLowerCase()}`} style={`--star-index:${index}`} data-star={champion.id} aria-label={`Explore ${champion.name}`}><span class="star-glow"></span><img src={`https://ddragon.leagueoflegends.com/cdn/${data.assetVersion ?? '15.8.1'}/img/champion/${champion.id}.png`} alt="" loading="lazy" /><span class="star-label">{champion.name}</span></a>)}
+  </div>
+  <div class="constellation-chapters">{scenes.map((scene, index) => <button class="constellation-node" type="button" data-chapter-button={index} aria-current={index === 0 ? 'step' : undefined} style={`--node-index:${index}`}><span class="node-line" aria-hidden="true"></span><span class="node-index">0{index + 1}</span><span class="node-label">{scene.label}</span></button>)}</div>
  </div>
  <button class="cinema-motion" type="button" aria-pressed="false">Pause motion</button>
  <div class="cinema-content">
@@ -52,8 +57,13 @@ const scenes = [
    root.style.setProperty('--tilt-y', `${(event.clientY / innerHeight - .5) * -8}deg`);
   }, { passive: true });
   root.addEventListener('pointerleave', () => { root.style.setProperty('--tilt-x', '0deg'); root.style.setProperty('--tilt-y', '0deg'); });
+  root.querySelectorAll<HTMLElement>('.champion-star').forEach(star => {
+   star.addEventListener('pointerenter', () => root.dataset.focus = star.dataset.star ?? '');
+   star.addEventListener('pointerleave', () => root.removeAttribute('data-focus'));
+   star.addEventListener('click', () => { if (star.dataset.star) root.dataset.focus = star.dataset.star; });
+  });
   const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-scene]'));
-  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('.constellation-node'));
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-chapter-button]'));
   buttons.forEach((button, index) => button.addEventListener('click', () => {
    panels[index]?.scrollIntoView({ behavior: preference.matches ? 'instant' : 'smooth', block: 'start' });
   }));
