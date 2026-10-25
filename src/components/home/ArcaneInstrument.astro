@@ -7,11 +7,15 @@
  <div class="instrument-coordinate">THE SCRYING ENGINE <span>EST. RUNETERRA</span></div>
 </div>
 <style>
-.instrument-stage{position:absolute;inset:15% 2% 16% 36%;pointer-events:none;perspective:1000px;}
+.instrument-stage{position:fixed;inset:15% 2% 16% 36%;pointer-events:none;perspective:1000px;z-index:0;}
+:global(.cinema) .instrument-pose{transform:translateX(var(--camera-x,0vw)) rotateZ(var(--camera-turn,-22deg)) scale(var(--camera-scale,1));transition:none;}
+:global(.cinema[data-chapter="1"]) .instrument-core{background:linear-gradient(135deg,#fff3cb,#c4aa6c 40%,#503b23);}
+:global(.cinema[data-chapter="2"]) .instrument-core{background:linear-gradient(135deg,#dcf5ff,#749fbe 40%,#243c59);}
+:global(.cinema[data-chapter="1"]) .instrument-stage{opacity:.55;}
+@media(max-width:760px){:global(.cinema) .instrument-stage{opacity:.35;}:global(.cinema) .instrument-pose{transform:rotateZ(var(--camera-turn,-22deg)) scale(1.3);}}
 .instrument-perspective{position:absolute;inset:0;display:grid;place-items:center;transform:rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg));transition:transform .6s ease-out;transform-style:preserve-3d;}
 .instrument-pose{width:min(36vw,430px);aspect-ratio:1;transform:rotateZ(-22deg);transition:transform 1.5s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d;}
-:global(.cinema[data-chapter="1"]) .instrument-pose{transform:rotateZ(28deg) scale(.92);}
-:global(.cinema[data-chapter="2"]) .instrument-pose{transform:rotateZ(-65deg) scale(1.07);}
+
 .instrument-orbit{width:100%;height:100%;transform-style:preserve-3d;animation:orbit 48s linear infinite;}
 .instrument-ring{position:absolute;inset:0;border-radius:50%;border:12px solid #9f8c5c;box-shadow:inset 2px 2px 2px #ecdeb1,inset -4px -4px 3px #443d2b,2px 2px 2px #e5d7ac,-3px -3px 2px #4b4739;transform-style:preserve-3d;}
 .ring-one{transform:rotateY(64deg);}
