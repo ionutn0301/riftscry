@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-26T11:17:43.413Z",
+  "mode": "Astro development server; headless Chromium; emulated iPhone 13, not a physical phone",
+  "desktopMetrics": {
+    "cls": 0,
+    "lcp": 232,
+    "longTasks": 1,
+    "maxLongTask": 64,
+    "p95FrameMs": 16.799999999999955
+  },
+  "mobileMetrics": {
+    "cls": 0,
+    "lcp": 120,
+    "longTasks": 0,
+    "maxLongTask": 0
+  },
+  "errors": [],
+  "mobileOverflow": false,
+  "reducedMotionAnimation": "none",
+  "checks": [
+    "native wheel scroll across four scenes",
+    "Camille selection updates downstream real record",
+    "Before and After exact ranks",
+    "Add to My Pool and reload persistence",
+    "Kennen touch selection and add/reload",
+    "359x603 portrait screenshots",
+    "reduced-motion full narrative"
+  ]
+}

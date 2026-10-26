@@ -1,18 +1,12 @@
-import { test, expect } from '@playwright/test';
-test.describe('keyboard-only Atlas navigation', () => {
-  test.skip(({ isMobile }) => isMobile, 'desktop keyboard test; portrait touch is tested separately');
-  test('skip link targets the active content', async ({ page }) => {
-    await page.goto('/patch/26.16'); await page.keyboard.press('Tab'); await expect(page.locator('.skip-link')).toBeFocused(); await page.keyboard.press('Enter'); await expect(page).toHaveURL(/#atlas-main/);
+import {test,expect} from '@playwright/test';
+test.describe('keyboard-only story navigation',()=>{
+  test.skip(({isMobile})=>isMobile,'desktop keyboard checks; mobile touch covered separately');
+  test('skip link targets direct content',async({page})=>{await page.goto('/patch/26.16');await page.keyboard.press('Tab');await expect(page.locator('.skip-link')).toBeFocused();await page.keyboard.press('Enter');await expect(page).toHaveURL(/#main/);});
+  test('champion, values and pool work without a pointer',async({page})=>{
+    await page.goto('/');await expect(page.locator('astro-island:has(.rift-story)')).not.toHaveAttribute('ssr','');
+    await page.getByRole('button',{name:'Choose Camille'}).focus();await page.keyboard.press('Enter');await expect(page.locator('#changes')).toContainText('Tactical Sweep');
+    await page.getByRole('button',{name:'Before',exact:true}).focus();await page.keyboard.press('Space');await expect(page.locator('.rank-number')).toHaveText(['15','14','13','12','11']);
+    await page.getByRole('button',{name:'Add to My Pool',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.locator('.saved-lineup')).toContainText('Camille');
   });
-  test('global search is adjacent to artwork and selects a champion with keyboard', async ({ page }) => {
-    await page.goto('/'); await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true');
-    await page.keyboard.press('Control+k'); const input = page.getByRole('searchbox', { name: 'Champion, patch, item, or system' }); await expect(input).toBeFocused(); await input.fill('Camille');
-    await page.keyboard.press('Tab'); await page.keyboard.press('Tab'); await page.keyboard.press('Enter');
-    await expect(page.locator('.atlas-reading h1')).toHaveText('Camille');
-    await page.getByRole('button', { name: 'Add to pool', exact: true }).focus(); await page.keyboard.press('Enter');
-    await expect(page.getByRole('button', { name: 'Remove from pool', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  });
-  test('escape dismisses in-scene search', async ({ page }) => {
-    await page.goto('/'); await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true'); await page.keyboard.press('Control+k'); await expect(page.locator('.atlas-global-search')).toBeVisible(); await page.keyboard.press('Escape'); await expect(page.locator('.atlas-global-search')).toHaveCount(0);
-  });
+  test('global search remains available and escape dismisses it',async({page})=>{await page.goto('/champions');await page.waitForSelector('astro-island[component-url*="CommandPalette"]:not([ssr])',{state:'attached'});await page.keyboard.press('Control+k');await expect(page.locator('[cmdk-input]')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('[cmdk-input]')).toBeHidden();});
 });

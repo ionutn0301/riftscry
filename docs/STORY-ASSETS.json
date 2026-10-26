@@ -1,0 +1,14 @@
+{
+  "reviewed": "2026-10-26",
+  "policies": ["https://www.riotgames.com/en/legal", "https://developer.riotgames.com/policies/general", "https://developer.riotgames.com/docs/lol"],
+  "permissionBasis": "Data Dragon is explicitly allowed by Riot developer policies. Use is conditional on those policies, not individual written approval. Owner must confirm Developer Portal registration and audit of this update; this was not accessible in this session.",
+  "scenes": [
+    {"scene": 1, "asset": "/images/story/battlefield.webp", "source": "Original environment generated for this project, not official League terrain", "resolution": "1920px wide derivative; original battlefield.png", "movement": "Bounded vertical reveal of landscape with separately masked foreground right edge; no unlimited zoom or invented 3D flight"},
+    {"scene": 2, "assets": ["Azir.jpg", "Camille.jpg", "Kennen.jpg"], "sourcePattern": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion}_0.jpg", "resolution": "1215 x 717 each", "movement": "Individual compositions using unmodified official base splash artwork, all choices labeled, art and text in separate layout columns"},
+    {"scene": 3, "assets": ["Azir-ability.png", "Camille-ability.png", "Kennen-ability.png"], "sourcePattern": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/spell/{AzirQWrapper,CamilleW,KennenShurikenStorm}.png", "resolution": "64 x 64", "movement": "Original HTML/CSS rank-value bars, zero baseline, fixed scale across Before/After; icons never larger than native size"},
+    {"scene": 4, "assets": ["Azir-loading.jpg", "Camille-loading.jpg", "Kennen-loading.jpg"], "sourcePattern": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/{champion}_0.jpg", "resolution": "308 x 560", "movement": "Staggered ensemble on original typographic green field, saved/candidate labels and actual persistent store"}
+  ],
+  "data": {"patch": "26.16", "status": "archived", "verifiedSource": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/", "records": ["Azir Q Damage", "Camille W Cooldown", "Kennen R Bonus Resistances"], "verification": "All before/after rank values matched official page on review date."},
+  "fonts": "Existing licensed General Sans and Clash Display; licenses remain in src/assets/fonts",
+  "excluded": "No extracted models, cinematic clips, music, unofficial champion redesigns, or igloo assets."
+}
