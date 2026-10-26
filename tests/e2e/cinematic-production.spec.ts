@@ -1,33 +1,227 @@
-import {test,expect,type Page} from '@playwright/test';
-import fs from 'node:fs/promises';
-const out='/tmp/agent-browser/cinematic-final';
-test.use({launchOptions:{args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']}});
-async function seek(page:Page,p:number){await page.evaluate(p=>{const t=document.querySelector<HTMLElement>('.cinema-track')!;scrollTo({top:t.offsetTop+p*(t.offsetHeight-innerHeight),behavior:'instant'});},p);await page.waitForTimeout(350);}
-async function ready(page:Page){await expect(page.locator('[data-renderer="webgl"]')).toBeVisible({timeout:30000});}
-async function framing(page:Page){const corners=JSON.parse(await page.locator('.cinema-canvas').getAttribute('data-framing')??'[]');expect(corners.length).toBe(4);for(const c of corners){expect(Math.abs(c[0])).toBeLessThan(1);expect(Math.abs(c[1])).toBeLessThan(1);}}
-test('normal arrival and stationary environmental life',async({browser})=>{
- test.setTimeout(120000);await fs.mkdir(out,{recursive:true});
- const context=await browser.newContext({viewport:{width:835,height:833},recordVideo:{dir:out,size:{width:835,height:833}}});const page=await context.newPage();await page.goto('/');await ready(page);await page.waitForTimeout(1700);
- await page.screenshot({path:`${out}/arrival-rest.png`});const camera=await page.locator('.cinema-canvas').getAttribute('data-camera');const life=await page.locator('.cinema-canvas').getAttribute('data-life');await page.waitForTimeout(2200);expect(await page.locator('.cinema-canvas').getAttribute('data-camera')).toBe(camera);expect(await page.locator('.cinema-canvas').getAttribute('data-life')).not.toBe(life);await framing(page);
- await context.close();await page.video()!.saveAs(`${out}/01-arrival-rest-webgl.webm`);
+import { test, expect, type Page } from "@playwright/test";
+import fs from "node:fs/promises";
+const out = "/tmp/agent-browser/cinematic-final";
+test.use({
+  launchOptions: {
+    args: [
+      "--enable-webgl",
+      "--use-gl=angle",
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader",
+    ],
+  },
 });
-test('continuous forward reverse journey and measured motion',async({browser})=>{
- test.setTimeout(180000);await fs.mkdir(out,{recursive:true});const context=await browser.newContext({viewport:{width:835,height:833},recordVideo:{dir:out,size:{width:835,height:833}}});const page=await context.newPage();await page.goto('/?champion=Azir&view=patch');await ready(page);
- await page.evaluate(()=>{const w=window as any;w.framesMeasured=[];let last=performance.now();w.measureMotion=true;const sample=(now:number)=>{if(!w.measureMotion)return;w.framesMeasured.push(now-last);last=now;requestAnimationFrame(sample)};requestAnimationFrame(sample)});
- for(const [i,p] of [0,.2,.45,.3,.45,.7,.87,1].entries()){await seek(page,p);await framing(page);if([0,2,5,7].includes(i))await page.screenshot({path:`${out}/azir-${i}-webgl.png`});await page.waitForTimeout(700);if(i===2)await page.locator('.cinema-canvas').evaluate(el=>{(window as any).forwardPose=(el as HTMLElement).dataset.camera});if(i===4)expect(await page.locator('.cinema-canvas').getAttribute('data-camera')).toBe(await page.evaluate(()=>(window as any).forwardPose));}
- const measurements=await page.evaluate(()=>{const w=window as any;w.measureMotion=false;const a=(w.framesMeasured as number[]).sort((a,b)=>a-b);return {renderer:'Chromium / SwiftShader software WebGL',mode:'Production, normal motion, video recording enabled',viewport:[innerWidth,innerHeight],samples:a.length,medianFrameMs:a[Math.floor(a.length*.5)],p95FrameMs:a[Math.floor(a.length*.95)],device:'Vercel sandbox; not a physical GPU or field measurement'};});await fs.writeFile(`${out}/performance.json`,JSON.stringify(measurements,null,2));
- await expect(page.getByText('Conquering Sands',{exact:true})).toBeVisible();await context.close();await page.video()!.saveAs(`${out}/02-travel-webgl.webm`);
+async function seek(page: Page, p: number) {
+  await page.evaluate((p) => {
+    const t = document.querySelector<HTMLElement>(".cinema-track")!;
+    scrollTo({
+      top: t.offsetTop + p * (t.offsetHeight - innerHeight),
+      behavior: "instant",
+    });
+  }, p);
+  await page.waitForTimeout(350);
+}
+async function ready(page: Page) {
+  await expect(page.locator('[data-renderer="webgl"]')).toBeVisible({
+    timeout: 30000,
+  });
+}
+async function framing(page: Page) {
+  const corners = JSON.parse(
+    (await page.locator(".cinema-canvas").getAttribute("data-framing")) ?? "[]",
+  );
+  expect(corners.length).toBe(4);
+  for (const c of corners) {
+    expect(Math.abs(c[0])).toBeLessThan(1);
+    expect(Math.abs(c[1])).toBeLessThan(1);
+  }
+}
+test("normal arrival and stationary environmental life", async ({
+  browser,
+}) => {
+  test.setTimeout(120000);
+  await fs.mkdir(out, { recursive: true });
+  const context = await browser.newContext({
+    viewport: { width: 835, height: 833 },
+    recordVideo: { dir: out, size: { width: 835, height: 833 } },
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  await ready(page);
+  await page.waitForTimeout(1700);
+  await page.screenshot({ path: `${out}/arrival-rest.png` });
+  const camera = await page
+    .locator(".cinema-canvas")
+    .getAttribute("data-camera");
+  const life = await page.locator(".cinema-canvas").getAttribute("data-life");
+  await page.waitForTimeout(2200);
+  expect(await page.locator(".cinema-canvas").getAttribute("data-camera")).toBe(
+    camera,
+  );
+  expect(
+    await page.locator(".cinema-canvas").getAttribute("data-life"),
+  ).not.toBe(life);
+  await framing(page);
+  await context.close();
+  await page.video()!.saveAs(`${out}/01-arrival-rest-webgl.webm`);
 });
-test('second environment real records pool and browser history',async({browser})=>{
- test.setTimeout(180000);const context=await browser.newContext({viewport:{width:1280,height:900},recordVideo:{dir:out,size:{width:1280,height:900}}});const page=await context.newPage();await page.goto('/?champion=Azir&view=champion');await ready(page);
- await page.getByRole('button',{name:'Camille',exact:true}).click();await expect(page).toHaveURL(/champion=Camille/);await ready(page);await page.waitForTimeout(2200);await framing(page);await page.screenshot({path:`${out}/camille-encounter-webgl.png`});
- await page.getByRole('button',{name:'Inspect changes',exact:false}).click();await expect(page.getByLabel('Choose a change')).toBeVisible();await page.getByLabel('Choose a change').selectOption('W-0');await expect(page.getByText('15 / 14 / 13 / 12 / 11s',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Add to My Pool',exact:true}).click();await expect(page.getByRole('button',{name:'Remove from My Pool',exact:true})).toBeVisible();await page.screenshot({path:`${out}/camille-inspect-webgl.png`});
- await page.reload();await ready(page);await expect(page.getByRole('button',{name:'Remove from My Pool',exact:true})).toBeVisible();await page.getByLabel('Choose a change').selectOption('passive-0');await expect(page.getByText('Adaptive Defenses',{exact:true})).toBeVisible();await page.goBack();await expect(page.getByLabel('Choose a change')).toHaveValue('W-0');
- await page.getByLabel('Patch',{exact:true}).selectOption('26.15');await expect(page).toHaveURL(/patch=26.15/);await expect(page.getByText(/No changes for this champion/)).toBeVisible();await page.getByRole('button',{name:'My Pool (1)',exact:true}).click();await expect(page.locator('.cinema-pool')).toContainText('Camille');
- await context.close();await page.video()!.saveAs(`${out}/03-interactions-webgl.webm`);
+test("continuous forward reverse journey and measured motion", async ({
+  browser,
+}) => {
+  test.setTimeout(180000);
+  await fs.mkdir(out, { recursive: true });
+  const context = await browser.newContext({
+    viewport: { width: 835, height: 833 },
+    recordVideo: { dir: out, size: { width: 835, height: 833 } },
+  });
+  const page = await context.newPage();
+  await page.goto("/?champion=Azir&view=patch");
+  await ready(page);
+  await page.evaluate(() => {
+    const w = window as any;
+    w.framesMeasured = [];
+    let last = performance.now();
+    w.measureMotion = true;
+    const sample = (now: number) => {
+      if (!w.measureMotion) return;
+      w.framesMeasured.push(now - last);
+      last = now;
+      requestAnimationFrame(sample);
+    };
+    requestAnimationFrame(sample);
+  });
+  for (const [i, p] of [0, 0.2, 0.45, 0.3, 0.45, 0.7, 0.87, 1].entries()) {
+    await seek(page, p);
+    await framing(page);
+    if ([0, 2, 5, 7].includes(i))
+      await page.screenshot({ path: `${out}/azir-${i}-webgl.png` });
+    await page.waitForTimeout(700);
+    if (i === 2)
+      await page.locator(".cinema-canvas").evaluate((el) => {
+        (window as any).forwardPose = (el as HTMLElement).dataset.camera;
+      });
+    if (i === 4)
+      expect(
+        await page.locator(".cinema-canvas").getAttribute("data-camera"),
+      ).toBe(await page.evaluate(() => (window as any).forwardPose));
+  }
+  const measurements = await page.evaluate(() => {
+    const w = window as any;
+    w.measureMotion = false;
+    const a = (w.framesMeasured as number[]).sort((a, b) => a - b);
+    return {
+      renderer: "Chromium / SwiftShader software WebGL",
+      mode: "Production, normal motion, video recording enabled",
+      viewport: [innerWidth, innerHeight],
+      samples: a.length,
+      medianFrameMs: a[Math.floor(a.length * 0.5)],
+      p95FrameMs: a[Math.floor(a.length * 0.95)],
+      device: "Vercel sandbox; not a physical GPU or field measurement",
+    };
+  });
+  await fs.writeFile(
+    `${out}/performance.json`,
+    JSON.stringify(measurements, null, 2),
+  );
+  await expect(
+    page.getByText("Conquering Sands", { exact: true }),
+  ).toBeVisible();
+  await context.close();
+  await page.video()!.saveAs(`${out}/02-travel-webgl.webm`);
 });
-test('portrait reduced motion fallback keyboard and native scrolling',async({browser})=>{
- test.setTimeout(120000);const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});const page=await context.newPage();await page.goto('/?champion=Camille&change=W-0&view=record');await expect(page.locator('[data-renderer="webgl-reduced"]')).toBeVisible({timeout:30000});await page.waitForTimeout(400);await framing(page);await page.screenshot({path:`${out}/portrait-reduced-webgl.png`});
- const camera=await page.locator('.cinema-canvas').getAttribute('data-camera');await page.locator('.cinema-reading').evaluate(el=>el.scrollTop=150);expect(await page.locator('.cinema-canvas').getAttribute('data-camera')).toBe(camera);
- await page.goto('/?champion=Camille&change=W-0&view=record&renderer=fallback');await expect(page.locator('[data-renderer="fallback"]')).toBeVisible();await expect(page.locator('.cinema-fallback')).toBeVisible();expect(await page.locator('.cinema-fallback').evaluate(e=>getComputedStyle(e).objectFit)).toBe('contain');await page.screenshot({path:`${out}/portrait-fallback.png`});await page.getByRole('button',{name:'Add to My Pool',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('button',{name:'Remove from My Pool',exact:true})).toBeVisible();await context.close();
+test("second environment real records pool and browser history", async ({
+  browser,
+}) => {
+  test.setTimeout(180000);
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 900 },
+    recordVideo: { dir: out, size: { width: 1280, height: 900 } },
+  });
+  const page = await context.newPage();
+  await page.goto("/?champion=Azir&view=champion");
+  await ready(page);
+  await page.getByRole("button", { name: "Camille", exact: true }).click();
+  await expect(page).toHaveURL(/champion=Camille/);
+  await ready(page);
+  await page.waitForTimeout(2200);
+  await framing(page);
+  await page.screenshot({ path: `${out}/camille-encounter-webgl.png` });
+  await page
+    .getByRole("button", { name: "Inspect changes", exact: false })
+    .click();
+  await expect(page.getByLabel("Choose a change")).toBeVisible();
+  await page.getByLabel("Choose a change").selectOption("W-0");
+  await expect(
+    page.getByText("15 / 14 / 13 / 12 / 11s", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Add to My Pool", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Remove from My Pool", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({ path: `${out}/camille-inspect-webgl.png` });
+  await page.reload();
+  await ready(page);
+  await expect(
+    page.getByRole("button", { name: "Remove from My Pool", exact: true }),
+  ).toBeVisible();
+  await page.getByLabel("Choose a change").selectOption("passive-0");
+  await expect(
+    page.getByText("Adaptive Defenses", { exact: true }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(page.getByLabel("Choose a change")).toHaveValue("W-0");
+  await page.getByLabel("Patch", { exact: true }).selectOption("26.15");
+  await expect(page).toHaveURL(/patch=26.15/);
+  await expect(page.getByText(/No changes for this champion/)).toBeVisible();
+  await page.getByRole("button", { name: "My Pool (1)", exact: true }).click();
+  await expect(page.locator(".cinema-pool")).toContainText("Camille");
+  await context.close();
+  await page.video()!.saveAs(`${out}/03-interactions-webgl.webm`);
+});
+test("portrait reduced motion fallback keyboard and native scrolling", async ({
+  browser,
+}) => {
+  test.setTimeout(120000);
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    reducedMotion: "reduce",
+  });
+  const page = await context.newPage();
+  await page.goto("/?champion=Camille&change=W-0&view=record");
+  await expect(page.locator('[data-renderer="webgl-reduced"]')).toBeVisible({
+    timeout: 30000,
+  });
+  await page.waitForTimeout(400);
+  await framing(page);
+  await page.screenshot({ path: `${out}/portrait-reduced-webgl.png` });
+  const camera = await page
+    .locator(".cinema-canvas")
+    .getAttribute("data-camera");
+  await page.locator(".cinema-reading").evaluate((el) => (el.scrollTop = 150));
+  expect(await page.locator(".cinema-canvas").getAttribute("data-camera")).toBe(
+    camera,
+  );
+  await page.goto(
+    "/?champion=Camille&change=W-0&view=record&renderer=fallback",
+  );
+  await expect(page.locator('[data-renderer="fallback"]')).toBeVisible();
+  await expect(page.locator(".cinema-fallback")).toBeVisible();
+  expect(
+    await page
+      .locator(".cinema-fallback")
+      .evaluate((e) => getComputedStyle(e).objectFit),
+  ).toBe("contain");
+  await page.screenshot({ path: `${out}/portrait-fallback.png` });
+  await page
+    .getByRole("button", { name: "Add to My Pool", exact: true })
+    .focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("button", { name: "Remove from My Pool", exact: true }),
+  ).toBeVisible();
+  await context.close();
 });
