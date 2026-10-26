@@ -1,0 +1,13 @@
+{
+  "mode": "Production build; GSAP-driven CSS 2.5D layers; full motion",
+  "viewport": "1440x1000 Chromium",
+  "metrics": {
+    "lcp": 200,
+    "cls": 0,
+    "longTasks": 1,
+    "maxEventDuration": 192,
+    "frameP95": 66.79999999999995,
+    "ttfb": 3.4000000001396984
+  },
+  "errors": []
+}
