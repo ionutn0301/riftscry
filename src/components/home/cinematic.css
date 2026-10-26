@@ -1,0 +1,381 @@
+.cinema-page {
+  --ink: #eee9df;
+  --quiet: #b5b3a8;
+  --accent: #c6a468;
+  background: #141510;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+}
+.cinema-page button,
+.cinema-page a {
+  color: inherit;
+}
+.cinema-page button {
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  min-height: 44px;
+}
+.cinema-page a {
+  text-decoration: none;
+}
+.cinema-page a:hover,
+.cinema-page button:hover {
+  color: var(--accent);
+}
+.cinema-page :focus-visible {
+  outline: 2px solid #e7c38b;
+  outline-offset: 5px;
+}
+.cinema-header {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4%;
+  gap: 24px;
+  background: #141510;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+.cinema-brand {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+.cinema-brand span {
+  font-weight: 400;
+  color: var(--accent);
+}
+.cinema-header nav {
+  display: flex;
+  gap: 24px;
+  font-size: 12px;
+  align-items: center;
+}
+.cinema-track {
+  height: 340svh;
+}
+.cinema-shell {
+  --inspection: 0;
+  position: sticky;
+  top: 70px;
+  height: calc(100svh - 70px);
+  overflow: hidden;
+  background: #141510;
+}
+.cinema-context {
+  height: 54px;
+  padding: 0 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--quiet);
+}
+.cinema-picture {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  bottom: 165px;
+  width: calc(100% - var(--inspection) * 43%);
+}
+.cinema-stage,
+.cinema-canvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.cinema-canvas canvas {
+  display: block;
+}
+.cinema-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: 1100px;
+  margin: auto;
+}
+.cinema-mode {
+  position: absolute;
+  bottom: 10px;
+  left: 4%;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: #d0caba;
+  pointer-events: none;
+}
+.cinema-caption {
+  position: absolute;
+  bottom: 45px;
+  left: 4%;
+  right: 4%;
+  height: 110px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+.cinema-caption p {
+  font-size: 11px;
+  color: var(--quiet);
+  margin: 0 0 10px;
+}
+.cinema-caption h1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(26px, 3.5vw, 52px);
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+.cinema-destinations {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  font-size: 12px;
+}
+.cinema-destinations button:last-child {
+  border-bottom: 1px solid var(--accent);
+}
+.cinema-reading {
+  position: absolute;
+  left: 60%;
+  right: 4%;
+  top: 80px;
+  bottom: 175px;
+  overflow-y: auto;
+  overscroll-behavior: auto;
+  opacity: var(--inspection);
+  transform: translateY(calc((1 - var(--inspection)) * 40px));
+  padding: 10px 16px 24px 0;
+  scrollbar-width: thin;
+  color: var(--quiet);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.cinema-reading h2 {
+  font-family: Georgia, serif;
+  font-size: 32px;
+  color: var(--ink);
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 14px 0;
+}
+.cinema-eyebrow {
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+.cinema-reading dl {
+  margin: 24px 0;
+}
+.cinema-reading dt {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 9px;
+  margin-top: 18px;
+}
+.cinema-reading dd {
+  font-size: 17px;
+  color: var(--ink);
+  margin: 7px 0;
+  overflow-wrap: anywhere;
+}
+.cinema-difference {
+  color: #e5c48e;
+}
+.cinema-save {
+  border-bottom: 1px solid var(--accent) !important;
+  color: var(--ink) !important;
+  margin: 12px 0;
+}
+.cinema-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 11px;
+  align-items: center;
+}
+.cinema-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 4%;
+  right: 4%;
+  height: 38px;
+  border-top: 1px solid #ffffff18;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--quiet);
+  letter-spacing: 0.05em;
+}
+.cinema-footer {
+  padding: 60px 5%;
+  max-width: 1000px;
+  color: var(--quiet);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.cinema-footer > a {
+  font-size: 18px;
+  color: var(--ink);
+}
+@media (max-width: 1100px) {
+  .cinema-picture {
+    width: 100%;
+    bottom: calc(180px + var(--inspection) * 36svh);
+  }
+  .cinema-reading {
+    top: calc(100% - 170px - 36svh);
+    bottom: 170px;
+    left: 5%;
+    right: 5%;
+    padding-right: 10px;
+  }
+  .cinema-reading h2 {
+    font-size: 25px;
+  }
+  .cinema-reading dl {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 10px;
+    margin: 15px 0;
+  }
+  .cinema-reading dt,
+  .cinema-reading dd {
+    margin: 0;
+  }
+  .cinema-caption {
+    height: 120px;
+  }
+  .cinema-destinations {
+    gap: 14px;
+  }
+}
+.cinema-page select {
+  color: var(--ink);
+  background: #1c201d;
+  border: 1px solid #a9aa8f44;
+  border-radius: 0;
+  min-height: 44px;
+  padding: 8px;
+  font: inherit;
+  max-width: 100%;
+}
+.cinema-context select {
+  font-size: 10px;
+  border: 0;
+  background: transparent;
+}
+.cinema-record-label {
+  display: grid;
+  gap: 8px;
+  font-size: 11px;
+}
+.cinema-pool {
+  list-style: none;
+  padding: 0;
+}
+.cinema-pool li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #ffffff20;
+  padding: 12px 0;
+}
+.cinema-pool .saved-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cinema-pool img {
+  object-fit: contain;
+}
+.cinema-pool small {
+  display: block;
+}
+.cinema-destinations [aria-pressed="true"] {
+  color: var(--accent);
+}
+@media (max-width: 600px) {
+  .cinema-shell {
+    top: 90px;
+    height: calc(100svh - 90px);
+  }
+  .cinema-header {
+    height: 90px;
+    align-items: flex-start;
+    padding-top: 18px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .cinema-brand {
+    font-size: 17px;
+  }
+  .cinema-header nav {
+    gap: 18px;
+    width: 100%;
+    justify-content: space-between;
+    font-size: 10px;
+  }
+  .cinema-header nav button {
+    min-height: 32px;
+  }
+  .cinema-context {
+    font-size: 7px;
+    letter-spacing: 0.07em;
+    gap: 10px;
+    height: 48px;
+  }
+  .cinema-caption {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+    height: 132px;
+  }
+  .cinema-caption h1 {
+    font-size: 28px;
+  }
+  .cinema-destinations {
+    font-size: 11px;
+    gap: 20px;
+  }
+  .cinema-picture {
+    top: 48px;
+    bottom: calc(190px + var(--inspection) * 34svh);
+  }
+  .cinema-reading {
+    top: calc(100% - 190px - 34svh);
+    bottom: 190px;
+  }
+  .cinema-bottom {
+    font-size: 8px;
+  }
+  .cinema-reading h2 {
+    font-size: 22px;
+  }
+  .cinema-reading dd {
+    font-size: 13px;
+  }
+  .cinema-reading {
+    font-size: 12px;
+  }
+  .cinema-mode {
+    font-size: 7px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-page * {
+    scroll-behavior: auto !important;
+  }
+}

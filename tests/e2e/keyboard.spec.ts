@@ -14,28 +14,28 @@ test.describe("keyboard-only exploration", () => {
   test("choose, reveal, save, and return without a pointer", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/?renderer=fallback");
     await expect(
-      page.locator("astro-island:has(.incision-experience)"),
+      page.locator("astro-island:has(.cinema-page)"),
     ).not.toHaveAttribute("ssr", "");
-    await page
-      .locator(".champion-branches")
-      .getByRole("button", { name: /Explore Azir/ })
-      .focus();
+    await page.getByRole("button", { name: "Azir", exact: true }).focus();
     await page.keyboard.press("Enter");
-    await page.getByRole("button", { name: "Reveal this change" }).focus();
+    await page.getByRole("button", { name: /Inspect changes/ }).focus();
     await page.keyboard.press("Enter");
-    await expect(page.locator(".record-values")).toContainText(
+    await expect(page.locator(".cinema-reading")).toContainText(
       "75 / 95 / 115 / 135 / 155",
     );
-    await page.getByRole("button", { name: "Add to My Pool" }).focus();
+    await page
+      .getByRole("button", { name: "Add to My Pool", exact: true })
+      .focus();
     await page.keyboard.press("Space");
-    await expect(page.locator(".collection-rail")).toContainText("Azir");
-    await page.getByRole("button", { name: "Other changes" }).focus();
-    await page.keyboard.press("Enter");
     await expect(
-      page.getByRole("button", { name: "Reveal this change" }),
+      page.getByRole("button", { name: "My Pool (1)", exact: true }),
     ).toBeVisible();
+    await page.getByRole("button", { name: "Overview", exact: true }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/view=patch/);
   });
   test("visible search and keyboard shortcut both work", async ({ page }) => {
     await page.goto("/");

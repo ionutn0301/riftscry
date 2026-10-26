@@ -1,0 +1,12 @@
+{
+  "renderer": "Chromium / SwiftShader software WebGL",
+  "mode": "Production, normal motion, video recording enabled",
+  "viewport": [
+    835,
+    833
+  ],
+  "samples": 142,
+  "medianFrameMs": 316.6999999999971,
+  "p95FrameMs": 716.5999999999985,
+  "device": "Vercel sandbox; not a physical GPU or field measurement"
+}
