@@ -42,6 +42,7 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
 
   // Hydrate from the URL, and follow browser history navigation.
   useEffect(() => {
+    if (document.documentElement.dataset.atlasMode === 'immersive' && document.querySelector('.atlas-mount')) return;
     setFilters(parseFilters(window.location.search));
     setReady(true);
     const onPop = () => setFilters(parseFilters(window.location.search));
@@ -82,7 +83,10 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
     const count = document.querySelector<HTMLElement>("[data-filter-count]");
     if (count) count.textContent = String(shown);
 
-    const qs = serializeFilters(filters);
+    const params = new URLSearchParams(window.location.search);
+    for (const key of ['q', 'role', 'type', 'pool', 'champions']) params.delete(key);
+    new URLSearchParams(serializeFilters(filters)).forEach((value, key) => params.set(key, value));
+    const qs = params.toString();
     if (window.location.search !== (qs ? `?${qs}` : "")) {
       const next = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
       window.history.replaceState(null, "", next);
@@ -94,7 +98,7 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
     set({ [key]: filters[key] === value ? null : value } as Partial<PatchFilters>);
 
   return (
-    <div className="filter-bar" role="group" aria-label="Filter changes">
+    <div className="filter-bar" data-ready={ready} role="group" aria-label="Filter changes">
       <input
         type="search"
         placeholder="Filter champions…"

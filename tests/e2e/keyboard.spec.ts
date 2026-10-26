@@ -1,54 +1,18 @@
-import { test, expect } from "@playwright/test";
-
-test.describe("keyboard-only navigation", () => {
-  test.skip(({ isMobile }) => isMobile, "keyboard flows are desktop-only");
-
-  test("skip link is first tab stop and jumps to content", async ({ page }) => {
-    await page.goto("/patch/26.16");
-    await page.keyboard.press("Tab");
-    await expect(page.locator(".skip-link")).toBeFocused();
-    await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/#main/);
+import { test, expect } from '@playwright/test';
+test.describe('keyboard-only Atlas navigation', () => {
+  test.skip(({ isMobile }) => isMobile, 'desktop keyboard test; portrait touch is tested separately');
+  test('skip link targets the active content', async ({ page }) => {
+    await page.goto('/patch/26.16'); await page.keyboard.press('Tab'); await expect(page.locator('.skip-link')).toBeFocused(); await page.keyboard.press('Enter'); await expect(page).toHaveURL(/#atlas-main/);
   });
-
-  test("palette: open with Ctrl+K, arrow to a result, Enter navigates", async ({ page }) => {
-    await page.goto("/patch/26.16");
-    // client:idle island is hydrated once its ssr attribute drops.
-    await page.waitForSelector("astro-island[component-url*='CommandPalette']:not([ssr])", { state: "attached" });
-    await page.keyboard.press("Control+k");
-    const input = page.locator("[cmdk-input]");
-    await expect(input).toBeVisible();
-    await input.pressSequentially("camille");
-    await expect(page.locator("[cmdk-item]").first()).toBeVisible();
-    await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/camille/);
+  test('global search is adjacent to artwork and selects a champion with keyboard', async ({ page }) => {
+    await page.goto('/'); await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true');
+    await page.keyboard.press('Control+k'); const input = page.getByRole('searchbox', { name: 'Champion, patch, item, or system' }); await expect(input).toBeFocused(); await input.fill('Camille');
+    await page.keyboard.press('Tab'); await page.keyboard.press('Tab'); await page.keyboard.press('Enter');
+    await expect(page.locator('.atlas-reading h1')).toHaveText('Camille');
+    await page.getByRole('button', { name: 'Add to pool', exact: true }).focus(); await page.keyboard.press('Enter');
+    await expect(page.getByRole('button', { name: 'Remove from pool', exact: true })).toHaveAttribute('aria-pressed', 'true');
   });
-
-  test("palette closes on Escape and returns focus to the page", async ({ page }) => {
-    await page.goto("/");
-    await page.waitForSelector("astro-island[component-url*='CommandPalette']:not([ssr])", { state: "attached" });
-    await page.keyboard.press("Control+k");
-    await expect(page.locator("[cmdk-input]")).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(page.locator("[cmdk-input]")).toHaveCount(0);
-  });
-
-  test("pool picker: toggle a champion with the keyboard", async ({ page }) => {
-    await page.goto("/pool");
-    const ahri = page.getByRole("option", { name: "Ahri", exact: true });
-    await ahri.focus();
-    await page.keyboard.press("Enter");
-    await expect(ahri).toHaveAttribute("aria-selected", "true");
-    await page.keyboard.press("Enter");
-    await expect(ahri).toHaveAttribute("aria-selected", "false");
-  });
-
-  test("timeline entries expand with Enter", async ({ page }) => {
-    await page.goto("/champion/camille");
-    const second = page.locator(".timeline-entry").nth(1);
-    const summary = second.locator("summary");
-    await summary.focus();
-    await page.keyboard.press("Enter");
-    await expect(second.locator("details")).toHaveAttribute("open", "");
+  test('escape dismisses in-scene search', async ({ page }) => {
+    await page.goto('/'); await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true'); await page.keyboard.press('Control+k'); await expect(page.locator('.atlas-global-search')).toBeVisible(); await page.keyboard.press('Escape'); await expect(page.locator('.atlas-global-search')).toHaveCount(0);
   });
 });

@@ -1,4 +1,4 @@
-import type { ChampionChange } from "./schema";
+import type { ChampionChange, Patch } from "./schema";
 
 export type ArchiveRecord = {
   patchId: string;
@@ -10,12 +10,14 @@ export type ArchiveChampion = {
   id: string;
   name: string;
   title: string;
+  roles?: string[];
   records: ArchiveRecord[];
 };
 export type ArchivePatch = { id: string; date: string; count: number };
 export type ArchiveData = {
   champions: ArchiveChampion[];
   patches: ArchivePatch[];
+  patchDetails?: Patch[];
 };
 
 export function recordsBetween(

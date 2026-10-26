@@ -1,26 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ArchiveArrival from '../components/home/ArchiveArrival.astro';
-import ArchiveExplorer from '../components/home/ArchiveExplorer';
-import SiteFooter from '../components/SiteFooter.astro';
-import { getAllPatches, getChampionHistory, getChampionMeta } from '../lib/data';
-import type { ArchiveData } from '../lib/living-archive';
-import '../styles/living-archive.css';
+import { getAllPatches } from '../lib/data';
 const patches = getAllPatches();
-const latest = patches[0]!;
-const data: ArchiveData = {
-  champions: Object.entries(getChampionMeta()).map(([id, meta]) => ({
-    id, ...meta,
-    records: getChampionHistory(id).map(entry => ({ patchId: entry.patchId, date: entry.releaseDate, source: patches.find(patch => patch.id === entry.patchId)!.sourceUrl, change: { ...entry.change, summary: undefined } })),
-  })).sort((a, b) => a.name.localeCompare(b.name)),
-  patches: patches.map(patch => ({ id: patch.id, date: patch.releaseDate, count: patch.champions.length })),
-};
 ---
-<Layout title="RiftScry — The Living Archive" description={`Bring change into focus. Discover champion histories, compare recorded patch changes, and follow your pool. Archive coverage through patch ${latest.id}.`}>
-  <div class="living-archive">
-    <ArchiveArrival latest={data.patches[0]!} count={patches.length} />
-    <ArchiveExplorer client:load data={data} />
-    <noscript><section class="archive-section"><h2>Explore the archive directly.</h2><p>Interactive selection requires JavaScript. Champion histories and patch records are available as ordinary pages.</p><a href="/champions">Champions →</a><br /><a href="/patches">Patch history →</a><br /><a href={`/compare/${latest.id}/${patches[1]?.id ?? latest.id}`}>Compare patches →</a></section></noscript>
-    <SiteFooter />
-  </div>
+<Layout title="RiftScry — The Rift Atlas" description={`Explore champion changes through a continuous spatial archive. Recorded patch coverage through ${patches[0]!.id}.`}>
+  <section class="shell" style="padding-block:64px"><h1>RiftScry Reader</h1><p>Source-backed champion histories and recorded patch changes.</p><nav aria-label="Reader navigation"><a href="/champions?mode=reader">Champions</a> · <a href="/patches?mode=reader">Patch history</a> · <a href={`/compare/${patches[1]!.id}/${patches[0]!.id}?mode=reader`}>Compare</a> · <a href="/pool?mode=reader">My Pool</a> · <a href="/">Return to the Atlas</a></nav></section>
 </Layout>
