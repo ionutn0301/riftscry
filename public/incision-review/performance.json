@@ -1,0 +1,33 @@
+{
+  "mode": "Production Chromium, no video/screenshot capture, unthrottled VM; lab measurements, not field INP",
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "metrics": {
+        "lcp": 244,
+        "cls": 0,
+        "maxEventDuration": 176,
+        "shifts": [],
+        "frameP95": 66.70000000000005,
+        "ttfb": 7.800000000046566
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "lcp": 156,
+        "cls": 0,
+        "maxEventDuration": 104,
+        "shifts": [],
+        "frameP95": 16.799999999999955,
+        "ttfb": 5.699999999953434
+      }
+    }
+  ]
+}

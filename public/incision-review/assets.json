@@ -1,0 +1,19 @@
+{
+  "reviewedAt": "2026-10-26",
+  "product": "RiftScry V4 branching patch experience",
+  "permissionsReviewed": ["https://www.riotgames.com/en/legal", "https://developer.riotgames.com/policies/general", "https://developer.riotgames.com/docs/lol"],
+  "permissionScope": "Riot's developer policies list Data Dragon assets for development and marketing of compliant third-party products. This is not project-specific approval or a blanket commercial license. Owner must confirm product registration and audit of these features in the Developer Portal before public release or monetization.",
+  "assets": [
+    {"files": ["/images/story/Azir.jpg", "/images/incision/Azir-figure.webp", "/images/incision/Azir-context.webp"], "source": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Azir_0.jpg", "owner": "Riot Games", "preparation": "Source-only alpha mask, manually outlined then refined with OpenCV GrabCut; resized contextual layer. No regenerated character parts, inpainting, game extraction, rig or combat animation. Original source is 1215 x 717 pixels.", "staging": "Upright amber figure; warm bronze planes; forward approach, then recede left as the record opens."},
+    {"files": ["/images/story/Camille.jpg", "/images/incision/Camille-figure.webp", "/images/incision/Camille-context.webp"], "source": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg", "owner": "Riot Games", "preparation": "Source-only alpha mask refined with OpenCV GrabCut; resized contextual layer. No synthesized limbs, reconstructed background or character rig. Original source is 1215 x 717 pixels.", "staging": "Diagonal steel-blue figure; vertical brushed metal; offset approach, angled record poses varying by actual selected change."},
+    {"files": ["/images/incision/bronze.png", "/images/incision/bronze.webp"], "source": "Generated for RiftScry in this session", "preparation": "Original dark brushed bronze material, optimized to 1200px-wide WebP. Supporting material only; no generated Riot characters or environments."},
+    {"files": ["/images/incision/steel.png", "/images/incision/steel.webp"], "source": "Generated for RiftScry in this session", "preparation": "Original dark blued-steel material, optimized to 1200px-wide WebP. Supporting material only."},
+    {"files": ["https://ddragon.leagueoflegends.com/cdn/16.16.1/img/champion/{id}.png"], "source": "Data Dragon", "owner": "Riot Games", "preparation": "Only real saved champion IDs present in the existing roster are requested; text identity survives a failed icon request."}
+  ],
+  "recordSource": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+  "coverage": "Archived 26.16; one Azir change and five Camille changes from existing repository records. Artwork identifies champions; it does not assert their historical appearance changed in this patch.",
+  "references": {"https://igloo.inc/": "Opened with graphics support; automated render exposed a canvas but the scene did not become usefully readable. No assets copied.", "https://www.awwwards.com/igloo-inc-case-study.html": "Read for unique object staging, previsualization, in-browser iteration and measurement, not copied effects."},
+  "fonts": "Existing General Sans and Spline Sans Mono; no new font assets added.",
+  "sound": "None",
+  "limitations": ["Painterly source edges and original baked lighting remain; these are 2.5D source-art layers, not rigged characters.", "Two curated art packages only; all other champions retain the existing efficient product routes.", "Product registration/audit status cannot be verified from this repository."]
+}

@@ -1,12 +1,52 @@
-import {test,expect} from '@playwright/test';
-test.describe('keyboard-only story navigation',()=>{
-  test.skip(({isMobile})=>isMobile,'desktop keyboard checks; mobile touch covered separately');
-  test('skip link targets direct content',async({page})=>{await page.goto('/patch/26.16');await page.keyboard.press('Tab');await expect(page.locator('.skip-link')).toBeFocused();await page.keyboard.press('Enter');await expect(page).toHaveURL(/#main/);});
-  test('champion, values and pool work without a pointer',async({page})=>{
-    await page.goto('/');await expect(page.locator('astro-island:has(.rift-story)')).not.toHaveAttribute('ssr','');
-    await page.getByRole('button',{name:'Choose Camille'}).focus();await page.keyboard.press('Enter');await expect(page.locator('#changes')).toContainText('Tactical Sweep');
-    await page.getByRole('button',{name:'Before',exact:true}).focus();await page.keyboard.press('Space');await expect(page.locator('.rank-number')).toHaveText(['15','14','13','12','11']);
-    await page.getByRole('button',{name:'Add to My Pool',exact:true}).focus();await page.keyboard.press('Enter');await expect(page.locator('.saved-lineup')).toContainText('Camille');
+import { test, expect } from "@playwright/test";
+test.describe("keyboard-only exploration", () => {
+  test.skip(
+    ({ isMobile }) => isMobile,
+    "Keyboard checks use desktop; touch is covered separately.",
+  );
+  test("skip link targets content", async ({ page }) => {
+    await page.goto("/patch/26.16");
+    await page.keyboard.press("Tab");
+    await expect(page.locator(".skip-link")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#main/);
   });
-  test('global search remains available and escape dismisses it',async({page})=>{await page.goto('/champions');await page.waitForSelector('astro-island[component-url*="CommandPalette"]:not([ssr])',{state:'attached'});await page.keyboard.press('Control+k');await expect(page.locator('[cmdk-input]')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('[cmdk-input]')).toBeHidden();});
+  test("choose, reveal, save, and return without a pointer", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await expect(
+      page.locator("astro-island:has(.incision-experience)"),
+    ).not.toHaveAttribute("ssr", "");
+    await page
+      .locator(".champion-branches")
+      .getByRole("button", { name: /Explore Azir/ })
+      .focus();
+    await page.keyboard.press("Enter");
+    await page.getByRole("button", { name: "Reveal this change" }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".record-values")).toContainText(
+      "75 / 95 / 115 / 135 / 155",
+    );
+    await page.getByRole("button", { name: "Add to My Pool" }).focus();
+    await page.keyboard.press("Space");
+    await expect(page.locator(".collection-rail")).toContainText("Azir");
+    await page.getByRole("button", { name: "Other changes" }).focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByRole("button", { name: "Reveal this change" }),
+    ).toBeVisible();
+  });
+  test("visible search and keyboard shortcut both work", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForSelector(
+      'astro-island[component-url*="CommandPalette"]:not([ssr])',
+      { state: "attached" },
+    );
+    await page.locator("[data-palette-trigger]").click();
+    await expect(page.locator("[cmdk-input]")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Control+k");
+    await expect(page.locator("[cmdk-input]")).toBeVisible();
+  });
 });
