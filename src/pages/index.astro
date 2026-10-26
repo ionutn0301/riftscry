@@ -1,23 +1,26 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import CinematicHome from '../components/home/CinematicHome.astro';
-import { getAllPatches, getChampionHistory, getChampionMeta, getAssetVersion } from '../lib/data';
-import type { ObservatoryData } from '../lib/observatory';
-import '../styles/journey.css';
+import ArchiveArrival from '../components/home/ArchiveArrival.astro';
+import ArchiveExplorer from '../components/home/ArchiveExplorer';
+import SiteFooter from '../components/SiteFooter.astro';
+import { getAllPatches, getChampionHistory, getChampionMeta } from '../lib/data';
+import type { ArchiveData } from '../lib/living-archive';
+import '../styles/living-archive.css';
 const patches = getAllPatches();
 const latest = patches[0]!;
-const meta = getChampionMeta();
-const ids = [...new Set([...latest.champions.map(c => c.championId), 'Ahri', 'Jinx', 'Thresh', 'LeeSin'])].slice(0, 6);
-const data: ObservatoryData = {
-  assetVersion: getAssetVersion(), latest: latest.id, date: latest.releaseDate, source: latest.sourceUrl,
-  champions: ids.map(id => {
-    const entry = getChampionHistory(id)[0];
-    return { id, name: meta[id]?.name ?? id, title: meta[id]?.title ?? '', patch: entry?.patchId ?? latest.id, classification: entry?.change.classification ?? 'unchanged', changes: entry?.change.abilities.flatMap(a => a.changes.map(c => c.kind === 'numeric' ? { label: `${a.name} · ${c.label}`, before: c.before, after: c.after } : { label: `${a.name} · ${c.label}`, text: c.text })) ?? [] };
-  }),
-  patches: patches.slice(0, 8).map(p => ({ id: p.id, date: p.releaseDate, count: p.champions.length }))
+const data: ArchiveData = {
+  champions: Object.entries(getChampionMeta()).map(([id, meta]) => ({
+    id, ...meta,
+    records: getChampionHistory(id).map(entry => ({ patchId: entry.patchId, date: entry.releaseDate, source: patches.find(patch => patch.id === entry.patchId)!.sourceUrl, change: { ...entry.change, summary: undefined } })),
+  })).sort((a, b) => a.name.localeCompare(b.name)),
+  patches: patches.map(patch => ({ id: patch.id, date: patch.releaseDate, count: patch.champions.length })),
 };
 ---
-<Layout title="RiftScry — A new perspective on the Rift" description={`An interactive observatory of League of Legends patch ${latest.id}. Explore your champions, inspect every change, and trace the history.`}>
-  <CinematicHome data={data} />
-  <noscript><section class="observatory-static"><h1>A new perspective on the Rift.</h1><p>Explore the latest recorded patch, {latest.id}.</p><a href={`/patch/${latest.id}`}>Read patch {latest.id}</a><a href="/pool">Explore champions</a></section></noscript>
+<Layout title="RiftScry — The Living Archive" description={`Bring change into focus. Discover champion histories, compare recorded patch changes, and follow your pool. Archive coverage through patch ${latest.id}.`}>
+  <div class="living-archive">
+    <ArchiveArrival latest={data.patches[0]!} count={patches.length} />
+    <ArchiveExplorer client:load data={data} />
+    <noscript><section class="archive-section"><h2>Explore the archive directly.</h2><p>Interactive selection requires JavaScript. Champion histories and patch records are available as ordinary pages.</p><a href="/champions">Champions →</a><br /><a href="/patches">Patch history →</a><br /><a href={`/compare/${latest.id}/${patches[1]?.id ?? latest.id}`}>Compare patches →</a></section></noscript>
+    <SiteFooter />
+  </div>
 </Layout>

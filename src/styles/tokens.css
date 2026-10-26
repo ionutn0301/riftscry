@@ -21,33 +21,33 @@
 
 :root {
   /* Environment */
-  --ink: #e9e8e2;
-  --ink-2: #f6f5ef;
-  --ink-3: #dce1d6;
-  --line: #bac2b5;
-  --line-strong: #778572;
+  --ink: #101311;
+  --ink-2: #171c19;
+  --ink-3: #222923;
+  --line: #343c35;
+  --line-strong: #697166;
 
   /* Text */
-  --cream: #25372d;
-  --cream-dim: #445748;
-  --cream-faint: #52634f;
+  --cream: #ece8dd;
+  --cream-dim: #b9bdb2;
+  --cream-faint: #a2ab9e;
 
-  /* Brand accent — gold, from the logo rift slashes */
-  --gold: #394f3c;
-  --gold-bright: #283e2d;
-  --gold-deep: #586b4e;
+  /* Brand accent — never a semantic change color. */
+  --gold: #c7af7e;
+  --gold-bright: #e7d4a9;
+  --gold-deep: #8c7851;
 
-  /* Semantic change colors (CVD-safe pairings with ▲/▼ glyphs + labels) */
-  --buff: #23604d;
-  --buff-dim: #3f6b62;
-  --nerf: #963d2b;
-  --nerf-dim: #7d4a3c;
-  --neutral: #52634f;
+  /* Semantic change colors are paired with glyphs and labels. */
+  --buff: #97c7b4;
+  --buff-dim: #8fb7a6;
+  --nerf: #e7a896;
+  --nerf-dim: #cfaa9f;
+  --neutral: #b9bdb2;
 
   /* Type */
-  --font-display: "Clash Display", "Georgia", serif;
+  --font-display: "Georgia", "Times New Roman", serif;
   --font-ui: "General Sans", "Segoe UI", sans-serif;
-  --font-num: "Spline Sans Mono", "Consolas", monospace;
+  --font-num: "General Sans", "Segoe UI", sans-serif;
 
   /* Type scale (fluid) */
   --text-xs: 0.75rem;
