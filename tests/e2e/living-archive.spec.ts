@@ -1,36 +1,35 @@
 import { test, expect } from '@playwright/test';
-test('Atlas selection, actual records, comparison, Back and persisted pool', async ({ page }) => {
-  await page.goto('/'); await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true');
-  await page.getByRole('button', { name: 'Explore the Atlas', exact: true }).click();
-  await page.getByRole('button', { name: 'Camille 2 recorded changes', exact: true }).click();
-  await expect(page.locator('.atlas-reading h1')).toHaveText('Camille');
-  await expect(page.locator('.atlas-records')).toContainText('Cooldown');
-  await page.getByRole('button', { name: 'Champions', exact: true }).click();
-  await page.getByRole('button', { name: 'Azir 4 recorded changes', exact: true }).click();
-  await page.getByRole('button', { name: 'Compare changes', exact: true }).click();
-  await expect(page.locator('.atlas-records')).toContainText('75 / 95 / 115 / 135 / 155');
-  await page.getByRole('slider', { name: /First endpoint/ }).focus(); await page.keyboard.press('Home');
-  await expect(page.locator('.atlas-records')).toContainText('Health Growth');
-  await page.goBack(); await expect(page.getByRole('slider', { name: /First endpoint/ })).toHaveValue('12');
-  await page.getByRole('button', { name: 'Add to pool', exact: true }).click();
-  await page.reload(); await expect(page.getByRole('button', { name: 'Remove from pool', exact: true })).toHaveAttribute('aria-pressed', 'true');
+const ready = async (page: import('@playwright/test').Page) => { await page.goto('/'); await expect(page.locator('astro-island:has(.rift-story)')).not.toHaveAttribute('ssr',''); };
+test('native story, champion selection, full values, and pool reload persistence', async ({ page }) => {
+  await ready(page);
+  await expect(page.getByRole('slider')).toHaveCount(0);
+  for(const id of ['battlefield','champions','changes','my-pool']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await expect(page.locator(`#${id}`)).toBeVisible(); }
+  await page.getByRole('button',{name:'Choose Camille'}).scrollIntoViewIfNeeded();
+  const scroll = await page.evaluate(()=>scrollY);
+  await page.getByRole('button',{name:'Choose Camille'}).click();
+  expect(Math.abs(await page.evaluate(()=>scrollY)-scroll)).toBeLessThan(5);
+  await expect(page.locator('#changes')).toContainText('Tactical Sweep');
+  await page.getByRole('button',{name:'Before',exact:true}).click();
+  await expect(page.locator('.rank-number')).toHaveText(['15','14','13','12','11']);
+  await page.getByRole('button',{name:'After',exact:true}).click();
+  await expect(page.locator('.rank-number')).toHaveText(['12','11.5','11','10.5','10']);
+  await page.getByRole('button',{name:'Add to My Pool',exact:true}).click();
+  await expect(page.locator('.saved-lineup')).toContainText('Camille');
+  await page.reload(); await expect(page.locator('.saved-lineup')).toContainText('Camille');
+  await page.getByRole('button',{name:'Remove Camille from My Pool',exact:true}).click();
+  await expect(page.locator('.empty-pool')).toBeVisible();
 });
-test('portrait reduced-motion preserves the full state graph and readable controls', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/compare/26.14/26.16?champion=azir');
-  await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true');
-  await expect(page.getByRole('button', { name: 'Reduced motion', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect(page.locator('.atlas-records')).toContainText('Conquering Sands');
-  await page.getByRole('button', { name: 'Search', exact: false }).click();
-  await page.getByRole('searchbox', { name: 'Champion, patch, item, or system' }).fill('Camille');
-  await page.getByRole('button', { name: 'Camille', exact: true }).click();
-  await expect(page.locator('.atlas-reading h1')).toHaveText('Camille');
+test('reduced motion and small portrait retain all scenes without overflow',async({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'}); await page.setViewportSize({width:359,height:603}); await ready(page);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  for(const id of ['battlefield','champions','changes','my-pool']) await expect(page.locator(`#${id}`)).toHaveCount(1);
+  expect(await page.locator('.battlefield-foreground').evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
+  await page.getByRole('button',{name:'Choose Kennen'}).click();
+  await expect(page.locator('#changes')).toContainText('Slicing Maelstrom');
+  await expect(page.locator('.rank-number')).toHaveText(['25','50','75']);
 });
-test('patch filter links and explicit Reader mode retain stored data', async ({ page }) => {
-  await page.goto('/patch/26.16?type=buff'); await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true');
-  await expect(page.getByRole('combobox', { name: 'Classification', exact: true })).toHaveValue('buff');
-  await expect(page.locator('.atlas-patch-inspection .atlas-record-champion')).toHaveCount(3);
-  await page.getByRole('link', { name: 'Reader view', exact: true }).click();
-  await expect(page.locator('.reader-shell')).toBeVisible(); await expect(page.locator('.atlas-mount')).toBeHidden();
+test('utility routes open directly without Atlas takeover',async({page})=>{
+  for(const path of ['/champions','/champion/azir','/patch/26.16','/compare/26.15/26.16','/pool']){
+    await page.goto(path);await expect(page.locator('h1')).toBeVisible();await expect(page.locator('.rift-atlas')).toHaveCount(0);
+  }
 });

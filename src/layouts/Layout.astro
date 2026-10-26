@@ -4,10 +4,6 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import CommandPalette from "../components/islands/CommandPalette";
 import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
-import RiftAtlas from '../components/home/RiftAtlas';
-import { getAtlasData } from '../lib/atlas-data';
-import { isAtlasPath } from '../lib/atlas-state';
-const atlasEnabled = isAtlasPath(Astro.url.pathname);
 
 interface Props {
   title: string;
@@ -23,9 +19,6 @@ const isHome = Astro.url.pathname === "/";
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <script is:inline>
-      document.documentElement.dataset.atlasMode = new URLSearchParams(location.search).get('mode') === 'reader' ? 'reader' : 'immersive';
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#101311" />
     <title>{title}</title>
@@ -44,25 +37,12 @@ const isHome = Astro.url.pathname === "/";
     <meta name="generator" content={Astro.generator} />
   </head>
   <body class:list={[isHome && "is-home"]}>
-    <a class="skip-link" href={atlasEnabled ? '#atlas-main' : '#main'}>Skip to content</a>
-    {atlasEnabled && <main id="atlas-main" class="atlas-mount" tabindex="-1"><RiftAtlas client:load data={getAtlasData()} /></main>}
-    <div class:list={[atlasEnabled && 'reader-shell']}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div>
       {!isHome && <SiteHeader />}
       <main id="main"><slot /></main>
       {!isHome && <SiteFooter />}
     </div>
-    <noscript><style is:inline>.reader-shell{display:block!important}.atlas-mount{display:none!important}</style></noscript>
     <CommandPalette client:idle />
-    <script is:inline>
-      if (document.documentElement.dataset.atlasMode === 'reader') {
-        document.querySelector('.skip-link')?.setAttribute('href', '#main');
-        document.addEventListener('click', event => {
-          const a = event.target.closest?.('.reader-shell a');
-          if (!a || a.textContent.includes('Return to the Atlas')) return;
-          const u = new URL(a.href);
-          if (u.origin === location.origin) { u.searchParams.set('mode', 'reader'); a.href = u.href; }
-        });
-      }
-    </script>
   </body>
 </html>

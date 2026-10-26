@@ -1,8 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAllPatches } from '../lib/data';
-const patches = getAllPatches();
+import RiftStory from '../components/home/RiftStory';
 ---
-<Layout title="RiftScry — The Rift Atlas" description={`Explore champion changes through a continuous spatial archive. Recorded patch coverage through ${patches[0]!.id}.`}>
-  <section class="shell" style="padding-block:64px"><h1>RiftScry Reader</h1><p>Source-backed champion histories and recorded patch changes.</p><nav aria-label="Reader navigation"><a href="/champions?mode=reader">Champions</a> · <a href="/patches?mode=reader">Patch history</a> · <a href={`/compare/${patches[1]!.id}/${patches[0]!.id}?mode=reader`}>Compare</a> · <a href="/pool?mode=reader">My Pool</a> · <a href="/">Return to the Atlas</a></nav></section>
+<Layout title="RiftScry — Understand what changed for your champions" description="A League companion for source-backed champion changes, patch comparisons, and your personal champion pool. Explore the story, then prepare your next game.">
+  <RiftStory client:load />
 </Layout>
