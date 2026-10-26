@@ -5,7 +5,7 @@ test("land → pick pool → see personalized patch → persists → share link"
   browser,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Nothing stays");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Bring change");
 
   // CTA to the pool picker.
   await page.getByRole("link", { name: "Choose champions" }).first().click();

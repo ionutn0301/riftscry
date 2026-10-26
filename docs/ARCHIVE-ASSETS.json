@@ -1,0 +1,65 @@
+{
+  "verifiedAt": "2026-10-26",
+  "releaseStatus": "review-only; operator, registration, commercial status and production art signoff unresolved",
+  "assets": [
+    {
+      "files": ["public/images/living-archive/observatory.png", "public/images/living-archive/observatory-wide.webp", "public/images/living-archive/observatory-mobile.webp"],
+      "source": "Generated in this v0 session using GenerateImage; full source PNG retained",
+      "sourceUrl": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/sources-v2/L83RgC6Q1oTk6CpJB65N6-gW9VskCA5opLYVgT0NvKDlYyDW1HXK.png",
+      "rightsholder": "Generated output; no claim of exclusive copyright",
+      "permissionEvidence": "Original environment prompt, no Riot character, logo or reference-site asset copied. This is concept/still output, not a licensed 3D asset.",
+      "intendedUse": "Review-build arrival and closeup composition; desktop and authored portrait crop",
+      "commercialStatus": "Not cleared for final release; review provider terms and output before production",
+      "modificationHosting": "Local WebP compression and portrait crop derived from original PNG",
+      "attribution": "Generated concept environment, RiftScry Living Archive study",
+      "unresolved": "Human art signoff, source model, material consistency and actual animated lens states"
+    },
+    {
+      "files": ["src/assets/brand/logo-desktop-light.png"],
+      "sourceUrl": null,
+      "source": "Existing user-provided brand assets; src/assets/brand/README.md",
+      "rightsholder": "User-supplied RiftScry brand; ownership confirmation pending",
+      "permissionEvidence": "Repository identifies these as user-provided final marks dated 2026-08-21",
+      "intendedUse": "Unmodified website brand identity",
+      "commercialStatus": "User to confirm ownership",
+      "modificationHosting": "Astro optimized derivative; no recoloring",
+      "attribution": "RiftScry",
+      "unresolved": "No signed rights evidence in repository"
+    },
+    {
+      "files": ["src/assets/fonts/GeneralSans-Variable.woff2", "src/assets/fonts/GeneralSans-LICENSE.txt"],
+      "sourceUrl": "https://www.fontshare.com/fonts/general-sans",
+      "rightsholder": "Indian Type Foundry",
+      "permissionEvidence": "Bundled font license retained; final deployment must remain subject to that license",
+      "intendedUse": "Self-hosted UI and tabular numbers",
+      "commercialStatus": "See bundled license",
+      "modificationHosting": "Unmodified self-hosted WOFF2",
+      "attribution": "General Sans / Indian Type Foundry",
+      "unresolved": "Bundled FFL permits self-hosting for operator-owned sites but restricts redistribution via public repositories and to contractors. Existing repository distribution needs operator review; no new font binary added."
+    },
+    {
+      "files": ["system Georgia font"],
+      "sourceUrl": null,
+      "rightsholder": "Platform font licensors",
+      "permissionEvidence": "CSS system-font request only; no font redistributed",
+      "intendedUse": "Editorial headings",
+      "commercialStatus": "No redistribution",
+      "modificationHosting": "None",
+      "attribution": "None required for a CSS family request",
+      "unresolved": "Exact appearance varies by installed system fonts"
+    },
+    {
+      "files": ["Existing data-route champion icons; no new Riot image files introduced on homepage"],
+      "sourceUrl": "https://ddragon.leagueoflegends.com/cdn/{assetVersion}/img/champion/{championId}.png",
+      "rightsholder": "Riot Games, Inc.",
+      "permissionEvidence": ["https://developer.riotgames.com/docs/lol", "https://developer.riotgames.com/policies/general", "https://www.riotgames.com/en/legal", "https://developer.riotgames.com/terms"],
+      "intendedUse": "Existing champion-identification thumbnails on existing product routes",
+      "commercialStatus": "Unresolved: operator status, registration/audit and monetization not established",
+      "modificationHosting": "Existing official Data Dragon URLs; no client extraction, models, cinematic assets or logos added",
+      "attribution": "Official general-policy boilerplate in shared footer",
+      "unresolved": "Release blocked pending operator confirmation; new champion splash compositions intentionally not added"
+    }
+  ],
+  "excluded": ["Legacy journey backgrounds lack provenance and are not referenced by the new homepage", "Riot character models and animations", "Riot music", "Reference-site assets", "New champion splash illustrations pending operator rights clarification"],
+  "modelDependency": "See docs/LIVING-ARCHIVE.md for source formats, named pivots, material set, shots and budget targets"
+}

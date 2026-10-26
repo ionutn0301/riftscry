@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../../assets/brand/logo-desktop-light.png';
+import type { ArchivePatch } from '../../lib/living-archive';
+const { latest, count } = Astro.props as { latest: ArchivePatch; count: number };
+---
+<section class="archive-arrival" id="arrival" aria-labelledby="arrival-title">
+  <picture class="archive-environment" aria-hidden="true">
+    <source media="(max-width: 640px)" srcset="/images/living-archive/observatory-mobile.webp" />
+    <img src="/images/living-archive/observatory-wide.webp" width="1600" height="1073" alt="" fetchpriority="high" />
+  </picture>
+  <header class="archive-header">
+    <a class="archive-brand" href="/" aria-label="RiftScry home"><Image src={logo} width={156} alt="RiftScry" /></a>
+    <nav aria-label="Primary">
+      <a href="/champions">Champions</a><a href="/patches">Patch history</a><a href="/compare">Compare</a><a href="/pool">My Pool <span aria-hidden="true">→</span></a>
+    </nav>
+    <button class="archive-search" type="button" data-palette-trigger aria-label="Open search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Search</span><kbd>⌘ K</kbd></button>
+  </header>
+  <div class="arrival-copy">
+    <p class="archive-eyebrow"><span class="small-rule" aria-hidden="true"></span> THE LIVING ARCHIVE</p>
+    <h1 id="arrival-title">Bring change<br />into <em>focus.</em></h1>
+    <p class="arrival-description">A living archive of League of Legends.<br />Follow your champions, trace their history,<br class="desktop-break" /> and see exactly what changed.</p>
+    <a class="archive-primary" href="#focus">Explore the archive <span aria-hidden="true">→</span></a>
+    <a class="arrival-secondary" href={`/patch/${latest.id}`}>Read archived patch {latest.id} <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="arrival-caption" aria-hidden="true"><span class="caption-rule"></span><span>THE OPTICAL ARCHIVE<br /><small>Two perspectives. One clearer picture.</small></span></div>
+  <div class="arrival-bottom">
+    <a class="scroll-cue" href="#focus"><span class="scroll-circle" aria-hidden="true">↓</span> SCROLL TO DISCOVER</a>
+    <p><span class="status-dot" aria-hidden="true"></span> {count} PATCHES IN THE ARCHIVE <span class="archive-coverage">THROUGH {latest.id}</span></p>
+    <button class="motion-switch" type="button" aria-pressed="false" data-motion-toggle>Motion off</button>
+  </div>
+</section>
+<nav class="archive-chapters" aria-label="Archive journey">
+  <a href="#arrival" aria-current="step"><span>01</span> Arrival</a>
+  <a href="#focus"><span>02</span> Focus</a>
+  <a href="#trace"><span>03</span> Trace</a>
+  <a href="#compare"><span>04</span> Compare</a>
+  <a href="#continue"><span>05</span> Your pool</a>
+  <span class="chapter-note">A DIFFERENT VIEW OF THE RIFT</span>
+</nav>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+  const preference = matchMedia('(prefers-reduced-motion: reduce)');
+  const setMotion = (enabled: boolean) => {
+    document.documentElement.dataset.archiveMotion = enabled ? 'on' : 'off';
+    button?.setAttribute('aria-pressed', String(enabled));
+    if (button) button.textContent = enabled ? 'Motion on' : 'Motion off';
+  };
+  setMotion(!preference.matches);
+  preference.addEventListener('change', () => setMotion(!preference.matches));
+  button?.addEventListener('click', () => setMotion(document.documentElement.dataset.archiveMotion !== 'on'));
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.archive-chapters a'));
+  const sections = links.map(link => document.querySelector(link.hash)).filter((section): section is Element => !!section);
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      links.forEach(link => {
+        if (link.hash === `#${entry.target.id}`) link.setAttribute('aria-current', 'step');
+        else link.removeAttribute('aria-current');
+      });
+    }
+  }, { rootMargin: '-15% 0px -65% 0px', threshold: 0 });
+  sections.forEach(section => observer.observe(section));
+</script>
