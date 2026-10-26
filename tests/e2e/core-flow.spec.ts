@@ -8,6 +8,7 @@ test("land → pick pool → see personalized patch → persists → share link"
   await expect(page).toHaveURL(/\/pool/);
 
   // Select two champions.
+  await expect(page.locator('astro-island:has(.pool-picker)')).not.toHaveAttribute('ssr', '');
   await page.getByRole("option", { name: "Ahri", exact: true }).click();
   await page.getByRole("option", { name: "Jinx", exact: true }).click();
   await expect(page.locator(".pool-bar .count")).toContainText("2");
@@ -37,6 +38,7 @@ test("land → pick pool → see personalized patch → persists → share link"
 
 test("patch filters sync to the URL and restore from it", async ({ page }) => {
   await page.goto("/patch/26.16?mode=reader");
+  await expect(page.locator('.filter-bar')).toHaveAttribute('data-ready', 'true');
   await page.getByRole("button", { name: "Buffs" }).click();
   await expect(page).toHaveURL(/type=buff/);
   const visible = page.locator("[data-champion-id]:not([data-filtered])");

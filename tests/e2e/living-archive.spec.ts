@@ -29,7 +29,7 @@ test('portrait reduced-motion preserves the full state graph and readable contro
 });
 test('patch filter links and explicit Reader mode retain stored data', async ({ page }) => {
   await page.goto('/patch/26.16?type=buff'); await expect(page.locator('.rift-atlas')).toHaveAttribute('data-ready', 'true');
-  await expect(page.getByLabel('Classification', { exact: true })).toHaveValue('buff');
+  await expect(page.getByRole('combobox', { name: 'Classification', exact: true })).toHaveValue('buff');
   await expect(page.locator('.atlas-patch-inspection .atlas-record-champion')).toHaveCount(3);
   await page.getByRole('link', { name: 'Reader view', exact: true }).click();
   await expect(page.locator('.reader-shell')).toBeVisible(); await expect(page.locator('.atlas-mount')).toBeHidden();

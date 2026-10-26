@@ -47,7 +47,7 @@ export function atlasPose(state: AtlasState, portrait: boolean, preview = state.
     case 'champions': return { position: [12, 7, -1], target: [0, 2, -16] };
     case 'champion': return { position: [portrait ? 8 : 6, 5, z + 12], target: [-3, 2.8, z - 1] };
     case 'history': return { position: [portrait ? 9 : 7, 6.5, z + 11], target: [-1.5, 1.8, z - 1] };
-    case 'compare': return { position: [8, 13 + span * .22, z + 18 + span * .62], target: [-.5, 1.8, z] };
+    case 'compare': return { position: [0, 10 + span * .18, z + 18 + span * .62], target: [0, 1.8, z] };
     case 'pool': return { position: [portrait ? 17 : 20, 13, 15], target: [0, 2, -13] };
   }
 }

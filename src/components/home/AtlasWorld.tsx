@@ -46,7 +46,7 @@ function Bay({ id, index, props }: { id: string; index: number; props: AtlasWorl
   }, [selected, state.view, state.pool, inCollection, id, index, z]);
   const initialized = useRef(false);
   useFrame((_, dt) => { if (!group.current) return; if (reduced || !initialized.current) group.current.position.copy(destination); else group.current.position.lerp(destination, 1 - Math.exp(-7 * Math.min(dt, .5))); initialized.current = true; if (group.current.position.distanceTo(destination) > .002) invalidate(); });
-  return <group ref={group} position={destination} onClick={e => { e.stopPropagation(); props.onChampion(id); }}>
+  return <group name={`champion-${id}`} ref={group} position={destination} onClick={e => { e.stopPropagation(); props.onChampion(id); }}>
     <Block at={[0, -.35, 0]} size={[3.2, .9, 2]} color={stone} />
     <Block at={[0, .18, 0]} size={[3.4, .36, 2.15]} color={pale} />
     <Block at={[0, .45, 0]} size={[2.8, .18, 1.55]} color={bronze} metal />
@@ -76,13 +76,13 @@ function Bracket({ endpoint, props }: { endpoint: 'comparisonFrom' | 'comparison
   const { invalidate } = useThree();
   const g = useRef<THREE.Group>(null); const index = [...props.data.patches].reverse().findIndex(p => p.id === props.state[endpoint]);
   useFrame((_, dt) => { if (!g.current) return; const t = props.reduced ? 1 : 1 - Math.exp(-10 * Math.min(dt, .5)); g.current.position.z = THREE.MathUtils.lerp(g.current.position.z, -index * 3.4, t); g.current.scale.y = THREE.MathUtils.lerp(g.current.scale.y, props.state.comparisonOpen ? 1 : .02, t); if (Math.abs(g.current.position.z + index * 3.4) > .002 || Math.abs(g.current.scale.y - (props.state.comparisonOpen ? 1 : .02)) > .002) invalidate(); });
-  return <group ref={g} position={[0, .28, -index * 3.4]}>
+  return <group name={endpoint} ref={g} position={[0, .28, -index * 3.4]}>
     <Block at={[0, 0, 0]} size={[7.7, .14, .14]} color={bronze} metal />
     {[-3.8, 3.8].map(x => <Block key={x} at={[x, .8, 0]} size={[.14, 1.6, .14]} color={bronze} metal />)}
   </group>;
 }
 function Rig(props: AtlasWorldProps) {
-  const { camera, size, gl, invalidate } = useThree();
+  const { camera, size, gl, invalidate, scene } = useThree();
   const started = useRef(0);
   const initialized = useRef(false); const progress = useRef(1); const target = useRef(new THREE.Vector3()); const fromPosition = useRef(new THREE.Vector3()); const fromTarget = useRef(new THREE.Vector3());
   const interval = intervalGeometry(props);
@@ -95,11 +95,11 @@ function Rig(props: AtlasWorldProps) {
     const snap = props.reduced || !initialized.current;
     progress.current = snap ? 1 : Math.min(1, (performance.now() - started.current) / (props.preview !== null ? 280 : 1050));
     const t = progress.current * progress.current * (3 - 2 * progress.current);
-    camera.position.lerpVectors(fromPosition.current, destination, t); if (!props.reduced && progress.current < 1) camera.position.x += Math.sin(Math.PI * t) * (props.state.view === 'champion' ? 2 : .5); target.current.lerpVectors(fromTarget.current, aim, t); camera.lookAt(target.current); initialized.current = true;
+    camera.position.lerpVectors(fromPosition.current, destination, t); if (!props.reduced && progress.current < 1) camera.position.x += Math.sin(Math.PI * t) * (props.state.view === 'champion' ? 2 : props.state.view === 'compare' ? -1.3 : .5); target.current.lerpVectors(fromTarget.current, aim, t); camera.lookAt(target.current); initialized.current = true;
     if (progress.current < 1) invalidate();
     if (import.meta.env.DEV) {
       times.current.push(dt * 1000); if (times.current.length > 240) times.current.shift();
-      Object.assign(window, { __riftAtlas: { mode: props.reduced ? 'reduced' : 'full', renderer: instance.current, ready: true, state: props.state, progress: progress.current, camera: camera.position.toArray(), target: target.current.toArray(), drawCalls: gl.info.render.calls, triangles: gl.info.render.triangles, textures: gl.info.memory.textures, dpr: gl.getPixelRatio(), frameMs: times.current.slice(), viewport: [size.width, size.height], fallbackReason: null } });
+      Object.assign(window, { __riftAtlas: { mode: props.reduced ? 'reduced' : 'full', renderer: instance.current, ready: true, state: props.state, progress: progress.current, camera: camera.position.toArray(), target: target.current.toArray(), drawCalls: gl.info.render.calls, triangles: gl.info.render.triangles, textures: gl.info.memory.textures, dpr: gl.getPixelRatio(), frameMs: times.current.slice(), viewport: [size.width, size.height], fallbackReason: null, objects: Object.fromEntries([`champion-${props.state.championId}`, 'comparisonFrom', 'comparisonTo'].map(name => [name, scene.getObjectByName(name)?.position.toArray()])) } });
     }
   }); return null;
 }
