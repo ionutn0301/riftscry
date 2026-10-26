@@ -61,7 +61,8 @@ export default function PaletteDialog({
                   value={`${e.label} ${e.keywords.join(" ")}`}
                   onSelect={() => {
                     onOpenChange(false);
-                    window.location.href = e.href;
+                    if (document.documentElement.dataset.atlasMode === 'immersive' && document.querySelector('.atlas-mount')) window.dispatchEvent(new CustomEvent('atlas:navigate', { detail: e.href }));
+                    else { const url = new URL(e.href, location.origin); url.searchParams.set('mode', 'reader'); window.location.href = url.href; }
                   }}
                 >
                   <span className="item-label">{e.label}</span>

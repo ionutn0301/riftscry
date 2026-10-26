@@ -4,11 +4,7 @@ test("land → pick pool → see personalized patch → persists → share link"
   page,
   browser,
 }) => {
-  await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Bring change");
-
-  // CTA to the pool picker.
-  await page.getByRole("link", { name: "Choose champions" }).first().click();
+  await page.goto("/pool?mode=reader");
   await expect(page).toHaveURL(/\/pool/);
 
   // Select two champions.
@@ -33,20 +29,20 @@ test("land → pick pool → see personalized patch → persists → share link"
   // Shared ?champions= link works with no localStorage.
   const fresh = await browser.newContext();
   const cold = await fresh.newPage();
-  await cold.goto("/patch/26.16?champions=azir");
+  await cold.goto("/patch/26.16?mode=reader&champions=azir");
   await expect(cold.locator(".pool-strip li")).toHaveCount(1);
   await expect(cold.locator(".pool-strip")).toContainText("Azir");
   await fresh.close();
 });
 
 test("patch filters sync to the URL and restore from it", async ({ page }) => {
-  await page.goto("/patch/26.16");
+  await page.goto("/patch/26.16?mode=reader");
   await page.getByRole("button", { name: "Buffs" }).click();
   await expect(page).toHaveURL(/type=buff/);
   const visible = page.locator("[data-champion-id]:not([data-filtered])");
   await expect(visible).toHaveCount(3); // 26.16 has exactly 3 champion buffs
 
-  await page.goto("/patch/26.16?role=top");
+  await page.goto("/patch/26.16?mode=reader&role=top");
   await expect(page.getByRole("button", { name: "Top", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -54,14 +50,14 @@ test("patch filters sync to the URL and restore from it", async ({ page }) => {
 });
 
 test("compare page shows aggregated span with net groups", async ({ page }) => {
-  await page.goto("/compare/26.16/26.12");
+  await page.goto("/compare/26.16/26.12?mode=reader");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("26.16");
   await expect(page.getByRole("heading", { name: /Buffed/ })).toBeVisible();
   await expect(page.locator(".champ-rows li").first()).toBeVisible();
 });
 
 test("champion history timeline renders and links back to patches", async ({ page }) => {
-  await page.goto("/champion/camille");
+  await page.goto("/champion/camille?mode=reader");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Camille");
   const first = page.locator(".timeline-entry").first();
   await expect(first.locator("details")).toHaveAttribute("open", "");

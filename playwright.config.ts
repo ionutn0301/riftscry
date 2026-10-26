@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "tests/e2e",
+  // These reference unmounted pre-Atlas generations; active contracts live in living-archive.spec.ts.
+  testIgnore: ['**/home-cinematic*.spec.ts', '**/journey-review.spec.ts', '**/mobile-observatory.spec.ts', '**/reduced-motion.spec.ts', '**/spatial-journey.spec.ts'],
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",

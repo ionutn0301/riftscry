@@ -16,6 +16,7 @@ export default function CommandPalette() {
   }, []);
 
   useEffect(() => {
+    if (document.documentElement.dataset.atlasMode === 'immersive' && document.querySelector('.atlas-mount')) return;
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
