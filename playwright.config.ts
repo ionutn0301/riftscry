@@ -2,8 +2,9 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "tests/e2e",
-  // Unmounted presentations remain archived; cinematic-production covers the active homepage.
+  // Unmounted presentations remain archived; investigation covers the active roster-wide story.
   testIgnore: [
+    "**/cinematic-production.spec.ts",
     "**/incision-*.spec.ts",
     "**/living-archive.spec.ts",
     "**/home-cinematic*.spec.ts",
@@ -16,13 +17,13 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
   use: {
-    baseURL: "http://127.0.0.1:4321",
+    baseURL: "http://127.0.0.1:4322",
     trace: "retain-on-failure",
   },
   webServer: {
     // astro 7 `preview` daemonizes; Playwright needs a foreground process.
     command: "node tests/e2e/serve.mjs",
-    url: "http://127.0.0.1:4321",
+    url: "http://127.0.0.1:4322",
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },

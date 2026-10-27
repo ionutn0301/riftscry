@@ -6,7 +6,7 @@ import { extname, join, normalize } from "node:path";
 import { gzipSync } from "node:zlib";
 
 const ROOT = new URL("../../dist", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
-const PORT = 4321;
+const PORT = 4322;
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css",

@@ -17,15 +17,19 @@ test.describe("keyboard-only exploration", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/?renderer=fallback");
     await expect(
-      page.locator("astro-island:has(.cinema-page)"),
+      page.locator("astro-island:has(.investigation)"),
     ).not.toHaveAttribute("ssr", "");
-    await page.getByRole("button", { name: "Azir", exact: true }).focus();
+    await page.getByRole("button", { name: /^Azir/ }).focus();
     await page.keyboard.press("Enter");
-    await page.getByRole("button", { name: /Inspect changes/ }).focus();
+    await page.getByRole("button", { name: "Follow what changed" }).focus();
     await page.keyboard.press("Enter");
-    await expect(page.locator(".cinema-reading")).toContainText(
+    await expect(page.locator(".evidence-main")).toContainText(
       "75 / 95 / 115 / 135 / 155",
     );
+    await page
+      .getByRole("button", { name: "Bring the findings together" })
+      .focus();
+    await page.keyboard.press("Enter");
     await page
       .getByRole("button", { name: "Add to My Pool", exact: true })
       .focus();
@@ -33,9 +37,9 @@ test.describe("keyboard-only exploration", () => {
     await expect(
       page.getByRole("button", { name: "My Pool (1)", exact: true }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Overview", exact: true }).focus();
+    await page.getByRole("button", { name: /Another champion/ }).focus();
     await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/view=patch/);
+    await expect(page).toHaveURL(/beat=opening/);
   });
   test("visible search and keyboard shortcut both work", async ({ page }) => {
     await page.goto("/");
