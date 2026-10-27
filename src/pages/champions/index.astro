@@ -1,103 +1,126 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getAssetVersion, getChampionHistory, getChampionMeta } from "../../lib/data";
+import RouteArrival from "../../components/experience/RouteArrival.astro";
+import { getAssetVersion, getChampionHistory, getChampionMeta, getLatestPatch, getRoles, ROLES } from "../../lib/data";
 
 const meta = getChampionMeta();
+const roles = getRoles();
+const latest = getLatestPatch();
 const assetVersion = getAssetVersion();
-const champions = Object.entries(meta)
-  .map(([id, m]) => ({ id, ...m, changes: getChampionHistory(id).length }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+const champions = Object.entries(meta).map(([id, m]) => {
+  const history = getChampionHistory(id);
+  return { id, ...m, changes: history.length, latest: history[0]?.patchId, roles: roles[id] ?? [] };
+}).sort((a,b) => a.name.localeCompare(b.name));
+const featured = latest.champions.slice(0,3).map((c) => champions.find((item) => item.id === c.championId)).filter(Boolean);
+const normalize = (value: string) => value.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",adc:"ADC",support:"Support" };
 ---
+<Layout surface="champions" title="Champions — RiftScry" description="Find your champion and follow their recorded League of Legends patch history, with exact changes and original sources.">
+  <div class="reader-experience" data-roster-directory>
+    <RouteArrival eyebrow="THE CHAMPION ARCHIVE" title={"Every champion.\nA different history."}
+      description="A familiar face is the beginning. Find the changes that shaped your champion, then follow them through the archive."
+      image="/images/voyage/rift-overlook.webp" variant="roster"
+      note={"Archive through " + latest.releaseDate + ". Records describe direct changes in the loaded patch history."}
+      chapters={[
+        { href:"#roster",label:"Find your champion",detail:champions.length + " identities in the archive" },
+        { href:"/pool",label:"Keep your mains",detail:"Your next visit starts here" },
+      ]}>
+      <div slot="actions"><a class="route-action" href="#roster">Enter the roster <span aria-hidden="true">↓</span></a></div>
+      <div slot="figure" class="roster-arrival-figures" aria-label={"Champions with records in patch " + latest.id}>
+        {featured.map((c) => c && <a href={"/champion/" + c.id.toLowerCase()}>
+          <img src={"https://ddragon.leagueoflegends.com/cdn/img/champion/loading/" + c.id + "_0.jpg"} alt={c.name + ", official Riot Games portrait"} width="308" height="560" loading="eager" decoding="async" />
+          <strong>{c.name}</strong><small>RECORDED IN {latest.id}</small>
+        </a>)}
+      </div>
+    </RouteArrival>
 
-<Layout
-  title="Champions — RiftScry"
-  description="Season-long patch history for every League of Legends champion: buffs, nerfs and adjustments as structured data."
->
-  <div class="page">
-    <p class="eyebrow">THE CHAMPION ARCHIVE</p>
-    <h1>Pick a main. See its history.</h1>
-    <p class="intro">Every champion. Every recorded shift. Explore the changes behind your next game.</p>
-    <ul class="grid">
-      {
-        champions.map((c) => (
-          <li>
-            <a href={`/champion/${c.id.toLowerCase()}`}>
-              <img
-                src={`https://ddragon.leagueoflegends.com/cdn/${assetVersion}/img/champion/${c.id}.png`}
-                alt=""
-                width="64"
-                height="64"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="name">{c.name}</span>
-              <span class="changes num">
-                {c.changes > 0 ? `${c.changes} ${c.changes === 1 ? "patch" : "patches"}` : "untouched"}
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="reader-body">
+      <aside class="chapter-rail">
+        <p>Choose a perspective</p>
+        <ol><li><a href="#roster">The full roster</a></li><li><a href="/pool">Your champion pool ↗</a></li><li><a href={"/patch/" + latest.id}>Latest archived patch ↗</a></li></ol>
+        <a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a>
+      </aside>
+      <div class="reader-chapters">
+        <section id="roster" class="reading-chapter" data-scene="roster">
+          <header class="chapter-heading" data-reveal>
+            <span class="chapter-index">01</span>
+            <div><h2>Who are you here for?</h2><p>Search a name or choose a role. Every champion has a place here, including those without direct records in the archive.</p></div>
+          </header>
+          <form class="roster-tools" data-roster-tools hidden>
+            <div class="roster-search"><label for="roster-search">Find a champion</label><input id="roster-search" data-roster-search type="search" placeholder="Name your champion…" autocomplete="off" spellcheck="false" /></div>
+            <div class="roster-role-options" role="group" aria-label="Champion role">
+              <button type="button" data-roster-role="" aria-pressed="true">All roles</button>
+              {ROLES.map((role) => <button type="button" data-roster-role={role} aria-pressed="false">{roleLabels[role]}</button>)}
+            </div>
+          </form>
+          <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions in view</p><button type="button" class="route-text-link" data-roster-reset hidden>Clear filters ↗</button></div>
+          <p class="reader-section-note" data-roster-empty hidden>No champions match this combination. Try another name or clear the role filter.</p>
+          <ul class="roster-wall">
+            {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")}>
+              <a href={"/champion/" + c.id.toLowerCase()}>
+                <img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="64" height="64" loading="lazy" decoding="async" />
+                <span><span class="name">{c.name}</span><span class="title">{c.title}</span><span class="changes">{c.changes ? c.changes + " archived " + (c.changes === 1 ? "patch" : "patches") : "No direct records yet"}</span></span>
+                <span class="roster-arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>)}
+          </ul>
+        </section>
+        <section class="reader-next" data-reveal>
+          <div><h2>Your mains, kept close.</h2><p>Save the champions you play. Your pool follows you into every patch and makes the next visit personal.</p></div>
+          <a href="/pool" class="route-action">Build your pool <span aria-hidden="true">↗</span></a>
+        </section>
+      </div>
+    </div>
   </div>
 </Layout>
 
-<style>
-  .page {
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: var(--s7) var(--page-pad) 0;
+<script>
+  function initRoster() {
+    const root = document.querySelector<HTMLElement>("[data-roster-directory]");
+    if (!root || root.dataset.rosterReady) return;
+    root.dataset.rosterReady = "true";
+    const tools = root.querySelector<HTMLFormElement>("[data-roster-tools]")!;
+    const search = root.querySelector<HTMLInputElement>("[data-roster-search]")!;
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-roster-role]")];
+    const rows = [...root.querySelectorAll<HTMLElement>("[data-roster-row]")];
+    const count = root.querySelector<HTMLElement>("[data-roster-count]")!;
+    const empty = root.querySelector<HTMLElement>("[data-roster-empty]")!;
+    const reset = root.querySelector<HTMLButtonElement>("[data-roster-reset]")!;
+    let role = "";
+    const normal = (value: string) => value.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+    function apply(sync = true) {
+      const query = normal(search.value);
+      let shown = 0;
+      for (const row of rows) {
+        const match = (!query || (row.dataset.rosterQuery ?? "").includes(query)) && (!role || (row.dataset.rosterRoles ?? "").split(",").includes(role));
+        row.hidden = !match;
+        if (match) shown++;
+      }
+      count.textContent = String(shown);
+      empty.hidden = shown > 0;
+      reset.hidden = !query && !role;
+      for (const button of buttons) button.setAttribute("aria-pressed", String(button.dataset.rosterRole === role));
+      if (sync) {
+        const url = new URL(location.href);
+        if (search.value.trim()) url.searchParams.set("q",search.value.trim()); else url.searchParams.delete("q");
+        if (role) url.searchParams.set("role",role); else url.searchParams.delete("role");
+        history.replaceState(null,"",url.pathname + url.search + url.hash);
+      }
+    }
+    function restore() {
+      const params = new URLSearchParams(location.search);
+      search.value = params.get("q") ?? "";
+      role = buttons.some((button) => button.dataset.rosterRole === params.get("role")) ? params.get("role")! : "";
+      apply(false);
+    }
+    tools.hidden = false;
+    tools.addEventListener("submit",(event) => event.preventDefault());
+    search.addEventListener("input",() => apply());
+    for (const button of buttons) button.addEventListener("click",() => { role = button.dataset.rosterRole === role ? "" : button.dataset.rosterRole ?? ""; apply(); });
+    reset.addEventListener("click",() => { search.value = ""; role = ""; apply(); search.focus(); });
+    window.addEventListener("popstate",restore);
+    restore();
   }
-
-  h1 {
-    font-size: var(--text-2xl);
-    margin-bottom: var(--s3);
-  }
-  .eyebrow { color: var(--cream-dim); font-size: var(--text-xs); letter-spacing: .16em; margin-bottom: var(--s3); }
-  .intro { color: var(--cream-dim); max-width: 60ch; margin-bottom: var(--s6); }
-
-  .grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
-    gap: var(--s3);
-  }
-
-  .grid a {
-    display: flex;
-    flex-direction: column;
-    gap: var(--s2);
-    padding: var(--s4);
-    border: 1px solid var(--line);
-    border-top: 2px solid var(--gold-deep);
-    background: var(--ink-2);
-    box-shadow: 0 3px 12px #25372d08;
-    transition:
-      border-color var(--t-fast) var(--ease-out),
-      background-color var(--t-fast) var(--ease-out);
-  }
-
-  .grid a:hover {
-    border-color: var(--gold-deep);
-    background: var(--ink-2);
-    color: inherit;
-  }
-
-  .grid img {
-    width: 48px;
-    height: 48px;
-    border: 1px solid var(--line-strong);
-  }
-
-  .name {
-    font-weight: 600;
-    font-size: var(--text-sm);
-  }
-
-  .changes {
-    font-size: var(--text-xs);
-    color: var(--cream-faint);
-  }
-</style>
+  initRoster();
+  document.addEventListener("astro:page-load",initRoster);
+</script>

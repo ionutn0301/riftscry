@@ -1,0 +1,139 @@
+import { $pool } from '../lib/pool';
+import { rememberReading, RETURN_STATE_EVENT } from '../lib/return-briefing';
+
+const root = document.documentElement;
+const preference = matchMedia('(prefers-reduced-motion: reduce)');
+let userReduced = false;
+try { userReduced = localStorage.getItem('riftscry:motion') === 'reduced'; } catch { /* Browser preference still applies. */ }
+const motionButton = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+function applyMotion() {
+  const reduced = preference.matches || userReduced;
+  root.dataset.motion = reduced ? 'reduced' : 'full';
+  motionButton?.setAttribute('aria-pressed', String(reduced));
+  motionButton?.setAttribute('aria-label', preference.matches ? 'Reduced motion follows your device preference' : reduced ? 'Enable cinematic motion' : 'Reduce cinematic motion');
+  if (motionButton) {
+    motionButton.disabled = preference.matches;
+    motionButton.title = preference.matches ? 'Reduced motion follows your device preference.' : 'Choose how much motion you see.';
+  }
+  const label = motionButton?.querySelector('[data-motion-label]');
+  if (label) label.textContent = reduced ? 'Motion reduced' : 'Motion on';
+  window.dispatchEvent(new Event('riftscry:motion-change'));
+}
+applyMotion();
+preference.addEventListener('change', applyMotion);
+motionButton?.addEventListener('click', () => {
+  userReduced = !userReduced;
+  try { localStorage.setItem('riftscry:motion', userReduced ? 'reduced' : 'full'); } catch { /* This visit remains usable. */ }
+  applyMotion();
+});
+
+const map = document.querySelector<HTMLDialogElement>('#rift-map-dialog');
+const trigger = document.querySelector<HTMLButtonElement>('[data-map-open]');
+let mapOpener: HTMLElement | null = null;
+function openMap() {
+  if (!map || map.open) return;
+  mapOpener = document.activeElement instanceof HTMLElement ? document.activeElement : trigger;
+  map.showModal();
+  map.querySelector<HTMLAnchorElement>('[aria-current="page"]')?.focus();
+}
+trigger?.addEventListener('click', openMap);
+document.querySelector('[data-map-close]')?.addEventListener('click', () => map?.close());
+map?.addEventListener('close', () => {
+  if (mapOpener?.isConnected) mapOpener.focus({ preventScroll: true });
+  else trigger?.focus({ preventScroll: true });
+});
+document.addEventListener('keydown', (event) => {
+  // Option+M can produce a different character on macOS; match the key's code.
+  if (event.defaultPrevented || event.isComposing || event.repeat || !event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.code !== 'KeyM') return;
+  const target = event.target;
+  if (!(target instanceof HTMLElement) || target.isContentEditable || target.closest('input, textarea, select, [role="combobox"]')) return;
+  if (!map || document.querySelector('dialog[open], [cmdk-dialog]')) return;
+  event.preventDefault();
+  openMap();
+});
+
+// Native links remain native; supported browsers supply the cross-page transition.
+document.addEventListener('click', (event) => {
+  const anchor = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
+  if (!anchor || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || anchor.target || anchor.hasAttribute('download')) return;
+  const destination = new URL(anchor.href, location.href);
+  if (destination.origin !== location.origin) return;
+  const sourceDialog = anchor.closest<HTMLDialogElement>('dialog[open]');
+  if (destination.pathname !== location.pathname || destination.search !== location.search || !destination.hash) {
+    // A route selected from the map must not restore an open modal on Back.
+    sourceDialog?.close();
+    return;
+  }
+  if (destination.pathname === location.pathname && destination.hash) {
+    let hashId: string;
+    try { hashId = decodeURIComponent(destination.hash.slice(1)); } catch { return; }
+    const target = document.getElementById(hashId);
+    if (target) {
+      event.preventDefault();
+      const moveToChapter = () => {
+        if (destination.hash !== location.hash) history.pushState(null, '', destination.pathname + destination.search + destination.hash);
+        target.scrollIntoView({ behavior: root.dataset.motion === 'reduced' ? 'auto' : 'smooth', block: 'start' });
+        const heading = target.querySelector<HTMLElement>('h1, h2, h3') ?? target;
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      };
+      if (sourceDialog) {
+        sourceDialog.addEventListener('close', () => requestAnimationFrame(moveToChapter), { once: true });
+        sourceDialog.close();
+      } else moveToChapter();
+    }
+  }
+});
+
+const unsubscribe = $pool.subscribe((pool) => {
+  document.querySelectorAll('[data-world-pool-count]').forEach((node) => { node.textContent = String(pool.length); });
+});
+
+const sceneElements = [...document.querySelectorAll<HTMLElement>('[data-scene]')];
+const revealElements = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+const reveals = new IntersectionObserver((entries) => {
+  for (const entry of entries) if (entry.isIntersecting) {
+    entry.target.classList.add('is-in-view');
+    reveals.unobserve(entry.target);
+  }
+}, { threshold: 0.08, rootMargin: '0px 0px 10% 0px' });
+revealElements.forEach((element) => reveals.observe(element));
+const scenes = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (!(entry.target instanceof HTMLElement)) continue;
+    entry.target.classList.toggle('is-active-scene', entry.isIntersecting);
+    if (entry.isIntersecting) {
+      const sceneId = entry.target.id;
+      document.querySelectorAll<HTMLAnchorElement>('[data-scene-link], .chapter-rail a[href^="#"]').forEach((link) => {
+        if (link.hash === '#' + sceneId) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    }
+  }
+}, { rootMargin: '-25% 0px -40% 0px', threshold: 0 });
+sceneElements.forEach((element) => scenes.observe(element));
+root.classList.add('experience-ready');
+document.addEventListener('visibilitychange', () => { root.dataset.visibility = document.hidden ? 'hidden' : 'visible'; });
+window.addEventListener('pageshow', (event) => {
+  if (!event.persisted) return;
+  // Other documents may have changed device-local preferences while this one
+  // was frozen in the browser's back-forward cache.
+  try {
+    userReduced = localStorage.getItem('riftscry:motion') === 'reduced';
+    const saved: unknown = JSON.parse(localStorage.getItem('riftscry:pool') ?? '[]');
+    if (Array.isArray(saved)) {
+      const pool = saved.filter((id): id is string => typeof id === 'string');
+      if (JSON.stringify(pool) !== JSON.stringify($pool.get())) $pool.set(pool);
+    }
+  } catch { /* Reading and navigation remain available without storage. */ }
+  applyMotion();
+  root.dataset.visibility = document.hidden ? 'hidden' : 'visible';
+  window.dispatchEvent(new Event(RETURN_STATE_EVENT));
+});
+
+if (!['home', 'missing', 'pool'].includes(document.body.dataset.surface ?? '')) {
+  rememberReading(location.pathname + location.search + location.hash, document.title.split(' — ')[0] ?? document.title);
+}
+window.addEventListener('pagehide', (event) => {
+  if (!event.persisted) { unsubscribe(); reveals.disconnect(); scenes.disconnect(); }
+});

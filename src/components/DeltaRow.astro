@@ -29,6 +29,7 @@ const dirLabel =
         </span>
         <span class="visually-hidden">changed to</span>
         <span class="after">{change.after}</span>
+        {change.unit && <span class="unit">{change.unit}</span>}
       </span>
       {(rel || dirLabel) && (
         <span class="meta num">

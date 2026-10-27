@@ -1,8 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import CinematicJourney from '../components/home/CinematicJourney';
+import HomeVoyage from '../components/experience/HomeVoyage.astro';
 ---
-<Layout title="RiftScry — Understand what changed for your champions" description="What changed since you last looked? Choose any champion in the RiftScry archive, follow exact patch evidence over your chosen period, and leave with a source-backed answer.">
-  <CinematicJourney client:load />
-  <noscript><p style="padding:2rem">Interactive reveals require JavaScript. All records remain available in <a href="/patch/26.16">Patch 26.16</a>, <a href="/champions">Champions</a>, and <a href="/compare">Compare</a>.</p></noscript>
+<Layout surface="home" title="RiftScry — The Rift, revealed" description="Enter a changing game. Choose any League of Legends champion, follow exact patch records through time, and build a personal briefing for your next visit.">
+  <HomeVoyage />
 </Layout>

@@ -1,192 +1,62 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import RouteArrival from "../../components/experience/RouteArrival.astro";
 import TimelineEntry from "../../components/TimelineEntry.astro";
-import DeltaGlyph from "../../components/DeltaGlyph.astro";
-import { getAllPatches, getChampionHistory, getChampionMeta, getRoles } from "../../lib/data";
+import { getAllPatches, getChampionHistory, getChampionMeta, getRoles, getLatestPatch } from "../../lib/data";
+import { assetFor } from "../../lib/investigation";
 
 export function getStaticPaths() {
-  const meta = getChampionMeta();
-  return Object.keys(meta).map((championId) => ({
-    params: { slug: championId.toLowerCase() },
-    props: { championId },
-  }));
+  return Object.keys(getChampionMeta()).map((championId) => ({ params:{ slug:championId.toLowerCase() }, props:{ championId } }));
 }
-
 const { championId } = Astro.props;
 const meta = getChampionMeta()[championId]!;
 const roles = getRoles()[championId] ?? [];
 const history = getChampionHistory(championId);
-const totalPatches = getAllPatches().length;
-const loading = `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
-
+const patches = getAllPatches();
+const latest = getLatestPatch();
+const artwork = assetFor(championId);
 const counts = {
-  buff: history.filter((h) => h.change.classification === "buff").length,
-  nerf: history.filter((h) => h.change.classification === "nerf").length,
-  other: history.filter((h) => !["buff", "nerf"].includes(h.change.classification)).length,
+  buff:history.filter((h) => h.change.classification === "buff").length,
+  nerf:history.filter((h) => h.change.classification === "nerf").length,
+  other:history.filter((h) => !["buff","nerf"].includes(h.change.classification)).length,
 };
-const ROLE_LABEL: Record<string, string> = {
-  top: "Top",
-  jungle: "Jungle",
-  mid: "Mid",
-  adc: "ADC",
-  support: "Support",
-};
+const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",adc:"ADC",support:"Support" };
+const journeyUrl = "/?champion=" + encodeURIComponent(championId) + "&beat=subject";
 ---
-
-<Layout
-  title={`${meta.name} Patch History — RiftScry`}
-  description={`Every ${meta.name} buff, nerf and adjustment across League of Legends patches, with exact before/after values.`}
->
-  <div class="page">
-    <header class="champ-header">
-      <img src={loading} alt="" width="308" height="560" loading="eager" decoding="async" class="art" />
-      <div class="intro">
-        <p class="eyebrow">Champion history</p>
-        <h1>{meta.name}</h1>
-        <p class="title">{meta.title}</p>
-        <p class="roles">
-          {roles.map((r) => <span class="role">{ROLE_LABEL[r]}</span>)}
-          <a class="roles-note" href="https://github.com/riftscry/riftscry/blob/main/CONTRIBUTING.md"
-            >curated mapping — corrections welcome</a
-          >
-        </p>
-        <p class="season num">
-          {`${history.length} ${history.length === 1 ? "patch" : "patches"} this season`} ·{" "}
-          <span class="c-buff">{`${counts.buff} buffs`}</span> ·{" "}
-          <span class="c-nerf">{`${counts.nerf} nerfs`}</span> · {`${counts.other} other`}
-        </p>
+<Layout surface="champion" title={meta.name + " Patch History — RiftScry"} description={"Follow " + meta.name + "'s archived League of Legends changes, with complete before/after values and original patch sources."}>
+  <div class="reader-experience">
+    <RouteArrival eyebrow="A CHAMPION / A HISTORY" title={meta.name} variant="champion" image="/images/voyage/history-strata.webp"
+      description={history.length ? "Follow the changes behind the champion you know. Every dated record keeps its exact values and its place in the story." : "A place in the archive, even when the record is quiet. Explore the available coverage and keep this champion in view."}
+      note={"Loaded archive: " + patches.at(-1)!.releaseDate + " through " + latest.releaseDate + "."}
+      chapters={[
+        {href:"#history",label:"Follow the history",detail:history.length + " archived patch records"},
+        {href:"#perspective",label:"Keep the context",detail:"Coverage and original sources"},
+        {href:"/pool",label:"Make it personal",detail:"Keep your champion in My Pool"},
+      ]}>
+      <div slot="identity"><p class="arrival-champion-title">{meta.title}</p><p class="champion-roles">{roles.map((role) => <span>{roleLabels[role]}</span>)}</p></div>
+      <div slot="actions"><a class="route-action" href="#history">Enter the history <span aria-hidden="true">↓</span></a></div>
+      <figure slot="figure" class="champion-arrival-art">
+        <picture><source media="(max-width:700px)" srcset={artwork.portrait} /><img src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture>
+        <figcaption>RIOT GAMES / COMPLETE ORIGINAL SOURCE ARTWORK</figcaption>
+      </figure>
+    </RouteArrival>
+    <div class="reader-body">
+      <aside class="chapter-rail"><p>{meta.name}</p><ol><li><a href="#history">Recorded history</a></li><li><a href="#perspective">Coverage & sources</a></li><li><a href="/pool">My Pool ↗</a></li></ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <div class="reader-chapters">
+        <section id="history" class="reading-chapter" data-scene="champion-history">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>The changes leave a trace.</h2><p>Open a patch to follow its abilities and exact recorded changes. The most recent available entry is open for you.</p><div class="archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{counts.other}</strong> other records</span></div></div></header>
+          {history.length ? <ol class="timeline record-timeline">
+            {history.map((h,i) => <TimelineEntry patchId={h.patchId} releaseDate={h.releaseDate} change={h.change} open={i === 0} />)}
+          </ol> : <div class="reader-empty"><h3>No direct records in this archive.</h3><p>{meta.name} has no recorded direct champion changes in these {patches.length} archived patches. Items, systems, and other champions can still affect how the game feels.</p><a href={"/patch/" + latest.id} class="route-text-link">Explore the latest archived patch ↗</a></div>}
+        </section>
+        <section id="perspective" class="reading-chapter" data-scene="champion-context">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>A record, with its context.</h2><p>Each entry leads back to the patch that introduced it. Classification counts describe archived notes; they do not calculate the champion's current strength.</p></div></header>
+          <p class="reader-section-note">This archive covers {patches.at(-1)!.releaseDate} through {latest.releaseDate}. It is a history of direct changes, not a reconstructed live stat sheet.</p>
+          <p class="reader-section-note">Role labels use a curated mapping. <a href="https://github.com/ionutn0301/riftscry/blob/main/CONTRIBUTING.md">Contribute a correction ↗</a></p>
+          <div class="reader-next-actions"><a href="/champions" class="route-action route-action--quiet">Another champion <span aria-hidden="true">↗</span></a><a href={journeyUrl} class="route-text-link">Explore a focused interval ↗</a></div>
+        </section>
+        <section class="reader-next" data-reveal><div><h2>A familiar face on your next visit.</h2><p>Save {meta.name} to your device-local pool and find their changes alongside your other mains.</p></div><a href="/pool" class="route-action">Shape your pool <span aria-hidden="true">↗</span></a></section>
       </div>
-    </header>
-
-    {
-      history.length > 0 ? (
-        <ol class="timeline">
-          {history.map((h, i) => (
-            <TimelineEntry
-              patchId={h.patchId}
-              releaseDate={h.releaseDate}
-              change={h.change}
-              open={i === 0}
-            />
-          ))}
-        </ol>
-      ) : (
-        <div class="untouched">
-          <p class="big">Untouched all season.</p>
-          <p>
-            {meta.name} hasn't appeared in any 2026 patch notes. Sometimes stability is the
-            strongest statement — <DeltaGlyph kind="neutral" showLabel={false} /> zero changes
-            across {totalPatches} patches.
-          </p>
-        </div>
-      )
-    }
+    </div>
   </div>
 </Layout>
-
-<style>
-  .page {
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: var(--s6) var(--page-pad) 0;
-  }
-
-  .champ-header {
-    display: flex;
-    gap: var(--s6);
-    align-items: flex-end;
-    margin-bottom: var(--s7);
-  }
-
-  .art {
-    width: clamp(120px, 18vw, 200px);
-    height: auto;
-    border: 1px solid var(--line-strong);
-  }
-
-  .eyebrow {
-    color: var(--cream-faint);
-    font-size: var(--text-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: var(--s2);
-  }
-
-  h1 {
-    font-size: var(--text-display);
-    line-height: 0.95;
-    margin-bottom: var(--s2);
-  }
-
-  .title {
-    color: var(--cream-dim);
-    margin-bottom: var(--s4);
-  }
-
-  .roles {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: var(--s2);
-    margin-bottom: var(--s4);
-  }
-
-  .role {
-    border: 1px solid var(--line-strong);
-    padding: 2px var(--s2);
-    font-size: var(--text-xs);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--cream-dim);
-  }
-
-  .roles-note {
-    font-size: var(--text-xs);
-    color: var(--cream-faint);
-    border-bottom: 1px dotted var(--line-strong);
-  }
-
-  .season {
-    font-size: var(--text-sm);
-    color: var(--cream-dim);
-  }
-
-  .c-buff {
-    color: var(--buff);
-  }
-
-  .c-nerf {
-    color: var(--nerf);
-  }
-
-  .timeline {
-    margin: 0;
-    padding: 0;
-    max-width: 56rem;
-  }
-
-  .untouched {
-    padding: var(--s7) 0 var(--s8);
-    max-width: 48ch;
-  }
-
-  .untouched .big {
-    font-family: var(--font-display);
-    font-size: var(--text-2xl);
-    margin-bottom: var(--s4);
-  }
-
-  .untouched p {
-    color: var(--cream-dim);
-    line-height: 1.7;
-  }
-
-  @media (max-width: 640px) {
-    .champ-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--s4);
-    }
-  }
-</style>

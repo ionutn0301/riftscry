@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import RouteArrival from "../../components/experience/RouteArrival.astro";
 import ChangeCard from "../../components/ChangeCard.astro";
 import ClassificationBadge from "../../components/ClassificationBadge.astro";
 import DeltaRow from "../../components/DeltaRow.astro";
@@ -8,228 +9,75 @@ import PoolStrip from "../../components/islands/PoolStrip";
 import { getAllPatches, getChampionMeta, getRoles, getLatestPatch } from "../../lib/data";
 
 export function getStaticPaths() {
-  return getAllPatches().map((p) => ({ params: { id: p.id }, props: { patch: p } }));
+  return getAllPatches().map((patch) => ({ params:{id:patch.id},props:{patch} }));
 }
-
 const { patch } = Astro.props;
 const meta = getChampionMeta();
 const roles = getRoles();
 const latest = getLatestPatch();
 const isLatest = patch.id === latest.id;
-
-const releaseDate = new Date(patch.releaseDate + "T00:00:00Z").toLocaleDateString("en-US", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  timeZone: "UTC",
-});
-
+const hotfixes = patch.hotfixes ?? [];
+const releaseDate = new Date(patch.releaseDate + "T00:00:00Z").toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric",timeZone:"UTC"});
 const entries: FilterEntry[] = patch.champions.map((c) => ({
-  id: c.championId,
-  name: meta[c.championId]?.name ?? c.championId,
-  classification: c.classification,
-  roles: roles[c.championId] ?? [],
+  id:c.championId,name:meta[c.championId]?.name ?? c.championId,classification:c.classification,roles:roles[c.championId] ?? [],
 }));
-
 const counts = {
-  buff: patch.champions.filter((c) => c.classification === "buff").length,
-  nerf: patch.champions.filter((c) => c.classification === "nerf").length,
+  buff:patch.champions.filter((c) => c.classification === "buff").length,
+  nerf:patch.champions.filter((c) => c.classification === "nerf").length,
 };
-
-const names = Object.fromEntries(Object.entries(meta).map(([id, m]) => [id, m.name]));
-const changed = Object.fromEntries(
-  patch.champions.map((c) => [
-    c.championId,
-    {
-      classification: c.classification,
-      changes: c.abilities.reduce((n, a) => n + a.changes.length, 0),
-    },
-  ]),
-);
+const names = Object.fromEntries(Object.entries(meta).map(([id,m]) => [id,m.name]));
+const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
+  classification:c.classification,changes:c.abilities.reduce((n,a) => n + a.changes.length,0),
+}]));
+const chapters = [
+  {href:"#your-perspective",label:"Your perspective",detail:"Start with the champions you play"},
+  {href:"#champions",label:"Champions",detail:patch.champions.length + " direct records"},
+  ...(patch.items.length ? [{href:"#items",label:"Items",detail:patch.items.length + " item records"}] : []),
+  ...(patch.systems.length ? [{href:"#systems",label:"Systems",detail:patch.systems.length + " system records"}] : []),
+];
 ---
-
-<Layout
-  title={`League Patch ${patch.id} Changes — RiftScry`}
-  description={`Every champion buff, nerf and adjustment in League of Legends patch ${patch.id}, as structured before/after deltas.`}
->
-  <div class="page">
-    <header class="patch-header">
-      <p class="eyebrow">
-        {isLatest ? "Latest archived patch" : "Patch archive"} · {releaseDate} ·
-        <a href={patch.sourceUrl}>Official notes ↗</a>
-      </p>
-      <h1 class="num">{patch.id}</h1>
-      <p class="counts">
-        <span class="num">{patch.champions.length}</span> champions ·
-        <span class="num">{patch.items.length}</span> items ·
-        <span class="num">{patch.systems.length}</span> systems
-        · <span class="num">{counts.buff}</span> buffed · <span class="num">{counts.nerf}</span> nerfed
-      </p>
-    </header>
-
-    {patch.hotfixes && patch.hotfixes.length > 0 && (
-      <section class="hotfixes" aria-label="Hotfixes">
-        <h2>Hotfixes</h2>
-        {patch.hotfixes.map((h) => (
-          <p><span class="num">{h.date}</span> — {h.description}</p>
-        ))}
-      </section>
-    )}
-
-    <PoolStrip
-      client:load
-      patchId={patch.id}
-      assetVersion={patch.assetVersion}
-      names={names}
-      changed={changed}
-    />
-
-    <section aria-labelledby="champions-h">
-      <div class="section-head">
-        <h2 id="champions-h">Champions</h2>
-        <p class="shown"><span class="num" data-filter-count>{patch.champions.length}</span> shown</p>
+<Layout surface="patch" title={"League Patch " + patch.id + " Changes — RiftScry"} description={"Explore the champion, item, and system changes in archived League of Legends patch " + patch.id + ", with complete before/after values."}>
+  <div class="reader-experience">
+    <RouteArrival eyebrow={(isLatest ? "NEWEST ARCHIVED PATCH" : "A MOMENT IN THE ARCHIVE") + " / " + releaseDate}
+      title={"The Rift after\n" + patch.id}
+      description="One patch. Different consequences for every player. Find your champions, inspect the exact changes, and follow each record back to its source."
+      image="/images/voyage/history-strata.webp" variant="patch" chapters={chapters}
+      note={"Source record: " + patch.releaseDate + ". Newest loaded archive: " + latest.id + " / " + latest.releaseDate + "."}>
+      <div slot="actions" class="reader-next-actions"><a class="route-action" href="#champions">Enter the changes <span aria-hidden="true">↓</span></a><a class="route-text-link" href={patch.sourceUrl} target="_blank" rel="noreferrer">Riot's original notes ↗</a></div>
+      <div slot="figure" class="arrival-stat-group" aria-label="Patch overview">
+        <div class="arrival-stat arrival-stat--signal"><strong>{patch.champions.length}</strong><span>champions with direct records</span></div>
+        <div class="arrival-stat arrival-stat--brass"><strong>{patch.items.length + patch.systems.length}</strong><span>items and systems with records</span></div>
       </div>
-      <PatchFilterBar client:load entries={entries} />
-      <p class="empty" data-filter-empty hidden>
-        No changes match these filters. Loosen one and try again.
-      </p>
-      <div class="cards">
-        {patch.champions.map((c) => (
-          <ChangeCard
-            change={c}
-            meta={meta[c.championId]}
-            roles={roles[c.championId] ?? []}
-            assetVersion={patch.assetVersion}
-          />
-        ))}
+    </RouteArrival>
+    <div class="reader-body">
+      <aside class="chapter-rail"><p>Inside patch {patch.id}</p><ol>{chapters.map((chapter) => <li><a href={chapter.href}>{chapter.label}</a></li>)}{hotfixes.length > 0 && <li><a href="#hotfixes">Hotfixes</a></li>}</ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <div class="reader-chapters">
+        <section id="your-perspective" class="reading-chapter" data-scene="patch-perspective">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Start with your side of the Rift.</h2><p>Your saved champions appear here, alongside any champions included in a shared link. Keep the full patch within reach as you focus your view.</p></div></header>
+          <PoolStrip client:load patchId={patch.id} assetVersion={patch.assetVersion} names={names} changed={changed}/>
+          <a class="route-text-link" href="/pool">Choose or edit your champion pool ↗</a>
+        </section>
+        <section id="champions" class="reading-chapter" aria-labelledby="champions-h" data-scene="patch-champions">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2 id="champions-h">Champions</h2><p>Filter by a name, a role, or the source classification. Every result keeps its full ability changes.</p><div class="counts archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{patch.champions.length}</strong> champion records</span></div></div></header>
+          <PatchFilterBar client:load entries={entries}/>
+          <p class="record-count"><span data-filter-count>{patch.champions.length}</span> champion records in view</p>
+          <p class="reader-section-note" data-filter-empty hidden>No changes match these filters. Loosen one and try again.</p>
+          <div class="cards">{patch.champions.map((c) => <ChangeCard change={c} meta={meta[c.championId]} roles={roles[c.championId] ?? []} assetVersion={patch.assetVersion}/>)}</div>
+        </section>
+        {patch.items.length > 0 && <section id="items" class="reading-chapter" aria-labelledby="items-h" data-scene="patch-items">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">03</span><div><h2 id="items-h">The tools change too.</h2><p>Item changes form another part of this patch. Read the complete values and conditions before connecting them to your champion.</p></div></header>
+          {patch.items.map((item) => <article class="flat-card reader-flat-record"><header><h3>{item.name}</h3><ClassificationBadge classification={item.classification}/></header>{item.changes.map((c) => <DeltaRow change={c}/>)}</article>)}
+        </section>}
+        {patch.systems.length > 0 && <section id="systems" class="reading-chapter" aria-labelledby="systems-h" data-scene="patch-systems">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">{patch.items.length ? "04" : "03"}</span><div><h2 id="systems-h">The rules around the fight.</h2><p>System changes can affect the wider game. Their original wording remains intact here.</p></div></header>
+          {patch.systems.map((system) => <article class="flat-card reader-flat-record"><header><h3>{system.name}</h3><ClassificationBadge classification={system.classification}/></header>{system.changes.map((c) => <DeltaRow change={c}/>)}</article>)}
+        </section>}
+        {hotfixes.length > 0 && <section id="hotfixes" class="reading-chapter" aria-labelledby="hotfixes-h" data-scene="patch-hotfixes">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">↳</span><div><h2 id="hotfixes-h">After the patch landed.</h2><p>Dated hotfix notes included in this archive.</p></div></header>
+          {hotfixes.map((hotfix) => <article class="hotfix-record"><time datetime={hotfix.date}>{hotfix.date}</time><p>{hotfix.description}</p></article>)}
+        </section>}
+        <section class="reader-next" data-reveal><div><h2>One moment in a longer story.</h2><p>Compare this patch with another point in the archive, or follow a champion's complete recorded history.</p></div><div class="reader-next-actions"><a class="route-action" href={"/compare/" + patch.id}>Compare this patch <span aria-hidden="true">↗</span></a><a class="route-text-link" href="/champions">Find a champion ↗</a></div></section>
       </div>
-    </section>
-
-    {patch.items.length > 0 && (
-      <section aria-labelledby="items-h">
-        <h2 id="items-h">Items</h2>
-        {patch.items.map((item) => (
-          <article class="flat-card">
-            <header>
-              <h3>{item.name}</h3>
-              <ClassificationBadge classification={item.classification} />
-            </header>
-            {item.changes.map((c) => <DeltaRow change={c} />)}
-          </article>
-        ))}
-      </section>
-    )}
-
-    {patch.systems.length > 0 && (
-      <section aria-labelledby="systems-h">
-        <h2 id="systems-h">Systems</h2>
-        {patch.systems.map((sys) => (
-          <article class="flat-card">
-            <header>
-              <h3>{sys.name}</h3>
-              <ClassificationBadge classification={sys.classification} />
-            </header>
-            {sys.changes.map((c) => <DeltaRow change={c} />)}
-          </article>
-        ))}
-      </section>
-    )}
+    </div>
   </div>
 </Layout>
-
-<style>
-  .page {
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: 0 var(--page-pad);
-  }
-
-  .patch-header {
-    padding: var(--s7) 0 var(--s6);
-  }
-
-  .eyebrow {
-    color: var(--cream-dim);
-    font-size: var(--text-sm);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: var(--s3);
-  }
-
-  .eyebrow a {
-    color: var(--gold-bright);
-  }
-
-  h1 {
-    font-family: var(--font-num);
-    font-size: var(--text-display);
-    font-weight: 500;
-    line-height: 1;
-    color: var(--cream);
-    margin-bottom: var(--s4);
-  }
-
-  .counts {
-    color: var(--cream-dim);
-    font-size: var(--text-sm);
-  }
-
-  .counts .num {
-    color: var(--cream);
-  }
-
-  .hotfixes {
-    border: 1px solid var(--gold-deep);
-    padding: var(--s4);
-    margin-bottom: var(--s6);
-  }
-
-  .hotfixes h2 {
-    color: var(--gold-bright);
-    font-size: var(--text-lg);
-    margin-bottom: var(--s2);
-  }
-
-  section {
-    margin-bottom: var(--s7);
-  }
-
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--s4);
-  }
-
-  h2 {
-    font-size: var(--text-xl);
-    margin-bottom: var(--s4);
-  }
-
-  .shown {
-    color: var(--cream-faint);
-    font-size: var(--text-sm);
-  }
-
-  .empty {
-    padding: var(--s6) 0;
-    color: var(--cream-dim);
-  }
-
-  .flat-card {
-    border-top: 1px solid var(--line-strong);
-    padding: var(--s4) 0;
-  }
-
-  .flat-card header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s4);
-    margin-bottom: var(--s2);
-  }
-
-  .flat-card h3 {
-    font-size: var(--text-lg);
-  }
-</style>
