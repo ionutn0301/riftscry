@@ -121,6 +121,17 @@ html[data-motion="reduced"]::view-transition-old(root),html[data-motion="reduced
   .map-destination > span:nth-child(3) { font-size: 10px; }
   .map-destination > b { right: -2px; }
 }
+@media (max-width: 700px) {
+  body:not(.is-home) .world-controls { height: 72px; padding: 10px 88px 10px 16px; grid-template-columns: minmax(0,1fr) auto; gap: 8px; background: #081319; border-bottom: 1px solid #324a4c; }
+  body:not(.is-home) .world-brand img { max-width: 104px; width: 100%; height: auto; }
+  body:not(.is-home) .world-utilities { gap: 4px; }
+  body:not(.is-home) .world-search, body:not(.is-home) .motion-choice { min-width: 44px; justify-content: center; }
+  body:not(.is-home) .world-search kbd, body:not(.is-home) .motion-choice [data-motion-label] { display: none; }
+  body:not(.is-home) .wayfinder-dock { top: 14px; right: 12px; bottom: auto; left: auto; }
+  body:not(.is-home) .wayfinder-trigger { min-height: 44px; padding: 10px; border-radius: 4px; box-shadow: none; }
+  body:not(.is-home) .wayfinder-trigger strong { font-size: 12px; }
+  body:not(.is-home) .wayfinder-trigger small, body:not(.is-home) .mini-world, body:not(.is-home) .map-open-mark { display: none; }
+}
 @media (max-width: 650px) {
   .world-controls { padding-inline: 20px; height: 72px; }
   .world-utilities { gap: 15px; }

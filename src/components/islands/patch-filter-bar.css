@@ -86,6 +86,10 @@
 
 @media (max-width: 640px) {
   .filter-bar input[type="search"] {
-    min-width: 100%;
+    min-width: 0;
+    width: 100%;
+    font-size: 16px;
   }
+  .filter-bar .seg { width: 100%; min-width: 0; }
+  .filter-bar .seg button { flex: 1; min-width: 0; padding-inline: 4px; letter-spacing: .02em; }
 }

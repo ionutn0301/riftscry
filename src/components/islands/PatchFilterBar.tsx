@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "@nanostores/react";
 import { $pool } from "../../lib/pool";
 import { EMPTY_FILTERS, parseFilters, serializeFilters, type PatchFilters } from "../../lib/url-state";
@@ -39,6 +39,7 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
   const pool = useStore($pool);
   const [filters, setFilters] = useState<PatchFilters>(EMPTY_FILTERS);
   const [ready, setReady] = useState(false);
+  const anchorRestored = useRef(false);
 
   // Hydrate from the URL, and follow browser history navigation.
   useEffect(() => {
@@ -76,6 +77,15 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
       card.toggleAttribute("data-filtered", !on);
       if (!on) card.setAttribute("data-filtered", "out");
       if (on) shown += 1;
+    }
+    if (!anchorRestored.current) {
+      anchorRestored.current = true;
+      let id = '';
+      try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { /* Malformed fragments have no target. */ }
+      const target = document.getElementById(id);
+      if (target && !target.hasAttribute('data-filtered')) {
+        requestAnimationFrame(() => target.scrollIntoView({ block: 'start', behavior: 'instant' }));
+      }
     }
     const empty = document.querySelector<HTMLElement>("[data-filter-empty]");
     if (empty) empty.hidden = shown !== 0;
