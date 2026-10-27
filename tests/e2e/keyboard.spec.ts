@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 test.describe("keyboard-only exploration", () => {
   test.skip(
     ({ isMobile }) => isMobile,
-    "Keyboard checks use desktop; touch is covered separately.",
+    "Keyboard on desktop; touch covered separately.",
   );
   test("skip link targets content", async ({ page }) => {
     await page.goto("/patch/26.16");
@@ -11,43 +11,44 @@ test.describe("keyboard-only exploration", () => {
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/#main/);
   });
-  test("choose, reveal, save, and return without a pointer", async ({
-    page,
-  }) => {
+  test("choose, inspect, save and return without pointer", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/?renderer=fallback");
+    await page.goto("/");
     await expect(
       page.locator("astro-island:has(.investigation)"),
     ).not.toHaveAttribute("ssr", "");
+    await page.getByRole("button", { name: "Choose your champion" }).focus();
+    await page.keyboard.press("Enter");
+    await page.getByLabel(/Search all/).fill("Azir");
     await page.getByRole("button", { name: /^Azir/ }).focus();
     await page.keyboard.press("Enter");
-    await page.getByRole("button", { name: "Follow what changed" }).focus();
+    await page.locator(".record-place").first().focus();
     await page.keyboard.press("Enter");
     await expect(page.locator(".evidence-main")).toContainText(
       "75 / 95 / 115 / 135 / 155",
     );
-    await page
-      .getByRole("button", { name: "Bring the findings together" })
-      .focus();
+    await page.getByRole("button", { name: /Gather your findings/ }).focus();
     await page.keyboard.press("Enter");
     await page
       .getByRole("button", { name: "Add to My Pool", exact: true })
       .focus();
     await page.keyboard.press("Space");
     await expect(
-      page.getByRole("button", { name: "My Pool (1)", exact: true }),
+      page.getByRole("button", { name: /My Pool \(1\)/ }),
     ).toBeVisible();
-    await page.getByRole("button", { name: /Another champion/ }).focus();
+    await page.getByRole("button", { name: /Azir’s history/ }).focus();
     await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/beat=opening/);
+    await expect(page.locator(".history-field")).toBeVisible();
   });
-  test("visible search and keyboard shortcut both work", async ({ page }) => {
+  test("search handoff closes native dialog", async ({ page }) => {
     await page.goto("/");
     await page.waitForSelector(
       'astro-island[component-url*="CommandPalette"]:not([ssr])',
       { state: "attached" },
     );
-    await page.locator("[data-palette-trigger]").click();
+    await page.getByRole("button", { name: /Explore/ }).click();
+    await page.getByRole("button", { name: "Search the archive" }).click();
+    await expect(page.locator("dialog")).not.toBeVisible();
     await expect(page.locator("[cmdk-input]")).toBeVisible();
     await page.keyboard.press("Escape");
     await page.keyboard.press("Control+k");

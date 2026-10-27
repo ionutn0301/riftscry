@@ -5,6 +5,8 @@ export default defineConfig({
   // Unmounted presentations remain archived; investigation covers the active roster-wide story.
   testIgnore: [
     "**/cinematic-production.spec.ts",
+    "**/investigation.spec.ts",
+    "**/investigation-review.spec.ts",
     "**/incision-*.spec.ts",
     "**/living-archive.spec.ts",
     "**/home-cinematic*.spec.ts",

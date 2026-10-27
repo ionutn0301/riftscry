@@ -10,6 +10,29 @@ import {
   numericReading,
 } from "../../src/lib/investigation";
 describe("universal investigation", () => {
+  it("retains other visited abilities beside a same-field return", () => {
+    const records = derivePlan({
+      ...defaultVisit,
+      champion: "Belveth",
+    }).records;
+    const visited = records.filter(
+      (r) =>
+        r.change.label === "Health Growth" ||
+        (r.patch === "26.16" &&
+          r.change.label === "True Form Total Attack Speed"),
+    );
+    const p = derivePlan({
+      ...defaultVisit,
+      champion: "Belveth",
+      focus: "R",
+      beat: "ending",
+      seen: visited.map((r) => r.id).join("|"),
+    });
+    expect(p.findings).toHaveLength(2);
+    expect(p.findings[0]).toContain("returned to its earlier");
+    expect(p.findings[1]).toContain("True Form Total Attack Speed");
+    expect(p.unexplored).toBe(records.length - visited.length);
+  });
   it("resolves every canonical identity without featured substitution", () => {
     expect(artworkManifest).toHaveLength(Object.keys(roster).length);
     for (const id of Object.keys(roster)) {

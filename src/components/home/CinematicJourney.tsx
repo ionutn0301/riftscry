@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 import { useStore } from "@nanostores/react";
 import { $pool, togglePool } from "../../lib/pool";
 import {
   archive,
   roster,
   assetFor,
-  defaultVisit,
   parseVisit,
   visitUrl,
   derivePlan,
   type Visit,
+  type Evidence,
 } from "../../lib/investigation";
-import InvestigationStage from "./InvestigationStage";
 import InvestigationEvidence from "./InvestigationEvidence";
+import EvidenceField, { recordTransition } from "./EvidenceField";
+import ChampionPicker from "./ChampionPicker";
 import "./investigation.css";
 const subscribe = (fn: () => void) => {
   window.addEventListener("popstate", fn);
@@ -22,26 +24,39 @@ const subscribe = (fn: () => void) => {
     window.removeEventListener("investigation", fn);
   };
 };
+type Utility = "champions" | "explore" | "pool" | "records" | null;
 export default function CinematicJourney() {
   const query = useSyncExternalStore(
       subscribe,
       () => location.search,
       () => "",
     ),
-    v = parseVisit(query),
+    raw = parseVisit(query),
+    featured = !raw.champion;
+  const v = { ...raw, champion: featured ? "Belveth" : raw.champion },
     p = derivePlan(v),
+    identity = p.known ? assetFor(v.champion) : null,
     pool = useStore($pool);
-  const [search, setSearch] = useState(""),
-    [poolOpen, setPoolOpen] = useState(false),
-    [artFailed, setArtFailed] = useState(false);
-  const title = useRef<HTMLHeadingElement>(null);
+  const [utility, setUtility] = useState<Utility>(null),
+    [failed, setFailed] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null),
+    opener = useRef<HTMLElement | null>(null),
+    edge = useRef<HTMLButtonElement>(null),
+    heading = useRef<HTMLHeadingElement>(null),
+    artwork = useRef<HTMLImageElement>(null);
+  const transition = useRef<{ skipTransition: () => void } | null>(null);
+  const focusHeading = () =>
+    requestAnimationFrame(() => {
+      const target = document.querySelector<HTMLElement>('.evidence-main h2, .record-reading h2, .empty-reading h2') ?? heading.current;
+      if (target) { target.tabIndex = -1; target.focus({ preventScroll: true }); }
+    });
   const go = (next: Visit) => {
-    const changed =
+    if (
       next.champion !== v.champion ||
       next.older !== v.older ||
-      next.newer !== v.newer ||
-      next.focus !== v.focus;
-    if (changed) next.seen = "";
+      next.newer !== v.newer
+    )
+      next.seen = "";
     if (next.beat === "evidence") {
       const chosen = derivePlan(next).selected;
       if (chosen)
@@ -49,483 +64,449 @@ export default function CinematicJourney() {
           ...new Set([...next.seen.split("|").filter(Boolean), chosen.id]),
         ].join("|");
     }
-    history.pushState(null, "", visitUrl(next));
-    window.dispatchEvent(new Event("investigation"));
-    window.scrollTo({ top: 0, behavior: "instant" });
-    requestAnimationFrame(() => title.current?.focus({ preventScroll: true }));
+    const apply = () => {
+      flushSync(() => {
+        history.pushState(null, "", visitUrl(next));
+        window.dispatchEvent(new Event("investigation"));
+      });
+      focusHeading();
+    };
+    transition.current?.skipTransition();
+    if (
+      document.startViewTransition &&
+      !matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      transition.current = document.startViewTransition(apply);
+    } else apply();
   };
-  const select = (id: string) => {
-    setSearch("");
-    go({ ...v, champion: id, focus: "", event: "", beat: "subject" });
+  useEffect(() => {
+    setFailed(Boolean(artwork.current?.complete && !artwork.current.naturalWidth));
+  }, [v.champion]);
+  useEffect(() => {
+    const back = () => focusHeading();
+    window.addEventListener("popstate", back);
+    return () => window.removeEventListener("popstate", back);
+  }, []);
+  useEffect(() => {
+    if (utility) {
+      opener.current = document.activeElement as HTMLElement;
+      dialog.current?.showModal();
+      if (utility === "champions")
+        dialog.current?.querySelector<HTMLInputElement>("input")?.focus();
+    } else if (dialog.current?.open) dialog.current.close();
+  }, [utility]);
+  const close = () => {
+    dialog.current?.close();
+    setUtility(null);
   };
-  useEffect(() => setArtFailed(false), [v.champion]);
-  const identity = p.known ? assetFor(v.champion) : null;
-  const matches = Object.entries(roster).filter(([id, m]) =>
-    `${id} ${m.name}`.toLowerCase().includes(search.toLowerCase()),
-  );
-  const eventIndex = p.sequence.findIndex((r) => r.id === p.selected?.id),
-    next = p.sequence[eventIndex + 1];
-  const scope = `After ${v.older} through ${v.newer}`;
-  const begin = () =>
-    go({
-      ...v,
-      beat: p.records.length ? "evidence" : "ending",
-      event: p.sequence[0]?.id ?? "",
+  const closed = () => {
+    setUtility(null);
+    const target = opener.current;
+    requestAnimationFrame(() => {
+      if (target?.isConnected && !target.closest("dialog")) target.focus();
+      else edge.current?.focus();
     });
+  };
+  const search = () => {
+    close();
+    requestAnimationFrame(() =>
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "k",
+          ctrlKey: true,
+          bubbles: true,
+        }),
+      ),
+    );
+  };
+  const openRecord = (r: Evidence) => {
+    close();
+    go({ ...v, focus: r.field, event: r.id, beat: "evidence" });
+  };
+  const select = (champion: string) => {
+    close();
+    go({ ...v, champion, focus: "", event: "", beat: "subject" });
+  };
+  const historyView = () => go({ ...v, beat: "subject" });
+  const read = v.beat === "evidence" && p.selected;
+  const empty =
+    p.coverage === "unknown"
+      ? "Champion not found"
+      : p.coverage === "invalid-scope"
+        ? "Choose a valid interval"
+        : p.coverage === "missing-history"
+          ? "No direct history in this archive"
+          : "No direct records in this interval";
   return (
-    <div
-      className="investigation"
-      data-beat={v.beat}
-      data-treatment={p.treatment}
-    >
+    <div className="investigation" data-beat={v.beat}>
       <header className="story-header">
-        <a href="/" className="rift-wordmark">
+        <a className="rift-wordmark" href="/">
           RIFTSCRY<span>THE CHANGING GAME</span>
         </a>
-        <nav aria-label="Product">
-          <button type="button" data-palette-trigger aria-label="Open search">Search</button>
-          <a href={`/patch/${archive[0]!.id}`}>Patch records</a>
-          <a href="/compare">Compare</a>
-          <button
-            aria-expanded={poolOpen}
-            onClick={() => setPoolOpen(!poolOpen)}
-          >
-            My Pool ({pool.length})
-          </button>
-        </nav>
+        <button onClick={() => setUtility("explore")}>
+          Explore <span aria-hidden="true">↗</span>
+        </button>
+        <button
+          className="champion-edge"
+          ref={edge}
+          onClick={() => setUtility("champions")}
+        >
+          {identity?.name ?? "Choose champion"}{" "}
+          <span aria-hidden="true">⌄</span>
+        </button>
       </header>
-      <InvestigationStage visit={v} />
-      <div className="story-content">
-        {poolOpen && (
-          <section className="pool-panel" aria-label="My Pool">
-            <h2>Your champions</h2>
-            {!pool.length && (
+      <div className="spatial-body">
+        <aside
+          className="champion-identity"
+          style={{ viewTransitionName: "champion-identity" }}
+        >
+          <div className="identity-copy">
+            <p className="eyebrow">
+              {featured
+                ? "FEATURED HISTORY · BEL’VETH"
+                : "YOUR CHAMPION · RECORDED HISTORY"}
+            </p>
+            <h1 tabIndex={-1} ref={heading}>
+              {featured ? (
+                <>
+                  The Rift keeps
+                  <br />
+                  <em>changing.</em>
+                </>
+              ) : (
+                (identity?.name ?? "Unknown champion")
+              )}
+            </h1>
+            <p>
+              {featured
+                ? "What changed since you last looked?"
+                : (identity?.title ??
+                  `“${v.champion}” is not a canonical champion ID. No substitute was selected.`)}
+            </p>
+          </div>
+          {identity && (
+            <figure className="champion-art">
+              {failed || !identity.splash ? (
+                <p>
+                  Artwork unavailable for {identity.name}. The records remain
+                  available.
+                </p>
+              ) : (
+                <picture>
+                  <source
+                    media="(max-width:700px)"
+                    srcSet={identity.portrait}
+                  />
+                      <img ref={artwork}
+
+                    src={identity.splash}
+                    width="1215"
+                    height="717"
+                    alt={`${identity.name} — complete Riot illustration`}
+                    onError={() => setFailed(true)}
+                  />
+                </picture>
+              )}
+              <figcaption>{identity.name} / Riot Games</figcaption>
+            </figure>
+          )}
+          <div className="identity-actions">
+            <button
+              className="primary-action"
+              onClick={() => setUtility("champions")}
+            >
+              Choose your champion ↗
+            </button>
+            <button onClick={() => go({ ...v, beat: "ending" })}>
+              {v.seen ? "Your findings" : "Interval overview"}{" "}
+              <span>{v.seen.split("|").filter(Boolean).length || ""}</span>
+            </button>
+          </div>
+        </aside>
+        <div className="spatial-reading">
+          {p.coverage !== "records" ? (
+            <section className="empty-reading">
+              <p className="eyebrow">ARCHIVE BOUNDARY</p>
+              <h2>{empty}</h2>
               <p>
-                No saved champions yet. Complete any investigation and save
-                explicitly.
+                {p.coverage === "invalid-scope"
+                  ? "The starting patch must be older than the ending patch. It is excluded from the interval."
+                  : p.coverage === "unknown"
+                    ? "Search the complete canonical roster to begin."
+                    : "This does not imply the champion was unaffected by items, systems, or other champions."}
               </p>
-            )}
-            {pool.map((id) => (
-              <div key={id}>
-                <button
-                  onClick={() => {
-                    setPoolOpen(false);
-                    select(id);
-                  }}
+              <button onClick={() => setUtility("explore")}>
+                View archive coverage ↗
+              </button>
+            </section>
+          ) : read ? (
+            <section className="record-reading">
+              <button className="return-history" onClick={historyView}>
+                ← {identity!.name}’s history
+              </button>
+              <div
+                className="evidence-scroll"
+                tabIndex={0}
+                aria-label="Complete record"
+              >
+                <article
+                  className="evidence-main"
+                  style={{ viewTransitionName: recordTransition(read.id) }}
                 >
-                  {roster[id]?.name ?? id} · investigate
+                  <InvestigationEvidence record={read} />
+                </article>
+                <nav
+                  className="record-connections"
+                  aria-label="Connected records"
+                >
+                  <p className="eyebrow">SAME FIELD · ANOTHER PATCH</p>
+                  {p.records
+                    .filter(
+                      (r) => r.field === read.field && r.patch !== read.patch,
+                    )
+                    .map((r) => (
+                      <button key={r.id} onClick={() => openRecord(r)}>
+                        {r.patch} · {r.change.label} →
+                      </button>
+                    ))}
+                  {!p.records.some(
+                    (r) => r.field === read.field && r.patch !== read.patch,
+                  ) && <p>No other record of this field in the interval.</p>}
+                  <p className="eyebrow">TAKE ANOTHER BRANCH</p>
+                  {p.records
+                    .filter((r) => r.field !== read.field)
+                    .sort(
+                      (a, b) =>
+                        Number(b.patch === read.patch) -
+                        Number(a.patch === read.patch),
+                    )
+                    .slice(0, 3)
+                    .map((r) => (
+                      <button key={r.id} onClick={() => openRecord(r)}>
+                        {r.patch} · {r.ability} · {r.change.label} →
+                      </button>
+                    ))}
+                </nav>
+              </div>
+              <div className="reading-actions">
+                <button onClick={() => setUtility("records")}>
+                  All {p.records.length} records ↗
                 </button>
-                <button
-                  aria-label={`Remove ${roster[id]?.name ?? id} from pool`}
-                  onClick={() => togglePool(id)}
-                >
-                  Remove
+                <button onClick={() => go({ ...v, beat: "ending" })}>
+                  Gather your findings →
                 </button>
               </div>
-            ))}
-            <a href="/champions">Champion directory ↗</a>
-          </section>
-        )}
-        <div className="story-kicker">
-          <span>AN INDEPENDENT LEAGUE COMPANION</span>
-          <span>
-            ARCHIVE {archive.at(-1)!.id} — {archive[0]!.id}
-          </span>
+            </section>
+          ) : v.beat === "ending" ? (
+            <section className="record-reading">
+              <button className="return-history" onClick={historyView}>
+                ← {identity!.name}’s history
+              </button>
+              <div
+                className="evidence-scroll"
+                tabIndex={0}
+                aria-label="Findings"
+              >
+                <p className="eyebrow">
+                  {v.seen
+                    ? "YOUR VISITED RECORDS"
+                    : "INTERVAL OVERVIEW · NO VISIT TRAIL"}
+                </p>
+                <h2>
+                  {v.seen ? "The story so far." : "What the archive records."}
+                </h2>
+                <ul className="findings">
+                  {p.findings.map((f, i) => (
+                    <li key={i}>{f}</li>
+                  ))}
+                </ul>
+                <p>
+                  {p.unexplored} records not included. This is not a complete
+                  stat sheet or a judgment of competitive strength.
+                </p>
+                <p className="coverage-note">
+                  After {v.older}, through {v.newer}. Loaded archive{" "}
+                  {archive.at(-1)!.id}–{archive[0]!.id}; not live game data.
+                </p>
+                <div className="source-links">
+                  {p.scope.map((a) => (
+                    <a
+                      key={a.id}
+                      href={a.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Riot {a.id} ↗
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div className="reading-actions">
+                <button
+                  aria-pressed={pool.includes(v.champion)}
+                  onClick={() => togglePool(v.champion)}
+                >
+                  {pool.includes(v.champion)
+                    ? "Remove from My Pool"
+                    : "Add to My Pool"}
+                </button>
+                <a href={visitUrl(v)}>Link to findings ↗</a>
+              </div>
+            </section>
+          ) : (
+            <EvidenceField
+              records={p.records}
+              selected={v.event}
+              onOpen={openRecord}
+              onAll={() => setUtility("records")}
+            />
+          )}
         </div>
-        {v.beat === "opening" ? (
-          <section className="opening-copy">
-            <p className="eyebrow">You know your champion.</p>
-            <h1 ref={title} tabIndex={-1}>
-              The Rift keeps
-              <br />
-              <em>changing.</em>
-            </h1>
-            <p className="story-lead">What changed since you last looked?</p>
-            <p>
-              Choose who matters to you. Follow the records. Leave with an
-              answer.
-            </p>
-          </section>
-        ) : (
-          <div className="subject-heading">
-            <button
-              onClick={() =>
-                go({ ...defaultVisit, older: v.older, newer: v.newer })
+      </div>
+      <footer className="story-footer">
+        <div className="period-controls">
+          <label>
+            After{" "}
+            <select
+              aria-label="After patch"
+              value={v.older}
+              onChange={(e) =>
+                go({
+                  ...v,
+                  older: e.target.value,
+                  event: "",
+                  focus: "",
+                  beat: "subject",
+                })
               }
             >
-              ← Another champion
-            </button>
-            <p className="eyebrow">{scope} · recorded direct changes</p>
-            <h1 ref={title} tabIndex={-1}>
-              {identity?.name ?? "Champion not found"}
-              <em>
-                {v.beat === "ending"
-                  ? " / your findings"
-                  : v.beat === "evidence"
-                    ? " / follow the evidence"
-                    : ""}
-              </em>
-            </h1>
-          </div>
-        )}
-        {(v.beat === "opening" || !p.known) && (
-          <section className="roster-search" aria-label="Choose your champion">
-            <h2>Who are you here for?</h2>
-            {v.champion && !p.known && (
-              <p role="alert">
-                “{v.champion}” is not a canonical ID in this archive. Choose a
-                champion below; no substitute has been selected.
-              </p>
-            )}
-            <label htmlFor="roster-query">
-              Search all {Object.keys(roster).length} archived champions
-            </label>
-            <input
-              id="roster-query"
-              type="search"
-              placeholder="Name your champion…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <div className="roster-results">
-              {matches.map(([id, m]) => (
-                <button key={id} onClick={() => select(id)}>
-                  {m.name}
-                  <span>{m.title}</span>
-                </button>
+              {archive.map((a) => (
+                <option key={a.id}>{a.id}</option>
               ))}
-              {!matches.length && <p>No champions match. Try another name.</p>}
-            </div>
-            <a href={`/patch/${archive[0]!.id}`}>
-              Just show me the patch records ↗
-            </a>
-          </section>
-        )}
-        {p.known && (
-          <>
-            <div className="period-controls">
-              <label>
-                After patch
-                <select
-                  aria-label="After patch"
-                  value={v.older}
-                  onChange={(e) =>
-                    go({
-                      ...v,
-                      older: e.target.value,
-                      focus: "",
-                      event: "",
-                      beat: "subject",
-                    })
-                  }
-                >
-                  {archive.map((a) => (
-                    <option key={a.id}>{a.id}</option>
-                  ))}
-                </select>
-              </label>
-              <span>→</span>
-              <label>
-                Through patch
-                <select
-                  aria-label="Through patch"
-                  value={v.newer}
-                  onChange={(e) =>
-                    go({
-                      ...v,
-                      newer: e.target.value,
-                      focus: "",
-                      event: "",
-                      beat: "subject",
-                    })
-                  }
-                >
-                  {archive.map((a) => (
-                    <option key={a.id}>{a.id}</option>
-                  ))}
-                </select>
-              </label>
-              <a href={`/champion/${v.champion.toLowerCase()}`}>
-                Full history ↗
-              </a>
-            </div>
-            {p.coverage === "invalid-scope" ? (
-              <p role="alert">
-                Choose an older starting patch and a newer ending patch. The
-                starting patch is excluded.
+            </select>
+          </label>
+          <span>→</span>
+          <label>
+            Through{" "}
+            <select
+              aria-label="Through patch"
+              value={v.newer}
+              onChange={(e) =>
+                go({
+                  ...v,
+                  newer: e.target.value,
+                  event: "",
+                  focus: "",
+                  beat: "subject",
+                })
+              }
+            >
+              {archive.map((a) => (
+                <option key={a.id}>{a.id}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <span className="archive-caption">
+          AN INDEPENDENT ARCHIVE / NOT LIVE DATA
+        </span>
+        <button onClick={() => setUtility("pool")}>
+          My Pool ({pool.length}) ↗
+        </button>
+      </footer>
+      <dialog
+        ref={dialog}
+        className="story-dialog"
+        aria-labelledby="utility-title"
+        onClose={closed}
+        onCancel={() => setUtility(null)}
+        onKeyDown={(e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+            e.preventDefault();
+            e.stopPropagation();
+            search();
+          }
+        }}
+      >
+        <button className="close-dialog" onClick={close}>
+          Close <span aria-hidden="true">×</span>
+        </button>
+        <div className="dialog-content">
+          {utility === "champions" && <ChampionPicker onSelect={select} />}
+          {utility === "records" && (
+            <>
+              <h2 id="utility-title">Every record · {identity?.name}</h2>
+              <p>
+                After {v.older}, through {v.newer}. Choose any field.
               </p>
-            ) : (
-              <>
-                {v.beat === "subject" && (
-                  <section className="commitment">
-                    <div className="artwork-insert">
-                      {artFailed || !identity!.splash ? (
-                        <p>
-                          Artwork unavailable for {identity!.name}. Your
-                          investigation is still complete below.
-                        </p>
-                      ) : (
-                        <picture>
-                          <source
-                            media="(max-width: 520px)"
-                            srcSet={identity!.portrait}
-                          />
-                          <img
-                            width={1215}
-                            height={717}
-                            decoding="async"
-                            src={identity!.splash}
-                            alt={`${identity!.name} — intact Riot illustration`}
-                            onError={() => setArtFailed(true)}
-                          />
-                        </picture>
-                      )}
-                      <p>
-                        {identity!.name} · {identity!.title} / Riot Games
-                      </p>
-                    </div>
-                    <div className="commitment-copy">
-                      <p className="eyebrow">Your question, made personal</p>
-                      <h2>
-                        What happened
-                        <br />
-                        to {identity!.name}?
-                      </h2>
-                      <p>
-                        {p.records.length
-                          ? `${p.records.length} direct records across ${p.scope.length} archived patches. We’ll begin ${p.returned ? "with a field that appears again" : p.sequence.length > 1 ? "with a traceable thread" : "with the exact recorded change"}.`
-                          : p.coverage === "missing-history"
-                            ? "This champion has no direct history in the loaded archive. We can explain that boundary, not invent a past."
-                            : "There are no recorded direct changes in this interval. That is an answer—with limits."}
-                      </p>
-                      <button className="primary-action" onClick={begin}>
-                        {p.records.length
-                          ? "Follow what changed"
-                          : "Understand this interval"}{" "}
-                        <span>→</span>
-                      </button>
-                      <button onClick={() => go({ ...v, beat: "ending" })}>
-                        Skip the journey, read the findings
-                      </button>
-                    </div>
-                  </section>
-                )}
-                {v.beat === "evidence" && p.selected && (
-                  <section className="evidence-layout">
-                    <div className="evidence-main">
-                      <p className="eyebrow">
-                        {eventIndex > 0
-                          ? "Following the thread"
-                          : "The first finding"}{" "}
-                        · {identity!.name}
-                      </p>
-                      {eventIndex > 0 &&
-                        p.sequence[eventIndex - 1]?.field ===
-                          p.selected.field && (
-                          <p className="continuity">
-                            Previously, in {p.sequence[eventIndex - 1]!.patch}:{" "}
-                            {p.sequence[eventIndex - 1]!.change.kind ===
-                            "numeric"
-                              ? (
-                                  p.sequence[eventIndex - 1]!.change as {
-                                    after: string;
-                                  }
-                                ).after
-                              : "a rule was recorded"}
-                            .
-                          </p>
-                        )}
-                      <InvestigationEvidence record={p.selected} />
-                      {p.returned && p.selected.id === p.returned.last.id && (
-                        <aside className="finding">
-                          <h3>Back to the earlier value.</h3>
-                          <p>{p.findings[0]}</p>
-                          <p>That explains this stat. What else changed?</p>
-                        </aside>
-                      )}
-                      <div className="story-actions">
-                        {next && (
-                          <button
-                            className="primary-action"
-                            onClick={() => go({ ...v, event: next.id })}
-                          >
-                            {next.field === p.selected.field
-                              ? "Follow this stat"
-                              : "Inspect the next change"}{" "}
-                            →
-                          </button>
-                        )}
-                        <button onClick={() => go({ ...v, beat: "ending" })}>
-                          Bring the findings together →
-                        </button>
-                      </div>
-                    </div>
-                    <aside className="focus-choices">
-                      <h3>Where do you want to look?</h3>
-                      <p>Your choice changes the evidence and the ending.</p>
-                      <button
-                        onClick={() =>
-                          go({
-                            ...v,
-                            focus: p.selected!.field,
-                            event: p.selected!.id,
-                          })
-                        }
-                      >
-                        Follow {p.selected.change.label}
-                      </button>
-                      {p.choices.map((a) => (
-                        <button
-                          key={a}
-                          aria-pressed={v.focus === a}
-                          onClick={() => go({ ...v, focus: a, event: "" })}
-                        >
-                          Inspect {a === "base" ? "base stats" : a}
-                        </button>
-                      ))}
-                      <button
-                        onClick={() => go({ ...v, focus: "", event: "" })}
-                      >
-                        Return to the main thread
-                      </button>
-                      <p className="selection-note">
-                        Main thread: earliest repeated field, otherwise
-                        chronological records. No importance score.
-                      </p>
-                    </aside>
-                  </section>
-                )}
-                {(v.beat === "ending" ||
-                  (v.beat === "evidence" && !p.selected)) && (
-                  <section className="story-ending">
-                    <p className="eyebrow">
-                      The aperture is open / {identity!.name}
-                    </p>
-                    <h2>
-                      {p.coverage === "records"
-                        ? "You came with a question."
-                        : "A quieter chapter."}
-                    </h2>
-                    {p.coverage === "records" ? (
-                      <>
-                        <p className="story-lead">
-                          Here is what this investigation establishes.
-                        </p>
-                        <ul className="findings">
-                          {p.findings.map((f, i) => (
-                            <li key={i}>{f}</li>
-                          ))}
-                        </ul>
-                        <p>
-                          {p.unexplored} additional records outside this focus.
-                          The finding is not a complete historical stat sheet or
-                          a judgment of competitive strength.
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="story-lead">
-                          {p.coverage === "missing-history"
-                            ? "No direct history is available for this champion in the loaded archive."
-                            : "No recorded direct changes in this interval."}
-                        </p>
-                        <p>
-                          This does not mean the champion&apos;s competitive
-                          position stayed unchanged. Items, systems and
-                          incomplete coverage may matter.
-                        </p>
-                        {p.all.length > 0 && (
-                          <button
-                            onClick={() => {
-                              const last = p.all.at(-1)!;
-                              const i = archive.findIndex(
-                                (a) => a.id === last.patch,
-                              );
-                              go({
-                                ...v,
-                                older: archive[i + 1]?.id ?? archive.at(-1)!.id,
-                                newer: last.patch,
-                                focus: last.field,
-                                event: last.id,
-                                beat: "evidence",
-                              });
-                            }}
-                          >
-                            Inspect the last available change (changes period)
-                          </button>
-                        )}
-                      </>
-                    )}
-                    <p className="coverage-note">
-                      Scope: ({v.older}, {v.newer}]. Loaded archive:{" "}
-                      {archive.at(-1)!.id}–{archive[0]!.id},{" "}
-                      {archive.at(-1)!.releaseDate}–{archive[0]!.releaseDate}.
-                      This is the latest available here, not a claim about the
-                      live game. Direct champion records only; hotfix prose and
-                      system effects are not reconstructed.
-                    </p>
-                    <div className="source-links">
-                      {p.scope.map((a) => (
-                        <a
-                          key={a.id}
-                          href={a.sourceUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Riot {a.id} ↗
-                        </a>
-                      ))}
-                    </div>
-                    <div className="story-actions">
-                      <button
-                        className="primary-action"
-                        aria-pressed={pool.includes(v.champion)}
-                        onClick={() => togglePool(v.champion)}
-                      >
-                        {pool.includes(v.champion)
-                          ? "Remove from My Pool"
-                          : "Add to My Pool"}
-                      </button>
-                      <a href={visitUrl(v)}>Stable link to these findings</a>
-                      <button onClick={begin}>Reopen the investigation</button>
-                    </div>
-                  </section>
-                )}
-                {p.records.length > 0 && (
-                  <details className="all-evidence">
-                    <summary>
-                      Inspect all {p.records.length} records in this interval
-                    </summary>
-                    {p.records.map((r) => (
-                      <div key={r.id}>
-                        <InvestigationEvidence record={r} />
-                        <button
-                          onClick={() =>
-                            go({
-                              ...v,
-                              beat: "evidence",
-                              focus: r.field,
-                              event: r.id,
-                            })
-                          }
-                        >
-                          Investigate this record
-                        </button>
-                      </div>
-                    ))}
-                  </details>
-                )}
-              </>
-            )}
-          </>
-        )}
-        <footer className="story-footer">
-          RiftScry is not endorsed by Riot Games and does not reflect the views
-          or opinions of Riot Games or anyone officially involved in producing
-          or managing Riot Games properties. Riot Games and all associated
-          properties are trademarks or registered trademarks of Riot Games, Inc.
-        </footer>
-      </div>
+              <div className="record-directory">
+                {p.records.map((r) => (
+                  <button key={r.id} onClick={() => openRecord(r)}>
+                    <small>
+                      {r.patch} · {r.ability}
+                    </small>
+                    <strong>{r.change.label}</strong>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          {utility === "explore" && (
+            <>
+              <h2 id="utility-title">Explore RiftScry</h2>
+              <nav className="utility-links">
+                <button onClick={search}>Search the archive</button>
+                <a href={`/patch/${archive[0]!.id}`}>Patch records ↗</a>
+                <a href="/champions">Champion directory ↗</a>
+                <a href="/compare">Compare patches ↗</a>
+                <a href="/pool">My Pool ↗</a>
+              </nav>
+              <p>
+                Loaded archive: {archive.at(-1)!.id}–{archive[0]!.id}. Original
+                Riot sources remain attached to every record. This is not a
+                claim about the live game.
+              </p>
+              <p>
+                RiftScry is not endorsed by Riot Games. League of Legends and
+                its assets belong to Riot Games.
+              </p>
+            </>
+          )}
+          {utility === "pool" && (
+            <>
+              <h2 id="utility-title">Your champions</h2>
+              <p>Saved explicitly on this device.</p>
+              {!pool.length && <p>No saved champions yet.</p>}
+              <div className="utility-links">
+                {pool.map((id) => (
+                  <div key={id}>
+                    <button onClick={() => select(id)}>
+                      {roster[id]?.name ?? id} · investigate ↗
+                    </button>
+                    <button
+                      aria-label={`Remove ${roster[id]?.name ?? id}`}
+                      onClick={() => togglePool(id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {p.known && (
+                <button
+                  className="primary-action"
+                  onClick={() => togglePool(v.champion)}
+                >
+                  {pool.includes(v.champion)
+                    ? "Remove from My Pool"
+                    : "Add to My Pool"}{" "}
+                  · {identity!.name}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </dialog>
     </div>
   );
 }
