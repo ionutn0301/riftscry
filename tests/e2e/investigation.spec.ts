@@ -124,7 +124,7 @@ test("simple, rule, no-record, mobile, fallback and direct links", async () => {
       "Different ranks moved in different directions",
     );
     await page.getByRole("button", { name: "Inspect the next change" }).click();
-    await expect(page.locator(".rule-text")).toContainText("Resource bar");
+    await expect(page.locator(".evidence-main .rule-text")).toContainText("Resource bar");
     await page.screenshot({ path: `${output}/rule.png` });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/?champion=Ahri&older=26.15&newer=26.16&beat=subject");

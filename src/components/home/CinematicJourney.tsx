@@ -83,6 +83,7 @@ export default function CinematicJourney() {
           RIFTSCRY<span>THE CHANGING GAME</span>
         </a>
         <nav aria-label="Product">
+          <button type="button" data-palette-trigger aria-label="Open search">Search</button>
           <a href={`/patch/${archive[0]!.id}`}>Patch records</a>
           <a href="/compare">Compare</a>
           <button
