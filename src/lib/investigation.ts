@@ -56,27 +56,25 @@ export function assetFor(id: string) {
 }
 export const artworkManifest = Object.keys(roster).map(assetFor);
 export function recordsFor(id: string): Evidence[] {
-  return [...getChampionHistory(id)]
-    .reverse()
-    .flatMap((h) =>
-      h.change.abilities.flatMap((a, ai) =>
-        a.changes.map((change, ci) => ({
-          id: [h.patchId, id, ai, a.ability, ci].join(":"),
-          field: JSON.stringify([
-            a.ability,
-            a.name,
-            change.label,
-            change.kind === "numeric" ? (change.unit ?? "") : "",
-          ]),
-          patch: h.patchId,
-          date: h.releaseDate,
-          source: getPatch(h.patchId)!.sourceUrl,
-          ability: a.ability,
-          abilityName: a.name,
-          change,
-        })),
-      ),
-    );
+  return [...getChampionHistory(id)].reverse().flatMap((h) =>
+    h.change.abilities.flatMap((a, ai) =>
+      a.changes.map((change, ci) => ({
+        id: [h.patchId, id, ai, a.ability, ci].join(":"),
+        field: JSON.stringify([
+          a.ability,
+          a.name,
+          change.label,
+          change.kind === "numeric" ? (change.unit ?? "") : "",
+        ]),
+        patch: h.patchId,
+        date: h.releaseDate,
+        source: getPatch(h.patchId)!.sourceUrl,
+        ability: a.ability,
+        abilityName: a.name,
+        change,
+      })),
+    ),
+  );
 }
 function scalar(s: string) {
   return /^-?\d+(\.\d+)?$/.test(s.trim()) ? Number(s) : null;
@@ -130,11 +128,14 @@ export function derivePlan(v: Visit) {
   const selected = focused.find((r) => r.id === v.event) ?? focused[0];
   const sequence = focused;
   const reviewed =
-    v.beat === "ending" && v.seen
-      ? sequence.filter((r) => v.seen.split("|").includes(r.id))
+    v.beat === "ending"
+      ? v.seen
+        ? records.filter((r) => v.seen.split("|").includes(r.id))
+        : records
       : sequence;
-  const pairs = reviewed.slice(1).flatMap((b, i) => {
-    const a = reviewed[i]!;
+  const pairs = reviewed.flatMap((b, i) => {
+    const a = reviewed.slice(0, i).findLast((r) => r.field === b.field);
+    if (!a) return [];
     if (
       a.field !== b.field ||
       a.patch === b.patch ||
@@ -180,14 +181,23 @@ export function derivePlan(v: Visit) {
         : sequence.length > 1
           ? "chronology"
           : "single";
-  const findings = returned
-    ? [
-        `${returned.first.change.label} returned to its earlier recorded value across ${returned.first.patch} and ${returned.last.patch}. This establishes that field only, not a champion-wide revert.`,
-      ]
-    : reviewed.map(
+  const findings = [
+    ...(returned
+      ? [
+          `${returned.first.change.label} returned to its earlier recorded value across ${returned.first.patch} and ${returned.last.patch}. This establishes that field only, not a champion-wide revert.`,
+        ]
+      : []),
+    ...reviewed
+      .filter(
+        (r) =>
+          !returned ||
+          (r.id !== returned.first.id && r.id !== returned.last.id),
+      )
+      .map(
         (r) =>
           `${r.patch} · ${r.change.label}: ${r.change.kind === "numeric" ? `${r.change.before} → ${r.change.after}${r.change.unit ? " " + r.change.unit : ""}` : r.change.text}`,
-      );
+      ),
+  ];
   return {
     known,
     all,
@@ -236,6 +246,10 @@ export function parseVisit(search: string): Visit {
     .split("|")
     .filter((id) => plan.records.some((r) => r.id === id))
     .join("|");
+  if (v.beat === "evidence" && event)
+    v.seen = [
+      ...new Set([...v.seen.split("|").filter(Boolean), event.id]),
+    ].join("|");
   return v;
 }
 export function visitUrl(v: Visit) {

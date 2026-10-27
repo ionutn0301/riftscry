@@ -1,4 +1,14 @@
-# DESIGN.md — RiftScry "The Balance Ledger"
+# RiftScry design
+
+## Current homepage — spatial champion history (27 October 2026)
+
+The active homepage uses `CinematicJourney.tsx`, `EvidenceField.tsx`, `ChampionPicker.tsx`, and `investigation.css`. The supplied October design supersedes the historical homepage below. Canonical evidence supplies patch places, same-field connectors, and exact records. Exploration accumulates visited findings across abilities; an ending without a trail is labelled as an interval overview. Intervals are `(older, newer]`.
+
+The viewport shell uses forest ink, warm pale text, light green interaction signals, Clash Display, and General Sans. Official splash/portrait artwork remains intact with `object-fit: contain`. Desktop shows up to three dates with three records (two on short desktops); mobile shows up to two dates with two records. Connected fields are prioritised, and all records remain accessible. Native dialogs handle utilities; named view transitions connect compact records to expanded evidence without gating interaction. Reduced motion retains the same data and navigation. Existing archive routes retain their shared tokens.
+
+Acceptance is covered by `spatial-history.spec.ts`, `keyboard.spec.ts`, and the canonical data tests. Review the actual opening at 1440×900, 1280×720, and 390×844, along with branches, visited findings, direct links, Back, dialog focus, complete artwork, and reduced motion. Do not infer browser or cinematic quality from a successful build alone.
+
+## Historical visual direction — "The Balance Ledger"
 
 Committed visual world (user-approved 2026-08-21; anchored on the user's RIFTSCRY logo
 set in `src/assets/brand/`). Incumbent authority: `src/styles/tokens.css`,
