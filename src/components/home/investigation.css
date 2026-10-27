@@ -1,0 +1,558 @@
+.investigation {
+  --paper: #eee7d6;
+  --muted: #b9b4a7;
+  --gold: #d9b879;
+  --rule: #ffffff24;
+  background: #141714;
+  color: var(--paper);
+  min-height: 100svh;
+  font-family: Arial, sans-serif;
+}
+.story-header {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 5vw;
+  background: #141714;
+  border-bottom: 1px solid var(--rule);
+}
+.rift-wordmark {
+  font-size: 24px;
+  letter-spacing: 0.16em;
+  text-decoration: none !important;
+}
+.rift-wordmark span {
+  display: block;
+  font: 9px monospace;
+  letter-spacing: 0.23em;
+  margin-top: 5px;
+  color: var(--muted);
+}
+.story-header nav {
+  display: flex;
+  gap: 24px;
+  font: 12px monospace;
+  align-items: center;
+}
+.story-header nav button {
+  padding: 0;
+  font: inherit;
+}
+.pool-panel {
+  border-bottom: 1px solid var(--rule);
+  padding: 20px 0;
+}
+.pool-panel > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid var(--rule);
+}
+.investigation a {
+  color: inherit;
+  text-underline-offset: 5px;
+}
+.investigation button,
+.investigation select,
+.investigation input {
+  font: inherit;
+  color: inherit;
+}
+.investigation button {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+.investigation button:hover,
+.investigation a:hover {
+  color: var(--gold);
+}
+.investigation :focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 5px;
+}
+.investigation-world {
+  height: 45svh;
+  min-height: 270px;
+  position: relative;
+  background: #20251f;
+  overflow: hidden;
+}
+.investigation-canvas {
+  position: absolute;
+  inset: 0;
+}
+.investigation-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.renderer-label {
+  position: absolute;
+  left: 5vw;
+  bottom: 14px;
+  font: 9px monospace;
+  letter-spacing: 0.15em;
+  color: #e0d8c8;
+  background: #141714bb;
+  padding: 6px 9px;
+}
+.story-content {
+  max-width: 1440px;
+  margin: auto;
+  padding: 24px 5vw 0;
+}
+.story-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font: 9px monospace;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.opening-copy {
+  padding: 38px 0 32px;
+  max-width: 760px;
+}
+.investigation h1 {
+  font:
+    normal clamp(42px, 7vw, 90px)/1.03 Georgia,
+    serif;
+  letter-spacing: -0.04em;
+  margin: 12px 0 24px;
+}
+.investigation h1 em {
+  color: var(--gold);
+  font-weight: normal;
+}
+.investigation h2 {
+  font:
+    normal clamp(28px, 3.5vw, 48px)/1.12 Georgia,
+    serif;
+  margin: 12px 0 24px;
+  letter-spacing: -0.025em;
+}
+.investigation h3 {
+  font:
+    normal 23px Georgia,
+    serif;
+}
+.investigation p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.investigation .eyebrow {
+  font: 10px/1.6 monospace;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.investigation .story-lead {
+  font-size: 21px;
+  color: var(--paper);
+}
+.roster-search {
+  border-top: 1px solid var(--rule);
+  padding: 28px 0;
+}
+.roster-search label {
+  display: block;
+  color: var(--muted);
+  font: 12px monospace;
+}
+.roster-search input {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #d9b87988;
+  padding: 18px 0;
+  font-size: 24px;
+  outline-offset: 4px;
+}
+.roster-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 24px;
+  max-height: 310px;
+  overflow: auto;
+  margin: 24px 0;
+  overscroll-behavior: auto;
+}
+.roster-results button {
+  border-bottom: 1px solid var(--rule);
+  padding: 14px 4px;
+  font-size: 18px;
+}
+.roster-results span {
+  display: block;
+  font: 10px monospace;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.subject-heading {
+  padding-top: 16px;
+}
+.subject-heading h1 {
+  font-size: clamp(32px, 4.6vw, 60px);
+}
+.subject-heading h1 em {
+  font-size: 0.62em;
+}
+.period-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 16px 0 30px;
+}
+.period-controls label {
+  font: 10px monospace;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+}
+.period-controls select {
+  padding: 10px;
+  border: 1px solid var(--rule);
+  background: #20251f;
+  min-height: 44px;
+}
+.period-controls a {
+  font-size: 12px;
+  margin-left: auto;
+}
+.commitment {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.artwork-insert img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+.artwork-insert p {
+  font: 10px monospace;
+  margin-top: 12px;
+}
+.commitment-copy {
+  padding: 8px 0;
+}
+.investigation .primary-action {
+  background: var(--gold);
+  color: #171915;
+  padding: 15px 22px;
+  display: flex;
+  gap: 25px;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 50px;
+  border-radius: 0;
+}
+.commitment-copy button {
+  margin-top: 16px;
+}
+.evidence-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 48px;
+  padding-bottom: 36px;
+}
+.investigation-record {
+  border-top: 1px solid var(--rule);
+  padding: 20px 0;
+}
+.exact-values {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 20px 0;
+}
+.exact-values[data-compact="true"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.exact-values div {
+  padding: 10px 0;
+}
+.exact-values dt {
+  font: 10px monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.exact-values dd {
+  font: clamp(20px, 2.5vw, 32px)/1.5 monospace;
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--paper);
+}
+.exact-values div:nth-child(2) dd {
+  color: var(--gold);
+}
+.focus-choices {
+  border-left: 1px solid var(--rule);
+  padding-left: 24px;
+}
+.focus-choices button {
+  display: block;
+  border-bottom: 1px solid var(--rule);
+  width: 100%;
+  font-size: 13px;
+}
+.focus-choices [aria-pressed="true"] {
+  color: var(--gold);
+}
+.selection-note {
+  font-size: 11px !important;
+}
+.story-actions {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 26px 0;
+}
+.story-actions a {
+  font-size: 12px;
+}
+.finding {
+  border-left: 2px solid var(--gold);
+  padding: 2px 22px;
+}
+.finding h3 {
+  color: var(--gold);
+}
+.story-ending {
+  max-width: 860px;
+  margin: 16px 0 50px;
+}
+.findings {
+  padding: 0;
+  list-style: none;
+}
+.findings li {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 17px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.coverage-note {
+  font-size: 12px !important;
+}
+.source-links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font: 12px monospace;
+}
+.all-evidence {
+  padding: 25px 0;
+  border-top: 1px solid var(--rule);
+}
+.all-evidence summary {
+  cursor: pointer;
+  min-height: 44px;
+}
+.all-evidence > div {
+  margin: 24px 0;
+  max-width: 900px;
+}
+.all-evidence button {
+  color: var(--gold);
+}
+.story-footer {
+  font: 10px/1.7 monospace;
+  color: #9d9e94;
+  border-top: 1px solid var(--rule);
+  padding: 35px 0;
+  max-width: 880px;
+}
+.aperture-still {
+  position: absolute;
+  inset: 20% 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.aperture-still i {
+  display: block;
+  width: 100px;
+  height: 160px;
+  border: 12px solid #b69a65;
+  border-radius: 50%;
+  transform: rotate(-25deg);
+}
+.aperture-still.ending {
+  gap: 0;
+}
+.aperture-still.ending i {
+  transform: rotate(0);
+  margin-left: -40px;
+}
+.rule-text {
+  font-size: 23px !important;
+  color: var(--paper) !important;
+}
+.continuity {
+  border-left: 1px solid var(--gold);
+  padding-left: 14px;
+}
+.investigation[data-beat="opening"] .investigation-world {
+  height: 40svh;
+}
+.investigation[data-beat="ending"] .investigation-world {
+  height: 30svh;
+}
+.investigation[data-beat="subject"] .investigation-world,
+.investigation[data-beat="evidence"] .investigation-world {
+  height: 28svh;
+  min-height: 210px;
+}
+.artwork-insert picture {
+  display: block;
+  min-height: 160px;
+  background: #1d211c;
+}
+.subject-heading h1 {
+  margin-bottom: 12px;
+}
+.period-controls {
+  padding-bottom: 18px;
+}
+@media (min-width: 700px) {
+  .opening-copy {
+    float: left;
+    width: 49%;
+    padding-right: 50px;
+  }
+  .roster-search {
+    margin-left: 52%;
+    padding-top: 30px;
+    border-top: 0;
+  }
+  .roster-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .story-footer {
+    clear: both;
+  }
+  .investigation[data-beat="opening"] .investigation-world {
+    height: 36svh;
+  }
+  .opening-copy h1 {
+    font-size: clamp(42px, 6vw, 78px);
+  }
+}
+@media (max-width: 600px) {
+  .investigation[data-beat="opening"] .investigation-world {
+    height: 26svh;
+    min-height: 160px;
+  }
+  .opening-copy {
+    padding: 18px 0 10px;
+  }
+  .opening-copy h1 {
+    font-size: 38px;
+    margin-bottom: 12px;
+  }
+  .opening-copy .eyebrow {
+    display: none;
+  }
+  .opening-copy > p:last-child {
+    display: none;
+  }
+  .roster-search {
+    padding-top: 12px;
+  }
+  .roster-search h2 {
+    font-size: 25px;
+    margin-bottom: 14px;
+  }
+  .story-header {
+    padding: 18px 5vw;
+    align-items: start;
+  }
+  .rift-wordmark {
+    font-size: 19px;
+  }
+  .story-header nav {
+    gap: 10px;
+    font-size: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 160px;
+  }
+  .story-kicker {
+    font-size: 8px;
+  }
+  .investigation-world {
+    height: 31svh;
+    min-height: 220px;
+  }
+  .roster-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .commitment,
+  .evidence-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .artwork-insert picture {
+    display: block;
+    background: #101310;
+  }
+  .artwork-insert img {
+    height: 380px;
+    width: 100%;
+    object-fit: contain;
+  }
+  .focus-choices {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding: 20px 0;
+  }
+  .period-controls {
+    gap: 10px;
+  }
+  .period-controls a {
+    margin-left: 0;
+  }
+  .subject-heading h1 em {
+    display: block;
+    margin-top: 12px;
+  }
+  .investigation h1 {
+    font-size: 49px;
+  }
+  .story-content {
+    padding-top: 18px;
+  }
+  .story-actions {
+    gap: 16px;
+  }
+  .story-actions button {
+    width: 100%;
+  }
+  .roster-search input {
+    font-size: 21px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .investigation * {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

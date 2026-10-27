@@ -1,0 +1,26 @@
+{
+  "status": "Functional implementation verified; cinematic release acceptance remains open",
+  "scope": "173 canonical champions, source-derived interval records, shared narrative planner and director, official metadata-resolved intact artwork",
+  "checks": {
+    "unitTests": "204 passed across 26 files",
+    "typeCheck": "0 errors; existing PCFSoftShadowMap deprecation hint",
+    "productionBuild": "Passed after restoring visible search",
+    "browserScenarios": "All 10 selected scenarios passed across initial and targeted reruns, not one clean aggregate run",
+    "correctedFailures": ["Scoped the rule assertion to active evidence rather than the duplicate transcript record", "Restored the missing global search trigger and verified both click and Control+K"],
+    "coverage": ["Belveth selection, health-growth return, R-focused ending, refresh, browser Back and explicit save", "Azir numeric findings", "Mixed-rank and rule evidence", "Ahri no-record interval", "Portrait reduced motion", "Explicit fallback", "Invalid identity", "Keyboard selection, evidence, saving, return and search", "Existing pool, patch-filter, compare and champion-history flows", "World-only state changes and four representative artwork compositions"]
+  },
+  "visualReview": {
+    "inspected": ["Opening without UI", "Resolution transition without UI", "Belveth intact artwork composition", "Portrait no-record ending"],
+    "qualification": "World-only captures demonstrate changed positions but do not establish reference-level cinematic quality. The resolution capture is transitional rather than fully settled. Recordings predate the final search control and skip-link wording only.",
+    "notClaimed": ["All roster artwork visually inspected", "Physical GPU smoothness", "Safari or real mobile device verification", "Creative acceptance at reference-site quality"]
+  },
+  "performance": {
+    "environment": "Isolated static production build, Chromium ANGLE SwiftShader software renderer, 835x833, recording enabled",
+    "medianRafMs": 316.7,
+    "p95RafMs": 1083.3,
+    "assessment": "Poor software-rendered frame pacing. Physical GPU performance remains unmeasured; do not label this release-ready.",
+    "webVitalsCaveat": "The recorded CLS 1.06 and LCP 148ms come from a test that deliberately hides UI, forces a full-height canvas, then restores layout. These are contaminated review-harness observations, not valid normal-page Web Vitals. INP was not measured."
+  },
+  "rights": "Official Data Dragon provenance is recorded per asset. Riot registration/acknowledgment and any commercial authorization remain owner-side checks, not claims of approval.",
+  "remaining": ["Normal-page Web Vitals and physical GPU validation", "Fully settled world-only ending capture and stronger cinematic art-direction acceptance", "Safari and real mobile checks", "Owner Riot registration and commercial rights confirmation"]
+}

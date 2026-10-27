@@ -1,0 +1,22 @@
+{
+  "mode": "production build; Chromium ANGLE SwiftShader; video recording active; NOT physical GPU",
+  "viewport": [
+    835,
+    833
+  ],
+  "medianRafMs": 316.6999999999971,
+  "p95RafMs": 1083.2999999999956,
+  "cls": 1.0602919161676647,
+  "lcp": 148,
+  "paint": [
+    {
+      "name": "first-paint",
+      "ms": 148
+    },
+    {
+      "name": "first-contentful-paint",
+      "ms": 148
+    }
+  ],
+  "renderer": "webgl"
+}
