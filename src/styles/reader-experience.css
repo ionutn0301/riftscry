@@ -157,7 +157,7 @@
 .archive-statline strong { color: var(--reader-paper); font: 400 26px/1 var(--font-display); margin-right: 6px; }
 
 /* Dense facts stay in the foreground, without artwork beneath opaque cards. */
-.reader-experience .filter-bar { background: transparent; border-block: 1px solid var(--reader-line); border-inline: 0; padding-block: 20px; margin-bottom: 24px; }
+.reader-experience .filter-bar { position: static; backdrop-filter: none; background: transparent; border-block: 1px solid var(--reader-line); border-inline: 0; padding-block: 20px; margin-bottom: 24px; }
 .reader-experience .filter-bar input { background: transparent; border-color: var(--reader-line); min-height: 46px; }
 .reader-experience .filter-bar .seg button { min-height: 44px; }
 .reader-experience .filter-bar [aria-pressed="true"] { color: var(--reader-signal); }
@@ -308,7 +308,9 @@
   .patch-chronology .total { font-size: 11px; }
   .latest-archive-note { display: block; margin: 8px 0 0; font-size: 8px; }
   .reader-experience .reading-chapter .change-card { display: block; padding-block: 27px; }
-  .reader-experience .reading-chapter .change-card > header { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; gap: 12px; align-items: center; }
+  .reader-experience .reading-chapter .change-card > header { display: grid; grid-template-columns: 56px minmax(0,1fr); gap: 12px; align-items: center; }
+  .reader-experience .reading-chapter .change-card > header > :last-child { grid-column: 2; justify-self: start; }
+  .reader-experience .reading-chapter .change-card h3 { overflow-wrap: anywhere; }
   .reader-experience .reading-chapter .change-card > header img { width: 56px; height: 56px; }
   .reader-experience .reading-chapter .change-card .who { min-width: 0; }
   .reader-experience .reading-chapter .change-card h3 { font-size: 29px; }
