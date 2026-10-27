@@ -9,7 +9,10 @@
 .palette {
   position: fixed;
   z-index: 100;
-  top: clamp(3rem, 14vh, 9rem);
+  top: clamp(1rem, 10dvh, 6rem);
+  max-height: calc(100dvh - clamp(1rem, 10dvh, 6rem) - 1rem);
+  display: flex;
+  flex-direction: column;
   left: 50%;
   transform: translateX(-50%);
   width: min(38rem, calc(100vw - 2rem));
@@ -35,6 +38,7 @@
 
 .palette [cmdk-input] {
   flex: 1;
+  min-width: 0;
   background: none;
   border: none;
   outline: none;
@@ -47,7 +51,12 @@
   color: var(--cream-faint);
 }
 
-.palette-head kbd {
+.palette-close {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  background: transparent;
+  cursor: pointer;
   font-size: var(--text-xs);
   color: var(--cream-faint);
   border: 1px solid var(--line-strong);
@@ -56,7 +65,8 @@
 }
 
 .palette [cmdk-list] {
-  max-height: min(50vh, 22rem);
+  max-height: min(50dvh, 22rem);
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--s2) 0 var(--s3);
@@ -81,6 +91,8 @@
 .palette [cmdk-item] {
   display: flex;
   align-items: baseline;
+  min-height: 44px;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--s4);
   padding: var(--s2) var(--s4);

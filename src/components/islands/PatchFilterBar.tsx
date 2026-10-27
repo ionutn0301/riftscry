@@ -143,12 +143,15 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
         type="button"
         className="pool-toggle"
         aria-pressed={filters.pool}
-        disabled={pool.length === 0}
+        disabled={pool.length === 0 && !filters.pool}
         title={pool.length === 0 ? "Pick champions on the My Pool page first" : undefined}
         onClick={() => set({ pool: !filters.pool })}
       >
         My pool{pool.length > 0 ? ` (${pool.length})` : ""}
       </button>
+      {serializeFilters(filters) && <button type="button" className="pool-toggle" onClick={() => setFilters({ ...EMPTY_FILTERS })}>Clear filters</button>}
+      {ready && <span role="status" aria-live="polite">{filterChampions(changes, filters, roles, pool, meta).length} of {entries.length} champions</span>}
+      {ready && filters.pool && pool.length === 0 && <span>No champions saved on this device. Turn off My pool or <a href="/pool">choose champions</a>.</span>}
     </div>
   );
 }

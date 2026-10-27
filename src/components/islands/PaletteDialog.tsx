@@ -46,7 +46,7 @@ export default function PaletteDialog({
           Δ
         </span>
         <Command.Input placeholder="Champion, patch, item, system…" />
-        <kbd className="num">esc</kbd>
+        <button type="button" className="palette-close" aria-label="Close search" onClick={() => onOpenChange(false)}>Close</button>
       </div>
       <Command.List>
         <Command.Empty>Nothing on the ledger for that.</Command.Empty>
