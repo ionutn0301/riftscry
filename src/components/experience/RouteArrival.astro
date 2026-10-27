@@ -1,0 +1,51 @@
+---
+import "../../styles/reader-experience.css";
+
+interface Chapter {
+  href: string;
+  label: string;
+  detail?: string;
+}
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  image?: string;
+  variant?: string;
+  chapters?: Chapter[];
+  note?: string;
+}
+const {
+  eyebrow, title, description,
+  image = "/images/voyage/rift-overlook.webp",
+  variant = "archive", chapters = [], note,
+} = Astro.props;
+---
+<section id="route-arrival" class:list={["route-arrival", "route-arrival--" + variant]} data-scene="arrival">
+  <div class="route-landscape" aria-hidden="true">
+    <img src={image} alt="" width="1600" height="1000" loading="eager" decoding="async" fetchpriority="high" />
+  </div>
+  <div class="route-arrival-grid">
+    <header class="route-arrival-copy" data-reveal>
+      <p class="route-kicker"><span class="route-signal" aria-hidden="true"></span>{eyebrow}</p>
+      <h1 data-route-title>{title}</h1>
+      <slot name="identity" />
+      <p class="route-description">{description}</p>
+      <div class="route-arrival-actions"><slot name="actions" /></div>
+      {note && <p class="route-coverage">{note}</p>}
+    </header>
+    <div class="route-arrival-figure" data-reveal><slot name="figure" /></div>
+  </div>
+  {chapters.length > 0 && <nav class="route-chapters" aria-label="Explore this page">
+    <span class="route-chapters-caption">Choose your next step</span>
+    <ol>
+      {chapters.map((chapter, index) => <li>
+        <a href={chapter.href}>
+          <span class="route-chapter-number">{String(index + 1).padStart(2, "0")}</span>
+          <span><strong>{chapter.label}</strong>{chapter.detail && <small>{chapter.detail}</small>}</span>
+          <span class="route-chapter-arrow" aria-hidden="true">↗</span>
+        </a>
+      </li>)}
+    </ol>
+  </nav>}
+</section>

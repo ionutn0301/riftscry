@@ -1,52 +1,38 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import RouteArrival from "../components/experience/RouteArrival.astro";
+import ReturnBriefing from "../components/experience/ReturnBriefing.astro";
 import PoolPicker, { type PoolChampion } from "../components/islands/PoolPicker";
 import { getAssetVersion, getChampionMeta, getLatestPatch, getRoles } from "../lib/data";
-
 const meta = getChampionMeta();
 const roles = getRoles();
 const assetVersion = getAssetVersion();
 const latest = getLatestPatch();
-
-const champions: PoolChampion[] = Object.entries(meta)
-  .map(([id, m]) => ({ id, name: m.name, title: m.title, roles: roles[id] ?? [] }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+const champions: PoolChampion[] = Object.entries(meta).map(([id,m]) => ({id,name:m.name,title:m.title,roles:roles[id] ?? []})).sort((a,b) => a.name.localeCompare(b.name));
 ---
-
-<Layout
-  title="My Pool — RiftScry"
-  description="Pick the champions you play. RiftScry remembers them on this device and shows you only the patch changes that matter to you."
->
-  <div class="page">
-    <header>
-      <h1>Pick your champions.</h1>
-      <p class="sub">
-        Stored on this device — no account. Every patch page gets a "your pool" lens.
-      </p>
-    </header>
-    <PoolPicker
-      client:load
-      champions={champions}
-      assetVersion={assetVersion}
-      latestPatchId={latest.id}
-    />
+<Layout surface="pool" title="My Pool — RiftScry" description="Return to your saved League of Legends champions, review their archived changes, and shape a device-local pool without an account.">
+  <div class="reader-experience">
+    <RouteArrival eyebrow="YOUR POINT OF RETURN" title={"Your Rift.\nReady when you are."}
+      description="Keep your champions close. Return to your briefing, pick up a history, and make the next patch easier to read."
+      image="/images/voyage/return-basin.webp" variant="pool"
+      note={"Saved on this device. Newest loaded archive: " + latest.id + " / " + latest.releaseDate + "."}
+      chapters={[{href:"#briefing",label:"Your briefing",detail:"Return to what matters"},{href:"#edit-pool",label:"Shape your pool",detail:"Choose the champions you play"}]}>
+      <div slot="actions"><a class="route-action" href="#briefing">Enter your briefing <span aria-hidden="true">↓</span></a></div>
+      <div slot="figure" class="arrival-period"><span class="arrival-period-caption">NEWEST LOADED ARCHIVE</span><span class="arrival-period-number">{latest.id}</span><time class="arrival-period-caption" datetime={latest.releaseDate}>{latest.releaseDate}</time></div>
+    </RouteArrival>
+    <div class="reader-body">
+      <aside class="chapter-rail"><p>Your perspective</p><ol><li><a href="#briefing">Your return briefing</a></li><li><a href="#edit-pool">Edit your champion pool</a></li><li><a href={"/patch/" + latest.id + "?pool=1"}>Open your patch ↗</a></li></ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <div class="reader-chapters">
+        <section id="briefing" class="reading-chapter" data-scene="pool-briefing">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>A place to pick things up.</h2><p>Your saved pool and the available archive give this visit its starting point.</p></div></header>
+          <ReturnBriefing />
+        </section>
+        <section id="edit-pool" class="reading-chapter" data-scene="pool-selection">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>Who belongs in your pool?</h2><p>Choose the champions you play. Selections stay on this device and give every patch page a personal view.</p></div></header>
+          <PoolPicker client:load champions={champions} assetVersion={assetVersion} latestPatchId={latest.id}/>
+        </section>
+        <section class="reader-next" data-reveal><div><h2>The full Rift is still there.</h2><p>Your pool focuses the view. Champion histories, item changes, and system records remain one step away.</p></div><a class="route-action route-action--quiet" href={"/patch/" + latest.id}>Explore the full patch <span aria-hidden="true">↗</span></a></section>
+      </div>
+    </div>
   </div>
 </Layout>
-
-<style>
-  .page {
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: var(--s7) var(--page-pad) 0;
-  }
-
-  h1 {
-    font-size: var(--text-2xl);
-    margin-bottom: var(--s3);
-  }
-
-  .sub {
-    color: var(--cream-dim);
-    margin-bottom: var(--s6);
-  }
-</style>

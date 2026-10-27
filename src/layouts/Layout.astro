@@ -1,26 +1,31 @@
 ---
 import "../styles/global.css";
-import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/experience.css";
+import Wayfinder from "../components/experience/Wayfinder.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import CommandPalette from "../components/islands/CommandPalette";
 import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
+import displayUrl from "../assets/fonts/ClashDisplay-Variable.woff2?url";
 
 interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  surface?: "home" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "missing";
 }
 
-const { title, description, ogImage = "/og-default.png" } = Astro.props;
+const { title, description, ogImage = "/og-default.png", surface: requestedSurface } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const isHome = Astro.url.pathname === "/";
+const inferredSurface = isHome ? "home" : Astro.url.pathname.split("/")[1] || "missing";
+const surface = requestedSurface ?? inferredSurface;
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#101311" />
+    <meta name="theme-color" content="#081319" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -28,6 +33,7 @@ const isHome = Astro.url.pathname === "/";
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" as="font" type="font/woff2" href={generalUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={displayUrl} crossorigin />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -35,14 +41,22 @@ const isHome = Astro.url.pathname === "/";
     <meta property="og:image" content={new URL(ogImage, Astro.site)} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      try {
+        document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches || localStorage.getItem('riftscry:motion') === 'reduced' ? 'reduced' : 'full';
+      } catch { document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'; }
+    </script>
   </head>
-  <body class:list={[isHome && "is-home"]}>
+  <body class:list={[isHome && "is-home"]} data-surface={surface}>
     <a class="skip-link" href="#main">Skip to content</a>
     <div>
-      {!isHome && <SiteHeader />}
+      <Wayfinder surface={surface} />
       <main id="main"><slot /></main>
-      {!isHome && <SiteFooter />}
+      <SiteFooter />
     </div>
     <CommandPalette client:load />
+    <script>
+      import '../scripts/experience';
+    </script>
   </body>
 </html>

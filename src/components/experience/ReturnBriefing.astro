@@ -1,0 +1,66 @@
+---
+import { getAllPatches, getChampionMeta, getAssetVersion } from '../../lib/data';
+import type { BriefingChampion, BriefingInsight, BriefingPatch } from '../../lib/return-briefing';
+import { dailyArchiveInsight } from '../../lib/return-briefing';
+import PersonalBriefing from './PersonalBriefing';
+import './briefing.css';
+
+interface Props { heading?: string }
+const { heading = 'Your next visit starts here.' } = Astro.props;
+const patches = getAllPatches();
+const meta = getChampionMeta();
+const version = getAssetVersion();
+const archive: BriefingPatch[] = patches.map((patch) => ({
+  id: patch.id,
+  date: patch.releaseDate,
+  championIds: [...new Set(patch.champions.map((champion) => champion.championId))],
+}));
+const champions: Record<string, BriefingChampion> = Object.fromEntries(
+  Object.entries(meta).map(([id, champion]) => [id, {
+    name: champion.name,
+    icon: `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${id}.png`,
+  }]),
+);
+
+// Build-time selection only: the client receives these exact records, not the archive.
+// These choices demonstrate scalar, rank-array and prose records without scoring impact.
+const selections = [
+  ['Azir', 'Q', 'Damage'],
+  ['Belveth', 'base', 'Health Growth'],
+  ['Belveth', 'R', 'True Form Remora Indicator'],
+  ['Camille', 'passive', 'Shield'],
+  ['Kennen', 'R', 'Damage'],
+  ['Azir', 'W', 'Laser Focus'],
+];
+const insights: BriefingInsight[] = [];
+const addRecord = (patch: typeof patches[number], champion: typeof patches[number]['champions'][number], ability: typeof patches[number]['champions'][number]['abilities'][number], change: typeof patches[number]['champions'][number]['abilities'][number]['changes'][number], index: number) => {
+  const id = `${patch.id}:${champion.championId}:${ability.ability}:${change.label}:${index}`;
+  if (insights.some((item) => item.id === id) || insights.length >= 16) return;
+  const context = {
+    id, championId: champion.championId, championName: meta[champion.championId]?.name ?? champion.championId,
+    patch: patch.id, date: patch.releaseDate, ability: ability.name, label: change.label, source: patch.sourceUrl,
+  };
+  insights.push(change.kind === 'numeric'
+    ? { ...context, kind: 'numeric', before: change.before, after: change.after, ...(change.unit ? { unit: change.unit } : {}) }
+    : { ...context, kind: 'prose', text: change.text });
+};
+for (const [championId, abilityId, label] of selections) {
+  for (const patch of patches) {
+    const champion = patch.champions.find((candidate) => candidate.championId === championId);
+    const ability = champion?.abilities.find((candidate) => candidate.ability === abilityId && candidate.changes.some((change) => change.label === label));
+    const index = ability?.changes.findIndex((change) => change.label === label) ?? -1;
+    if (champion && ability && index >= 0) { addRecord(patch, champion, ability, ability.changes[index]!, index); break; }
+  }
+}
+// Broaden the daily selection across other champions, with one exact record each.
+for (const patch of patches) {
+  for (const champion of patch.champions) {
+    if (insights.some((item) => item.championId === champion.championId)) continue;
+    const ability = champion.abilities.find((candidate) => candidate.changes.length > 0);
+    if (ability) addRecord(patch, champion, ability, ability.changes[0]!, 0);
+    if (insights.length >= 16) break;
+  }
+  if (insights.length >= 16) break;
+}
+---
+<PersonalBriefing archive={archive} champions={champions} insights={insights} initialInsightId={dailyArchiveInsight(insights)?.id} heading={heading} client:visible />

@@ -1,120 +1,44 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import RouteArrival from "../../components/experience/RouteArrival.astro";
 import DeltaGlyph from "../../components/DeltaGlyph.astro";
 import { getAllPatches } from "../../lib/data";
-
 const patches = getAllPatches();
-
-function fmt(date: string): string {
-  return new Date(date + "T00:00:00Z").toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  });
-}
+const latest = patches[0]!;
+const earliest = patches.at(-1)!;
+function fmt(date: string) { return new Date(date + "T00:00:00Z").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); }
 ---
-
-<Layout
-  title="All League Patches — RiftScry"
-  description="Every 2026 season League of Legends patch, diffed: champion, item and system changes as structured data."
->
-  <div class="page">
-    <h1>The season, patch by patch.</h1>
-    <ol class="patch-list" reversed>
-      {
-        patches.map((p) => {
-          const buffs = p.champions.filter((c) => c.classification === "buff").length;
-          const nerfs = p.champions.filter((c) => c.classification === "nerf").length;
-          return (
-            <li>
-              <a href={`/patch/${p.id}`}>
-                <span class="pid num">{p.id}</span>
-                <span class="date">{fmt(p.releaseDate)}</span>
-                <span class="stats">
-                  <span class="stat">
-                    <DeltaGlyph kind="buff" showLabel={false} />
-                    <span class="num">{buffs}</span>
-                  </span>
-                  <span class="stat">
-                    <DeltaGlyph kind="nerf" showLabel={false} />
-                    <span class="num">{nerfs}</span>
-                  </span>
-                  <span class="total num">{p.champions.length} champions</span>
-                </span>
-              </a>
-            </li>
-          );
-        })
-      }
-    </ol>
+<Layout surface="patches" title="All League Patches — RiftScry" description="Move through RiftScry's archived League of Legends patches and follow the champion, item, and system changes inside each one.">
+  <div class="reader-experience">
+    <RouteArrival eyebrow="THE SEASON / IN RECORDED MOMENTS" title={"The game moves.\nThe record remains."}
+      description="Choose a point in the archive. Open the changes it holds, or compare the distance between two patches."
+      image="/images/voyage/history-strata.webp" variant="patches"
+      note={"Archive coverage: " + earliest.releaseDate + " through " + latest.releaseDate + "."}
+      chapters={[{href:"#archive",label:"Enter the archive",detail:patches.length + " recorded patches"},{href:"/compare",label:"Cross two moments",detail:"Compare an interval"}]}>
+      <div slot="actions"><a class="route-action" href={"/patch/" + latest.id}>Open {latest.id} <span aria-hidden="true">↗</span></a></div>
+      <div slot="figure" class="arrival-period" aria-label={"Archive from patch " + earliest.id + " through " + latest.id}>
+        <span class="arrival-period-number">{earliest.id}</span><span class="arrival-period-line" aria-hidden="true"></span><span class="arrival-period-number">{latest.id}</span>
+      </div>
+    </RouteArrival>
+    <div class="reader-body">
+      <aside class="chapter-rail"><p>Recorded moments</p><ol><li><a href="#archive">Every archived patch</a></li><li><a href="/compare">Compare an interval ↗</a></li><li><a href="/pool">Your pool's perspective ↗</a></li></ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <div class="reader-chapters">
+        <section id="archive" class="reading-chapter" data-scene="patch-archive">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Choose your moment.</h2><p>Newest archived patch first. Counts describe direct champion classifications in each source record.</p></div></header>
+          <ol class="patch-list patch-chronology" reversed>
+            {patches.map((patch,index) => {
+              const buffs = patch.champions.filter((c) => c.classification === "buff").length;
+              const nerfs = patch.champions.filter((c) => c.classification === "nerf").length;
+              return <li data-reveal><a href={"/patch/" + patch.id}>
+                <span><span class="pid">{patch.id}</span>{index === 0 && <span class="latest-archive-note">Newest archived</span>}<time class="date" datetime={patch.releaseDate}>{fmt(patch.releaseDate)}</time></span>
+                <span class="stats"><span class="total">{patch.champions.length} champions · {patch.items.length} items · {patch.systems.length} systems</span><span class="stat"><DeltaGlyph kind="buff" showLabel={false}/>{buffs} buffs</span><span class="stat"><DeltaGlyph kind="nerf" showLabel={false}/>{nerfs} nerfs</span></span>
+                <span class="patch-enter" aria-hidden="true">↗</span>
+              </a></li>;
+            })}
+          </ol>
+        </section>
+        <section class="reader-next" data-reveal><div><h2>How far did the game move?</h2><p>Choose the last patch you remember and the point you want to reach. Follow every recorded change in between.</p></div><a href="/compare" class="route-action">Compare patches <span aria-hidden="true">↗</span></a></section>
+      </div>
+    </div>
   </div>
 </Layout>
-
-<style>
-  .page {
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: var(--s7) var(--page-pad) 0;
-  }
-
-  h1 {
-    font-size: var(--text-2xl);
-    margin-bottom: var(--s6);
-  }
-
-  .patch-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .patch-list a {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s5);
-    padding: var(--s4) 0;
-    border-top: 1px solid var(--line);
-    transition: background-color var(--t-fast) var(--ease-out);
-  }
-
-  .patch-list a:hover {
-    background: var(--ink-2);
-    color: inherit;
-  }
-
-  .pid {
-    font-size: var(--text-xl);
-    color: var(--cream);
-    min-width: 5.5ch;
-  }
-
-  .date {
-    color: var(--cream-faint);
-    font-size: var(--text-sm);
-    min-width: 5ch;
-  }
-
-  .stats {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s4);
-    margin-left: auto;
-    font-size: var(--text-sm);
-  }
-
-  .stat {
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--s1);
-  }
-
-  .total {
-    color: var(--cream-faint);
-  }
-
-  @media (max-width: 640px) {
-    .total {
-      display: none;
-    }
-  }
-</style>

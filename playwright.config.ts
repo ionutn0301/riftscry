@@ -2,7 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "tests/e2e",
-  // Unmounted presentations remain archived; investigation covers the active roster-wide story.
+  // Earlier presentations remain archived. Voyage, keyboard, spatial-history
+  // (migrated resilience contracts) and core-flow cover the active experience.
   testIgnore: [
     "**/cinematic-production.spec.ts",
     "**/investigation.spec.ts",
@@ -38,5 +39,6 @@ export default defineConfig({
       },
     },
     { name: "mobile", use: { ...devices["iPhone 13"] } },
+    { name: "mobile-chromium", use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 } } },
   ],
 });

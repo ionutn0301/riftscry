@@ -42,7 +42,6 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
 
   // Hydrate from the URL, and follow browser history navigation.
   useEffect(() => {
-    if (document.documentElement.dataset.atlasMode === 'immersive' && document.querySelector('.atlas-mount')) return;
     setFilters(parseFilters(window.location.search));
     setReady(true);
     const onPop = () => setFilters(parseFilters(window.location.search));
