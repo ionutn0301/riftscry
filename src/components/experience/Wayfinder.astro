@@ -20,6 +20,7 @@ const label = destinations.find((destination) => destination.id === active)?.lab
   <a class="world-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={48} densities={[1, 2]} loading="eager" /></a>
   <div class="world-location"><span class="location-dot" aria-hidden="true"></span><span data-current-location>{label}</span></div>
   <div class="world-utilities">
+    <a href="/players">Players</a>
     <button type="button" class="world-search" data-palette-trigger>Search <kbd>⌘ K</kbd></button>
     <button type="button" class="motion-choice" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><span aria-hidden="true">◐</span><span data-motion-label>Motion on</span></button>
   </div>

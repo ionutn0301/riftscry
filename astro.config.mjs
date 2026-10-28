@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
+import vercel from "@astrojs/vercel";
 
 export default defineConfig({
   site: "https://riftscry.vercel.app",
@@ -10,6 +11,7 @@ export default defineConfig({
     optimizeDeps: { include: ['@nanostores/react', '@nanostores/persistent'] },
   },
   output: "static",
+  adapter: vercel(),
   devToolbar: { enabled: false },
   integrations: [react(), sitemap()],
 });

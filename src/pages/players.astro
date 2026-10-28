@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PlayerProfile from '../components/player/PlayerProfile';
+import '../styles/player.css';
+export const prerender = false;
+const fields = ['platform','puuid','queue','champion','result','view','name'] as const;
+const initial = Object.fromEntries(fields.map(key => [key, Astro.url.searchParams.get(key)?.slice(0,150) ?? ''])) as Record<typeof fields[number],string>;
+Astro.response.headers.set('Cache-Control','private, no-store');
+Astro.response.headers.set('X-Robots-Tag','noindex');
+---
+<Layout title="Player profiles · RiftScry" description="Review recorded matches and keep one private build adjustment to revisit." surface="players"><div class="player-workspace"><PlayerProfile initial={initial} client:load /></div></Layout>
