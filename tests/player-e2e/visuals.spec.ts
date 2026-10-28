@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { installFixtures, mixedModeMatches, platform, profilePath, query, recentAramLoss, recentAramWin, savedNote, seedNotes } from './fixtures';
+import { installFixtures, mixedModeMatches, platform, profilePath, puuid, query, recentAramLoss, recentAramWin, savedNote, seedNotes } from './fixtures';
 
 // Success artifacts for human design review. These are not pixel baselines and
 // never represent the user's live identity, history, rank, or AI responses.
@@ -125,13 +125,24 @@ for (const viewport of [
   });
 }
 
-test('desktop gateway has a bounded full-motion visual capture without blocking lookup', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test('short-laptop gateway keeps lookup, saved player and footer visible with full motion', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await installFixtures(page, { matches: mixedModeMatches });
+  const requests = await installFixtures(page, { matches: mixedModeMatches });
+  await page.addInitScript(remembered => {
+    localStorage.setItem('riftscry:remembered-player:v1', JSON.stringify(remembered));
+  }, { platform, puuid, name: identity });
   await page.goto(`/players?platform=${platform}`, { waitUntil: 'domcontentloaded' });
   await expectGatewayInViewport(page);
+  await expect(page.getByRole('form', { name: 'Find a League of Legends player', exact: true })).toBeInViewport({ ratio: 1 });
+  const remembered = page.locator('.remembered-player');
+  await expect(remembered).toHaveAccessibleName(/Fixture Player#TEST/);
+  await expect(remembered).toHaveAttribute('href', new RegExp(`^${profilePath}\\?.*view=memory`));
+  await expect(remembered).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.gateway-footnote')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.gateway-privacy')).toHaveJSProperty('open', false);
   // Capture the live animation after actual readiness; no arbitrary sleep or
   // pixel assertion against a particular animation frame.
   await page.screenshot({ path: `${captureDirectory}/desktop-gateway-full-motion.png`, animations: 'allow', timeout: 10_000 });
+  expect(requests).toEqual([]);
 });
