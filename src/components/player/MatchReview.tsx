@@ -8,6 +8,9 @@ import BuildMemory from './BuildMemory';
 import { ItemLabel, RuneLabel } from './ItemPicker';
 import { useItemMetadata } from './useItemMetadata';
 import { usePlayerCooldown } from './usePlayerCooldown';
+import ChampionPortrait from './ChampionPortrait';
+import { championDisplayName } from './championArtwork';
+import PlayerIcon from './PlayerIcon';
 
 function clock(milliseconds: number) {
   const seconds = Math.max(0, Math.floor(milliseconds / 1000));
@@ -35,6 +38,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [draft, setDraft] = useState<AdjustmentDraft>();
+  const [reviewOpen, setReviewOpen] = useState(false);
   const evidenceDetails = useRef<HTMLDetailsElement>(null);
   const { data: timeline, error: timelineError, isLoading: timelineLoading, mutate: retryTimeline } = useSWR<Timeline>(timelineRequested ? api('timeline', values) : null, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const { data: items, error: itemError, isValidating: itemsLoading, mutate: retryItems } = useItemMetadata(match, platform, puuid);
@@ -49,6 +53,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     facts: [...report.facts, ...baseline.facts.filter(fact => !report.facts.some(recorded => recorded.id === fact.id))],
   } : baseline, [report, baseline]);
   const shownSuggestions = shown.suggestions ?? [];
+  const focusSection = shown.sections[1] ?? shown.sections[0];
   const purchaseFacts = (timeline ? facts : shown.facts).filter(fact => fact.kind === 'item' || fact.kind === 'death');
 
   function revealEvidence(factId: string, updateHash = true) {
@@ -87,6 +92,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       const body = await fetcher<Review>(api('review', values), { method: 'POST' });
       if (!Array.isArray(body.sections) || !Array.isArray(body.facts) || !['ai', 'deterministic'].includes(body.mode)) throw new Error('The review could not be read. Please try again.');
       setReport(body as Review);
+      setReviewOpen(true);
     } catch (failure) {
       setMessage(`${failure instanceof Error ? failure.message : 'Review unavailable.'} ${report ? 'Your previous review remains available.' : 'Deterministic summary remains available.'}`);
     } finally {
@@ -95,12 +101,11 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   }
 
   return <>
-    <a className="player-text-link" href={playerBackLink(back, platform, puuid)}>← Back to player and filters</a>
-    <header className="player-hero">
-      <p className="player-kicker">MATCH REVIEW / RECORDED EVIDENCE</p>
-      <h1>{p?.championName ?? 'Selected match'}<em> / review</em></h1>
-      <p>{id} · {match ? `${mode?.label} · Patch ${patchOf(match.info.gameVersion)}` : 'Loading match data'}</p>
-      {mode && <p className="review-mode-context">{mode.context}</p>}
+    <a className="player-text-link" aria-label="← Back to player and filters" href={playerBackLink(back, platform, puuid)}><PlayerIcon name="arrow-left" /> Back to player</a>
+    <header className="player-hero review-champion-heading">
+      {p && <ChampionPortrait className="review-champion-portrait" champion={p.championName} size={88} />}
+      <div><p className="player-kicker">MATCH REVIEW</p><h1>{p ? championDisplayName(p.championName) : 'Selected match'}</h1>
+      <div className="player-chips">{match ? <><span className="player-chip">{mode?.label}</span><span>Patch {patchOf(match.info.gameVersion)}</span><span><PlayerIcon name="clock" />{clock(match.info.gameDuration * 1000)}</span></> : <span>Loading match…</span>}</div></div>
     </header>
     {isLoading && <p role="status">Loading match summary…</p>}
     {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
@@ -110,50 +115,50 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
         <div>
           <p className="player-kicker">{p.win ? 'VICTORY' : 'DEFEAT'}</p>
           <h2>{p.kills} / {p.deaths} / {p.assists}</h2>
-          <p>{new Date(match.info.gameCreation).toLocaleString()} · {clock(match.info.gameDuration * 1000)} · {comparisonRoleLabel(comparisonRole(match, puuid))}</p>
-          <p>{Number.isFinite(p.totalDamageDealtToChampions) ? p.totalDamageDealtToChampions.toLocaleString() : 'Unavailable'} champion damage · {Number.isFinite(p.goldEarned) ? p.goldEarned.toLocaleString() : 'Unavailable'} gold{mode?.visionMetrics ? ` · ${Number.isFinite(p.visionScore) ? p.visionScore : 'Unavailable'} vision score` : ''}</p>
+          <p className="player-help">Kills / Deaths / Assists</p>
+          <div className="review-metrics">
+            <div className="review-metric"><PlayerIcon name="swords" /><span>Damage<strong>{Number.isFinite(p.totalDamageDealtToChampions) ? p.totalDamageDealtToChampions.toLocaleString() : '—'}</strong></span></div>
+            <div className="review-metric"><PlayerIcon name="coins" /><span>Gold<strong>{Number.isFinite(p.goldEarned) ? p.goldEarned.toLocaleString() : '—'}</strong></span></div>
+            {mode?.visionMetrics && <div className="review-metric"><PlayerIcon name="eye" /><span>Vision<strong>{Number.isFinite(p.visionScore) ? p.visionScore : '—'}</strong></span></div>}
+          </div>
         </div>
         <div>
           <h2>Final loadout</h2>
           <ul className="review-inventory">{[p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6].filter(Boolean).map((itemId, index) => <li key={`${itemId}:${index}`}><ItemLabel id={itemId} metadata={items} compact /></li>)}</ul>
-          <div className="review-runes">{mode?.runeSetup ? p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} />)) || <span>Runes unavailable</span> : <span>{mode?.queueId === 2400 || mode?.family === 'arena' ? 'Augments mode · rune settings not used' : 'Rune setup is not interpreted for this mode'}</span>}</div>
-          <p className="player-help">{itemError ? 'Historical item details are unavailable. Recorded IDs are retained.' : items ? `${items.notice} Final inventory does not establish purchase order.` : 'Loading compatible item and rune details…'}</p>
+          <div className="review-runes">{mode?.runeSetup ? p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} compact />)) || <span>Runes unavailable</span> : <span>{mode?.queueId === 2400 || mode?.family === 'arena' ? 'Augments mode' : 'Mode-specific setup'}</span>}</div>
+          {(!items || itemError) && <p className="player-help">{itemError ? 'Item names unavailable. Recorded IDs are kept.' : 'Loading items and runes…'}</p>}
           {itemError && <button className="player-button-secondary" disabled={itemsLoading || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button>}
         </div>
       </section>
+      <details className="player-explainer"><summary><PlayerIcon name="info" /> Match details</summary><p>{new Date(match.info.gameCreation).toLocaleString()} · {comparisonRoleLabel(comparisonRole(match, puuid))} · {id}</p>{mode && <p>{mode.context}</p>}<p>{items?.notice} Final loadout shows the end of the game; open the timeline for purchase order. Damage is champion damage across the whole match.</p></details>
 
       <section aria-labelledby="short-review-heading">
         <div className="player-actions review-actions">
-          <div><p className="player-kicker">01 / UNDERSTAND THIS GAME</p><h2 id="short-review-heading">A short review</h2></div>
-          <button disabled={busy || reviewRetrySeconds > 0} onClick={() => void generate()}>{reviewRetrySeconds ? `Review available in ${reviewRetrySeconds}s` : busy ? 'Preparing review…' : 'Request evidence-assisted review'}</button>
+          <h2 id="short-review-heading">One thing to revisit</h2>
+          <button disabled={busy || reviewRetrySeconds > 0} onClick={() => void generate()}><PlayerIcon name="sparkles" />{reviewRetrySeconds ? `Ready in ${reviewRetrySeconds}s` : busy ? 'Reviewing…' : 'Review with AI'}</button>
         </div>
-        <p className="review-mode">{shown.mode === 'ai' ? 'AI-assisted interpretation · check cited evidence' : 'Recorded summary · available without AI'}</p>
-        <p role="status" aria-live="polite">{busy ? 'Reviewing the recorded match. You can keep exploring while this loads.' : message}</p>
-        <div className="review-grid">{shown.sections.map(section => <article key={section.heading}><h3 className="player-kicker">{section.heading}</h3><p>{section.text}</p><div className="review-evidence-links">{section.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div></article>)}</div>
-        {shown.notice && <p className="player-help">{shown.notice}</p>}
+        <p className="review-mode"><PlayerIcon name={shown.mode === 'ai' ? 'sparkles' : 'check'} />{shown.mode === 'ai' ? 'AI-assisted interpretation' : 'Recorded summary'}</p>
+        <p role="status" aria-live="polite">{busy ? 'Reviewing your match…' : message}</p>
+        {focusSection && <article className="review-focus"><PlayerIcon name="target" size={24} /><div><p>{focusSection.text}</p><div className="review-evidence-links">{focusSection.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div></div></article>}
+        <details className="review-full player-explainer" open={reviewOpen} onToggle={event => setReviewOpen(event.currentTarget.open)}><summary>Full review</summary><div className="review-grid">{shown.sections.filter(section => section !== focusSection).map(section => <article key={section.heading}><h3 className="player-kicker">{section.heading}</h3><p>{section.text}</p><div className="review-evidence-links">{section.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div></article>)}</div>{shown.notice && <p className="player-help">{shown.notice}</p>}</details>
       </section>
 
       {!!shownSuggestions.length && <section className="build-suggestions" aria-labelledby="build-suggestions-heading">
-        <p className="player-kicker">02 / MAKE THE NEXT GAME COUNT</p>
-        <h2 id="build-suggestions-heading">A decision to revisit</h2>
-        <p>Pick an observation or compare an item option. Review the draft before saving it to Build Memory.</p>
+        <h2 id="build-suggestions-heading">Try next game</h2>
         {shownSuggestions.map(suggestion => <article className="build-suggestion" key={suggestion.id} data-suggestion-id={suggestion.id}>
           <header><ItemLabel id={suggestion.targetItem} metadata={items} compact /><h3>{suggestion.alternative}</h3></header>
-          <p><strong>Recorded:</strong> {suggestion.original}</p>
-          <p>{suggestion.reason}</p>
-          <p className="suggestion-tradeoff"><strong>Tradeoff:</strong> {suggestion.tradeoff}</p>
-          <p className="player-help">Applies when: {suggestion.condition}</p>
+          <p className="suggestion-condition"><PlayerIcon name="target" /> When: {suggestion.condition}</p>
+          <details className="player-explainer"><summary>Why this option?</summary><p><strong>Recorded:</strong> {suggestion.original}</p><p>{suggestion.reason}</p><p className="suggestion-tradeoff"><strong>Tradeoff:</strong> {suggestion.tradeoff}</p>
           <div className="review-evidence-links">{suggestion.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div>
           {suggestion.source && /^https:\/\//.test(suggestion.source.url) && <p><a href={suggestion.source.url} target="_blank" rel="noreferrer">{suggestion.source.label} ↗</a></p>}
-          <button aria-controls="build-memory" onClick={() => setDraft({ ...suggestion })}>Try this next time</button>
+          </details><button aria-controls="build-memory" onClick={() => setDraft({ ...suggestion })}><PlayerIcon name="bookmark" /> Review draft</button>
         </article>)}
       </section>}
 
       <section className="purchase-evidence" aria-labelledby="purchase-evidence-heading">
         <div className="player-actions"><h2 id="purchase-evidence-heading">Purchase evidence</h2>
-          <button onClick={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} disabled={timelineLoading || retrySeconds > 0 || (!!timeline && !timelineError)}>{retrySeconds && !timeline ? `Retry in ${retrySeconds}s` : timelineLoading ? 'Loading timeline…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Load timeline on demand'}</button>
+          <button onClick={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} disabled={timelineLoading || retrySeconds > 0 || (!!timeline && !timelineError)}><PlayerIcon name="clock" />{retrySeconds && !timeline ? `Retry in ${retrySeconds}s` : timelineLoading ? 'Loading…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Open timeline'}</button>
         </div>
-        <p>Follow actual purchases, sales, and undo events. An item event is a place to investigate, not a verdict about the decision.</p>
         {timelineLoading && <p role="status">Loading timeline…</p>}
         {timelineError && <p role="alert">Timeline unavailable. Purchase timing is unknown for this request.</p>}
         {!!purchaseFacts.length && <details><summary>Recorded item and death events · {purchaseFacts.length}</summary><ol className="purchase-timeline">{purchaseFacts.map(fact => <li key={fact.id}>
@@ -164,7 +169,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
         {(timeline || report) && !purchaseFacts.length && <p>No item or death events are available in the returned evidence.</p>}
       </section>
 
-      <details ref={evidenceDetails} className="supporting-evidence"><summary>Supporting facts, not inferred causes</summary>{shown.facts.map(fact => <p id={`fact-${fact.id}`} tabIndex={-1} key={fact.id}><strong>{evidenceLabel(fact)}:</strong> {fact.text}</p>)}</details>
+      <details ref={evidenceDetails} className="supporting-evidence"><summary><PlayerIcon name="info" /> Supporting facts</summary><p className="player-help">Recorded events show what happened, not why a decision worked.</p>{shown.facts.map(fact => <p id={`fact-${fact.id}`} tabIndex={-1} key={fact.id}><strong>{evidenceLabel(fact)}:</strong> {fact.text}</p>)}</details>
       <BuildMemory player={`${platform}:${puuid}`} puuid={puuid} platform={platform} source={match} metadata={items} draft={draft} onDraftConsumed={() => setDraft(undefined)} />
     </>}
   </>;

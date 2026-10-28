@@ -2,6 +2,7 @@ import { useEffect, useId, useState, type SubmitEvent } from 'react';
 import { platforms } from '../../lib/player/contracts';
 import { api, fetcher, playerLink, type PlayerView } from './client';
 import { usePlayerCooldown } from './usePlayerCooldown';
+import PlayerIcon from './PlayerIcon';
 
 const platformNames: Record<string, string> = {
   eun1: 'EUNE · Nordic & East', euw1: 'EUW · Europe West', na1: 'NA · North America',
@@ -10,10 +11,10 @@ const platformNames: Record<string, string> = {
   ru: 'RU · Russia', sg2: 'SG · Singapore', tw2: 'TW · Taiwan', vn2: 'VN · Vietnam',
   me1: 'ME · Middle East', ph2: 'PH · Legacy server', th2: 'TH · Legacy server',
 };
-const destinations: { id: PlayerView; label: string; detail: string }[] = [
-  { id: 'history', label: 'Your matches', detail: 'Follow your latest games across modes. Open a match to examine its recorded decisions.' },
-  { id: 'builds', label: 'Your builds', detail: 'Discover what you actually built, kept separate by champion, mode, role and patch.' },
-  { id: 'memory', label: 'Your next game', detail: 'Return to a saved adjustment. Keep the reason, the tradeoff, and what you want to try next.' },
+const destinations: { id: PlayerView; label: string; icon: 'history' | 'build' | 'bookmark' }[] = [
+  { id: 'history', label: 'Matches', icon: 'history' },
+  { id: 'builds', label: 'Builds', icon: 'build' },
+  { id: 'memory', label: 'Build Memory', icon: 'bookmark' },
 ];
 type RememberedPlayer = { platform: string; puuid: string; name: string };
 
@@ -69,9 +70,9 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
     </div>
     <div className="gateway-composition">
       <header className="gateway-heading">
-        <p className="player-kicker">LEAGUE OF LEGENDS / YOUR NEXT CHAPTER</p>
-        <h1 id="player-gateway-heading">The game ends.<br /><em>Your story stays.</em></h1>
-        <p>Find the player. Follow the matches.<br className="gateway-mobile-break" /> Take one better decision into your next game.</p>
+        <p className="player-kicker">LEAGUE OF LEGENDS</p>
+        <h1 id="player-gateway-heading">Your games.<br /><em>Your next move.</em></h1>
+        <p>Matches, builds, and one thing to try next.</p>
       </header>
 
       <form onSubmit={lookup} className="lookup-form" aria-label="Find a League of Legends player" aria-busy={busy}>
@@ -85,23 +86,22 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
             {Object.keys(platforms).map(value => <option key={value} value={value}>{platformNames[value] ?? value.toUpperCase()}</option>)}
           </select>
         </div>
-        <button type="submit" disabled={!ready || busy || retrySeconds > 0}>{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Looking up…' : !ready ? 'Preparing lookup…' : 'Find player →'}</button>
+        <button type="submit" disabled={!ready || busy || retrySeconds > 0}><PlayerIcon name={retrySeconds ? 'clock' : 'search'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Looking up…' : !ready ? 'Preparing lookup…' : 'Find player'}</button>
       </form>
-      <p id={`${id}-lookup-status`} className="lookup-status" role={message ? 'alert' : 'status'} aria-live="polite">{message || (busy ? 'Finding this player. Your match journey is next.' : '')}</p>
+      <p id={`${id}-lookup-status`} className="lookup-status" role={message ? 'alert' : 'status'} aria-live="polite">{message || (busy ? 'Finding player…' : '')}</p>
 
       <div className="gateway-destinations">
         <div className="gateway-intents" role="group" aria-label="Start with">
-          {destinations.map((destination, index) => <button key={destination.id} type="button" aria-pressed={view === destination.id} onClick={() => setView(destination.id)}>
-            <span aria-hidden="true">0{index + 1}</span><strong>{destination.label}</strong><span className="intent-arrow" aria-hidden="true">↗</span>
+          {destinations.map(destination => <button key={destination.id} type="button" aria-pressed={view === destination.id} onClick={() => setView(destination.id)}>
+            <PlayerIcon name={destination.icon} /><strong>{destination.label}</strong><PlayerIcon className="intent-arrow" name="arrow-right" size={16} />
           </button>)}
         </div>
-        <p className="gateway-anticipation" aria-live="polite">{destinations.find(destination => destination.id === view)?.detail}</p>
       </div>
 
       {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { name: remembered.name, view: 'memory' })}>
-        <span className="player-kicker">PICK UP WHERE YOU LEFT OFF</span><strong>{remembered.name || 'Your remembered player'}</strong><span>Open Build Memory ↗</span>
+        <span className="player-kicker"><PlayerIcon name="bookmark" size={16} /> SAVED PLAYER</span><strong>{remembered.name || 'Your remembered player'}</strong><span>Build Memory <PlayerIcon name="arrow-right" size={16} /></span>
       </a>}
     </div>
-    <footer className="gateway-footnote"><span>01 / FIND YOUR PERSPECTIVE</span><p>Private beta · Recent Riot match records.<br />Notes stay on this browser. Lookup does not verify ownership.</p></footer>
+    <footer className="gateway-footnote"><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />Private beta</summary><p>Notes stay on this browser. Looking up a player does not verify account ownership.</p></details></footer>
   </section>;
 }

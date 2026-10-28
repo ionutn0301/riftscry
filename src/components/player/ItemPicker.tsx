@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { api, fetcher } from './client';
 import type { ItemMetadata } from '../../lib/player/advice';
 import { usePlayerCooldown } from './usePlayerCooldown';
+import PlayerIcon from './PlayerIcon';
 
 export type { ItemMetadata } from '../../lib/player/advice';
 
@@ -37,7 +38,7 @@ export default function ItemPicker({ platform, puuid, id, initial = 0, value, on
   }
 
   return <div className="item-picker">
-    <label htmlFor={`${uid}-search`}>Search patch items</label>
+    <label htmlFor={`${uid}-search`}><PlayerIcon name="search" /> Search patch items</label>
     <input id={`${uid}-search`} type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Search by item name" />
     <label htmlFor={`${uid}-item`}>Tracked item</label>
     <select id={`${uid}-item`} name="item" required value={selected || ''} onChange={event => choose(Number(event.target.value))} aria-describedby={`${uid}-help`}>
@@ -46,25 +47,32 @@ export default function ItemPicker({ platform, puuid, id, initial = 0, value, on
       {options.map(([key, item]) => <option key={key} value={key}>{item.name}</option>)}
     </select>
     {selected > 0 && data?.data[selected] && <p className="item-picker-selection"><ItemLabel id={selected} metadata={data} /></p>}
-    {error && <div><p role="status">Item details are unavailable. Your existing target is preserved.</p><button type="button" disabled={isValidating || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button></div>}
-    {!isLoading && data && !Object.keys(data.data).length && <p role="status">No compatible item catalogue is available for this match.</p>}
+    {error && <div><p role="status">Items unavailable. Your selection is kept.</p><button type="button" disabled={isValidating || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}><PlayerIcon name="refresh" />{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button></div>}
+    {!isLoading && data && !Object.keys(data.data).length && <p role="status">No items available for this patch.</p>}
     {!!query && !options.length && <p role="status">No items match this search.</p>}
-    <p id={`${uid}-help`} className="player-help">Choose the item you want to observe in future games. Eligibility and purchase budget depend on the game.</p>
+    <p id={`${uid}-help`} className="player-help">The item to track in later games.</p>
   </div>;
 }
 
-export function RuneLabel({ id, metadata }: { id: number; metadata?: ItemMetadata }) {
+export function RuneLabel({ id, metadata, compact = false }: { id: number; metadata?: ItemMetadata; compact?: boolean }) {
   const rune = metadata?.runes?.[id];
-  return <span className="rune-label">
-    {rune && <img loading="lazy" width="24" height="24" alt="" src={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon.split('/').map(encodeURIComponent).join('/')}`} />}
-    <span>{rune?.name ?? `Rune ${id}`}</span>
+  const src = rune ? `https://ddragon.leagueoflegends.com/cdn/img/${rune.icon.split('/').map(encodeURIComponent).join('/')}` : '';
+  const [failedSource, setFailedSource] = useState('');
+  const hasImage = !!src && failedSource !== src;
+  const name = rune?.name ?? `Rune ${id}`;
+  return <span className={`rune-label${compact ? ' rune-label--compact' : ''}${hasImage ? ' has-art' : ''}`} title={name}>
+    {hasImage && <img loading="lazy" width="24" height="24" alt="" src={src} onError={() => setFailedSource(src)} />}
+    <span>{name}</span>
   </span>;
 }
 
 export function ItemLabel({ id, metadata, compact = false }: { id: number; metadata?: ItemMetadata; compact?: boolean }) {
   const item = metadata?.data[id];
-  return <span className="item-label">
-    {metadata?.version && item?.image?.full && <img width="32" height="32" loading="lazy" src={`https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(metadata.version)}/img/item/${encodeURIComponent(item.image.full)}`} alt="" />}
+  const src = metadata?.version && item?.image?.full ? `https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(metadata.version)}/img/item/${encodeURIComponent(item.image.full)}` : '';
+  const [failedSource, setFailedSource] = useState('');
+  const hasImage = !!src && failedSource !== src;
+  return <span className={`item-label${compact ? ' item-label--compact' : ''}${hasImage ? ' has-art' : ''}`} title={item?.name ?? `Item ${id}`}>
+    {hasImage && <img width="32" height="32" loading="lazy" src={src} alt="" onError={() => setFailedSource(src)} />}
     <span>{item?.name ?? `Item ${id}`}{!compact && item?.plaintext && <small> — {item.plaintext}</small>}</span>
   </span>;
 }

@@ -60,7 +60,7 @@ test('legacy query profile links redirect to the separate profile with their sel
   await expect(page).toHaveURL(url => url.pathname === profilePath && url.searchParams.get('queue') === '450' && url.searchParams.get('view') === 'memory');
   await expect(page.locator('[data-player-gateway]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Build Memory', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByText(/^No saved adjustments for this player yet\./)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'No saved ideas yet.', exact: true })).toBeVisible();
 });
 
 test('History, Builds and Memory show their own content while preserving mode and history filters', async ({ page }) => {
@@ -79,18 +79,18 @@ test('History, Builds and Memory show their own content while preserving mode an
   await expect(sample).toContainText('2 of 2 recent matches imported');
   await expect(rows(page)).toHaveCount(1);
   await expectSummary(page, 450, { matches: 1, wins: 0, winRate: 0, kda: [6, 4, 12] });
-  await expect(arrival.getByRole('link', { name: 'Explore your games', exact: true })).toHaveAttribute('href', '#player-records');
+  await expect(arrival.getByRole('link', { name: 'View matches', exact: true })).toHaveAttribute('href', '#player-records');
 
-  await views.getByRole('button', { name: 'Personal builds', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Observed personal builds', exact: true })).toBeVisible();
+  await views.getByRole('button', { name: 'Builds', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your builds', exact: true })).toBeVisible();
   await expect(page.locator('.observed-build')).toHaveCount(1);
   await expect(page.locator('.observed-build')).toHaveAttribute('data-queue', '450');
-  await expect(page.locator('.observed-build .build-occurrences')).toHaveText('1 recorded game');
+  await expect(page.locator('.observed-build .build-occurrences')).toHaveText('1 game');
   await expect(page.locator('[data-mode-summary]')).toHaveCount(0);
   await expect(sample).toContainText('2 of 2 recent matches imported');
   await expect(filters.getByLabel('Champion', { exact: true })).toHaveValue('Ahri');
   await expect(filters.getByLabel('Result', { exact: true })).toHaveValue('loss');
-  await expect(arrival.getByRole('link', { name: 'Explore your builds', exact: true })).toHaveAttribute('href', '#player-records');
+  await expect(arrival.getByRole('link', { name: 'View builds', exact: true })).toHaveAttribute('href', '#player-records');
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: 'player-visuals/compact-profile-builds.png', fullPage: true, animations: 'disabled' });
 
@@ -103,18 +103,18 @@ test('History, Builds and Memory show their own content while preserving mode an
   await expect(filters.getByLabel('Champion', { exact: true })).toHaveCount(0);
   await expect(filters.getByLabel('Result', { exact: true })).toHaveCount(0);
   await expect(page.getByRole('group', { name: 'Filter saved adjustments', exact: true }).getByLabel('Champion', { exact: true })).toHaveValue('');
-  await expect(arrival.getByRole('link', { name: 'Open Build Memory', exact: true })).toHaveAttribute('href', '#player-records');
+  await expect(arrival.getByRole('link', { name: 'Build Memory', exact: true })).toHaveAttribute('href', '#player-records');
   await expect(page).toHaveURL(url => url.searchParams.get('view') === 'memory' && url.searchParams.get('queue') === '450' && url.searchParams.get('champion') === 'Ahri' && url.searchParams.get('result') === 'loss');
   await page.screenshot({ path: 'player-visuals/compact-profile-memory.png', fullPage: true, animations: 'disabled' });
 
-  await views.getByRole('button', { name: 'Match history', exact: true }).click();
+  await views.getByRole('button', { name: 'Matches', exact: true }).click();
   await expect(filters.getByLabel('Game mode', { exact: true })).toHaveValue('450');
   await expect(filters.getByLabel('Champion', { exact: true })).toHaveValue('Ahri');
   await expect(filters.getByLabel('Result', { exact: true })).toHaveValue('loss');
   await expect(rows(page)).toHaveCount(1);
   await expect(rows(page)).toHaveAttribute('href', new RegExp(`/matches/${recentAramLoss.metadata.matchId}\\?`));
   await expectSummary(page, 450, { matches: 1, wins: 0, winRate: 0, kda: [6, 4, 12] });
-  await expect(arrival.getByRole('link', { name: 'Explore your games', exact: true })).toHaveAttribute('href', '#player-records');
+  await expect(arrival.getByRole('link', { name: 'View matches', exact: true })).toHaveAttribute('href', '#player-records');
   expect(requests.filter(request => request.action === 'history')).toHaveLength(1);
 });
 
@@ -161,7 +161,7 @@ test('All recent includes newer ARAM and modern normal games ahead of old ranked
   await expect(modeSummary(page, 450).locator('[data-stat="cs-per-minute"], [data-stat="vision"]')).toHaveCount(0);
   await expect(modeSummary(page, 2400).locator('[data-stat="cs-per-minute"], [data-stat="vision"]')).toHaveCount(0);
   await expect(page.locator('.match-row[data-queue="2400"] .loadout-runes')).toHaveCount(0);
-  await expect(page.locator('.match-row[data-queue="2400"]')).toContainText('Augments mode · rune settings not used');
+  await expect(page.locator('.match-row[data-queue="2400"]')).toContainText('Augments mode');
   const importedIds = requests.filter(request => request.action === 'match')
     .map(request => new URL(request.url).searchParams.get('id'));
   expect(importedIds.sort()).toEqual(mixedModeMatches.map(match => match.metadata.matchId).sort());
@@ -309,14 +309,14 @@ test('ARAM review labels its mode and does not invent Summoner’s Rift lane or 
   await installFixtures(page, { matches: mixedModeMatches });
   await page.goto(`/matches/${recentAramWin.metadata.matchId}?${query}`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
-  await expect(page.getByText(/Recorded summary · available without AI/)).toBeVisible();
-  await page.getByText('Supporting facts, not inferred causes', { exact: true }).click();
+  await expect(page.getByText('Recorded summary', { exact: true })).toBeVisible();
+  await page.getByText('Supporting facts', { exact: true }).click();
   await expect(page.locator('#fact-mode-context')).toContainText('ARAM');
   await expect(page.locator('#fact-farm-rate')).toHaveCount(0);
   await expect(page.locator('#fact-vision')).toHaveCount(0);
   await expect(page.locator('#fact-result')).toContainText('18/6/24');
   await expect(page.locator('#fact-inventory')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Try this next time', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Review draft', exact: true })).toHaveCount(0);
 });
 
 test('new ARAM memory compares later ARAM games while excluding Mayhem even with the same mode context', async ({ page }) => {
@@ -347,7 +347,7 @@ test('gateway form is keyboard operable and opens the separate player profile', 
   const server = form.getByLabel('Server', { exact: true });
   const submit = form.getByRole('button', { name: /Find player/ });
   await expect(submit).toBeEnabled();
-  const buildsIntent = page.getByRole('button', { name: 'Your builds', exact: true });
+  const buildsIntent = page.getByRole('button', { name: 'Builds', exact: true });
   await buildsIntent.focus();
   await page.keyboard.press('Enter');
   await expect(buildsIntent).toHaveAttribute('aria-pressed', 'true');
@@ -361,12 +361,14 @@ test('gateway form is keyboard operable and opens the separate player profile', 
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(url => url.pathname === profilePath && url.searchParams.get('view') === 'builds');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(identity);
-  await expect(page.getByRole('heading', { name: 'Observed personal builds', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your builds', exact: true })).toBeVisible();
   await expect(page.locator('[data-player-gateway]')).toHaveCount(0);
 });
 
 test('the profile match path and shared map provide keyboard navigation without losing browser Back', async ({ page }) => {
   await installFixtures(page, { matches: mixedModeMatches });
+  // Artwork failure must preserve both the champion identity and the action.
+  await page.route('**/img/champion/Ahri.png', route => route.abort());
   await page.goto(namedProfile, { waitUntil: 'domcontentloaded' });
   await expect(page.locator('body')).toHaveAttribute('data-surface', 'player');
   const mapOpener = page.locator('[data-map-open]');
@@ -388,6 +390,11 @@ test('the profile match path and shared map provide keyboard navigation without 
   const rankedMoment = matchPath.getByRole('link', { name: /^Open Ahri, Ranked Solo\/Duo, win,/ });
   await rankedMoment.focus();
   await expect(rankedMoment).toHaveAttribute('data-selected', 'true');
+  const portrait = rankedMoment.locator('.champion-portrait');
+  await expect(portrait).toHaveAttribute('data-image-missing', 'true');
+  await expect(portrait.locator('img')).toHaveCount(0);
+  await expect(portrait.locator('.champion-portrait-fallback')).toHaveText('AH');
+  await expect(rankedMoment).toHaveAccessibleName(/^Open Ahri, Ranked Solo\/Duo, win,/);
   await expect(page.locator('.profile-path-reading')).toContainText('Ranked Solo/Duo');
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(url => url.pathname === `/matches/${oldRankedMatch.metadata.matchId}`);

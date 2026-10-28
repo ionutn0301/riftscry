@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { installFixtures, mixedModeMatches, platform, profilePath } from './fixtures';
+import { installFixtures, mixedModeMatches, platform, profilePath, puuid, query, recentAramLoss, recentAramWin, savedNote, seedNotes } from './fixtures';
 
 // Success artifacts for human design review. These are not pixel baselines and
 // never represent the user's live identity, history, rank, or AI responses.
@@ -9,6 +9,14 @@ const namedProfile = `${profilePath}?name=${encodeURIComponent(identity)}`;
 
 async function settledFonts(page: Page) {
   await page.evaluate(() => document.fonts.ready);
+}
+
+async function capture(page: Page, name: string, fullPage = false) {
+  await settledFonts(page);
+  // Full-page screenshots should show fixed navigation at its initial position,
+  // rather than halfway down the image after Playwright scrolls to a control.
+  if (fullPage) await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.screenshot({ path: `${captureDirectory}/${name}.png`, fullPage, animations: 'disabled' });
 }
 
 async function expectNoHorizontalOverflow(page: Page) {
@@ -38,12 +46,18 @@ for (const viewport of [
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const requests = await installFixtures(page, { matches: mixedModeMatches });
+    if (viewport.name === 'desktop') await seedNotes(page, [{
+      ...savedNote, role: 'MODE:aram', queue: 450,
+      source: recentAramLoss.metadata.matchId, sourceDate: recentAramLoss.info.gameCreation,
+      createdAt: recentAramLoss.info.gameCreation + 1_000,
+      trackingStartedAt: recentAramLoss.info.gameCreation + 1_000,
+    }]);
     await page.goto(`/players?platform=${platform}`, { waitUntil: 'domcontentloaded' });
     await expectGatewayInViewport(page);
     const runningLoops = await page.locator('[data-player-gateway]').evaluate(element => element.getAnimations({ subtree: true })
       .filter(animation => animation.playState === 'running' && animation.effect?.getComputedTiming().endTime === Infinity).length);
     expect(runningLoops).toBe(0);
-    await page.screenshot({ path: `${captureDirectory}/${viewport.name}-gateway.png`, animations: 'disabled' });
+    await capture(page, `${viewport.name}-gateway`);
 
     await page.goto(namedProfile, { waitUntil: 'domcontentloaded' });
     const sample = page.getByRole('region', { name: 'Recent match sample', exact: true });
@@ -52,9 +66,24 @@ for (const viewport of [
     await expect(page.locator('[data-player-profile]')).toBeVisible();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(identity);
     await expect(page.getByRole('heading', { level: 1 })).toBeInViewport({ ratio: 1 });
+    if (viewport.name === 'desktop') {
+      const recordReads = () => requests.filter(request => ['history', 'match'].includes(request.action)).length;
+      const before = recordReads();
+      for (const title of ['About this sample', 'About these stats']) {
+        const summary = sample.locator('summary').filter({ hasText: title }).first();
+        const disclosure = summary.locator('..');
+        await expect(disclosure).toHaveJSProperty('open', false);
+        await summary.focus();
+        await page.keyboard.press('Enter');
+        await expect(disclosure).toHaveJSProperty('open', true);
+        await page.keyboard.press('Enter');
+        await expect(disclosure).toHaveJSProperty('open', false);
+      }
+      expect(recordReads()).toBe(before);
+    }
     await settledFonts(page);
     await expectNoHorizontalOverflow(page);
-    await page.screenshot({ path: `${captureDirectory}/${viewport.name}-profile-all.png`, fullPage: true, animations: 'disabled' });
+    await capture(page, `${viewport.name}-profile-all`, true);
 
     for (const mode of [{ id: '450', name: 'aram', count: 2 }, { id: '420', name: 'ranked', count: 1 }]) {
       await page.getByLabel('Game mode', { exact: true }).selectOption(mode.id);
@@ -64,19 +93,56 @@ for (const viewport of [
       await expect(page.locator('[data-mode-summary]')).toHaveAttribute('data-queue', mode.id);
       await settledFonts(page);
       await expectNoHorizontalOverflow(page);
-      await page.screenshot({ path: `${captureDirectory}/${viewport.name}-profile-${mode.name}.png`, fullPage: true, animations: 'disabled' });
+      await capture(page, `${viewport.name}-profile-${mode.name}`, true);
     }
     expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);
+
+    if (viewport.name === 'desktop') {
+      await page.getByLabel('Game mode', { exact: true }).selectOption('450');
+      await expect(sample).toContainText('2 of 2 recent matches imported');
+      const views = page.getByRole('navigation', { name: 'Player views', exact: true });
+      await views.getByRole('button', { name: 'Builds', exact: true }).click();
+      await expect(page.locator('.observed-build')).toHaveCount(1);
+      await expectNoHorizontalOverflow(page);
+      await capture(page, 'desktop-profile-builds', true);
+      await views.getByRole('button', { name: 'Build Memory', exact: true }).click();
+      await expect(page.locator('.memory-note')).toHaveCount(1);
+      await expect(page.getByText(/1 eligible later match/)).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+      await capture(page, 'desktop-profile-memory', true);
+      expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);
+    }
+
+    if (viewport.name !== 'mobile') {
+      await page.goto(`/matches/${recentAramWin.metadata.matchId}?${query}`, { waitUntil: 'domcontentloaded' });
+      await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
+      await expect(page.getByRole('region', { name: 'Match overview', exact: true })).toContainText('18 / 6 / 24');
+      await expect(page.getByRole('button', { name: 'Review with AI', exact: true })).toBeEnabled();
+      await expectNoHorizontalOverflow(page);
+      await capture(page, `${viewport.name}-match-review`, true);
+      expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);
+    }
   });
 }
 
-test('desktop gateway has a bounded full-motion visual capture without blocking lookup', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test('short-laptop gateway keeps lookup, saved player and footer visible with full motion', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await installFixtures(page, { matches: mixedModeMatches });
+  const requests = await installFixtures(page, { matches: mixedModeMatches });
+  await page.addInitScript(remembered => {
+    localStorage.setItem('riftscry:remembered-player:v1', JSON.stringify(remembered));
+  }, { platform, puuid, name: identity });
   await page.goto(`/players?platform=${platform}`, { waitUntil: 'domcontentloaded' });
   await expectGatewayInViewport(page);
+  await expect(page.getByRole('form', { name: 'Find a League of Legends player', exact: true })).toBeInViewport({ ratio: 1 });
+  const remembered = page.locator('.remembered-player');
+  await expect(remembered).toHaveAccessibleName(/Fixture Player#TEST/);
+  await expect(remembered).toHaveAttribute('href', new RegExp(`^${profilePath}\\?.*view=memory`));
+  await expect(remembered).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.gateway-footnote')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.gateway-privacy')).toHaveJSProperty('open', false);
   // Capture the live animation after actual readiness; no arbitrary sleep or
   // pixel assertion against a particular animation frame.
   await page.screenshot({ path: `${captureDirectory}/desktop-gateway-full-motion.png`, animations: 'allow', timeout: 10_000 });
+  expect(requests).toEqual([]);
 });

@@ -1,5 +1,39 @@
 # RiftScry design
 
+## Player clarity follow-up — current presentation
+
+The player experience now leads with recognizable League imagery and short,
+plain labels. Preserve the cinematic environments and connected routes while
+reducing repeated explanation between the player and their next action.
+
+- Champion portraits identify the recent-game path, match rows, builds and saved
+  adjustments. The existing official catalogue resolves artwork aliases and
+  readable names; raw match, filter and saved-comparison identifiers stay intact.
+  Failed images retain names, initials and a stable footprint.
+- Every primary icon has a short visible label. Navigation says Matches, Builds
+  and Build Memory. Controls retain keyboard access and accessible names that
+  include their visible text. Icons are decorative, not unexplained navigation.
+- The profile arrival is shorter. Repeated slogans and the promotional closing
+  section are removed. A real selected-match link makes the portrait path useful.
+- Per-mode tiles lead with match count, win rate, known-result denominator, KDA
+  and champion portraits. Date ranges, mode context and secondary metrics remain
+  available in native disclosures. A partial sample and actual failures remain
+  visible; no combined all-mode performance score is introduced.
+- Match review shows a useful takeaway immediately. The remaining full result,
+  supporting evidence and methodology are optional disclosures. Requesting AI
+  opens the result automatically and keeps its AI label visible. User-authored
+  notes and generated findings are not arbitrarily shortened or discarded.
+- Items use artwork alongside readable names where decisions are made. Concise
+  match rows can use icons with accessible names; the match detail keeps readable
+  inventory labels. Missing artwork falls back to text.
+- Storage, condition confirmation, timing, mode eligibility, request caching and
+  cooldown behavior are unchanged. The lighter presentation must not erase facts
+  that explain a failed request or prevent a misleading comparison.
+
+The player browser suite retains its thirty workflow scenarios and captures the
+gateway, profile, builds, Memory and match-review layouts. Current rendered and
+deployment evidence belongs in the pull request; discovery is not a browser pass.
+
 ## October 28 player experience amendment — current implementation
 
 The player area extends the homepage's environment, typography and Rift map into
