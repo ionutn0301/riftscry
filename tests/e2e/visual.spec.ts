@@ -5,7 +5,7 @@ import { test, expect } from "@playwright/test";
 // `pnpm exec playwright test tests/e2e/visual.spec.ts --update-snapshots`.
 test.skip(process.platform !== "win32", "visual baselines are win32-rendered");
 
-// Mask remote imagery on product routes. The homepage baseline intentionally
+// Mask remote imagery on product routes. The journey baseline intentionally
 // renders its committed patch data: the patch numerals are core composition,
 // and masking them would conceal the emblem aperture we need to review.
 const maskRemote = (page: import("@playwright/test").Page) => [
@@ -16,8 +16,8 @@ const maskRemote = (page: import("@playwright/test").Page) => [
   page.locator("[data-portal-preview]"),
 ];
 
-test("homepage hero end state", async ({ page }) => {
-  await page.goto("/");
+test("exploration hero end state", async ({ page }) => {
+  await page.goto("/explore");
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
   await expect(page).toHaveScreenshot("hero.png", {

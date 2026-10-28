@@ -61,9 +61,23 @@ body .route-arrival-copy, body .route-landscape img { animation: none; }
 /* Player journeys keep the map in the shared controls so the opening can use
    the full landscape without a second floating navigation layer. */
 .world-controls--player .world-utilities { gap: 18px; }
+.world-controls--tasks .world-utilities { gap: 18px; }
+.world-task-links { display: flex; align-items: center; gap: 24px; font-size: 13px; }
+.world-task-links a { display: inline-flex; align-items: center; min-height: 44px; white-space: nowrap; }
+.world-task-links a[aria-current] { color: var(--world-signal); }
+body:is([data-surface="home"], [data-surface="next-game"]) #main { padding-left: 0; }
+body:is([data-surface="home"], [data-surface="next-game"]) .site-footer { padding-bottom: max(36px,env(safe-area-inset-bottom)) !important; }
 .player-map-trigger { view-transition-name: world-wayfinder; color: var(--world-signal); }
 .player-map-trigger svg { width: 20px; height: 20px; flex: none; }
+@media (max-width: 1150px) {
+  .world-task-links { gap: 16px; }
+  .world-task-links a:last-child { display: none; }
+}
+@media (max-width: 1050px), (max-height: 600px), (pointer: coarse) {
+  .world-task-links { display: none; }
+}
 @media (max-width: 700px) {
+  .world-controls--tasks .world-utilities { gap: 8px; }
   .player-map-trigger svg { width: 16px; height: 16px; }
 }
 html[data-motion="reduced"]::view-transition-group(world-wayfinder),

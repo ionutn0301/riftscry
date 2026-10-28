@@ -181,7 +181,11 @@ html[data-motion="reduced"]::view-transition-old(root),html[data-motion="reduced
   .map-destination strong { font-size: 22px; }
 }
 @media (min-width: 480px) and (max-width: 650px) and (max-height: 450px) {
-  .navigation-landscape { grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 20px; }
+  .navigation-landscape { grid-template-columns: repeat(3,minmax(0,1fr)); column-gap: 14px; }
+  .map-destination { grid-template-columns: minmax(0,1fr) max-content; min-height: 44px; padding-block: 6px; column-gap: 6px; }
+  .map-destination .destination-coordinate { display: none; }
+  .map-destination strong { font-size: 18px; }
+  .map-destination > b { grid-column: 2; font-size: 18px; }
 }
 @media (max-height: 600px) and (min-width: 651px) {
   .map-dialog-inner { padding-block: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-bottom)); }

@@ -1,7 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import HomeVoyage from '../components/experience/HomeVoyage.astro';
+import CompanionHome from '../components/companion/CompanionHome.astro';
 ---
-<Layout surface="home" title="RiftScry — The Rift, revealed" description="Enter a changing game. Choose any League of Legends champion, follow exact patch records through time, and build a personal briefing for your next visit.">
-  <HomeVoyage />
+<Layout surface="home" title="RiftScry — Review your games. Prepare for the next." description="Your League of Legends companion for recent matches, recorded builds, quick notes and champion changes. Bring your own advice into the next game with Rift Recall.">
+  <script is:inline>
+    // Existing shared journey links and saved reading places still reach their
+    // original chapter after the companion becomes the front door.
+    const previousJourney = new URL(location.href);
+    const journeyChapters = ['#arrival', '#perspective', '#change', '#history', '#return', '#subject', '#evidence', '#ending', '#opening'];
+    if (['champion', 'patch', 'older', 'newer', 'event', 'seen', 'beat', 'focus'].some((key) => previousJourney.searchParams.has(key)) || journeyChapters.includes(previousJourney.hash)) {
+      location.replace('/explore' + previousJourney.search + previousJourney.hash);
+    }
+  </script>
+  <CompanionHome />
 </Layout>

@@ -10,8 +10,9 @@ Astro.response.headers.set('X-Robots-Tag','noindex');
 const name = Astro.url.searchParams.get('name')?.slice(0, 150) ?? '';
 const platform = Astro.url.searchParams.get('platform')?.toLowerCase() ?? '';
 const puuid = Astro.url.searchParams.get('puuid') ?? '';
+const intent = Object.fromEntries(['view', 'queue', 'champion', 'result'].map(key => [key, Astro.url.searchParams.get(key)?.slice(0, 150) ?? '']));
 // Keep previously saved and shared profile links useful after the route split.
-if (platform in platforms && /^[A-Za-z0-9_-]{30,120}$/.test(puuid)) {
+if (Object.hasOwn(platforms, platform) && /^[A-Za-z0-9_-]{30,120}$/.test(puuid)) {
   const query = new URLSearchParams();
   for (const key of ['name', 'queue', 'champion', 'result', 'view']) {
     const value = Astro.url.searchParams.get(key)?.slice(0, 150);
@@ -21,5 +22,5 @@ if (platform in platforms && /^[A-Za-z0-9_-]{30,120}$/.test(puuid)) {
 }
 ---
 <Layout title="Your next chapter · RiftScry" description="Find a League of Legends player, follow recent matches across modes, and carry useful build decisions into your next game." surface="players">
-  <div class="player-workspace player-gateway-shell"><PlayerGateway name={name} platform={platform} client:load /></div>
+  <div class="player-workspace player-gateway-shell"><PlayerGateway name={name} platform={platform} {...intent} client:load /></div>
 </Layout>

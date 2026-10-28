@@ -6,6 +6,7 @@ import { matchLink } from './client';
 import ChampionPortrait from './ChampionPortrait';
 import { championDisplayName } from './championArtwork';
 import PlayerIcon from './PlayerIcon';
+import SaveBuildButton from '../companion/SaveBuildButton';
 
 type LoadoutProps = { match: Match; platform: string; puuid: string; concise?: boolean };
 
@@ -50,6 +51,7 @@ export default function PersonalBuilds({ matches, platform, puuid, back, onLeave
       return <article className="memory-note observed-build" key={key} data-queue={source.info.queueId}>
         <header><div className="memory-note-identity"><ChampionPortrait className="build-champion-portrait" champion={player.championName} size={56} /><div><h3>{championDisplayName(player.championName)}</h3><div className="player-chips"><span className="player-chip">{mode.label}</span><span>Patch {patchOf(source.info.gameVersion)}</span></div><small>{comparisonRoleLabel(comparisonRole(source, puuid))}</small></div></div><span className="build-occurrences"><strong>{group.length}</strong> {group.length === 1 ? 'game' : 'games'}</span></header>
         <Loadout match={source} platform={platform} puuid={puuid} />
+        <SaveBuildButton match={source} platform={platform} puuid={puuid} />
         <p className="build-win-count"><PlayerIcon name="check" />{wins} recorded {wins === 1 ? 'win' : 'wins'}</p>
         <details className="build-source-matches"><summary>View {group.length === 1 ? 'match' : `${group.length} matches`}</summary>{group.map(match => <p key={match.metadata.matchId}><a onClick={onLeave} href={matchLink(match.metadata.matchId, platform, puuid, back)}><span>{new Date(match.info.gameCreation).toLocaleDateString()} · {participant(match, puuid)?.win ? 'Win' : 'Loss'}</span><PlayerIcon name="chevron-right" /></a></p>)}</details>
       </article>;

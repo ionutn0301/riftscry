@@ -7,7 +7,7 @@ type Bounds = { x: number; y: number; width: number; height: number };
 const champions = championData.champions as Record<string, { name: string; title: string }>;
 const longChampion = Object.entries(champions).sort((a, b) => b[1].name.length - a[1].name.length)[0]!;
 
-async function readyHome(page: Page) {
+async function readyJourney(page: Page) {
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-loading", "false");
   await page.evaluate(() => document.fonts.ready);
@@ -41,10 +41,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], [844, 390], [1024, 768]] as const) {
-  test(`home controls and all Rift map destinations fit ${width}×${height}`, async ({ page }) => {
+  test(`journey controls and all seven Rift map destinations fit ${width}×${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
-    await page.goto("/", { waitUntil: "domcontentloaded" });
-    await readyHome(page);
+    await page.goto("/explore", { waitUntil: "domcontentloaded" });
+    await readyJourney(page);
 
     const headerControls = page.locator(".world-brand, .world-utilities > a, [data-map-open], .world-utilities > [data-palette-trigger], [data-motion-toggle]");
     const controlBounds = await Promise.all((await headerControls.all()).map(bounds));
@@ -91,7 +91,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     const map = page.locator("#rift-map-dialog");
     await expect(map).toBeVisible();
     const destinations = map.getByRole("navigation", { name: "RiftScry destinations" }).getByRole("link");
-    await expect(destinations).toHaveCount(6);
+    await expect(destinations).toHaveCount(7);
     for (const destination of await destinations.all()) {
       await expect(destination).toBeInViewport({ ratio: 0.99 });
     }
@@ -123,8 +123,8 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
 for (const [width, height] of [[320, 568], [390, 844]] as const) {
   test(`champion selection has one usable scroll surface at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height });
-    await page.goto("/#perspective", { waitUntil: "domcontentloaded" });
-    await readyHome(page);
+    await page.goto("/explore#perspective", { waitUntil: "domcontentloaded" });
+    await readyJourney(page);
     const opener = page.locator("[data-roster-open]");
     await expectUncovered(opener);
     await opener.focus();
@@ -158,7 +158,7 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     await expect(roster.locator("[data-choose-champion]")).toHaveCount(1);
     await roster.locator('[data-choose-champion="Azir"]').click();
     await expect(roster).not.toBeVisible();
-    await readyHome(page);
+    await readyJourney(page);
     await expect(page.locator("[data-champion-name]")).toHaveText(champions.Azir!.name);
     await expect(page.locator("#perspective h2")).toBeFocused();
     await expect(page).toHaveURL((url) => url.searchParams.get("champion") === "Azir");
@@ -238,8 +238,8 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
 test("the short desktop opening keeps the scroll invitation clear of the Rift map", async ({ page, isMobile }) => {
   test.skip(isMobile, "Touch devices use the compact header at this width.");
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto("/", { waitUntil: "domcontentloaded" });
-  await readyHome(page);
+  await page.goto("/explore", { waitUntil: "domcontentloaded" });
+  await readyJourney(page);
   const invitation = page.locator(".arrival-footer .chapter-invitation");
   await expectUncovered(invitation);
   expect(overlaps(await bounds(invitation), await bounds(page.locator(".wayfinder-dock"))))

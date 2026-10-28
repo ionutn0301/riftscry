@@ -8,12 +8,13 @@ const latest = getLatestPatch();
   <div class="cols">
     <div>
       <p class="wordmark">RiftScry</p>
-      <p class="tagline">The patch notes, diffed.</p>
+      <p class="tagline">Review your games. Prepare for the next.</p>
     </div>
     <nav aria-label="Footer">
-      <a href={`/patch/${latest.id}`}>Latest archived patch</a>
-      <a href="/patches">All patches</a>
-      <a href="/champions">Champions</a>
+      <a href="/players">Recent games</a>
+      <a href="/next-game">Next game</a>
+      <a href="/pool#briefing">Champion changes</a>
+      <a href="/explore">Explore the Rift</a>
       <a href="https://github.com/ionutn0301/riftscry">Source on GitHub</a>
     </nav>
   </div>
@@ -74,6 +75,8 @@ const latest = getLatestPatch();
   nav a:hover {
     color: var(--gold-bright);
   }
+
+  nav a { min-height: 44px; display: inline-flex; align-items: center; }
 
   .provenance {
     max-width: 60ch;

@@ -148,7 +148,8 @@ test('short-laptop gateway and profile keep their useful first actions visible w
   await expect(page.getByRole('form', { name: 'Find a League of Legends player', exact: true })).toBeInViewport({ ratio: 1 });
   const remembered = page.locator('.remembered-player');
   await expect(remembered).toHaveAccessibleName(/Fixture Player#TEST/);
-  await expect(remembered).toHaveAttribute('href', new RegExp(`^${profilePath}\\?.*view=memory`));
+  // The saved identity follows the selected task; the gateway starts on Matches.
+  await expect(remembered).toHaveAttribute('href', new RegExp(`^${profilePath}\\?.*view=history`));
   await expect(remembered).toBeInViewport({ ratio: 1 });
   await expect(page.locator('.gateway-footnote')).toBeInViewport({ ratio: 1 });
   await expect(page.locator('.gateway-privacy')).toHaveJSProperty('open', false);

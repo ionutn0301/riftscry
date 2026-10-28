@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "checkedAt": "2026-10-28",
+  "scope": "Reviewed positive matches only. Each original heading has an explicit item-ID image in the official patch notes and that ID was checked in the patch's Data Dragon catalog. Names, map membership, shared artwork and numeric prefixes are not fallback identity rules. Unreviewed, combined or ambiguous headings remain unmapped.",
+  "entries": [
+    {
+      "patch": "26.17",
+      "heading": "Stormrazor",
+      "ids": [3095],
+      "assetVersion": "16.17.1",
+      "catalogName": "Stormrazor",
+      "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+      "sourceImageUrl": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/item/3095.png",
+      "catalogUrl": "https://ddragon.leagueoflegends.com/cdn/16.17.1/data/en_US/item.json"
+    },
+    {
+      "patch": "26.17",
+      "heading": "Sundered Sky",
+      "ids": [6610],
+      "assetVersion": "16.17.1",
+      "catalogName": "Sundered Sky",
+      "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+      "sourceImageUrl": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/item/6610.png",
+      "catalogUrl": "https://ddragon.leagueoflegends.com/cdn/16.17.1/data/en_US/item.json"
+    },
+    {
+      "patch": "26.18",
+      "heading": "Guinsoo's Rageblade",
+      "ids": [3124],
+      "assetVersion": "16.18.1",
+      "catalogName": "Guinsoo's Rageblade",
+      "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-18-notes/",
+      "sourceImageUrl": "https://ddragon.leagueoflegends.com/cdn/16.16.1/img/item/3124.png",
+      "catalogUrl": "https://ddragon.leagueoflegends.com/cdn/16.18.1/data/en_US/item.json"
+    },
+    {
+      "patch": "26.20",
+      "heading": "Experimental Hexplate",
+      "ids": [3073],
+      "assetVersion": "16.20.1",
+      "catalogName": "Experimental Hexplate",
+      "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+      "sourceImageUrl": "https://ddragon.leagueoflegends.com/cdn/16.17.1/img/item/3073.png",
+      "catalogUrl": "https://ddragon.leagueoflegends.com/cdn/16.20.1/data/en_US/item.json"
+    },
+    {
+      "patch": "26.21",
+      "heading": "Dawncore",
+      "ids": [6621],
+      "assetVersion": "16.21.1",
+      "catalogName": "Dawncore",
+      "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+      "sourceImageUrl": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/item/6621.png",
+      "catalogUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/data/en_US/item.json"
+    },
+    {
+      "patch": "26.21",
+      "heading": "Hubris",
+      "ids": [6697],
+      "assetVersion": "16.21.1",
+      "catalogName": "Hubris",
+      "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+      "sourceImageUrl": "https://ddragon.leagueoflegends.com/cdn/16.18.1/img/item/6697.png",
+      "catalogUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/data/en_US/item.json"
+    }
+  ]
+}

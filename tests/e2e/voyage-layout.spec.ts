@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test('unavailable device storage leaves evidence readable', async ({page}) => {
   await page.addInitScript(() => Object.defineProperty(window, 'localStorage', {get() { throw new DOMException('Blocked', 'SecurityError'); }}));
-  // Keep the evidence fixture explicit as the default homepage patch advances.
-  await page.goto('/?champion=Belveth&older=26.15&newer=26.16');
+  // Keep the evidence fixture explicit as the default journey patch advances.
+  await page.goto('/explore?champion=Belveth&older=26.15&newer=26.16');
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-ready', 'true');
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-loading', 'false');
   const latestArchive = page.locator('.arrival-archive a');
@@ -26,7 +26,7 @@ test('unavailable device storage leaves evidence readable', async ({page}) => {
 for (const [width, height] of [[835,833],[1440,900],[1280,720],[390,844],[844,390]] as const) {
   test(`chapter layout at ${width} by ${height}`, async ({ page }, testInfo) => {
     await page.setViewportSize({width,height});
-    await page.goto('/');
+    await page.goto('/explore');
     await page.waitForSelector('[data-ready="true"]');
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);

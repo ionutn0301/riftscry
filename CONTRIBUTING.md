@@ -67,7 +67,7 @@ Edit it directly; `pnpm test` checks coverage and validity.
 ```bash
 pnpm check      # typecheck
 pnpm test       # unit + data validation
-pnpm build      # static build must succeed
+pnpm build      # Astro/Vercel build must succeed
 pnpm e2e        # Playwright (run pnpm build first)
 ```
 
@@ -78,6 +78,9 @@ screenshots (desktop + 390px mobile).
 
 ## What we won't merge
 
-Accounts/backends/analytics, republished Riot prose, opaque "impact scores", or
-imitations of Riot's client UI. See `docs/DATA.md` for the methodology those rules
-protect.
+Republished Riot prose, opaque "impact scores", unsupported gameplay claims, or
+imitations of Riot's client UI. Keep recorded evidence distinct from user reflections
+and recommendations. Browser preparation should remain usable without player imports;
+new API work must preserve the existing access, cache and request-budget controls.
+See `docs/DATA.md` for the archive methodology and `docs/ARCHITECTURE.md` for the current
+client/server boundaries.

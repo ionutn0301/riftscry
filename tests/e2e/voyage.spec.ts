@@ -47,7 +47,7 @@ async function expectOpeningBounds(page: Page) {
 }
 
 test("five document chapters are connected by named native links", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/explore");
   await ready(page);
   const chapters = page.locator("[data-journey-chapter]");
   await expect(chapters).toHaveCount(5);
@@ -67,13 +67,13 @@ test("five document chapters are connected by named native links", async ({ page
 test("the arrival also fits a short desktop while the journey can scroll", async ({ page, isMobile }) => {
   test.skip(isMobile, "The mobile project already exercises its actual 390×844 viewport.");
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto("/");
+  await page.goto("/explore");
   await ready(page);
   await expectOpeningBounds(page);
 });
 
 test("champion choice loads a canonical static model and Back restores perspective", async ({ page }) => {
-  await page.goto("/?ref=regression");
+  await page.goto("/explore?ref=regression");
   await ready(page);
   const champion = await uncachedFeaturedChampion(page, ["Ahri"]);
   const modelPath = `/journey/${champion.id}.json`;
@@ -99,7 +99,7 @@ test("champion choice loads a canonical static model and Back restores perspecti
 });
 
 test("the full roster supports roles and normalized names beyond featured champions", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/explore");
   await ready(page);
   const rosterResponse = page.waitForResponse((response) => new URL(response.url()).pathname === "/journey/roster.json");
   await page.locator("[data-roster-open]").click();
@@ -129,7 +129,7 @@ test("the full roster supports roles and normalized names beyond featured champi
 });
 
 test("exact rank arrays, scaling, prose and source survive selection and reload", async ({ page }) => {
-  await page.goto("/?champion=Azir&older=26.15&newer=26.16#change");
+  await page.goto("/explore?champion=Azir&older=26.15&newer=26.16#change");
   await ready(page);
   await expect(page.locator("[data-record-label]")).toHaveText("Damage");
   await expect(page.locator("[data-record-before]")).toHaveText("60 / 80 / 100 / 120 / 140 (+35 / 40 / 45 / 50 / 55% AP)");
@@ -154,7 +154,7 @@ test("exact rank arrays, scaling, prose and source survive selection and reload"
 });
 
 test("interval boundaries, invalid input and a quiet champion stay honest", async ({ page }) => {
-  await page.goto("/?champion=Belveth&older=26.14&newer=26.16#history");
+  await page.goto("/explore?champion=Belveth&older=26.14&newer=26.16#history");
   await ready(page);
   await page.locator("[data-field-choice]").selectOption({ label: "Base stats / Health Growth" });
   await expect(page.locator("[data-history-trace] [data-select-record]")).toHaveCount(2);
@@ -168,7 +168,7 @@ test("interval boundaries, invalid input and a quiet champion stay honest", asyn
   await expect(page.locator("[data-period-status]")).toHaveAttribute("data-invalid", "true");
   await expect(page).toHaveURL(validUrl);
   await expect(page.locator("[data-record-after]")).toHaveText("105");
-  await page.goto("/?champion=Ahri&older=26.15&newer=26.16#change");
+  await page.goto("/explore?champion=Ahri&older=26.15&newer=26.16#change");
   await ready(page);
   await expect(page.locator("[data-record-quiet]")).toBeVisible();
   await expect(page.locator("[data-record-quiet]")).toContainText("No direct record");
@@ -178,7 +178,7 @@ test("interval boundaries, invalid input and a quiet champion stay honest", asyn
 });
 
 test("a failed champion request keeps the last readable perspective and a retry", async ({ page }) => {
-  await page.goto("/?champion=Belveth&older=26.14&newer=26.16");
+  await page.goto("/explore?champion=Belveth&older=26.14&newer=26.16");
   await ready(page);
   const champion = await uncachedFeaturedChampion(page, ["Belveth"]);
   const modelPath = `/journey/${champion.id}.json`;
@@ -215,7 +215,7 @@ test("a failed champion request keeps the last readable perspective and a retry"
 });
 
 test("Rift map has real destinations, restores focus and hands search out of its modal", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/explore");
   await ready(page);
   await expect(page.locator('astro-island[component-url*="CommandPalette"]')).not.toHaveAttribute("ssr", "");
   const opener = page.locator("[data-map-open]");
@@ -223,7 +223,7 @@ test("Rift map has real destinations, restores focus and hands search out of its
   const map = page.locator("#rift-map-dialog");
   await expect(map).toBeVisible();
   expect(await map.locator(".map-destination").evaluateAll((links) => links.map((link) => link.getAttribute("href"))))
-    .toEqual(["/", "/champions", "/patches", "/compare", "/pool", "/players"]);
+    .toEqual(["/players", "/next-game", "/pool", "/champions", "/patches", "/compare", "/explore"]);
   await page.keyboard.press("Escape");
   await expect(opener).toBeFocused();
   await opener.click();
@@ -264,14 +264,13 @@ test("each reading destination has a distinct arrival and the shared map", async
         // the arrival navigation. The missing-page arrival has recovery actions.
         if (surface === "missing") {
           const actions = page.locator("#route-arrival .route-arrival-actions");
-          const returnLink = actions.getByRole("link", { name: "Return to the journey", exact: true });
+          const returnLink = actions.getByRole("link", { name: "Return home", exact: true });
           await expect(returnLink).toBeVisible();
           await expect(returnLink).toHaveAttribute("href", "/");
           await expect(actions.getByRole("button", { name: "Search the archive ↗", exact: true })).toBeVisible();
           await returnLink.click();
           await expect(page).toHaveURL((url) => url.pathname === "/" && url.hash === "");
-          await ready(page);
-          await expect(page.locator("#arrival h1")).toBeVisible();
+          await expect(page.locator("#companion-heading")).toBeVisible();
           await page.goBack();
           await expect(page).toHaveURL((url) => url.pathname === path);
           await expect(page.locator("body")).toHaveAttribute("data-surface", surface);

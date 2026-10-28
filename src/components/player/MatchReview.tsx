@@ -11,6 +11,8 @@ import { usePlayerCooldown } from './usePlayerCooldown';
 import ChampionPortrait from './ChampionPortrait';
 import { championDisplayName } from './championArtwork';
 import PlayerIcon from './PlayerIcon';
+import SaveBuildButton from '../companion/SaveBuildButton';
+import QuickNoteCapture from '../companion/QuickNoteCapture';
 
 function clock(milliseconds: number) {
   const seconds = Math.max(0, Math.floor(milliseconds / 1000));
@@ -128,9 +130,11 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <div className="review-runes">{mode?.runeSetup ? p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} compact />)) || <span>Runes unavailable</span> : <span>{mode?.queueId === 2400 || mode?.family === 'arena' ? 'Augments mode' : 'Mode-specific setup'}</span>}</div>
           {(!items || itemError) && <p className="player-help">{itemError ? 'Item names unavailable. Recorded IDs are kept.' : 'Loading items and runes…'}</p>}
           {itemError && <button className="player-button-secondary" disabled={itemsLoading || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button>}
+          <SaveBuildButton match={match} platform={platform} puuid={puuid} metadata={items} />
         </div>
       </section>
       <details className="player-explainer"><summary><PlayerIcon name="info" /> Match details</summary><p>{new Date(match.info.gameCreation).toLocaleString()} · {comparisonRoleLabel(comparisonRole(match, puuid))} · {id}</p>{mode && <p>{mode.context}</p>}<p>{items?.notice} Final loadout shows the end of the game; open the timeline for purchase order. Damage is champion damage across the whole match.</p></details>
+      <QuickNoteCapture match={match} platform={platform} puuid={puuid} />
 
       <section aria-labelledby="short-review-heading">
         <div className="player-actions review-actions">

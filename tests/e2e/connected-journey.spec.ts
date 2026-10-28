@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('kept records survive champion and interval changes and support removal/restoration', async ({ page }) => {
-  await page.goto('/?champion=Belveth&older=26.14&newer=26.16#change');
+  await page.goto('/explore?champion=Belveth&older=26.14&newer=26.16#change');
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-loading', 'false');
   await page.locator('[data-focus-record]').click();
   await expect(page.locator('[data-findings-status]')).toContainText('saved on this device');
@@ -38,7 +38,7 @@ test('champion history saves directly and reaches the briefing', async ({ page }
 });
 
 test('quiet historical branch preserves original interval', async ({ page }) => {
-  await page.goto('/?champion=Ahri&older=26.15&newer=26.16#change');
+  await page.goto('/explore?champion=Ahri&older=26.15&newer=26.16#change');
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-loading', 'false');
   const recovery = page.locator('[data-historical-recovery]');
   await expect(recovery).toBeVisible();

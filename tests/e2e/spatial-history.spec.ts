@@ -9,7 +9,7 @@ const ready = async (page: Page) => {
 
 test("missing champion artwork keeps exact records and real route navigation", async ({ page }) => {
   await page.route("**/cdn/img/champion/**", (route) => route.abort());
-  await page.goto("/?champion=Belveth&older=26.15&newer=26.16#perspective");
+  await page.goto("/explore?champion=Belveth&older=26.15&newer=26.16#perspective");
   await ready(page);
   await expect(page.locator("[data-art-fallback]")).toBeVisible();
   await expect(page.locator("[data-art-fallback]")).toContainText("records remain available");
@@ -22,7 +22,7 @@ test("missing champion artwork keeps exact records and real route navigation", a
 });
 
 test("a lowercase champion deep link resolves exact evidence and reloads", async ({ page }) => {
-  const path = "/?champion=azir&older=26.15&newer=26.16#change";
+  const path = "/explore?champion=azir&older=26.15&newer=26.16#change";
   await page.goto(path);
   await ready(page);
   await expect(page.locator("[data-champion-name]")).toHaveText("Azir");
@@ -36,7 +36,7 @@ test("a lowercase champion deep link resolves exact evidence and reloads", async
 });
 
 test("a display name with a different canonical ID resolves without substituting a champion", async ({ page }) => {
-  await page.goto("/?champion=Wukong#perspective");
+  await page.goto("/explore?champion=Wukong#perspective");
   await ready(page);
   await expect(page.locator("[data-champion-name]")).toHaveText("Wukong");
   await expect(page.locator("[data-champion-link]")).toHaveAttribute("href", "/champion/monkeyking");
@@ -51,7 +51,7 @@ test("legacy patch and kept-finding URLs restore only records from the chosen in
   const payload = await response.json() as { records: { id: string; patch: string }[] };
   const model = { older: '26.14', newer: '26.16', selectedId: payload.records.find((record) => record.patch === '26.16')!.id };
   const params = new URLSearchParams({ champion: "Belveth", older: model.older, patch: model.newer, event: model.selectedId, seen: model.selectedId + "|forged-record", beat: "ending" });
-  await page.goto("/?" + params.toString());
+  await page.goto("/explore?" + params.toString());
   await ready(page);
   await expect(page.locator("[data-period-newer]")).toHaveValue(model.newer);
   await expect(page.locator("[data-findings-list] li")).toHaveCount(1);
@@ -65,13 +65,13 @@ test("legacy patch and kept-finding URLs restore only records from the chosen in
 });
 
 test("unknown champions and invalid URL intervals explain the retained evidence", async ({ page }) => {
-  await page.goto("/?champion=NotAChampion#perspective");
+  await page.goto("/explore?champion=NotAChampion#perspective");
   await ready(page);
   await expect(page.locator("[data-selection-status]")).toContainText("not in the loaded roster");
   await expect(page.locator("[data-selection-status]")).toContainText("remains visible");
   const initialName = await page.locator('#voyage-initial-data').evaluate((node) => JSON.parse(node.textContent!).identity.name);
   await expect(page.locator("[data-champion-name]")).toHaveText(initialName);
-  await page.goto("/?champion=Belveth&older=26.16&newer=26.15#history");
+  await page.goto("/explore?champion=Belveth&older=26.16&newer=26.15#history");
   await ready(page);
   await expect(page.locator("[data-period-status]")).toHaveAttribute("data-invalid", "true");
   await expect(page.locator("[data-period-status]")).toContainText("default archived interval");
@@ -87,7 +87,7 @@ test("unknown champions and invalid URL intervals explain the retained evidence"
 
 test("reduced motion keeps chapter links, dates and the map available on every viewport", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/explore");
   await ready(page);
   await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");
   await expect(page.locator("[data-motion-toggle]")).toHaveAttribute("aria-pressed", "true");
@@ -108,7 +108,7 @@ test("a short landscape viewport keeps controls reachable without horizontal ove
   test.skip(isMobile, "A separate desktop context exercises the short landscape dimensions.");
   await page.setViewportSize({ width: 640, height: 360 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/explore");
   await ready(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
   await page.locator("[data-roster-open]").click();

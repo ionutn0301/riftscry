@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NextGame from '../components/companion/NextGame';
+import { getAllPatches, getChampionMeta } from '../lib/data';
+import type { RecallPatch } from '../lib/companion';
+import { itemChangeIds } from '../lib/companion-item-identities';
+import '../styles/companion.css';
+
+const champions = Object.entries(getChampionMeta()).map(([id, champion]) => ({ id, name: champion.name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+const archive: RecallPatch[] = getAllPatches().map(patch => ({
+  id: patch.id,
+  version: patch.assetVersion,
+  date: patch.releaseDate,
+  champions: patch.champions.map(champion => champion.championId),
+  items: patch.items.flatMap(item => itemChangeIds(patch.id, item).map(id => ({ id, name: item.name }))),
+  records: [
+    ...patch.champions.flatMap(champion => champion.abilities.flatMap(ability => ability.changes.flatMap(change => change.kind === 'numeric'
+      ? [{ kind: 'champion' as const, targetId: champion.championId, label: `${ability.name} · ${change.label}`, before: change.before, after: change.after }] : []))),
+    ...patch.items.flatMap(item => itemChangeIds(patch.id, item).flatMap(id => item.changes.flatMap(change => change.kind === 'numeric'
+      ? [{ kind: 'item' as const, targetId: String(id), label: `${item.name} · ${change.label}`, before: change.before, after: change.after }] : []))),
+  ],
+}));
+---
+<Layout surface="next-game" title="Next game · Rift Recall · RiftScry" description="Bring your own notes and saved loadouts into your next League of Legends game. Choose one focus, check its patch context, and leave yourself a reflection.">
+  <NextGame champions={champions} archive={archive} client:load />
+  <noscript><div class="recall-nojs"><h2>Your preparation stays in this browser.</h2><p>Enable JavaScript to read and save your Rift Recall notes. You can still <a href="/patches">browse the patch archive</a>.</p></div></noscript>
+</Layout>
