@@ -37,7 +37,7 @@
 .chapter-invitation > span:last-child { font-size: 20px; }
 .invitation-line { width: 58px; height: 1px; background: #a0d1c99c; transform: rotate(-14deg); }
 .journey-coordinates { position: fixed; z-index: 30; right: 26px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; }
-.journey-coordinates a { position: relative; display: flex; align-items: center; justify-content: end; gap: 9px; min-width: 36px; min-height: 31px; font: 400 12px/1 "Spline Sans Mono",monospace; color: #92aaa7; }
+.journey-coordinates a { position: relative; display: flex; align-items: center; justify-content: end; gap: 9px; min-width: 44px; min-height: 44px; font: 400 12px/1 "Spline Sans Mono",monospace; color: #92aaa7; }
 .coordinate-mark { width: 4px; height: 4px; border-radius: 50%; background: currentColor; transition: box-shadow 200ms; }
 .coordinate-number { width: 12px; }
 .coordinate-label { position: absolute; right: 45px; min-width: max-content; padding: 8px 10px; background: #081319e8; opacity: 0; transform: translateX(6px); transition: opacity 160ms,transform 160ms; pointer-events: none; font: 400 12px/1.3 "General Sans",sans-serif; }
@@ -45,7 +45,8 @@
 .journey-coordinates a[aria-current] .coordinate-mark { box-shadow: 0 0 0 5px #8ed8d024; }
 .journey-coordinates a:hover .coordinate-label,.journey-coordinates a:focus-visible .coordinate-label { opacity: 1; transform: none; }
 
-/* 00 / The opening is exactly one screen. It is not the whole homepage. */
+/* 00 / The opening fills a screen. Compact layouts may grow to keep the
+   introduction, actions and archive links in their own space. */
 .arrival-chapter { height: 100svh; height: 100dvh; min-height: 0; padding-block: 90px 118px; }
 .arrival-composition { height: 100%; display: flex; flex-direction: column; justify-content: center; }
 .arrival-composition > .world-eyebrow { margin-bottom: 25px; color: #c1d2cd; }
@@ -53,11 +54,12 @@
 .arrival-composition h1 em { color: #dce9df; }
 .arrival-bottom { display: flex; align-items: end; flex-wrap: wrap; gap: 27px 55px; margin-top: clamp(24px,4svh,45px); }
 .arrival-bottom > p { color: #c1d3cf; font-size: clamp(13px,1.2vw,17px); line-height: 1.7; max-width: 33ch; }
+.arrival-footer { display: contents; }
 .arrival-archive { position: absolute; bottom: -12px; right: 15px; display: flex; flex-direction: column; gap: 10px; }
 .arrival-archive .world-eyebrow { font-size: 12px; color: #c1d3cf; }
 .arrival-archive a { font: 400 35px/1 "Clash Display",sans-serif; letter-spacing: -.04em; display: flex; align-items: baseline; gap: 15px; }
 .arrival-archive a > span { font: 400 12px/1.5 "General Sans",sans-serif; letter-spacing: 0; color: #bdd0c8; }
-.arrival-composition > .chapter-invitation { position: absolute; bottom: -20px; left: 0; }
+.arrival-footer > .chapter-invitation { position: absolute; bottom: 0; left: 0; }
 
 /* 01 / The champion remains a complete artwork, in its own open space. */
 .perspective-composition { display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1.35fr); align-items: center; gap: clamp(35px,4vw,70px); }
@@ -89,7 +91,7 @@
 .change-heading h2 { font-size: clamp(43px,5.1vw,80px); }
 .change-choice { display: flex; flex-direction: column; gap: 8px; max-width: 350px; min-width: 220px; }
 .change-choice label,.history-controls label { color: #b0c4c0; font-size: 12px; }
-.change-choice select,.history-controls select,.roster-search-row select { min-height: 44px; border: 0; border-bottom: 1px solid var(--voyage-line); background: #0b1c23; border-radius: 0; padding: 10px 32px 10px 12px; color: #e6ece5; font-size: 12px; width: 100%; text-overflow: ellipsis; }
+.change-choice select,.history-controls select,.roster-search-row select { min-width: 0; min-height: 44px; border: 0; border-bottom: 1px solid var(--voyage-line); background: #0b1c23; border-radius: 0; padding: 10px 32px 10px 12px; color: #e6ece5; font-size: 16px; width: 100%; text-overflow: ellipsis; }
 .voyage-record { transition: transform 600ms var(--world-ease); transform-origin: 50% 70%; min-width: 0; }
 .record-context { display: flex; flex-wrap: wrap; gap: 8px 22px; text-transform: uppercase; letter-spacing: .08em; font-size: 12px; color: #a2c4bd; margin-bottom: 17px; }
 .voyage-record > h3 { font-size: clamp(26px,3vw,45px); letter-spacing: -.025em; font-weight: 400; margin-bottom: 27px; }
@@ -157,32 +159,35 @@
 .return-composition .return-briefing__intro h2 { font-size: clamp(36px,4.1vw,62px); }
 .return-composition .return-briefing__archive > article { min-height: 370px; }
 
-/* Champion selection is a native modal, with conventional input and labels. */
-.voyage-roster-dialog { width: min(100vw,1100px); max-width: none; max-height: min(90svh,920px); padding: 0; border: 1px solid #557f7a80; background: #08171e; color: #e6ece5; overflow-y: auto; overscroll-behavior: contain; }
+/* Champion selection has one scroll surface. Its close control stays in view
+   while the full roster flows beneath it, including on short touch screens. */
+.voyage-roster-dialog { width: min(calc(100% - 24px),1100px); max-width: none; max-height: min(calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),920px); margin: auto; padding: 0; border: 1px solid #557f7a80; background: #08171e; color: #e6ece5; overflow-y: auto; overscroll-behavior: contain; }
 .voyage-roster-dialog::backdrop { background: #02080dd9; }
 .voyage-roster-dialog[open] { animation: map-arrive 350ms var(--world-ease) both; }
-.voyage-roster-shell { padding: clamp(23px,4vw,50px); }
-.voyage-roster-shell > header { display: flex; justify-content: space-between; align-items: start; gap: 20px; }
+.voyage-roster-shell { padding: clamp(23px,4vw,50px) max(clamp(23px,4vw,50px),env(safe-area-inset-right)) clamp(23px,4vw,50px) max(clamp(23px,4vw,50px),env(safe-area-inset-left)); }
+.voyage-roster-shell > header { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: start; gap: 20px; padding-block: 12px; background: #08171e; }
+.voyage-roster-shell > header > div { min-width: 0; }
+.voyage-roster-shell .world-close { flex: none; }
 .voyage-roster-shell h2 { margin-top: 18px; font-size: clamp(35px,4.3vw,61px); line-height: 1; }
 .roster-search-row { display: grid; grid-template-columns: minmax(0,1fr) 165px; gap: 20px; margin-top: 35px; }
-.roster-search-row label { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #a7c2ba; }
-.roster-search-row input { min-width: 0; width: 100%; min-height: 49px; background: #10262d; border: 1px solid #5c898269; border-radius: 0; padding: 12px 15px; color: #e6ece5; font-size: 15px; }
+.roster-search-row label { display: flex; min-width: 0; flex-direction: column; gap: 8px; font-size: 12px; color: #a7c2ba; }
+.roster-search-row input { min-width: 0; width: 100%; min-height: 49px; background: #10262d; border: 1px solid #5c898269; border-radius: 0; padding: 12px 15px; color: #e6ece5; font-size: 16px; }
 .roster-search-row select { min-height: 49px; }
 [data-roster-status] { margin-block: 16px; min-height: 22px; font-size: 12px; color: #9ebbb1; }
-.voyage-roster-results { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px 15px; max-height: 45svh; overflow-y: auto; overscroll-behavior: contain; }
+.voyage-roster-results { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px 15px; }
+.voyage-roster-results li,.voyage-roster-results button > span { min-width: 0; overflow-wrap: anywhere; }
 .voyage-roster-results button { min-height: 66px; width: 100%; min-width: 0; display: flex; gap: 12px; align-items: center; text-align: left; padding: 10px 6px; border-bottom: 1px solid #5c898229; }
 .voyage-roster-results button[aria-pressed="true"] { color: var(--voyage-cyan); }
 .voyage-roster-results img { width: 40px; height: 40px; object-fit: contain; flex: 0 0 auto; }
 .voyage-roster-results strong { display: block; font-size: 12px; font-weight: 500; line-height: 1.3; }
 .voyage-roster-results small { display: block; font-size: 12px; line-height: 1.5; color: #a3bcb5; margin-top: 4px; }
 .voyage-roster-shell > footer { border-top: 1px solid var(--voyage-line); padding-top: 22px; margin-top: 28px; display: flex; justify-content: space-between; gap: 20px; font-size: 12px; color: #a3bcb5; }
-.voyage-roster-shell > footer a { color: var(--voyage-cyan); }
+.voyage-roster-shell > footer a { display: inline-flex; align-items: center; min-height: 44px; color: var(--voyage-cyan); }
 .voyage-nojs { padding: 30px clamp(24px,7vw,130px); background: #081319; }
 .voyage-nojs a { color: var(--voyage-cyan); text-decoration: underline; }
 
 @media (max-width: 1050px) {
-  .voyage-chapter { padding-inline: 6vw; }
-  .journey-coordinates { right: 10px; }
+  .voyage-chapter { padding-left: max(6vw,env(safe-area-inset-left)); padding-right: max(6vw,env(safe-area-inset-right)); }
   .perspective-composition { grid-template-columns: minmax(0,1fr) minmax(0,1.15fr); gap: 30px; }
   .perspective-copy h2 { font-size: clamp(43px,5.7vw,64px); }
   .perspective-identity figcaption { flex-wrap: wrap; padding-top: 20px; }
@@ -193,13 +198,9 @@
   .voyage-roster-results { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
-  .voyage-chapter { padding: 100px 26px 115px; min-height: 100svh; }
+  .voyage-chapter { padding: 100px max(26px,env(safe-area-inset-right)) 115px max(26px,env(safe-area-inset-left)); min-height: 100svh; }
   .voyage-chapter h2 { font-size: clamp(43px,10.2vw,65px); }
-  .journey-coordinates { right: 9px; gap: 5px; }
-  .coordinate-number { display: none; }
-  .journey-coordinates a { min-width: 22px; min-height: 31px; }
-  .coordinate-label { right: 27px; }
-  .arrival-chapter { height: 100svh; height: 100dvh; min-height: 0; padding: 91px 26px 118px; }
+  .arrival-chapter { height: 100svh; height: 100dvh; min-height: 0; padding: 91px max(26px,env(safe-area-inset-right)) 118px max(26px,env(safe-area-inset-left)); }
   .arrival-composition { justify-content: start; padding-top: clamp(15px,5svh,45px); }
   .arrival-composition > .world-eyebrow { font-size: 12px; margin-bottom: 24px; }
   .arrival-composition h1 { font-size: clamp(56px,min(13.3vw,10svh),92px); line-height: .9; }
@@ -212,7 +213,7 @@
   .arrival-archive .world-eyebrow { font-size: 12px; }
   .arrival-archive a { flex-direction: column; align-items: end; gap: 4px; font-size: 27px; }
   .arrival-archive a > span { font-size: 12px; }
-  .arrival-composition > .chapter-invitation { bottom: -19px; max-width: 170px; gap: 12px; font-size: 12px; line-height: 1.6; }
+  .arrival-footer > .chapter-invitation { bottom: -19px; max-width: 170px; gap: 12px; font-size: 12px; line-height: 1.6; }
   .arrival-composition .invitation-line { width: 20px; flex: 0 0 auto; }
   .world-shot--arrival > img { object-position: center center; }
   .world-shot--arrival::after { background: linear-gradient(90deg,#041014b3,transparent 95%),linear-gradient(180deg,#0410143b,transparent 65%,#081319b0 100%); }
@@ -234,7 +235,7 @@
   .record-values { grid-template-columns: minmax(0,1fr); gap: 20px; padding-block: 25px; }
   .record-values strong { font-size: 70px; }
   .record-values[data-long="true"] strong { font-size: clamp(26px,7vw,40px); }
-  .record-crossing { position: absolute; right: 5px; font-size: 45px; opacity: .5; }
+  .record-crossing { justify-self: start; transform: rotate(90deg); font-size: 30px; opacity: .7; }
   .record-values > div > span { font-size: 12px; margin-bottom: 7px; }
   .record-rule { font-size: 20px; }
   .record-reading { font-size: 12px; }
@@ -242,7 +243,7 @@
   .voyage-record > .voyage-actions .voyage-action { width: 100%; font-size: 12px; }
   .voyage-record.is-focused { transform: none; }
   .history-controls { flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-  .history-controls label { width: calc(50% - 23px); }
+  .history-controls label { min-width: 0; width: calc(50% - 23px); }
   .history-controls .voyage-text-link { flex-basis: 100%; margin-left: 0; font-size: 12px; }
   .history-trace { grid-template-columns: minmax(0,1fr); margin-top: 35px; padding-left: 8px; }
   .history-stop { border-top: 0; border-left: 1px solid #7da19a8c; padding: 5px 0 30px 27px; min-height: 120px; }
@@ -256,19 +257,18 @@
   .return-composition > .return-briefing { padding-top: 40px; }
   .journey-findings li { grid-template-columns: 65px minmax(0,1fr); font-size: 12px; }
   .journey-findings li > a { grid-column: 2; }
-  .voyage-roster-dialog { width: calc(100vw - 24px); max-height: 92svh; }
-  .voyage-roster-shell { padding: 22px; }
-  .voyage-roster-shell h2 { font-size: 34px; }
+  .voyage-roster-shell { padding: 22px max(22px,env(safe-area-inset-right)) 22px max(22px,env(safe-area-inset-left)); }
+  .voyage-roster-shell h2 { font-size: clamp(26px,6vw,34px); }
   .voyage-roster-shell .world-eyebrow { font-size: 12px; }
-  .roster-search-row { grid-template-columns: minmax(0,1fr) 100px; gap: 10px; margin-top: 28px; }
-  .roster-search-row input { font-size: 13px; padding-inline: 10px; }
-  .roster-search-row select { font-size: 12px; padding-inline: 8px; }
-  .voyage-roster-results { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px 12px; max-height: 45svh; }
+  .roster-search-row { grid-template-columns: minmax(0,1fr) 112px; gap: 10px; margin-top: 20px; }
+  .roster-search-row input { padding-inline: 10px; }
+  .roster-search-row select { padding-inline: 8px; }
+  .voyage-roster-results { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px 12px; }
   .voyage-roster-results button { gap: 8px; padding-inline: 0; }
   .voyage-roster-results img { width: 33px; height: 33px; }
   .voyage-roster-results strong { font-size: 12px; }
   .voyage-roster-results small { font-size: 12px; }
-  .voyage-roster-shell > footer { font-size: 12px; }
+  .voyage-roster-shell > footer { flex-wrap: wrap; gap: 8px; font-size: 12px; }
 }
 @media (max-height: 720px) and (min-width: 701px) {
   .arrival-chapter { padding-top: 90px; padding-bottom: 105px; }
@@ -278,7 +278,7 @@
   .arrival-bottom > p { font-size: 12px; }
   .arrival-bottom .voyage-action { min-height: 45px; padding-block: 10px; }
   .arrival-archive { bottom: -12px; }
-  .arrival-composition > .chapter-invitation { bottom: -16px; }
+  .arrival-footer > .chapter-invitation { bottom: 8px; }
 }
 @media (max-height: 730px) and (max-width: 700px) {
   .arrival-composition { padding-top: 0; }
@@ -286,7 +286,7 @@
   .arrival-composition > .world-eyebrow { margin-bottom: 18px; }
   .arrival-bottom { margin-top: 17px; }
   .arrival-bottom .voyage-actions { margin-top: 17px; }
-  .arrival-composition > .chapter-invitation { bottom: -27px; }
+  .arrival-footer > .chapter-invitation { bottom: -27px; }
   .arrival-archive { bottom: -25px; }
 }
 @media (max-height: 500px) {
@@ -299,7 +299,38 @@
   .arrival-bottom .voyage-actions { margin: 0; flex-direction: row; gap: 15px; }
   .arrival-bottom .voyage-action { font-size: 12px; min-height: 40px; padding: 8px 12px; gap: 15px; }
   .arrival-bottom .voyage-text-link { font-size: 12px; }
-  .arrival-composition > .chapter-invitation,.arrival-archive { display: none; }
+  .arrival-footer > .chapter-invitation,.arrival-archive { display: none; }
+}
+/* Compact screens use a chapter index in the document, so navigation never
+   competes with a champion, record or action under the user's finger. */
+@media (max-width: 1050px), (pointer: coarse) {
+  .journey-coordinates { position: relative; inset: auto; transform: none; display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 8px 12px; margin: 0 clamp(26px,6vw,80px); padding: 12px 16px; border-block: 1px solid var(--voyage-line); background: #081319ed; }
+  .journey-coordinates a { min-width: 0; min-height: 44px; justify-content: start; gap: 10px; }
+  .journey-coordinates .coordinate-mark { display: none; }
+  .journey-coordinates .coordinate-number { display: inline; width: auto; color: var(--voyage-quiet); }
+  .journey-coordinates .coordinate-label { position: static; min-width: 0; padding: 0; background: none; opacity: 1; transform: none; pointer-events: auto; font-size: 12px; line-height: 1.5; }
+  .journey-coordinates a[aria-current] { box-shadow: inset 0 -1px var(--voyage-cyan); }
+  .arrival-chapter { height: auto; min-height: 100svh; padding-top: calc(var(--world-header-height,78px) + 24px + env(safe-area-inset-top)); padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
+  .arrival-composition { height: auto; min-height: calc(100svh - var(--world-header-height,78px) - 56px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); justify-content: start; }
+  .arrival-footer { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-top: auto; padding-top: 28px; }
+  .arrival-archive { position: static; display: flex; min-width: 0; }
+  .arrival-footer > .chapter-invitation { position: static; display: flex; min-width: 0; }
+  .arrival-footer .chapter-invitation > span:nth-child(2) { min-width: 0; }
+  .arrival-footer .chapter-invitation > span:last-child { flex: none; }
+  .voyage-chapter:not(.arrival-chapter) { padding-top: calc(var(--world-header-height,78px) + 28px + env(safe-area-inset-top)); padding-bottom: 64px; }
+}
+@media (max-width: 700px) {
+  .arrival-footer { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; }
+  .arrival-footer .chapter-invitation { max-width: none; }
+  .arrival-footer .invitation-line { display: none; }
+}
+@media (max-width: 370px) {
+  .journey-coordinates { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px 12px; }
+  .roster-search-row { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-height: 500px) and (max-width: 700px) {
+  .arrival-bottom { flex-wrap: wrap; }
+  .arrival-bottom .voyage-actions { flex-wrap: wrap; }
 }
 html[data-motion="reduced"] .voyage-fracture,html[data-motion="reduced"] .voyage-occlusion { display: none; }
 html[data-motion="reduced"] .world-shot,html[data-motion="reduced"] .perspective-identity { transform: none !important; }

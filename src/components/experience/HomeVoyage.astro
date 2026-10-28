@@ -34,19 +34,21 @@ const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
     <div class="voyage-occlusion"></div>
   </div>
 
-  <nav class="journey-coordinates" aria-label="Journey chapters">
-    {chapters.map(([id, label], index) => <a href={'#' + id} data-scene-link aria-label={label} aria-current={index === 0 ? 'location' : undefined}><span class="coordinate-mark" aria-hidden="true"></span><span class="coordinate-number">0{index + 1}</span><span class="coordinate-label">{label}</span></a>)}
-  </nav>
-
   <section id="arrival" class="voyage-chapter arrival-chapter" data-scene="arrival" data-journey-chapter="0">
     <div class="chapter-composition arrival-composition">
       <p class="world-eyebrow">LEAGUE OF LEGENDS / THE CHANGING GAME</p>
       <h1>THE RIFT,<br /><em>REVEALED.</em></h1>
       <div class="arrival-bottom"><p>Know before you queue.<br />A journey through what changed for your champions.</p><div class="voyage-actions"><a class="voyage-action" href="#perspective">Enter the journey <span aria-hidden="true">↘</span></a><a class="voyage-text-link" href="/pool#briefing">Open my briefing <span aria-hidden="true">↗</span></a></div></div>
-      <div class="arrival-archive"><span class="world-eyebrow">LATEST IN THIS ARCHIVE</span><a href={'/patch/' + latest.id}>{latest.id}<span>{latest.releaseDate} ↗</span></a></div>
-      <a class="chapter-invitation" href="#perspective"><span class="invitation-line" aria-hidden="true"></span><span>Scroll into a different perspective</span><span aria-hidden="true">↓</span></a>
+      <div class="arrival-footer">
+        <a class="chapter-invitation" href="#perspective"><span class="invitation-line" aria-hidden="true"></span><span>Scroll into a different perspective</span><span aria-hidden="true">↓</span></a>
+        <div class="arrival-archive"><span class="world-eyebrow">LATEST IN THIS ARCHIVE</span><a href={'/patch/' + latest.id}>{latest.id}<span>{latest.releaseDate} ↗</span></a></div>
+      </div>
     </div>
   </section>
+
+  <nav class="journey-coordinates" aria-label="Journey chapters">
+    {chapters.map(([id, label], index) => <a href={'#' + id} data-scene-link aria-label={label} aria-current={index === 0 ? 'location' : undefined}><span class="coordinate-mark" aria-hidden="true"></span><span class="coordinate-number">0{index + 1}</span><span class="coordinate-label">{label}</span></a>)}
+  </nav>
 
   <section id="perspective" class="voyage-chapter perspective-chapter" data-scene="perspective" data-journey-chapter="1">
     <div class="chapter-composition perspective-composition">

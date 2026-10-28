@@ -1,11 +1,13 @@
 import { defineConfig } from '@playwright/test';
 
+const baseURL = process.env.PLAYWRIGHT_PLAYER_BASE_URL ?? 'http://127.0.0.1:3000';
+
 export default defineConfig({
   testDir: 'tests/player-e2e',
   timeout: 45_000,
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL,
     viewport: { width: 359, height: 603 },
     reducedMotion: 'reduce',
     trace: 'retain-on-failure',
@@ -15,8 +17,8 @@ export default defineConfig({
       : {}),
   },
   webServer: {
-    command: 'pnpm dev --port 3000',
-    url: 'http://127.0.0.1:3000/players',
+    command: `pnpm dev --port ${new URL(baseURL).port || '3000'}`,
+    url: `${baseURL}/players`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

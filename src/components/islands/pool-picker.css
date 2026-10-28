@@ -13,7 +13,8 @@
   font-size: var(--text-sm);
   padding: var(--s2) var(--s3);
   border-radius: 2px;
-  min-width: 14rem;
+  min-width: 0;
+  width: min(100%, 20rem);
 }
 
 .pool-picker input[type="search"]::placeholder {
@@ -25,6 +26,7 @@
   border: 1px solid var(--line-strong);
   border-radius: 2px;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .pool-picker .seg button {
@@ -171,4 +173,15 @@
 .pool-bar .cta:hover {
   background: var(--gold-bright);
   color: var(--ink);
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .pool-picker input[type="search"] { font-size: 16px; }
+}
+
+@media (max-width: 700px) {
+  .pool-picker input[type="search"] { width: 100%; }
+  .pool-picker .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 1px; overflow: visible; background: var(--line); }
+  .pool-picker .seg button { min-width: 0; min-height: 44px; padding: 10px 6px; border: 0; background: var(--ink); }
+  .pool-picker .seg button[aria-pressed="true"] { background: color-mix(in srgb, var(--gold) 26%, var(--ink)); }
 }

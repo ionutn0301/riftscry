@@ -11,6 +11,8 @@ export default function CommandPalette() {
   const [everOpened, setEverOpened] = useState(false);
   const handoffFrame = useRef<number | null>(null);
   const removeCloseListener = useRef<(() => void) | null>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
+  const wasOpen = useRef(false);
 
   const cancelHandoff = useCallback(() => {
     if (handoffFrame.current !== null) cancelAnimationFrame(handoffFrame.current);
@@ -24,19 +26,26 @@ export default function CommandPalette() {
     setOpen(false);
   }, [cancelHandoff]);
 
-  const show = useCallback(() => {
+  const show = useCallback((trigger?: HTMLElement) => {
     // Repeated clicks must not race the native dialog's pending close event.
     if (removeCloseListener.current || handoffFrame.current !== null) return;
 
-    const openPalette = () => {
-      handoffFrame.current = null;
-      setEverOpened(true);
-      setOpen(true);
-    };
     const focusedDialog = document.activeElement instanceof Element
       ? document.activeElement.closest<HTMLDialogElement>("dialog[open]")
       : null;
     const nativeDialog = focusedDialog ?? document.querySelector<HTMLDialogElement>("dialog[open]");
+    const openPalette = () => {
+      handoffFrame.current = null;
+      // A native dialog restores its opener before this frame. Direct pointer
+      // triggers are explicit because Safari taps need not focus a button.
+      const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const origin = nativeDialog ? active : trigger ?? active;
+      returnFocus.current = origin && origin !== document.body
+        ? origin
+        : document.querySelector<HTMLElement>(".world-utilities [data-palette-trigger]");
+      setEverOpened(true);
+      setOpen(true);
+    };
 
     if (nativeDialog) {
       // cmdk's portal cannot sit above a native modal's top layer. Let the
@@ -64,10 +73,10 @@ export default function CommandPalette() {
     };
     const onTrigger = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      const trigger = e.target instanceof Element ? e.target.closest("[data-palette-trigger]") : null;
+      const trigger = e.target instanceof Element ? e.target.closest<HTMLElement>("[data-palette-trigger]") : null;
       if (!trigger || trigger.matches(":disabled, [aria-disabled='true']")) return;
       e.preventDefault();
-      show();
+      show(trigger);
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("click", onTrigger);
@@ -78,6 +87,22 @@ export default function CommandPalette() {
   }, [hide, open, show]);
 
   useEffect(() => cancelHandoff, [cancelHandoff]);
+
+  useEffect(() => {
+    const didClose = wasOpen.current && !open;
+    wasOpen.current = open;
+    if (!didClose) return;
+    const target = returnFocus.current;
+    returnFocus.current = null;
+    // cmdk's Dialog has no registered Trigger or close-autofocus prop. Restore
+    // after its portal and focus trap unmount, without scrolling the document.
+    const frame = requestAnimationFrame(() => {
+      if (!target?.isConnected || target.closest('dialog:not([open]), [inert]')
+        || !target.getClientRects().length || document.querySelector('dialog[open], [cmdk-dialog]')) return;
+      target.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
 
   if (!everOpened) return null;
   return (
