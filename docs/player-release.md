@@ -1,6 +1,14 @@
 # Player beta delivery
 
-## Implementation checkpoint — 2026-10-28
+## Visual clarity follow-up — 2026-10-28
+
+This follow-up starts from deployed `main` commit `bcca807f676ae60d45d94f5d021d70b951d60266` on `codex/player-visual-clarity`. It simplifies the player gateway, profile, match review, builds and Build Memory while preserving the protected deployment and cache release below.
+
+Champion portraits, item artwork, consistent icons and short labels replace repeated explanatory copy. The profile arrival is shorter, mode summaries are compact, and supporting context lives in keyboard-accessible native disclosures. One useful review takeaway remains visible; an explicitly requested AI result opens automatically. Saved notes and generated prose remain complete. Accessible names include the visible button label, and missing artwork preserves readable identity and usable navigation.
+
+The thirty player browser workflows retain their queue, sample, cache, cooldown, evidence, note chronology and recovery assertions. The capture plan adds desktop Builds/Memory and desktop/compact match review to the previous fifteen views. Test discovery and source checks are preparatory; the pull request records actual CI, rendered review and production evidence.
+
+## Earlier implementation checkpoint — 2026-10-28
 
 This iteration starts from GitHub `main` commit `8778a5141294ffd3ffb094e7ae7e9acd449b5a4a` and continues on `codex/player-beta-completion`. It builds on the existing player profile, timestamp migration and personal-loadout work. The pull request identifies the delivered commit; an older deployment must not be treated as validation of these changes.
 

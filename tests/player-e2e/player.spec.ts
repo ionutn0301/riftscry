@@ -19,24 +19,24 @@ test('lookup opens readable profile and grouped builds without eager timeline or
   await expect(page.locator('[data-player-profile]')).toBeVisible();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fixture Player#TEST');
   await expect(page.locator('.match-row')).toHaveCount(3);
-  await expect(page.locator('.match-row').first().getByText('Plated Steelcaps', { exact: false })).toBeVisible();
-  await expect(page.locator('.match-row').first().getByText('Electrocute', { exact: false })).toBeVisible();
+  await expect(page.locator('.match-row').first().locator('.item-label[title="Plated Steelcaps"]')).toBeVisible();
+  await expect(page.locator('.match-row').first().locator('.rune-label[title="Electrocute"]')).toBeVisible();
   const lookup = requests.find(request => request.action === 'lookup');
   expect(new URL(lookup!.url).searchParams.get('name')).toBe('Fixture Player');
   expect(new URL(lookup!.url).searchParams.get('tag')).toBe('TEST');
   expect(new URL(lookup!.url).searchParams.get('platform')).toBe(platform);
   expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);
 
-  await page.getByRole('button', { name: 'Personal builds', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Observed personal builds', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Builds', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your builds', exact: true })).toBeVisible();
   const builds = page.locator('.observed-build');
   await expect(builds).toHaveCount(2);
   await expect(builds.first().getByRole('heading', { name: 'Ahri', exact: true })).toBeVisible();
-  await expect(builds.first().locator('.build-occurrences')).toHaveText('2 recorded games');
-  await builds.first().getByText('Inspect source matches and purchase sequences', { exact: true }).click();
+  await expect(builds.first().locator('.build-occurrences')).toHaveText('2 games');
+  await builds.first().getByText('View 2 matches', { exact: true }).click();
   await expect(builds.first().locator(`a[href^="/matches/${sourceMatch.metadata.matchId}?"]`)).toBeVisible();
   await expect(builds.first().locator(`a[href^="/matches/${historicalMatch.metadata.matchId}?"]`)).toBeVisible();
-  await page.getByRole('button', { name: 'Match history', exact: true }).click();
+  await page.getByRole('button', { name: 'Matches', exact: true }).click();
   await page.getByLabel('Champion', { exact: true }).selectOption('Ahri');
   await page.getByLabel('Result', { exact: true }).selectOption('win');
   await page.locator('.match-row').first().click();
@@ -49,15 +49,16 @@ test('lookup opens readable profile and grouped builds without eager timeline or
 test('AI suggestion prefills a draft, opens evidence, and saves only after confirmation', async ({ page }) => {
   const requests = await installFixtures(page);
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
-  await page.getByRole('button', { name: 'Request evidence-assisted review', exact: true }).click();
+  await page.getByRole('button', { name: 'Review with AI', exact: true }).click();
   await expect(page.getByText(/AI-assisted interpretation/)).toBeVisible();
+  await expect(page.locator('.review-full')).toHaveJSProperty('open', true);
   expect(requests.filter(request => request.action === 'review').map(request => request.method)).toEqual(['POST']);
 
-  await page.locator('.review-grid a[href="#fact-event-0"]').first().click();
+  await page.locator('.review-focus a[href="#fact-event-0"]').first().click();
   await expect(page.locator('#fact-event-0')).toBeVisible();
   await expect(page.locator('#fact-event-0')).toBeFocused();
 
-  await page.getByRole('button', { name: 'Try this next time', exact: true }).click();
+  await page.getByRole('button', { name: 'Review draft', exact: true }).click();
   await expect(page.getByLabel('Decision being reconsidered', { exact: true })).toHaveValue(suggestion.original);
   await expect(page.getByLabel('Proposed alternative', { exact: true })).toHaveValue(suggestion.alternative);
   await expect(page.getByLabel('Tracked item', { exact: true })).toHaveValue('3047');
@@ -65,7 +66,7 @@ test('AI suggestion prefills a draft, opens evidence, and saves only after confi
   await expect(page.getByLabel('Tradeoff', { exact: true })).toHaveValue(suggestion.tradeoff);
   expect(await readNotes(page)).toEqual([]);
 
-  await page.getByRole('button', { name: 'Keep adjustment', exact: true }).click();
+  await page.getByRole('button', { name: 'Save adjustment', exact: true }).click();
   await expect(page.getByText(/^Saved privately on this browser\./)).toBeVisible();
   const [note] = await readNotes(page);
   expect(note).toMatchObject({ targetItem: 3047, source: sourceMatch.metadata.matchId, evidence: suggestion.evidence });
@@ -97,13 +98,13 @@ test('manual adjustments persist privately and do not cross player contexts', as
   await page.getByLabel('Proposed alternative', { exact: true }).fill('Observe boots timing');
   await page.getByLabel('Reason', { exact: true }).fill('Preparation note');
   await page.getByLabel('Tradeoff', { exact: true }).fill('Another component is delayed');
-  await page.getByRole('button', { name: 'Keep adjustment', exact: true }).click();
+  await page.getByRole('button', { name: 'Save adjustment', exact: true }).click();
   await expect(page.getByText(/^Saved privately on this browser\./)).toBeVisible();
 
   await page.goto(`${profilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Ahri · Observe boots timing', exact: true })).toBeVisible();
   await page.goto(`${otherProfilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
-  await expect(page.getByText(/^No saved adjustments for this player yet\./)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'No saved ideas yet.', exact: true })).toBeVisible();
   expect(await readNotes(page)).toHaveLength(1);
 });
 
@@ -209,19 +210,21 @@ test('timeline and AI failures keep the loaded match summary usable while unavai
   });
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
   const overview = page.getByRole('region', { name: 'Match overview', exact: true });
-  await expect(overview).toContainText('Historical item details are unavailable. Recorded IDs are retained.');
+  await expect(overview).toContainText('Item names unavailable. Recorded IDs are kept.');
   await expect(overview.getByText('Item 1001', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Load timeline on demand', exact: true }).click();
+  await page.getByRole('button', { name: 'Open timeline', exact: true }).click();
   await expect(page.getByText(/Timeline unavailable/).first()).toBeVisible();
-  await page.getByRole('button', { name: 'Request evidence-assisted review', exact: true }).click();
+  await page.getByRole('button', { name: 'Review with AI', exact: true }).click();
   await expect(page.getByText(/Deterministic summary remains available/)).toBeVisible();
   await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
+  await expect(page.locator('.review-full')).toHaveJSProperty('open', false);
+  await page.getByText('Full review', { exact: true }).click();
   await expect(page.getByText('Your build', { exact: true })).toBeVisible();
   itemsAvailable = true;
   await overview.getByRole('button', { name: 'Retry item details', exact: true }).click();
-  await expect(overview.getByText('Boots', { exact: true })).toBeVisible();
-  await expect(overview.getByText('Electrocute', { exact: true })).toBeVisible();
-  await expect(overview).not.toContainText('Historical item details are unavailable.');
+  await expect(overview.locator('.item-label[title="Boots"]')).toBeVisible();
+  await expect(overview.locator('.rune-label[title="Electrocute"]')).toBeVisible();
+  await expect(overview).not.toContainText('Item names unavailable.');
   expect(requests.filter(request => request.action === 'items')).toHaveLength(2);
   expect(requests.filter(request => request.action === 'match')).toHaveLength(1);
   expect(requests.filter(request => request.action === 'timeline')).toHaveLength(1);
@@ -235,6 +238,6 @@ test('unreadable stored notes are not overwritten by a new save', async ({ page 
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/Saved notes could not be read/)).toBeVisible();
   await page.getByText('Save an adjustment from this match', { exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Keep adjustment', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Save adjustment', exact: true })).toBeDisabled();
   expect(await page.evaluate(key => localStorage.getItem(key), memoryKey)).toBe('{not valid JSON');
 });

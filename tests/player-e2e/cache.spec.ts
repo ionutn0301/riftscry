@@ -120,7 +120,7 @@ test('refresh after a cold account and rank cooldown recovers identity without r
     releaseIdentity();
     const rank = page.getByRole('complementary', { name: 'Current ranked status', exact: true });
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Player profile');
-    await expect(page.getByText('The Riot identity is unavailable right now.', { exact: false })).toBeVisible();
+    await expect(page.getByText('Name unavailable. Your matches are still here.', { exact: false })).toBeVisible();
     await expect(rank).toContainText('Current rank unavailable');
     await expect(page.getByRole('button', { name: 'Retry in 60s', exact: true })).toBeDisabled();
     await expect(page.locator('.match-row')).toHaveCount(5);
@@ -134,7 +134,7 @@ test('refresh after a cold account and rank cooldown recovers identity without r
     await expect(rank).toContainText('GOLD II');
     await expect(rank).toContainText('35 LP');
     await expect(rank).not.toContainText('unavailable');
-    await expect(page.getByText('The Riot identity is unavailable right now.', { exact: false })).toHaveCount(0);
+    await expect(page.getByText('Name unavailable. Your matches are still here.', { exact: false })).toHaveCount(0);
     await settled(page, 5);
     expect(calls).toEqual({ account: 2, rank: 2 });
     expect(requests.filter(request => request.action === 'history')).toHaveLength(2);

@@ -3,6 +3,9 @@ import { modeForMatch } from '../../lib/player/modes';
 import { useItemMetadata } from './useItemMetadata';
 import { ItemLabel, RuneLabel } from './ItemPicker';
 import { matchLink } from './client';
+import ChampionPortrait from './ChampionPortrait';
+import { championDisplayName } from './championArtwork';
+import PlayerIcon from './PlayerIcon';
 
 type LoadoutProps = { match: Match; platform: string; puuid: string; concise?: boolean };
 
@@ -14,12 +17,11 @@ export function Loadout({ match, platform, puuid, concise = false }: LoadoutProp
   const items = [player.item0, player.item1, player.item2, player.item3, player.item4, player.item5, player.item6].filter(Boolean);
   const runes = player.perks?.styles.flatMap(style => style.selections.map(selection => selection.perk)) ?? [];
   return <div className={`loadout${concise ? ' loadout--concise' : ''}`}>
-    {!concise && <p className="player-help">Final inventory · patch {patchOf(match.info.gameVersion)}</p>}
+    {!concise && <p className="player-kicker">Final items</p>}
     <ul className="loadout-items" aria-label="Final inventory">{items.map((id, index) => <li key={`${id}:${index}`}><ItemLabel id={id} metadata={data} compact /></li>)}</ul>
     {!items.length && <p className="player-help">No final items recorded.</p>}
-    {!mode.runeSetup ? <p className="loadout-mode-note">{mode.queueId === 2400 || mode.family === 'arena' ? 'Augments mode · rune settings not used' : 'Rune setup is not interpreted for this mode'}</p> :
-      <div className="loadout-runes" aria-label="Recorded runes">{runes.length ? (concise ? runes.slice(0, 1) : runes).map(id => <RuneLabel key={id} id={id} metadata={data} />) : 'Runes unavailable'}</div>}
-    {!concise && !mode.standardItems && <p className="player-help">This mode has its own item rules. A final inventory is an observation, not a standard Summoner’s Rift recommendation.</p>}
+    {!mode.runeSetup ? <p className="loadout-mode-note">{mode.queueId === 2400 || mode.family === 'arena' ? 'Augments mode' : 'Mode-specific setup'}</p> :
+      <div className="loadout-runes" aria-label="Recorded runes">{runes.length ? (concise ? runes.slice(0, 1) : runes).map(id => <RuneLabel key={id} id={id} metadata={data} compact={!concise} />) : 'Runes unavailable'}</div>}
   </div>;
 }
 
@@ -38,19 +40,19 @@ export default function PersonalBuilds({ matches, platform, puuid, back, onLeave
   }
 
   return <section className="personal-builds" aria-labelledby="personal-builds-heading">
-    <header className="player-section-heading"><div><p className="player-kicker">A PATTERN, WITH CONTEXT</p><h2 id="personal-builds-heading">Observed personal builds</h2></div><p>Your decisions, recorded.<br />No universal “best build” inferred.</p></header>
-    <p className="player-help">Each group keeps the same champion, mode, role, patch, final item multiset and rune setup. Inventory slots are ignored; purchase order is not inferred.</p>
+    <header className="player-section-heading"><div><h2 id="personal-builds-heading">Your builds</h2><p>Loadouts from your recent games.</p></div><PlayerIcon name="layers" size={28} /></header>
+    <details className="player-explainer"><summary><PlayerIcon name="info" /> How builds are grouped</summary><p>Each group keeps the same champion, mode, role, patch, final items and runes. Item slots are ignored. These are recorded loadouts, not recommendations; final items do not show purchase order. Wins describe this sample, not why a build worked.</p></details>
     {[...groups].sort((a, b) => b[1].length - a[1].length).map(([key, group]) => {
       const source = group[0]!;
       const player = participant(source, puuid)!;
       const mode = modeForMatch(source);
       return <article className="memory-note observed-build" key={key} data-queue={source.info.queueId}>
-        <header><div><p className="player-kicker">{mode.label} / PATCH {patchOf(source.info.gameVersion)}</p><h3>{player.championName}</h3><p>{comparisonRoleLabel(comparisonRole(source, puuid))}</p></div><span className="build-occurrences"><strong>{group.length}</strong> recorded {group.length === 1 ? 'game' : 'games'}</span></header>
+        <header><div className="memory-note-identity"><ChampionPortrait className="build-champion-portrait" champion={player.championName} size={56} /><div><h3>{championDisplayName(player.championName)}</h3><div className="player-chips"><span className="player-chip">{mode.label}</span><span>Patch {patchOf(source.info.gameVersion)}</span></div><small>{comparisonRoleLabel(comparisonRole(source, puuid))}</small></div></div><span className="build-occurrences"><strong>{group.length}</strong> {group.length === 1 ? 'game' : 'games'}</span></header>
         <Loadout match={source} platform={platform} puuid={puuid} />
-        <p>{group.filter(match => participant(match, puuid)?.win).length} recorded wins in this group. The result does not establish why the build worked or whether it was optimal.</p>
-        <details><summary>Inspect source matches and purchase sequences</summary>{group.map(match => <p key={match.metadata.matchId}><a onClick={onLeave} href={matchLink(match.metadata.matchId, platform, puuid, back)}>{new Date(match.info.gameCreation).toLocaleString()} · {modeForMatch(match).label} · {match.metadata.matchId} — open and load timeline ↗</a></p>)}</details>
+        <p className="build-win-count"><PlayerIcon name="check" />{group.filter(match => participant(match, puuid)?.win).length} recorded wins</p>
+        <details className="build-source-matches"><summary>View {group.length === 1 ? 'match' : `${group.length} matches`}</summary>{group.map(match => <p key={match.metadata.matchId}><a onClick={onLeave} href={matchLink(match.metadata.matchId, platform, puuid, back)}><span>{new Date(match.info.gameCreation).toLocaleDateString()} · {participant(match, puuid)?.win ? 'Win' : 'Loss'}</span><PlayerIcon name="chevron-right" /></a></p>)}</details>
       </article>;
     })}
-    {!groups.size && <div className="player-empty"><h3>No loadouts in this selection.</h3><p>Try another mode or clear a sample filter to explore more of your recorded builds.</p></div>}
+    {!groups.size && <div className="player-empty"><PlayerIcon name="layers" size={32} /><h3>No builds here yet.</h3><p>Try another mode or clear your filters.</p></div>}
   </section>;
 }
