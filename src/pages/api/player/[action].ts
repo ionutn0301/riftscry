@@ -39,14 +39,23 @@ export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => 
     }
     if (action === 'items') {
       const patch = match.info.gameVersion.split('.').slice(0, 2).join('.');
-      return json(await cached(`items:${patch}`, 86400, async () => {
+      return json(await cached(`items-runes-v2:${patch}`, 86400, async () => {
         const versionsResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json', { signal: AbortSignal.timeout(8000) });
         if (!versionsResponse.ok) throw new ServiceError('Item versions unavailable.');
         const versions: string[] = await versionsResponse.json(); const version = versions.find((v) => v.startsWith(patch + '.'));
         if (!version) return { version: null, data: {}, notice: 'No compatible historical item version. Only item IDs are shown.' };
         const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`, { signal: AbortSignal.timeout(8000) });
         if (!response.ok) throw new ServiceError('Historical items unavailable.');
-        const body = await response.json(); return { version, data: body.data, notice: 'Patch-level Data Dragon metadata; mid-patch item revisions may differ. Not a recommendation.' };
+        const body = await response.json();
+        let runes: Record<string,{name:string;icon:string}> = {};
+        try {
+          const runeResponse = await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/runesReforged.json`, {signal:AbortSignal.timeout(8000)});
+          if (runeResponse.ok) {
+            const trees = await runeResponse.json() as {slots:{runes:{id:number;name:string;icon:string}[]}[]}[];
+            runes = Object.fromEntries(trees.flatMap(tree=>tree.slots.flatMap(slot=>slot.runes.map(rune=>[rune.id,{name:rune.name,icon:rune.icon}]))));
+          }
+        } catch { /* Item metadata remains usable if rune metadata is unavailable. */ }
+        return { version, data: body.data, runes, notice: 'Patch-level Data Dragon metadata; mid-patch item revisions may differ. Not a recommendation.' };
       }));
     }
     return json({ error: 'Unknown endpoint' }, 404);
