@@ -39,7 +39,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   const { data: ranks, error: rankError } = useSWR<Rank[]>(api('rank', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
   const history = usePlayerHistory(platform, puuid, filters.queue);
   const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
-  const profile = { ...initial, name };
+  const profile = { ...initial, ...filters, name };
   const back = playerLink(platform, puuid, { ...filters, name });
   const scope = historyOptions.find(option => option.value === filters.queue)?.label ?? 'All recent';
   const matches = history.matches.filter(match => {
@@ -110,11 +110,14 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
       </nav>
       <div className="player-filters" role="group" aria-label="Filter match sample">
         <div className="player-field"><label htmlFor={`${filterId}-queue`}>Game mode</label><select id={`${filterId}-queue`} value={filters.queue} onChange={event => change({ queue: event.target.value })}>{historyOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>
-        <div className="player-field"><label htmlFor={`${filterId}-champion`}>Champion</label><select id={`${filterId}-champion`} value={filters.champion} onChange={event => change({ champion: event.target.value })}><option value="">All in loaded sample</option>{filters.champion && !champions.includes(filters.champion) && <option value={filters.champion}>{filters.champion} · outside this sample</option>}{champions.map(champion => <option key={champion}>{champion}</option>)}</select></div>
-        <div className="player-field"><label htmlFor={`${filterId}-result`}>Result</label><select id={`${filterId}-result`} value={filters.result} onChange={event => change({ result: event.target.value })}><option value="">All results</option><option value="win">Win</option><option value="loss">Loss</option></select></div>
-        {(filters.champion || filters.result || filters.queue !== 'all') && <button type="button" className="player-button-text" onClick={() => change({ queue: 'all', champion: '', result: '' })}>Reset sample filters</button>}
+        {filters.view !== 'memory' && <>
+          <div className="player-field"><label htmlFor={`${filterId}-champion`}>Champion</label><select id={`${filterId}-champion`} value={filters.champion} onChange={event => change({ champion: event.target.value })}><option value="">All in loaded sample</option>{filters.champion && !champions.includes(filters.champion) && <option value={filters.champion}>{filters.champion} · outside this sample</option>}{champions.map(champion => <option key={champion}>{champion}</option>)}</select></div>
+          <div className="player-field"><label htmlFor={`${filterId}-result`}>Result</label><select id={`${filterId}-result`} value={filters.result} onChange={event => change({ result: event.target.value })}><option value="">All results</option><option value="win">Win</option><option value="loss">Loss</option></select></div>
+        </>}
+        {(filters.queue !== 'all' || (filters.view !== 'memory' && (filters.champion || filters.result))) && <button type="button" className="player-button-text" onClick={() => change(filters.view === 'memory' ? { queue: 'all' } : { queue: 'all', champion: '', result: '' })}>{filters.view === 'memory' ? 'Reset mode filter' : 'Reset sample filters'}</button>}
       </div>
-      <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} />
+      {filters.view === 'memory' && <p className="player-help">Game mode selects the recent matches used for follow-up. Filter your saved adjustments inside Build Memory below.</p>}
+      <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} showBreakdown={filters.view === 'history'} />
       <div className="player-view" id="player-view" key={filters.view}>
         {filters.view === 'history' ? <PlayerHistory matches={matches} platform={platform} puuid={puuid} back={back} loading={history.loading} onLeave={leave} /> :
           filters.view === 'builds' ? <PersonalBuilds matches={matches} platform={platform} puuid={puuid} back={back} onLeave={leave} /> :

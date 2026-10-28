@@ -63,6 +63,61 @@ test('legacy query profile links redirect to the separate profile with their sel
   await expect(page.getByText(/^No saved adjustments for this player yet\./)).toBeVisible();
 });
 
+test('History, Builds and Memory show their own content while preserving mode and history filters', async ({ page }) => {
+  const requests = await installFixtures(page, { matches: mixedModeMatches });
+  const alternative = 'Review my next ARAM purchase';
+  await seedNotes(page, [{
+    ...savedNote, id: 'view-switch-adjustment', alternative, role: 'MODE:aram', queue: 450,
+    source: recentAramLoss.metadata.matchId, sourceDate: recentAramLoss.info.gameCreation,
+    createdAt: recentAramLoss.info.gameCreation + 1_000, trackingStartedAt: recentAramLoss.info.gameCreation + 1_000,
+  }]);
+  await page.goto(`${namedProfile}&queue=450&champion=Ahri&result=loss&view=history`, { waitUntil: 'domcontentloaded' });
+  const views = page.getByRole('navigation', { name: 'Player views', exact: true });
+  const filters = page.getByRole('group', { name: 'Filter match sample', exact: true });
+  const sample = page.getByRole('region', { name: 'Recent match sample', exact: true });
+  const arrival = page.locator('.profile-arrival');
+  await expect(sample).toContainText('2 of 2 recent matches imported');
+  await expect(rows(page)).toHaveCount(1);
+  await expectSummary(page, 450, { matches: 1, wins: 0, winRate: 0, kda: [6, 4, 12] });
+  await expect(arrival.getByRole('link', { name: 'Explore your games', exact: true })).toHaveAttribute('href', '#player-records');
+
+  await views.getByRole('button', { name: 'Personal builds', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Observed personal builds', exact: true })).toBeVisible();
+  await expect(page.locator('.observed-build')).toHaveCount(1);
+  await expect(page.locator('.observed-build')).toHaveAttribute('data-queue', '450');
+  await expect(page.locator('.observed-build .build-occurrences')).toHaveText('1 recorded game');
+  await expect(page.locator('[data-mode-summary]')).toHaveCount(0);
+  await expect(sample).toContainText('2 of 2 recent matches imported');
+  await expect(filters.getByLabel('Champion', { exact: true })).toHaveValue('Ahri');
+  await expect(filters.getByLabel('Result', { exact: true })).toHaveValue('loss');
+  await expect(arrival.getByRole('link', { name: 'Explore your builds', exact: true })).toHaveAttribute('href', '#player-records');
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({ path: 'player-visuals/compact-profile-builds.png', fullPage: true, animations: 'disabled' });
+
+  await views.getByRole('button', { name: 'Build Memory', exact: true }).click();
+  await expect(page.getByRole('heading', { name: `Ahri · ${alternative}`, exact: true })).toBeVisible();
+  await expect(page.locator('.personal-builds')).toHaveCount(0);
+  await expect(page.locator('[data-mode-summary]')).toHaveCount(0);
+  await expect(sample).toContainText('2 of 2 recent matches imported');
+  await expect(filters.getByLabel('Game mode', { exact: true })).toHaveValue('450');
+  await expect(filters.getByLabel('Champion', { exact: true })).toHaveCount(0);
+  await expect(filters.getByLabel('Result', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('group', { name: 'Filter saved adjustments', exact: true }).getByLabel('Champion', { exact: true })).toHaveValue('');
+  await expect(arrival.getByRole('link', { name: 'Open Build Memory', exact: true })).toHaveAttribute('href', '#player-records');
+  await expect(page).toHaveURL(url => url.searchParams.get('view') === 'memory' && url.searchParams.get('queue') === '450' && url.searchParams.get('champion') === 'Ahri' && url.searchParams.get('result') === 'loss');
+  await page.screenshot({ path: 'player-visuals/compact-profile-memory.png', fullPage: true, animations: 'disabled' });
+
+  await views.getByRole('button', { name: 'Match history', exact: true }).click();
+  await expect(filters.getByLabel('Game mode', { exact: true })).toHaveValue('450');
+  await expect(filters.getByLabel('Champion', { exact: true })).toHaveValue('Ahri');
+  await expect(filters.getByLabel('Result', { exact: true })).toHaveValue('loss');
+  await expect(rows(page)).toHaveCount(1);
+  await expect(rows(page)).toHaveAttribute('href', new RegExp(`/matches/${recentAramLoss.metadata.matchId}\\?`));
+  await expectSummary(page, 450, { matches: 1, wins: 0, winRate: 0, kda: [6, 4, 12] });
+  await expect(arrival.getByRole('link', { name: 'Explore your games', exact: true })).toHaveAttribute('href', '#player-records');
+  expect(requests.filter(request => request.action === 'history')).toHaveLength(1);
+});
+
 test('a profile displays the canonical account identity instead of trusting an editable name query', async ({ page }) => {
   const requests = await installFixtures(page, { matches: mixedModeMatches });
   const spoofedName = 'Different Player#SPOOF';

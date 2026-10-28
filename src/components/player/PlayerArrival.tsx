@@ -24,10 +24,11 @@ export default function PlayerArrival({ initial, matches, scope, allModes, back,
   const separator = initial.name.lastIndexOf('#');
   const name = separator > 0 ? initial.name.slice(0, separator) : initial.name || 'Player profile';
   const tag = separator > 0 ? initial.name.slice(separator) : '';
+  const destination = initial.view === 'builds' ? 'Explore your builds' : initial.view === 'memory' ? 'Open Build Memory' : 'Explore your games';
 
   return <header className="profile-arrival" aria-labelledby="profile-identity">
     <div className="player-environment profile-environment" aria-hidden="true">
-      <img src="/images/voyage/return-basin.webp" width="1672" height="941" alt="" decoding="async" />
+      <img src="/images/voyage/history-strata.webp" width="1672" height="941" alt="" decoding="async" />
       <span className="player-horizon" /><span className="player-coordinate player-coordinate--two" />
     </div>
     <div className="profile-arrival-top"><a className="player-text-link" href="/players">← Find another player</a><span>{initial.platform.toUpperCase()} / LEAGUE OF LEGENDS</span></div>
@@ -37,7 +38,7 @@ export default function PlayerArrival({ initial, matches, scope, allModes, back,
         <h1 id="profile-identity">{name}{tag && <em>{tag}</em>}</h1>
         <p className="profile-context"><span className="player-signal" aria-hidden="true" />{scope}{allModes ? ' · modes kept in context' : ' · exact queue history'}</p>
         <div className="player-actions profile-arrival-actions">
-          <a className="player-primary-link" href="#player-records">Explore your games <span aria-hidden="true">↓</span></a>
+          <a className="player-primary-link" href="#player-records">{destination} <span aria-hidden="true">↓</span></a>
           <button className="player-button-secondary" type="button" onClick={onRemember}>Remember player</button>
           <button className="player-button-text" type="button" disabled={loading} onClick={onRefresh}>{loading ? 'Importing matches…' : 'Refresh recent matches'}</button>
         </div>
@@ -45,7 +46,7 @@ export default function PlayerArrival({ initial, matches, scope, allModes, back,
       </div>
 
       <div className="profile-path">
-        <div className="profile-path-heading"><span className="player-kicker">YOUR RECENT PATH</span><span>{recent.length ? `${recent.length} MATCHES` : 'AWAITING RECORDS'}</span></div>
+        <div className="profile-path-heading"><span className="player-kicker">YOUR RECENT PATH</span><span>{recent.length ? `${recent.length} ${recent.length === 1 ? 'MATCH' : 'MATCHES'}` : 'AWAITING RECORDS'}</span></div>
         {recent.length ? <>
           <nav aria-label="Recent match path"><ol className="profile-match-path">{[...recent].reverse().map((match, index) => {
             const player = participant(match, initial.puuid);

@@ -16,6 +16,11 @@ under the lookup form or turn the records into a horizontal slide deck.
 - The profile arrival connects to a real chronology of imported games. Match
   history, personal builds and Build Memory have named controls and URL state.
   Game rows are normal links; match review returns to the same profile context.
+  The gateway uses the return-basin environment; the profile uses history-strata
+  so entering the recorded-match destination has its own setting. Detailed queue
+  statistics belong to Match history. Builds and Memory lead to their own content
+  while retaining import/error status, and Memory does not show unrelated history
+  champion/result filters.
 - The shared Rift map includes Players. The player gateway, profile and match
   review use a compact map control instead of the desktop archive navigation
   lane. Archive search is labeled separately from the Riot ID lookup.
