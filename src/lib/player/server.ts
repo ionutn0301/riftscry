@@ -2,6 +2,7 @@ import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import { createHash, randomUUID } from 'node:crypto';
 import { platforms, type Platform, type Match, type Timeline } from './contracts';
+import { riotAccessAllowed } from './access';
 export class ServiceError extends Error { constructor(message: string, public status = 503, public retry = 0) { super(message); } }
 export function redis() {
   const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
@@ -24,7 +25,7 @@ export async function cached<T>(key: string, ttl: number, fn: () => Promise<T>):
   finally { await db.eval('if redis.call("get", KEYS[1]) == ARGV[1] then return redis.call("del", KEYS[1]) else return 0 end', [lock], [owner]); }
 }
 export async function riot<T>(host: string, path: string, ttl = 300): Promise<T> {
-  if (!process.env.RIOT_API_KEY || process.env.RIOT_PUBLIC_ACCESS_APPROVED !== 'true') throw new ServiceError('Public Riot access is not enabled. A production Riot API key and approval for these player/review features are required.');
+  if (!riotAccessAllowed(process.env)) throw new ServiceError('Riot access is disabled. Private testing requires an enabled testing switch in a protected non-production environment. Public access remains separately gated.');
   return cached(`riot:${host}${path}`, ttl, async () => {
     const db = redis();
     const cooldown = await db.get<number>(`rs:riot-cooldown:${host}`);
