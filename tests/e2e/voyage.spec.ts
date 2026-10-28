@@ -7,6 +7,21 @@ const ready = async (page: Page) => {
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-loading", "false");
 };
 
+async function uncachedFeaturedChampion(page: Page, excludedIds: string[] = []) {
+  // The latest patch chooses the embedded model, which is cached at boot even
+  // when a different champion is requested in the URL. Exercise an actual fetch.
+  const initialId = await page.locator("#voyage-initial-data").evaluate((script) =>
+    (JSON.parse(script.textContent!) as { identity: { id: string } }).identity.id);
+  const choices = await page.locator(".quick-perspectives [data-choose-champion]").evaluateAll((buttons) =>
+    buttons.map((button) => ({
+      id: button.getAttribute("data-choose-champion")!,
+      name: button.querySelector("span")!.textContent!.trim(),
+    })));
+  const champion = choices.find(({ id }) => id !== initialId && !excludedIds.includes(id));
+  expect(champion, "A featured champion must be absent from the in-memory model cache").toBeDefined();
+  return champion!;
+}
+
 async function expectOpeningBounds(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   const bounds = await page.locator("#arrival").evaluate((arrival) => {
@@ -60,25 +75,27 @@ test("the arrival also fits a short desktop while the journey can scroll", async
 test("champion choice loads a canonical static model and Back restores perspective", async ({ page }) => {
   await page.goto("/?ref=regression");
   await ready(page);
-  const azirResponse = page.waitForResponse((response) => new URL(response.url()).pathname === "/journey/Azir.json");
-  await page.locator('.quick-perspectives [data-choose-champion="Azir"]').click();
-  const response = await azirResponse;
+  const champion = await uncachedFeaturedChampion(page, ["Ahri"]);
+  const modelPath = `/journey/${champion.id}.json`;
+  const modelResponse = page.waitForResponse((response) => new URL(response.url()).pathname === modelPath);
+  await page.locator(`.quick-perspectives [data-choose-champion="${champion.id}"]`).click();
+  const response = await modelResponse;
   expect(response.ok()).toBe(true);
-  expect((await response.json()).identity.id).toBe("Azir");
+  expect((await response.json()).identity.id).toBe(champion.id);
   await ready(page);
-  await expect(page.locator("[data-champion-name]")).toHaveText("Azir");
-  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === "Azir" && url.searchParams.get("ref") === "regression" && url.hash === "#perspective");
+  await expect(page.locator("[data-champion-name]")).toHaveText(champion.name);
+  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === champion.id && url.searchParams.get("ref") === "regression" && url.hash === "#perspective");
   await page.locator('.quick-perspectives [data-choose-champion="Ahri"]').click();
   await ready(page);
   await expect(page.locator("[data-champion-name]")).toHaveText("Ahri");
   await page.goBack();
   await ready(page);
-  await expect(page.locator("[data-champion-name]")).toHaveText("Azir");
-  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === "Azir");
+  await expect(page.locator("[data-champion-name]")).toHaveText(champion.name);
+  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === champion.id && url.searchParams.get("ref") === "regression");
   await page.reload();
   await ready(page);
-  await expect(page.locator("[data-champion-name]")).toHaveText("Azir");
-  await expect(page.locator("[data-champion-link]")).toHaveAttribute("href", "/champion/azir");
+  await expect(page.locator("[data-champion-name]")).toHaveText(champion.name);
+  await expect(page.locator("[data-champion-link]")).toHaveAttribute("href", `/champion/${champion.id.toLowerCase()}`);
 });
 
 test("the full roster supports roles and normalized names beyond featured champions", async ({ page }) => {
@@ -161,18 +178,40 @@ test("interval boundaries, invalid input and a quiet champion stay honest", asyn
 });
 
 test("a failed champion request keeps the last readable perspective and a retry", async ({ page }) => {
-  await page.route("**/journey/Azir.json", (route) => route.fulfill({ status: 503, body: "temporarily unavailable" }));
   await page.goto("/?champion=Belveth&older=26.14&newer=26.16");
   await ready(page);
-  await page.locator('.quick-perspectives [data-choose-champion="Azir"]').click();
+  const champion = await uncachedFeaturedChampion(page, ["Belveth"]);
+  const modelPath = `/journey/${champion.id}.json`;
+  const modelRoute = `**${modelPath}`;
+  const readableUrl = page.url();
+  await expect(page.locator("[data-champion-name]")).toHaveText("Bel'Veth");
+  await expect(page.locator("[data-record-after]")).not.toBeEmpty();
+  const readableBefore = await page.locator("[data-record-before]").innerText();
+  const readableAfter = await page.locator("[data-record-after]").innerText();
+  await page.route(modelRoute, (route) => route.fulfill({ status: 503, body: "temporarily unavailable" }));
+  const failedResponse = page.waitForResponse((response) => new URL(response.url()).pathname === modelPath);
+  await page.locator(`.quick-perspectives [data-choose-champion="${champion.id}"]`).click();
+  expect((await failedResponse).status()).toBe(503);
   await ready(page);
   await expect(page.locator("[data-selection-status]")).toContainText("could not load");
   await expect(page.locator("[data-champion-name]")).toHaveText("Bel'Veth");
-  await expect(page.locator("[data-record-after]")).not.toBeEmpty();
-  await page.unroute("**/journey/Azir.json");
-  await page.locator('.quick-perspectives [data-choose-champion="Azir"]').click();
+  await expect(page.locator("[data-record-before]")).toHaveText(readableBefore);
+  await expect(page.locator("[data-record-after]")).toHaveText(readableAfter);
+  await expect(page).toHaveURL(readableUrl);
+  await page.unroute(modelRoute);
+  const retryResponse = page.waitForResponse((response) => new URL(response.url()).pathname === modelPath);
+  await page.locator(`.quick-perspectives [data-choose-champion="${champion.id}"]`).click();
+  const response = await retryResponse;
+  expect(response.ok()).toBe(true);
+  expect((await response.json()).identity.id).toBe(champion.id);
   await ready(page);
-  await expect(page.locator("[data-champion-name]")).toHaveText("Azir");
+  await expect(page.locator("[data-champion-name]")).toHaveText(champion.name);
+  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === champion.id && url.searchParams.get("older") === "26.14" && url.searchParams.get("newer") === "26.16" && url.hash === "#perspective");
+  await page.goBack();
+  await ready(page);
+  await expect(page).toHaveURL(readableUrl);
+  await expect(page.locator("[data-champion-name]")).toHaveText("Bel'Veth");
+  await expect(page.locator("[data-record-after]")).toHaveText(readableAfter);
 });
 
 test("Rift map has real destinations, restores focus and hands search out of its modal", async ({ page }) => {
@@ -220,7 +259,31 @@ test("each reading destination has a distinct arrival and the shared map", async
       await expect(page.locator("#main h1")).toHaveCount(1);
       await expect(page.locator("#main h1")).toBeVisible();
       await expect(page.locator("#route-arrival")).toBeVisible();
-      await expect(page.getByRole("navigation", { name: "Explore this page" })).toBeVisible();
+      if (path === "/champions" && await page.evaluate(() => matchMedia("(max-width: 700px)").matches)) {
+        // The compact directory uses the chapter rail instead of repeating the
+        // arrival navigation. Its destinations must remain visible and usable.
+        const rail = page.locator(".chapter-rail");
+        await expect(rail).toBeVisible();
+        const patchLabel = await page.locator(".roster-arrival-figures").getAttribute("aria-label");
+        expect(patchLabel).toMatch(/^Champions with records in patch \d+\.\d+$/);
+        const latestPatch = patchLabel!.replace("Champions with records in patch ", "");
+        const destinations = [
+          ["The full roster", "#roster"],
+          ["Your champion pool ↗", "/pool"],
+          ["Latest archived patch ↗", `/patch/${latestPatch}`],
+        ] as const;
+        await expect(rail.locator("ol a")).toHaveCount(destinations.length);
+        for (const [name, href] of destinations) {
+          const link = rail.getByRole("link", { name, exact: true });
+          await expect(link).toBeVisible();
+          await expect(link).toHaveAttribute("href", href);
+        }
+        await rail.getByRole("link", { name: "The full roster", exact: true }).click();
+        await expect(page).toHaveURL(/\/champions\/?#roster$/);
+        await expect(page.locator("#roster h2")).toBeVisible();
+      } else {
+        await expect(page.getByRole("navigation", { name: "Explore this page" })).toBeVisible();
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
       await page.locator("[data-map-open]").click();
       await expect(page.locator("#rift-map-dialog")).toBeVisible();
