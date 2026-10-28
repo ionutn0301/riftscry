@@ -1,7 +1,10 @@
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { platforms, queues, evidence, participant, type Platform } from '../../../lib/player/contracts';
-import { riot, limit, ServiceError, getMatch, getTimeline, cached } from '../../../lib/player/server';
+import { riot, limit, ServiceError, getMatch, getTimeline } from '../../../lib/player/server';
+import { riotAccessAllowed } from '../../../lib/player/access';
+import { getItemMetadata } from '../../../lib/player/metadata';
+import { buildSuggestions } from '../../../lib/player/advice';
 import { review } from '../../../lib/player/review';
 export const prerender = false;
 const platformSchema = z.enum(Object.keys(platforms) as [Platform, ...Platform[]]);
@@ -11,9 +14,11 @@ const json = (body: unknown, status = 200, retry = 0) => new Response(JSON.strin
 export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => {
   try {
     const action = params.action;
+    if (!action || !['lookup', 'history', 'rank', 'match', 'timeline', 'review', 'items'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
     if (request.method !== (action === 'review' ? 'POST' : 'GET')) return json({ error: 'Method not allowed' }, 405);
     if (request.method === 'POST' && request.headers.get('origin') !== url.origin) return json({ error: 'Origin not allowed' }, 403);
     const platform = platformSchema.parse(url.searchParams.get('platform'));
+    if (!riotAccessAllowed(process.env)) throw new ServiceError('Player access is unavailable in this environment. Private testing requires the protected preview and its server configuration.');
     await limit(clientAddress, action === 'review');
     const region = platforms[platform];
     if (action === 'lookup') {
@@ -34,29 +39,16 @@ export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => 
     if (action === 'match') return json(match);
     if (action === 'timeline') return json(await getTimeline(platform, id));
     if (action === 'review') {
-      let timeline; try { timeline = await getTimeline(platform, id); } catch { /* Match facts remain useful when timeline access fails. */ }
-      return json(await review(evidence(match, puuid, timeline)));
+      const [timelineResult, metadataResult] = await Promise.allSettled([
+        getTimeline(platform, id), getItemMetadata(match),
+      ]);
+      const timeline = timelineResult.status === 'fulfilled' ? timelineResult.value : undefined;
+      const metadata = metadataResult.status === 'fulfilled' ? metadataResult.value : undefined;
+      const facts = evidence(match, puuid, timeline, metadata);
+      return json(await review(facts, buildSuggestions(match, puuid, facts, metadata)));
     }
     if (action === 'items') {
-      const patch = match.info.gameVersion.split('.').slice(0, 2).join('.');
-      return json(await cached(`items-runes-v2:${patch}`, 86400, async () => {
-        const versionsResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json', { signal: AbortSignal.timeout(8000) });
-        if (!versionsResponse.ok) throw new ServiceError('Item versions unavailable.');
-        const versions: string[] = await versionsResponse.json(); const version = versions.find((v) => v.startsWith(patch + '.'));
-        if (!version) return { version: null, data: {}, notice: 'No compatible historical item version. Only item IDs are shown.' };
-        const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`, { signal: AbortSignal.timeout(8000) });
-        if (!response.ok) throw new ServiceError('Historical items unavailable.');
-        const body = await response.json();
-        let runes: Record<string,{name:string;icon:string}> = {};
-        try {
-          const runeResponse = await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/runesReforged.json`, {signal:AbortSignal.timeout(8000)});
-          if (runeResponse.ok) {
-            const trees = await runeResponse.json() as {slots:{runes:{id:number;name:string;icon:string}[]}[]}[];
-            runes = Object.fromEntries(trees.flatMap(tree=>tree.slots.flatMap(slot=>slot.runes.map(rune=>[rune.id,{name:rune.name,icon:rune.icon}]))));
-          }
-        } catch { /* Item metadata remains usable if rune metadata is unavailable. */ }
-        return { version, data: body.data, runes, notice: 'Patch-level Data Dragon metadata; mid-patch item revisions may differ. Not a recommendation.' };
-      }));
+      return json(await getItemMetadata(match));
     }
     return json({ error: 'Unknown endpoint' }, 404);
   } catch (error) {

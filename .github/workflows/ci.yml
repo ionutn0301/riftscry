@@ -35,6 +35,11 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium webkit
 
+      - name: Player workflow browser tests
+        run: pnpm exec playwright test --config=playwright.player.config.ts
+        env:
+          CI: "true"
+
       - name: End-to-end tests
         run: pnpm e2e
         env:
@@ -45,5 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 7

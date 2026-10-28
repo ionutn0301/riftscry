@@ -1,11 +1,10 @@
-import useSWR from 'swr';
 import { participant,patchOf,type Match } from '../../lib/player/contracts';
-import {api,fetcher} from './client';
-import {ItemLabel,RuneLabel,type ItemMetadata} from './ItemPicker';
+import {useItemMetadata} from './useItemMetadata';
+import {ItemLabel,RuneLabel} from './ItemPicker';
 export function Loadout({match,platform,puuid}:{match:Match;platform:string;puuid:string}) {
-  const {data}=useSWR<ItemMetadata>(api('items',{platform,puuid,id:match.metadata.matchId}),fetcher,{shouldRetryOnError:false,revalidateOnFocus:false});
+  const {data}=useItemMetadata(match,platform,puuid);
   const p=participant(match,puuid);if(!p)return null;
-  return <div><p>Final inventory · patch {patchOf(match.info.gameVersion)}</p><ul>{[p.item0,p.item1,p.item2,p.item3,p.item4,p.item5,p.item6].filter(Boolean).map((id,i)=><li key={i}><ItemLabel id={id} metadata={data}/></li>)}</ul><p>Runes: {p.perks?.styles.flatMap(s=>s.selections.map(r=><RuneLabel key={r.perk} id={r.perk} metadata={data}/>))||'Unavailable'}</p></div>;
+  return <div className="loadout"><p className="player-help">Final inventory · patch {patchOf(match.info.gameVersion)}</p><ul className="loadout-items">{[p.item0,p.item1,p.item2,p.item3,p.item4,p.item5,p.item6].filter(Boolean).map((id,i)=><li key={i}><ItemLabel id={id} metadata={data} compact/></li>)}</ul><div className="loadout-runes" aria-label="Recorded runes">{p.perks?.styles.flatMap(s=>s.selections.map(r=><RuneLabel key={r.perk} id={r.perk} metadata={data}/>))||'Runes unavailable'}</div></div>;
 }
 export default function PersonalBuilds({matches,platform,puuid}:{matches:Match[];platform:string;puuid:string}) {
   const groups=new Map<string,Match[]>();
