@@ -7,46 +7,48 @@ interface Props { surface: string }
 const { surface } = Astro.props;
 const latest = getLatestPatch();
 const destinations = [
-  { id: 'home', label: 'The journey', description: 'Find your way through a changing game.', href: '/', x: 16, y: 72 },
-  { id: 'champions', label: 'Champions', description: 'Every identity. Their recorded history.', href: '/champions', x: 33, y: 27 },
-  { id: 'patches', label: 'Patch archive', description: 'Read the changes at their source.', href: '/patches', x: 54, y: 45 },
-  { id: 'compare', label: 'Compare', description: 'Put two moments side by side.', href: '/compare', x: 75, y: 22 },
-  { id: 'pool', label: 'My Pool', description: 'Your champions. Your next briefing.', href: '/pool', x: 83, y: 76 },
-  { id: 'players', label: 'Players', description: 'Your matches. A decision to carry forward.', href: '/players', x: 53, y: 78 },
+  { id: 'players', label: 'Recent games', description: 'Find a match. Review a recorded build.', href: '/players', x: 16, y: 17 },
+  { id: 'next-game', label: 'Next game', description: 'Your notes and builds, with Rift Recall.', href: '/next-game', x: 50, y: 17 },
+  { id: 'pool', label: 'My Pool', description: 'Changes for the champions you play.', href: '/pool', x: 84, y: 17 },
+  { id: 'champions', label: 'Champions', description: 'Every champion. Their recorded history.', href: '/champions', x: 33, y: 49 },
+  { id: 'patches', label: 'Patch archive', description: 'Read the changes at their source.', href: '/patches', x: 67, y: 49 },
+  { id: 'compare', label: 'Compare', description: 'Put two patches side by side.', href: '/compare', x: 16, y: 81 },
+  { id: 'explore', label: 'The journey', description: 'Take the scenic route through the Rift.', href: '/explore', x: 84, y: 81 },
 ];
 const isPlayerArea = ['players', 'player', 'match'].includes(surface);
+const isTaskArea = isPlayerArea || ['home', 'next-game'].includes(surface);
 const active = isPlayerArea ? 'players' : surface === 'champion' ? 'champions' : surface === 'patch' ? 'patches' : surface;
 const label = surface === 'player' ? 'Player profile' : surface === 'match' ? 'Match review' : destinations.find((destination) => destination.id === active)?.label ?? 'Find your way';
 ---
-<div class:list={['world-controls', { 'world-controls--player': isPlayerArea }]} aria-label="RiftScry controls">
+<div class:list={['world-controls', { 'world-controls--player': isPlayerArea, 'world-controls--tasks': isTaskArea }]} aria-label="RiftScry controls">
   <a class="world-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={48} densities={[1, 2]} loading="eager" /></a>
-  <div class="world-location"><span class="location-dot" aria-hidden="true"></span><span data-current-location>{label}</span></div>
+  {isTaskArea ? <nav class="world-task-links" aria-label="Main tasks"><a href="/players" aria-current={isPlayerArea ? 'page' : undefined}>Games</a><a href="/next-game" aria-current={surface === 'next-game' ? 'page' : undefined}>Next game</a><a href="/pool#briefing">Champion changes</a></nav> : <div class="world-location"><span class="location-dot" aria-hidden="true"></span><span data-current-location>{label}</span></div>}
   <div class="world-utilities">
-    {!isPlayerArea && <a href="/players">Players</a>}
-    {isPlayerArea && <button type="button" class="world-search player-map-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 2 9 10-9 10L3 12 12 2Zm0 5 4 5-4 5-4-5 4-5Z" stroke="currentColor" /></svg><span>Rift map</span></button>}
-    {!isPlayerArea && <div class="wayfinder-dock">
+    {!isTaskArea && <a href="/players">Games</a>}
+    {isTaskArea && <button type="button" class="world-search player-map-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 2 9 10-9 10L3 12 12 2Zm0 5 4 5-4 5-4-5 4-5Z" stroke="currentColor" /></svg><span>Rift map</span></button>}
+    {!isTaskArea && <div class="wayfinder-dock">
       <button type="button" class="wayfinder-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M">
         <svg class="mini-world" viewBox="0 0 140 92" fill="none" aria-hidden="true">
           <path class="mini-contour" d="m10 62 21-45 38-8 57 24 7 35-40 16-53-2zM21 60l17-34 29-8 49 20 6 23-31 14-44-1zM36 56l12-21 23-5 31 12 6 16-22 8-32-2z"/>
-          <path class="mini-route" d="m23 66 23-41 30 20 30-24 10 49-44 1"/>
+          <path class="mini-route" d="m22 17 45 0 46 0-23 32-46 0-22 32h91"/>
           {destinations.map((destination) => <circle cx={destination.x * 1.35} cy={destination.y} r={active === destination.id ? 4 : 2.4} class:list={['mini-point', { 'is-current': active === destination.id }]} />)}
         </svg>
         <span><strong>Rift map</strong><small>Choose your destination <kbd title="Alt+M / Option+M">Alt M</kbd></small></span><span class="map-open-mark" aria-hidden="true">↗</span>
       </button>
       <a class="briefing-shortcut" href="/pool#briefing" aria-label="Open your champion briefing">Your briefing <span data-world-pool-count>0</span><span aria-hidden="true">↗</span></a>
     </div>}
-    <button type="button" class="world-search" data-palette-trigger aria-label={isPlayerArea ? 'Search the archive' : undefined}>{isPlayerArea ? 'Archive' : 'Search'} <kbd>⌘ K</kbd></button>
+    <button type="button" class="world-search" data-palette-trigger aria-label={isTaskArea ? 'Search the archive' : undefined}>{isTaskArea ? 'Archive' : 'Search'} <kbd>⌘ K</kbd></button>
     <button type="button" class="motion-choice" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><span aria-hidden="true">◐</span><span data-motion-label>Motion on</span></button>
   </div>
 </div>
 
 <dialog id="rift-map-dialog" class="world-map-dialog" aria-labelledby="rift-map-title">
   <div class="map-dialog-inner">
-    <header class="map-dialog-heading"><div><p class="world-eyebrow">RIFTSCRY / FIND YOUR WAY</p><h2 id="rift-map-title"><span class="map-title-expanded">A different way<br />through the game.</span><span class="map-title-compact">Explore the Rift</span></h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
+    <header class="map-dialog-heading"><div><p class="world-eyebrow">RIFTSCRY / FIND YOUR WAY</p><h2 id="rift-map-title"><span class="map-title-expanded">Your next move<br />starts here.</span><span class="map-title-compact">Explore the Rift</span></h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
     <nav class="navigation-landscape" aria-label="RiftScry destinations">
       <svg viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true" class="navigation-terrain">
         <path class="terrain-contour" d="M50 310 170 100 420 40 780 90 950 280 760 410 360 400Z M120 300 220 150 440 90 730 130 860 270 710 355 370 350Z M200 285 290 200 460 150 690 180 770 260 670 310 410 300Z"/>
-        <path class="terrain-route" d="M160 310 C220 285 270 145 330 115 S480 220 540 194 675 74 750 95 800 258 830 327 640 385 530 335" />
+        <path class="terrain-route" d="M160 73 C290 20 370 20 500 73 S710 130 840 73 M330 211 C450 160 550 260 670 211 M160 348 C360 410 650 270 840 348" />
       </svg>
       {destinations.map((destination, index) => <a class="map-destination" href={destination.href} aria-current={active === destination.id ? 'page' : undefined} style={`--map-x:${destination.x}%;--map-y:${destination.y}%;--map-order:${index}`}>
         <span class="destination-coordinate">0{index + 1}<i aria-hidden="true"></i></span><strong>{destination.label}</strong><span>{destination.description}</span><b aria-hidden="true">↗</b>

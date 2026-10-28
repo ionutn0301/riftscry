@@ -18,7 +18,7 @@ test.describe("keyboard-only exploration", () => {
 
   test("choose, inspect, save and open a history without a pointer", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/?champion=Belveth&older=26.15&newer=26.16#perspective");
+    await page.goto("/explore?champion=Belveth&older=26.15&newer=26.16#perspective");
     await ready(page);
     const opener = page.locator("[data-roster-open]");
     await opener.focus();
@@ -58,7 +58,7 @@ test.describe("keyboard-only exploration", () => {
   });
 
   test("roster Escape restores the opener and the map keeps native focus", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/explore");
     await ready(page);
     const rosterOpener = page.locator("[data-roster-open]");
     await rosterOpener.focus();
@@ -92,7 +92,7 @@ test.describe("keyboard-only exploration", () => {
   });
 
   test("map-to-search handoff closes the native dialog before opening the palette", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/explore");
     await ready(page);
     await expect(page.locator('astro-island[component-url*="CommandPalette"]')).not.toHaveAttribute("ssr", "");
     await page.locator("[data-map-open]").focus();

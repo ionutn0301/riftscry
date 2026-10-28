@@ -62,7 +62,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     const params = new URLSearchParams({ champion: model.identity.id, older, newer });
     if (selected) params.set('event', selected.id);
     if (seen.size) params.set('seen', [...seen].join('|'));
-    rememberReading('/?' + params.toString() + '#change', model.identity.name + ' — your explored interval');
+    rememberReading('/explore?' + params.toString() + '#change', model.identity.name + ' — your explored interval');
   }
 
   function updateSaved(pool: readonly string[] = $pool.get()) {

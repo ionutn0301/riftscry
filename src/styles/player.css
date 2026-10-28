@@ -614,3 +614,30 @@ body:is([data-surface="players"], [data-surface="player"], [data-surface="match"
 html[data-motion="reduced"] .player-workspace *, html[data-motion="reduced"] .player-workspace *::before, html[data-motion="reduced"] .player-workspace *::after { animation: none !important; transition: none !important; }
 html[data-motion="reduced"]::view-transition-old(player-identity), html[data-motion="reduced"]::view-transition-new(player-identity) { animation: none !important; }
 html[data-motion="reduced"]::view-transition-group(player-identity) { animation-duration: .01ms; }
+
+/* Player captures share the browser-local Next game notebook. */
+.player-view-navigation { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 18px; }
+.profile-hub .player-view-navigation .player-tabs { flex: 1 1 360px; min-width: 0; margin-bottom: 0; }
+.player-workspace .player-next-game-link { flex: 0 0 auto; }
+.player-build-save { min-width: 0; margin-top: 16px; }
+.player-build-save-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; }
+.player-build-save-actions button { max-width: 100%; }
+.player-workspace .player-capture-status { margin-block: 8px 0; }
+.player-workspace .player-capture-status:empty { display: none; }
+.player-quick-note { margin-block: 28px 34px; padding: clamp(16px, 3vw, 24px); border: 1px solid var(--player-line); border-radius: 14px; background: #8ed8d006; }
+.player-quick-note-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; justify-content: space-between; }
+.player-quick-note-heading h2 { margin-block: 4px 0; }
+.player-quick-note form { display: flex; flex-direction: column; align-items: start; gap: 12px; }
+.player-quick-note .player-field { width: 100%; }
+.player-quick-note textarea { width: 100%; min-height: 100px; max-width: 100%; resize: vertical; }
+@media (max-width: 600px) {
+  .player-view-navigation { gap: 4px; margin-bottom: 14px; }
+  .profile-hub .player-view-navigation .player-tabs { flex-basis: 100%; }
+  .player-workspace .player-next-game-link { margin-left: auto; }
+  .player-build-save-actions { gap: 8px 14px; }
+  .player-quick-note-heading h2 { font-size: 24px; }
+}
+@media (max-width: 600px) and (max-height: 700px) {
+  /* Keep the first match visible below the wrapped preparation link. */
+  .player-view-navigation { margin-bottom: 6px; }
+}

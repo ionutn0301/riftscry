@@ -1,63 +1,109 @@
 # Architecture
 
-RiftScry is a static site with a build-time data pipeline. There is no runtime backend:
-no database, no API, no accounts, no server sessions. Hosting cost is $0.
+RiftScry combines a versioned patch archive, Riot-backed player review, and a browser-local
+preparation workspace. Astro 7 prerenders the archive and preparation shell; the Vercel
+adapter serves the dynamic player routes and API. React islands provide interactive state.
 
-```text
-Official Riot sources (patch-notes HTML, Data Dragon JSON)
-        │  scripts/patch-ingestion  (run locally or by CI)
-        ▼
-.cache/                     raw HTML — gitignored; Riot prose is never committed
-        │  parse → normalize → classify → merge overrides → validate (Zod)
-        ▼
-src/data/patches/26.16.json normalized, committed — git is the audit trail
-        │  astro build (static output)
-        ▼
-dist/  →  Cloudflare Pages / any static host  →  browser (localStorage for My Pool)
-```
+## Product routes
 
-## Ingestion pipeline (`scripts/patch-ingestion/`)
+| Route | Purpose | Data boundary |
+| --- | --- | --- |
+| `/` | Explain the companion and offer direct next actions | Static content; local returning-player state |
+| `/next-game` | Rift Recall, quick notes, saved builds, reflection and preparation transfer | Browser storage; build-time archive metadata; no player API or AI request |
+| `/players` | Riot ID lookup with preserved task and filters | Dynamic shell; explicit player API request |
+| `/players/:platform/:puuid` | Recent matches, observed builds, Build Memory | Dynamic shell; Riot API via server; local notes |
+| `/matches/:id` | Match facts, optional timeline and AI review, save a build/note | Requested match API data; local preparation |
+| `/champions`, `/champion/:slug`, `/patches`, `/patch/:id`, `/compare/*`, `/pool` | Structured changes and personal champion briefing | Committed patch data; local pool/reviewed baseline |
+| `/explore` | Immersive archive journey | Prerendered content and on-demand archive JSON |
+
+## Patch ingestion
+
+Official Riot patch notes and Data Dragon enter `scripts/patch-ingestion/`. Raw HTML is
+cached locally and excluded from git. The pipeline parses, normalizes, classifies, merges
+reviewed overrides, and validates records with Zod. Normalized files in
+`src/data/patches/*.json` are committed with source URLs and ingestion metadata.
 
 | Module | Responsibility |
-|---|---|
-| `fetch.ts` | Notes/ddragon HTTP with `.cache/` caching; patch-id → notes-URL candidates (Riot used two slug forms in 2026); patch-id → ddragon `assetVersion` resolution |
-| `parse.ts` | Riot HTML → raw change tree. Tolerant by construction: unknown sections default to *systems* (with an out-of-scope skip list), headerless blocks inherit their section title, and blocks with unattachable change lines are reported — never dropped silently |
-| `classify.ts` | Deterministic stat-semantics table (see [DATA.md](DATA.md)) |
-| `normalize.ts` | Raw tree → schema shape; champion-name canonicalization (curly apostrophes, `&`/`and`); override merging; ends in `validatePatch` |
-| `validate.ts` | Zod validation of every committed patch file — also wired into `pnpm test`, so malformed data fails CI |
-| `index.ts` | CLI: `pnpm ingest <id…> | --all | --validate`; prints a per-patch coverage report (arrow/prose lines, unknown labels, skipped sections) |
+| --- | --- |
+| `fetch.ts` | Source retrieval, caching, public patch IDs and Data Dragon version resolution |
+| `parse.ts` | Structured champion, item, system and hotfix extraction with coverage reporting |
+| `classify.ts` | Deterministic stat semantics; no opaque gameplay impact score |
+| `normalize.ts` | Canonical IDs, schema normalization and explicit overrides |
+| `validate.ts` | Data validation used by ingestion and CI |
+| `index.ts` | Ingestion CLI and reviewable coverage summary |
 
-Two real-world hazards the pipeline defends against, found during the 2026-season
-ingestion: Data Dragon occasionally ships variant entries whose display name collides
-with a real champion (`Jade_Alistar` → skipped by underscore-id rule + a referential-
-integrity test), and early-season notes use a different URL slug (candidate fallback).
+`src/lib/data.ts` reads this archive at build time. Dates and counts describe committed
+coverage; they are not a guarantee of live or complete hotfix coverage. Public patch IDs
+(such as `26.21`) and game/Data Dragon versions (`16.21.x`) are separate identifiers.
+Preparation resolves their relationship from each patch's actual `assetVersion`.
 
-## Site (`src/`)
+## Player API
 
-- **Astro 7, static output.** Every route is prerendered from the committed JSON:
-  16 patch pages, 173 champion histories, ~240 compare pairs, indexes — ~450 pages in
-  under 10 seconds.
-- **React islands** only where state lives client-side: patch filter bar, My Pool picker
-  and strip, compare picker, command palette (cmdk under fully custom styling, loaded on
-  first open from a build-time `search-index.json`).
-- **My Pool** is a nanostores `persistentAtom` on `localStorage` (`riftscry:pool`).
-  Server-rendered pages never depend on it; islands personalize after hydration, and
-  `?champions=` URLs let pool-less visitors see pinned champions.
-- **Homepage motion** is vanilla GSAP + ScrollTrigger in a plain `<script>` (no React):
-  scrubbed, transform/opacity/clip-path only. The static composition is the end state,
-  so `prefers-reduced-motion` and no-JS get the complete page with zero pins.
+`src/pages/api/player/[action].ts` validates methods, platform, PUUID, queue and match IDs.
+It gates access through `src/lib/player/access.ts`. Riot credentials remain server-side.
+The request layer caches records, applies regional/application budgets and respects
+rate-limit cooldowns. Configured Redis credentials are required for shared cache and
+budget state; missing credentials stop player requests with an explicit service error.
+Process-local pending-request deduplication supplements the shared cache.
 
-## Automation (`.github/workflows/`)
+History currently imports at most 20 recent match IDs for the selected exact queue.
+Client batching limits simultaneous detail requests; it is not pagination. Rank is a
+current observation, not a historical LP ledger. Match review distinguishes summary
+facts, timeline evidence, deterministic interpretation and an explicitly requested AI
+review. Failed optional services do not rewrite local notes.
 
-- `ci.yml` — typecheck, unit tests (including data validation), build, Playwright e2e.
-- `check-new-patch.yml` — scheduled; detects new ddragon versions, attempts ingestion,
-  and opens a PR with the JSON diff for human review. Never auto-merges; if Riot's site
-  blocks CI fetches the PR still opens with local-ingestion instructions.
+Mayhem (`2400`) remains separate from regular ARAM (`450`). Its published queue ID does
+not imply API history availability. The unavailable-history state preserves genuine
+returned records, real request errors and local notes; it does not invent an empty
+history or replace the requested queue silently.
 
-## Testing
+## Browser preparation and Rift Recall
 
-Unit (Vitest): parser fixtures, classifier table, normalizer + overrides, delta math,
-URL state, filters, pool store (happy-dom), search index, data/compare layers, and the
-always-on patch-data validation guard. E2E (Playwright, desktop + mobile projects):
-core personalization flow, filters/URL sync, keyboard-only navigation, reduced-motion
-behavior, and visual snapshots (ddragon imagery masked for determinism).
+`src/lib/companion.ts` defines a versioned, validated preparation document at
+`riftscry:companion:v1`:
+
+- Quick notes carry optional champion, exact queue and manually chosen situation,
+  plus source/creation and reviewed-patch context.
+- Saved builds retain the source player/server/match, observed final inventory and
+  permitted runes. They are references chosen by the user, not meta recommendations.
+- Recall cards snapshot the chosen note/build and game context. Later edits, deletions
+  or patch acknowledgments do not rewrite a past card.
+- Reflections are explicitly self-reported (`helped`, `retry`, `not-applicable`). They
+  do not certify that a match occurred or attribute a win to an adjustment.
+
+Matching is deterministic and visible: champion, exact queue, and the situation the user
+selected. General notes can apply broadly; a pinned note cannot cross incompatible
+context. Patch review links newer matching champion or authoritative item-ID records.
+Missing baselines remain unknown, and reviewed baselines never replace original source
+patches. Item names alone are not used to infer changed items.
+
+For older archive records without item IDs, `companion-item-identities.json` contains a
+small, explicitly reviewed supplement keyed by exact patch and source heading. Every
+mapped ID has an item-ID asset in Riot's source notes and a checked entry in that patch's
+Data Dragon catalog. Ambiguous headings and same-name mode variants remain unmapped;
+the UI explains that this is partial coverage. No catalog is fetched during preparation.
+
+Writes read the latest stored state, validate before persisting, then notify same-page
+subscribers. Storage events refresh other open tabs. Failures keep the previous data and
+show an error. Limits are 100 notes, 30 builds and 50 cards; old records are not silently
+discarded. Import previews an additive merge, preserves local conflicts by default,
+rejects incompatible/oversized files, and refuses to merge two independently unfinished
+cards without a user resolving one first.
+
+Preparation export contains this document only. The existing `riftscry:pool`, archive
+reading state and player-scoped `riftscry:build-memory:v1:*` records remain independent.
+Build Memory continues to require its original item/match/evidence conditions; generic
+quick notes do not weaken those rules. No local notes are sent to an AI service.
+
+## Deployment and verification
+
+The Vercel Git integration builds branch previews and deploys `main`. Existing deployment
+protection and Riot access settings are retained. A successful HTML response that is a
+Vercel sign-in page is not application verification; protected deployments are tested with
+authorized, short-lived access without committing access URLs or browser credentials.
+
+CI runs Astro typechecking, Vitest/data validation, a production build, player browser
+tests, and shared desktop Chromium, mobile Chromium and iPhone WebKit tests. Visual
+changes include desktop and 390px before/after captures. The old archive journey retains
+its navigation, reduced-motion and recovery coverage at `/explore`; homepage and
+preparation tests cover the companion's current actions and full local lifecycle.

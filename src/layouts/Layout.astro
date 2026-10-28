@@ -12,7 +12,7 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
-  surface?: "home" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "players" | "player" | "match" | "missing";
+  surface?: "home" | "explore" | "next-game" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "players" | "player" | "match" | "missing";
 }
 
 const { title, description, ogImage = "/og-default.png", surface: requestedSurface } = Astro.props;
@@ -48,7 +48,7 @@ const surface = requestedSurface ?? inferredSurface;
       } catch { document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'; }
     </script>
   </head>
-  <body class:list={[isHome && "is-home"]} data-surface={surface}>
+  <body class:list={[(isHome || surface === 'explore') && "is-home"]} data-surface={surface}>
     <a class="skip-link" href="#main">Skip to content</a>
     <div>
       <Wayfinder surface={surface} />

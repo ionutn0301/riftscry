@@ -1,5 +1,6 @@
 import { useEffect, useId, useState, type SubmitEvent } from 'react';
 import { platforms } from '../../lib/player/contracts';
+import { historyOptions } from '../../lib/player/modes';
 import { api, fetcher, playerLink, type PlayerView } from './client';
 import { usePlayerCooldown } from './usePlayerCooldown';
 import PlayerIcon from './PlayerIcon';
@@ -17,23 +18,31 @@ const destinations: { id: PlayerView; label: string; icon: 'history' | 'build' |
   { id: 'memory', label: 'Build Memory', icon: 'bookmark' },
 ];
 type RememberedPlayer = { platform: string; puuid: string; name: string };
+type Props = { name?: string; platform?: string; view?: string; queue?: string; champion?: string; result?: string };
 
-export default function PlayerGateway({ name = '', platform = '' }: { name?: string; platform?: string }) {
+export default function PlayerGateway({ name = '', platform = '', view: initialView = '', queue = '', champion = '', result = '' }: Props) {
   const id = useId();
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
-  const [view, setView] = useState<PlayerView>('history');
+  const [view, setView] = useState<PlayerView>(initialView === 'builds' || initialView === 'memory' ? initialView : 'history');
   const [remembered, setRemembered] = useState<RememberedPlayer | null>(null);
   const retrySeconds = usePlayerCooldown();
+  const filters = {
+    queue: historyOptions.some(option => option.value === queue) ? queue : 'all',
+    champion: champion.slice(0, 150),
+    result: result === 'win' || result === 'loss' ? result : '',
+  };
+  const destinationLabel = destinations.find(destination => destination.id === view)!.label;
 
   useEffect(() => {
     setReady(true);
     try {
       const value: unknown = JSON.parse(localStorage.getItem('riftscry:remembered-player:v1') ?? 'null');
       if (value && typeof value === 'object' && 'platform' in value && 'puuid' in value && 'name' in value &&
-        typeof value.platform === 'string' && value.platform in platforms &&
-        typeof value.puuid === 'string' && value.puuid.length > 0 && typeof value.name === 'string') {
+        typeof value.platform === 'string' && Object.hasOwn(platforms, value.platform) &&
+        typeof value.puuid === 'string' && /^[A-Za-z0-9_-]{30,120}$/.test(value.puuid) &&
+        typeof value.name === 'string' && value.name.length <= 150 && !/[\u0000-\u001f\u007f]/.test(value.name)) {
         setRemembered(value as RememberedPlayer);
       }
     } catch { /* Lookup still works when optional browser storage is unavailable. */ }
@@ -56,7 +65,7 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
     try {
       const selectedPlatform = String(form.get('platform'));
       const account = await fetcher<{ puuid: string; gameName: string; tagLine: string }>(api('lookup', { name: gameName, tag, platform: selectedPlatform }));
-      window.location.assign(playerLink(selectedPlatform, account.puuid, { name: `${account.gameName}#${account.tagLine}`, view }));
+      window.location.assign(playerLink(selectedPlatform, account.puuid, { ...filters, name: `${account.gameName}#${account.tagLine}`, view }));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Lookup is unavailable. Please try again.');
       setBusy(false);
@@ -82,7 +91,7 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
         </div>
         <div className="player-field lookup-server">
           <label htmlFor={`${id}-server`}>Server</label>
-          <select id={`${id}-server`} name="platform" defaultValue={platform in platforms ? platform : 'euw1'} disabled={!ready || busy}>
+          <select id={`${id}-server`} name="platform" defaultValue={Object.hasOwn(platforms, platform) ? platform : 'euw1'} disabled={!ready || busy}>
             {Object.keys(platforms).map(value => <option key={value} value={value}>{platformNames[value] ?? value.toUpperCase()}</option>)}
           </select>
         </div>
@@ -98,8 +107,8 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
         </div>
       </div>
 
-      {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { name: remembered.name, view: 'memory' })}>
-        <span className="player-kicker"><PlayerIcon name="bookmark" size={16} /> SAVED PLAYER</span><strong>{remembered.name || 'Your remembered player'}</strong><span>Build Memory <PlayerIcon name="arrow-right" size={16} /></span>
+      {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { ...filters, name: remembered.name, view })}>
+        <span className="player-kicker"><PlayerIcon name="bookmark" size={16} /> SAVED PLAYER</span><strong>{remembered.name || 'Your remembered player'}</strong><span>{destinationLabel} <PlayerIcon name="arrow-right" size={16} /></span>
       </a>}
     </div>
     <footer className="gateway-footnote"><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />Private beta</summary><p>Notes stay on this browser. Looking up a player does not verify account ownership.</p></details></footer>
