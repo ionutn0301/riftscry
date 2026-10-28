@@ -4,16 +4,19 @@
 
 This iteration starts from GitHub `main` commit `8778a5141294ffd3ffb094e7ae7e9acd449b5a4a` and continues on `codex/player-beta-completion`. It builds on the existing player profile, timestamp migration and personal-loadout work. The pull request identifies the delivered commit; an older deployment must not be treated as validation of these changes.
 
-The implemented loop is **profile → match review → editable adjustment → later-match evidence**. The first useful result is a factual match summary. AI interpretation and timeline requests are explicit actions; following a saved link to a timeline event also requests that timeline.
+The implemented loop is **player gateway → separate profile → match review → editable adjustment → later-match evidence**. The player area now uses the homepage's original environmental art, display typography, open compositions and shared Rift map. The first useful result is a factual match summary. AI interpretation and timeline requests are explicit actions; following a saved link to a timeline event also requests that timeline.
 
 ## Routes and reproduction
 
-- `/players`: enter a Riot ID and choose its League server. EUNE uses `eun1`, routed to Riot's Europe match/account APIs. The game is League of Legends; the server selector is separate from the Riot ID tag.
-- A resolved profile URL retains the canonical PUUID, server and queue. The profile imports up to 20 recent queue-specific matches in batches of four. History filters and the selected view remain in the URL.
+- `/players`: enter a Riot ID and choose its League server. EUNE uses `eun1`, routed to Riot's Europe match/account APIs. The game is League of Legends; the server selector is separate from the Riot ID tag. This route is a search gateway, not an embedded profile.
+- `/players/:platform/:puuid`: the resolved, bookmarkable profile. Displayed identity comes from Riot's account-by-PUUID response, not a trusted `name` query. Old `/players?platform=…&puuid=…` links redirect compatibly. Queue, champion, result and selected view remain in the URL; match links return to that context.
+- History defaults to **All recent games** and omits both queue and type from the upstream match-ID request. The previous default of Ranked Solo/Duo (`420`) excluded newer ARAM/normal games and could leave old ranked games as the apparent latest result. There was no date cutoff. Exact queue selections request that queue upstream.
+- The profile imports at most 20 recent match IDs in batches of four and sorts loaded games newest-first. Partial or excluded imports are counted explicitly and can be retried. The denominator is the imported, filtered sample, never all games on the account.
+- Statistics are grouped by actual queue ID, with separate outcome and metric denominators. There is no all-mode win rate. ARAM (`450`), ARAM: Mayhem (`2400`), ARAM Clash (`720`), Ranked Solo/Duo, Ranked Flex, Normal Draft, Swiftplay and Quickplay retain distinct samples. Current official ranked status is separate from the match sample.
 - **Personal builds** groups exact champion/role/queue/patch/item-multiset/rune signatures. Counts describe the imported personal sample, not build strength or global win rates.
 - A match review shows match-wide metrics, final inventory, runes, a factual review, and linked supporting facts. The **Request evidence-assisted review** action asks the server for a bounded interpretation. Timeline or AI failure leaves the loaded summary usable.
 - **Try this next time** prepares an editable draft. It does not save automatically. The player confirms the condition, tracked item, reason and tradeoff before choosing **Keep adjustment**.
-- Return to **Build Memory** after later games. Follow-up uses imported matches strictly after the tracking start, with the same player, champion, known role, queue and patch. A custom condition requires explicit **This condition applied** confirmation for each structurally eligible match; it can be undone. Unknown role, incompatible patch or historical matches cannot be made eligible by that confirmation.
+- Return to **Build Memory** after later games. Follow-up uses imported matches strictly after the tracking start, with the same player, champion, known comparison context, actual queue and patch. New non-lane notes can explicitly record their ARAM/Arena/rotating-mode context without inventing a lane; existing notes with absent roles stay unknown. A custom condition requires explicit **This condition applied** confirmation for each structurally eligible match; it can be undone. Unknown context, incompatible patch or historical matches cannot be made eligible by that confirmation.
 - Select a later eligible match to inspect purchase, sale, destruction and undo records. A purchase is an observation, not a success score or causal outcome.
 
 The tester has supplied a Riot ID for EUNE. That account is not hardcoded, committed as a fixture, or represented by synthetic test data.
@@ -22,9 +25,9 @@ The tester has supplied a Riot ID for EUNE. That account is not hardcoded, commi
 
 `RIOT_PRIVATE_TESTING_ENABLED=true` enables private Riot calls only in development or a protected Vercel preview. `RIOT_PUBLIC_ACCESS_APPROVED` remains a separate gate and must remain false for this private beta. The API checks the access gate before Redis rate limiting or provider work. Unknown endpoints are rejected without upstream requests.
 
-Keep Vercel Authentication enabled for all deployments. The current session observed `/players` on the production alias redirecting an anonymous browser to Vercel sign-in. The new branch preview also returned HTTP 302 to Vercel authentication for both `/players` and `/api/player/lookup`. These observations verify those routes' sign-in wall, not the complete project configuration, tester membership, sharing exceptions or private API integration. No protection setting has been weakened by this iteration.
+Keep Vercel Authentication enabled for all deployments. Earlier in this session, the now-authorized Vercel management connection verified SSO protection enabled with `deploymentType: all`, a READY branch preview, private testing enabled and public approval disabled. Anonymous page/API requests reached Vercel sign-in. These observations do not prove that the agent's browser has an authenticated deployment session or that the live Riot/model integrations work. No protection setting has been weakened by this iteration.
 
-Earlier implementation notes reported a successful temporary Redis SET/GET/DEL check, Riot status HTTP 200, Vercel SSO protection set to `all`, and zero project-level bypasses. Those are historical integration observations and have not been independently repeated in this iteration. The Vercel plugin is connected, but its project request returns HTTP 403 because this connection still needs authorization for the `ionutn0301s-projects` team. This requires the user's team-consent link, not reconnecting the plugin. A successful lookup of the supplied account and live AI generation are still pending.
+Earlier implementation notes reported a successful temporary Redis SET/GET/DEL check and Riot status HTTP 200; those integration observations have not been independently repeated in this iteration. Team authorization is now resolved. The agent's protected-browser session remained at sign-in, and no shareable protection-bypass link was created. A successful agent-observed lookup of the supplied account and live AI generation are still pending. Controlled fixtures must not be presented as that account's data.
 
 Server configuration:
 
@@ -42,12 +45,16 @@ The review includes typed summary and event facts. Long timelines are sampled ac
 
 Item metadata is resolved from an official Data Dragon version in the recorded major/minor game patch. It never falls forward to a different patch. Item and rune retrieval are independent, so a rune outage preserves valid item names. Missing metadata retains identifiers and displays an explanation. Profile rows share metadata requests by player/server/patch.
 
-The versioned `item-observations-1` catalogue is intentionally limited:
+The versioned `item-observations-2-mode-aware` catalogue is intentionally limited:
 
 1. Revisit an actual recorded purchase of an item also present in the final inventory.
 2. Compare supported recorded tier-two boots with the two defensive alternatives, using patch-compatible item stats and prices.
 
 Rules require available, purchasable items on the supported map and respect the metadata's champion restrictions. They do not infer the enemy threat, decide an optimal build, reconstruct available gold, model passives/upgrades/abilities, or claim that a different item would have changed the result. Conditional comparisons remain the player's decision. Source shape and item identities were checked against Riot Data Dragon 16.21.1 on 2026-10-28; values are read from each match's compatible payload rather than hardcoded.
+
+Every review includes a mode-context fact. ARAM, Mayhem, Arena and rotating modes do not receive Summoner's Rift lane/farming/vision or standard item advice. Swiftplay retains descriptive rates for its own queue but withholds standard item alternatives because its progression and item rules differ. Mayhem and Arena do not display standard rune setups. Recorded combat, inventory and timeline events remain available. The review prompt and evidence/cache versions changed so prior assumptions are not reused.
+
+Queue identities were checked against Riot's current official catalogue on 2026-10-28: <https://static.developer.riotgames.com/docs/lol/queues.json>. Mode capabilities are explicit in `src/lib/player/modes.ts`; unknown/custom/tutorial/bot queues are excluded rather than relabeled as normal or ranked.
 
 Riot references: <https://developer.riotgames.com/docs/portal>, <https://developer.riotgames.com/docs/lol>, <https://developer.riotgames.com/apis>, <https://developer.riotgames.com/policies/general>. Registration, permitted key scope and approval for public access remain separate from successful technical testing. Custom matches are excluded. Existing Riot attribution remains in the footer.
 
@@ -59,10 +66,18 @@ New notes have immutable `createdAt` and explicit `trackingStartedAt`. A materia
 
 Custom-condition confirmations are stored as bounded, unique match IDs. Structural eligibility is checked again when reading follow-up, so a stale or manually altered ID cannot qualify a wrong champion, unknown role, different patch or earlier match. Follow-up is derived from imported matches rather than appended counters; refreshing does not duplicate observations. Empty, not-yet-loaded and loading samples have distinct messages.
 
-## Validation of this iteration
+## Validation checkpoints
+
+### Cinematic profile and mode-aware history refactor
+
+The new source adds unit coverage for unfiltered history, exact queue requests, bounded imports, verified account identity, per-queue statistics, missing-value denominators, mode-aware evidence and non-lane prospective memory. The local full suite passes **330 tests in 39 files**; Astro typecheck and the production build pass. The dedicated player browser suite preserves the ten existing workflows and adds canonical-route, mode, refresh and visual coverage. Its controlled history includes recent ARAM, older ranked, Swiftplay and Mayhem games, never the tester's real identity.
+
+CI writes thirteen successful visual captures to the `player-experience` artifact: desktop, portrait and short-phone gateway/profile views, plus a full-motion gateway. Fixtures also cover partial imports/retry, a changed history tail during refresh, forged query identity, legacy redirects, keyboard/map navigation and reduced motion. The infinite history cache includes the complete ordered ID sample; old batches cannot count toward a new sample. Progressive loading does not refetch its first four details on each new batch. Current browser execution results must be read from the latest pull-request checks; test discovery alone is not a browser pass.
+
+### Earlier player beta baseline (`7b30ff6`)
 
 - Locked installation passed the active minimum-release-age policy. `ai` is pinned to 7.0.154 with compatible older Gateway/provider-utils packages; the newer lockfile releases were rejected by that policy. The policy was not disabled.
-- Full unit suite: **38 files, 306 tests passed**, including persisted-pool hydration coverage.
+- Full unit suite at the prior beta checkpoint: **38 files, 306 tests passed**, including persisted-pool hydration coverage.
 - `pnpm check`: exited successfully; the existing cinematic scene still reports a Three.js deprecation hint.
 - `pnpm build`: exited successfully and produced the Vercel server/static output.
 - `git diff --check`: passed before delivery.

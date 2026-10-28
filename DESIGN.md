@@ -1,6 +1,51 @@
 # RiftScry design
 
-## October 28 amendment — current implementation
+## October 28 player experience amendment — current implementation
+
+The player area extends the homepage's environment, typography and Rift map into
+a useful loop: **find a player → enter their profile → inspect a recorded game →
+keep an adjustment → return with later evidence**. It does not embed a full profile
+under the lookup form or turn the records into a horizontal slide deck.
+
+- `/players` is the search gateway. Its first-screen arrival uses the original
+  RiftScry environment, a readable Riot ID/server instrument, and an optional
+  browser-local remembered-player destination.
+- `/players/:platform/:puuid` is a separate, bookmarkable profile. The account API
+  resolves its displayed Riot identity; a query-string name is not proof of that
+  identity. Old query-based profile links redirect to the canonical route.
+- The profile arrival connects to a real chronology of imported games. Match
+  history, personal builds and Build Memory have named controls and URL state.
+  Game rows are normal links; match review returns to the same profile context.
+- The shared Rift map includes Players. The player gateway, profile and match
+  review use a compact map control instead of the desktop archive navigation
+  lane. Archive search is labeled separately from the Riot ID lookup.
+- Named route transitions and restrained arrival motion connect these surfaces.
+  Required controls and records remain available immediately. Reduced motion,
+  keyboard operation, short screens and ordinary browser Back remain supported.
+
+Recent history defaults to **all recent games**, with no upstream queue or type
+filter. Exact mode selections request the exact Riot queue, rather than filtering
+an already ranked-only sample. Imports remain bounded at 20 IDs in batches of four.
+Failed or excluded records are reported explicitly; they never become losses.
+
+Statistics, personal loadout groups and prospective Build Memory comparisons keep
+actual queues separate. There is no all-mode performance average. ARAM, ARAM:
+Mayhem, ranked Solo/Duo, ranked Flex, normal Draft, Swiftplay and Quickplay are
+distinct contexts. ARAM and other non-lane modes do not inherit Summoner's Rift
+lane, farming, vision or standard item advice. Current official rank is a separate
+record. The queue catalogue source and capability rules live in
+`src/lib/player/modes.ts`; sample calculations live in `stats.ts`.
+
+New non-lane Build Memory notes store an explicit comparison context without
+inventing a lane. Existing notes with unknown roles remain unknown. Same queue,
+champion, patch, player and prospective time constraints still apply.
+
+The current player refactor's validation is recorded in `docs/player-release.md`
+and the pull request's checks. CI captures desktop, portrait and short-phone
+screens into the `player-experience` artifact. Controlled fixture screenshots are
+visual evidence; they are not proof of a successful live Riot lookup.
+
+## Earlier October 28 connected-story amendment
 
 `docs/CONNECTED_STORYBOARD.md` specifies the connected observation sequence.
 `src/styles/connected.css` now shortens task-route arrivals, reserves a desktop
@@ -14,7 +59,7 @@ latest archived change without changing the selected dates. Champion pages expos
 a direct pool-save control. Comparisons retain champion/pool context and endpoint
 changes preserve query state. Numerical interpretation is conservative and exact.
 
-Current checks: production build, typecheck, and 241 unit/integration tests passed.
+At that checkpoint, production build, typecheck, and 241 unit/integration tests passed.
 Rendered review is blocked by preview routing and missing Chromium system libraries;
 see `docs/RELEASE_EVIDENCE.md`. The verification narrative below records the previous
 refactor handoff and is historical, not the current check result. No new visual
@@ -81,8 +126,8 @@ subject to applicable Riot policies and an appropriate release review.
 ## Navigation and motion
 
 `Wayfinder.astro` replaces the conventional destination navbar with a persistent
-Rift map control. Its native dialog has five clearly named, ordinary links: the
-journey, champions, patch archive, compare, and My Pool. The current destination
+Rift map control. Its native dialog has six clearly named, ordinary links: the
+journey, champions, patch archive, compare, My Pool, and Players. The current destination
 is marked. On mobile the same destinations become a readable ordered path. Search,
 the motion preference, the brand link, and the briefing shortcut remain direct
 utilities. The map is an orientation device, not a puzzle users must solve.
@@ -117,6 +162,9 @@ chapter links, and legible reading compositions. Each route has its own purpose:
 | `/patch/:id` | Patch identity → personal perspective → champion records → available item, system, and hotfix chapters. |
 | `/compare/:newer/:older` | Two endpoints → interval controls → champion classifications and linked item/system records. |
 | `/pool` | Personal return → useful briefing → saved-champion editor. |
+| `/players` | Riot ID/server search → verified identity → a separate player profile. |
+| `/players/:platform/:puuid` | Player arrival → mode-separated recent sample → match history, personal builds and Build Memory. |
+| `/matches/:id` | Recorded match context → evidence and timeline → an editable prospective adjustment → return to the profile. |
 | Missing route | A clear recovery arrival with real destinations. |
 
 Presentation changes must preserve existing patch filter selectors and URL state,
@@ -152,10 +200,10 @@ islands such as the palette, pool controls, and return briefing. Treat performan
 budgets as release criteria that need measurement, not as proof supplied by the
 architecture or the word “static.”
 
-## Verification status and acceptance
+## Historical refactor verification and ongoing acceptance criteria
 
-The refactor is implemented in source. Dependency installation was rejected by
-automatic approval review in this session, so the Astro build, type check,
+At the initial refactor handoff, dependency installation was rejected by
+automatic approval review, so the Astro build, type check,
 Playwright suite, browser rendering, performance, and visual quality have **not
 been verified** here. Static parsing and diff checks are narrower checks; they
 must not be reported as a successful build or a premium-experience sign-off.

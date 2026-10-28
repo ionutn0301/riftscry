@@ -1,4 +1,5 @@
 import type { Fact, Match } from './contracts';
+import { modeForMatch } from './modes';
 
 /** Reference data, not a complete combat or item-eligibility model. */
 export type ItemRecord = {
@@ -38,7 +39,7 @@ export type AdjustmentDraft = {
   ruleVersion?: string;
 };
 
-export const ITEM_ADVICE_VERSION = 'item-observations-1';
+export const ITEM_ADVICE_VERSION = 'item-observations-2-mode-aware';
 export const STRUCTURAL_CONDITION = 'Same champion, role, queue and patch';
 export const CONDITIONAL_COMPARISON = 'Specific matchup or replay condition — requires confirmation';
 
@@ -88,7 +89,7 @@ function statTradeoff(from: ItemRecord, to: ItemRecord): string | null {
  * No matchup verdict or combat outcome is inferred from these rules.
  */
 export function buildSuggestions(match: Match, puuid: string, facts: Fact[], metadata?: ItemMetadata): AdjustmentDraft[] {
-  if (!compatibleItems(match, metadata) || ![420, 440, 400, 430].includes(match.info.queueId)) return [];
+  if (!compatibleItems(match, metadata) || !modeForMatch(match).standardItems) return [];
   const p = match.info.participants.find(p => p.puuid === puuid);
   if (!p) return [];
   const source = {

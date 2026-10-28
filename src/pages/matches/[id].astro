@@ -10,4 +10,4 @@ const back = Astro.url.searchParams.get('back') ?? '';
 Astro.response.headers.set('Cache-Control','private, no-store');
 Astro.response.headers.set('X-Robots-Tag','noindex');
 ---
-<Layout title="Match review · RiftScry" description="Recorded match facts, purchase evidence and private Build Memory." surface="players"><div class="player-workspace"><MatchReview id={id} platform={platform} puuid={puuid} back={back} client:load /></div></Layout>
+<Layout title="Match review · RiftScry" description="Recorded match facts, purchase evidence and private Build Memory." surface="match"><div class="player-workspace player-match-shell"><MatchReview id={id} platform={platform} puuid={puuid} back={back} client:load /></div></Layout>

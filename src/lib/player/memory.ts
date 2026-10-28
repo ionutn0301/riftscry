@@ -29,7 +29,7 @@ export function confirmMatchApplicability(note: Memory, match: Match, puuid: str
   const remaining = (note.confirmedMatchIds ?? []).filter(id => id !== match.metadata.matchId);
   if (!applies) return { ...note, confirmedMatchIds: remaining };
   if (structuralEligibility(note, match, puuid) !== 'eligible') {
-    throw new Error('Only later matches with the same player, champion, known role, queue and patch can be confirmed.');
+    throw new Error('Only later matches with the same player, champion, known comparison context, queue and patch can be confirmed.');
   }
   if (note.condition === 'Same champion, role, queue and patch') return note;
   return { ...note, confirmedMatchIds: [...remaining, match.metadata.matchId].slice(-100) };

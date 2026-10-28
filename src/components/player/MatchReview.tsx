@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { api, fetcher, playerLink } from './client';
-import { participant, evidence, fallbackReview, patchOf, type Match, type Timeline, type Review, type Fact } from '../../lib/player/contracts';
+import { api, fetcher, playerBackLink } from './client';
+import { comparisonRole, comparisonRoleLabel, participant, evidence, fallbackReview, patchOf, type Match, type Timeline, type Review, type Fact } from '../../lib/player/contracts';
+import { modeForMatch } from '../../lib/player/modes';
 import { buildSuggestions, type AdjustmentDraft } from '../../lib/player/advice';
 import BuildMemory from './BuildMemory';
 import { ItemLabel, RuneLabel } from './ItemPicker';
@@ -29,6 +30,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   const { data: timeline, error: timelineError, isLoading: timelineLoading, mutate: retryTimeline } = useSWR<Timeline>(timelineRequested ? api('timeline', values) : null, fetcher, { shouldRetryOnError: false });
   const { data: items, error: itemError } = useItemMetadata(match, platform, puuid);
   const p = match && participant(match, puuid);
+  const mode = match && modeForMatch(match);
   const facts = useMemo(() => match && p ? evidence(match, puuid, timeline, items) : [], [match, p, puuid, timeline, items]);
   const suggestions = useMemo(() => match ? buildSuggestions(match, puuid, facts, items) : [], [match, puuid, facts, items]);
   const baseline = useMemo(() => fallbackReview(facts, undefined, suggestions), [facts, suggestions]);
@@ -91,11 +93,12 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   }
 
   return <>
-    <a href={back.startsWith('/players?') && !back.startsWith('//') ? back : playerLink(platform, puuid)}>← Back to player and filters</a>
+    <a className="player-text-link" href={playerBackLink(back, platform, puuid)}>← Back to player and filters</a>
     <header className="player-hero">
       <p className="player-kicker">MATCH REVIEW / RECORDED EVIDENCE</p>
       <h1>{p?.championName ?? 'Selected match'}<em> / review</em></h1>
-      <p>{id} · {match ? `Patch ${patchOf(match.info.gameVersion)}` : 'Loading match data'}</p>
+      <p>{id} · {match ? `${mode?.label} · Patch ${patchOf(match.info.gameVersion)}` : 'Loading match data'}</p>
+      {mode && <p className="review-mode-context">{mode.context}</p>}
     </header>
     {isLoading && <p role="status">Loading match summary…</p>}
     {error && <p role="alert">{error.message}</p>}
@@ -105,13 +108,13 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
         <div>
           <p className="player-kicker">{p.win ? 'VICTORY' : 'DEFEAT'}</p>
           <h2>{p.kills} / {p.deaths} / {p.assists}</h2>
-          <p>{new Date(match.info.gameCreation).toLocaleString()} · {clock(match.info.gameDuration * 1000)} · {p.teamPosition || 'Unknown role'}</p>
-          <p>{Number.isFinite(p.totalDamageDealtToChampions) ? p.totalDamageDealtToChampions.toLocaleString() : 'Unavailable'} champion damage · {Number.isFinite(p.goldEarned) ? p.goldEarned.toLocaleString() : 'Unavailable'} gold · {Number.isFinite(p.visionScore) ? p.visionScore : 'Unavailable'} vision score</p>
+          <p>{new Date(match.info.gameCreation).toLocaleString()} · {clock(match.info.gameDuration * 1000)} · {comparisonRoleLabel(comparisonRole(match, puuid))}</p>
+          <p>{Number.isFinite(p.totalDamageDealtToChampions) ? p.totalDamageDealtToChampions.toLocaleString() : 'Unavailable'} champion damage · {Number.isFinite(p.goldEarned) ? p.goldEarned.toLocaleString() : 'Unavailable'} gold{mode?.visionMetrics ? ` · ${Number.isFinite(p.visionScore) ? p.visionScore : 'Unavailable'} vision score` : ''}</p>
         </div>
         <div>
           <h2>Final loadout</h2>
           <ul className="review-inventory">{[p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6].filter(Boolean).map((itemId, index) => <li key={`${itemId}:${index}`}><ItemLabel id={itemId} metadata={items} compact /></li>)}</ul>
-          <div className="review-runes">{p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} />)) || <span>Runes unavailable</span>}</div>
+          <div className="review-runes">{mode?.runeSetup ? p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} />)) || <span>Runes unavailable</span> : <span>{mode?.queueId === 2400 || mode?.family === 'arena' ? 'Augments mode · rune settings not used' : 'Rune setup is not interpreted for this mode'}</span>}</div>
           <p className="player-help">{itemError ? 'Historical item details are unavailable. Recorded IDs are retained.' : items ? `${items.notice} Final inventory does not establish purchase order.` : 'Loading compatible item and rune details…'}</p>
         </div>
       </section>

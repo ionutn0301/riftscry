@@ -61,6 +61,47 @@ describe('player API access and review integration', () => {
     for (const fn of [limit, riot, getMatch, getTimeline, getItemMetadata, review]) expect(fn).not.toHaveBeenCalled();
   });
 
+  it('resolves canonical account identity from PUUID rather than trusting a profile name query', async () => {
+    vi.mocked(riot).mockResolvedValue({ puuid, gameName: 'Canonical Player', tagLine: 'EUNE' });
+    const result = await request('account', { platform: 'eun1', puuid, name: 'Untrusted display hint' });
+    expect(result.status).toBe(200);
+    expect(await result.json()).toEqual({ puuid, gameName: 'Canonical Player', tagLine: 'EUNE' });
+    expect(riot).toHaveBeenCalledWith('europe', `/riot/account/v1/accounts/by-puuid/${puuid}`);
+    expect(getMatch).not.toHaveBeenCalled();
+  });
+
+  it.each([undefined, '', 'all'])('requests a bounded unfiltered recent history for queue %s', async queue => {
+    vi.mocked(riot).mockResolvedValue(['EUN1_123456']);
+    const result = await request('history', { platform: 'eun1', puuid, ...(queue == null ? {} : { queue }) });
+    expect(result.status).toBe(200);
+    expect(await result.json()).toEqual(['EUN1_123456']);
+    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20`, 120);
+    expect(getMatch).not.toHaveBeenCalled();
+    expect(review).not.toHaveBeenCalled();
+  });
+
+  it.each(['420', '480', '490', '720', '2400'])('retrieves selected queue %s from Riot rather than filtering a ranked sample', async queue => {
+    vi.mocked(riot).mockResolvedValue([]);
+    const result = await request('history', { platform: 'eun1', puuid, queue });
+    expect(result.status).toBe(200);
+    expect(await result.json()).toEqual([]);
+    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&queue=${queue}`, 120);
+  });
+
+  it.each(['0', '870', '999999', 'aram', '-450', '4.5e2'])('rejects unsupported or ambiguous queue %s without Riot work', async queue => {
+    const result = await request('history', { platform: 'eun1', puuid, queue });
+    expect(result.status).toBe(400);
+    expect(riot).not.toHaveBeenCalled();
+  });
+
+  it('caps recent imports and does not accept client pagination as a way to exceed the bound', async () => {
+    vi.stubEnv('RIOT_IMPORT_LIMIT', '100');
+    vi.mocked(riot).mockResolvedValue([]);
+    const result = await request('history', { platform: 'eun1', puuid, count: '100', start: '20' });
+    expect(result.status).toBe(200);
+    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20`, 120);
+  });
+
   it('passes compatible item names and bounded suggestions into a protected review', async () => {
     const result = await request('review', { platform: 'eun1', puuid, id: match.metadata.matchId }, 'POST');
     expect(result.status).toBe(200);

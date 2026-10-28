@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
   alreadyStartedMatch, followUpMatch, historicalMatch, installFixtures, makeMatch, memoryKey,
-  otherPuuid, platform, puuid, query, readNotes, savedNote, seedNotes,
+  otherProfilePath, platform, profilePath, query, readNotes, savedNote, seedNotes,
   sourceMatch, suggestion, trackingStart,
 } from './fixtures';
 
@@ -14,8 +14,10 @@ test('lookup opens readable profile and grouped builds without eager timeline or
   await page.getByLabel('Server', { exact: true }).selectOption(platform);
   await page.getByRole('button', { name: 'Find player', exact: false }).click();
 
-  await expect(page).toHaveURL(url => url.pathname === '/players' && url.searchParams.get('puuid') === puuid);
-  await expect(page.getByRole('heading', { name: 'Fixture Player#TEST', exact: true })).toBeVisible();
+  await expect(page).toHaveURL(url => url.pathname === profilePath && !url.searchParams.has('puuid'));
+  await expect(page.locator('[data-player-gateway]')).toHaveCount(0);
+  await expect(page.locator('[data-player-profile]')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fixture Player#TEST');
   await expect(page.locator('.match-row')).toHaveCount(3);
   await expect(page.locator('.match-row').first().getByText('Plated Steelcaps', { exact: false })).toBeVisible();
   await expect(page.locator('.match-row').first().getByText('Electrocute', { exact: false })).toBeVisible();
@@ -27,7 +29,13 @@ test('lookup opens readable profile and grouped builds without eager timeline or
 
   await page.getByRole('button', { name: 'Personal builds', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Observed personal builds', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Ahri · 2 occurrences', exact: true })).toBeVisible();
+  const builds = page.locator('.observed-build');
+  await expect(builds).toHaveCount(2);
+  await expect(builds.first().getByRole('heading', { name: 'Ahri', exact: true })).toBeVisible();
+  await expect(builds.first().locator('.build-occurrences')).toHaveText('2 recorded games');
+  await builds.first().getByText('Inspect source matches and purchase sequences', { exact: true }).click();
+  await expect(builds.first().locator(`a[href^="/matches/${sourceMatch.metadata.matchId}?"]`)).toBeVisible();
+  await expect(builds.first().locator(`a[href^="/matches/${historicalMatch.metadata.matchId}?"]`)).toBeVisible();
   await page.getByRole('button', { name: 'Match history', exact: true }).click();
   await page.getByLabel('Champion', { exact: true }).selectOption('Ahri');
   await page.getByLabel('Result', { exact: true }).selectOption('win');
@@ -92,9 +100,9 @@ test('manual adjustments persist privately and do not cross player contexts', as
   await page.getByRole('button', { name: 'Keep adjustment', exact: true }).click();
   await expect(page.getByText(/^Saved privately on this browser\./)).toBeVisible();
 
-  await page.goto(`/players?${query}&view=memory`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${profilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Ahri · Observe boots timing', exact: true })).toBeVisible();
-  await page.goto(`/players?platform=${platform}&puuid=${otherPuuid}&view=memory`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${otherProfilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/^No saved adjustments for this player yet\./)).toBeVisible();
   expect(await readNotes(page)).toHaveLength(1);
 });
@@ -102,7 +110,7 @@ test('manual adjustments persist privately and do not cross player contexts', as
 test('material revision updates the tracked item and baseline; reflection preserves them', async ({ page }) => {
   await installFixtures(page);
   await seedNotes(page, [savedNote]);
-  await page.goto(`/players?${query}&view=memory`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${profilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   const note = page.locator('.memory-note').filter({ has: page.getByRole('heading', { name: `Ahri · ${savedNote.alternative}`, exact: true }) });
   await note.getByText('Revise this adjustment', { exact: true }).click();
   await note.getByLabel('Tracked item', { exact: true }).selectOption('3006');
@@ -126,14 +134,17 @@ test('material revision updates the tracked item and baseline; reflection preser
 });
 
 test('follow-up excludes historical and already-started games and does not duplicate after refresh', async ({ page }) => {
-  await installFixtures(page, { matches: [followUpMatch, alreadyStartedMatch, historicalMatch, sourceMatch] });
+  const wrongQueue = makeMatch('EUN1_12351', trackingStart + 4_000);
+  wrongQueue.info.queueId = 440;
+  await installFixtures(page, { matches: [wrongQueue, followUpMatch, alreadyStartedMatch, historicalMatch, sourceMatch] });
   await seedNotes(page, [savedNote]);
-  await page.goto(`/players?${query}&view=memory`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${profilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/1 eligible later match/)).toBeVisible();
   const selector = page.getByLabel('Inspect purchase evidence', { exact: true });
   await expect(selector.locator('option')).toHaveCount(2);
   await expect(selector.locator(`option[value="${historicalMatch.metadata.matchId}"]`)).toHaveCount(0);
   await expect(selector.locator(`option[value="${alreadyStartedMatch.metadata.matchId}"]`)).toHaveCount(0);
+  await expect(selector.locator(`option[value="${wrongQueue.metadata.matchId}"]`)).toHaveCount(0);
   await selector.selectOption(followUpMatch.metadata.matchId);
   await expect(page.getByText(/Purchase event observed/)).toBeVisible();
   await page.getByText('Inspect all recorded item events', { exact: true }).click();
@@ -149,7 +160,7 @@ test('legacy notes retain unknown creation time until tracking is explicitly sta
   await installFixtures(page);
   const { createdAt, trackingStartedAt, revisedAt, ...legacy } = savedNote;
   await seedNotes(page, [legacy]);
-  await page.goto(`/players?${query}&view=memory`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${profilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/Legacy adjustment: creation time is unknown/)).toBeVisible();
   await page.getByRole('button', { name: 'Start tracking from now', exact: true }).click();
   const [migrated] = await readNotes(page);
@@ -165,7 +176,7 @@ test('a custom condition requires explicit match confirmation and can be undone'
   differentPatch.info.gameVersion = '16.22.1';
   const requests = await installFixtures(page, { matches: [differentPatch, wrongChampion, followUpMatch, sourceMatch] });
   await seedNotes(page, [{ ...savedNote, condition: 'Compare physical defense when that threat is relevant.', confirmedMatchIds: [] }]);
-  await page.goto(`/players?${query}&view=memory`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${profilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/0 eligible later matches.*2 unknown/)).toBeVisible();
   const candidates = page.getByLabel('Match to check', { exact: true });
   await expect(candidates.locator('option')).toHaveCount(2);

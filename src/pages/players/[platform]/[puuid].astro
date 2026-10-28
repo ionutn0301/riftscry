@@ -1,0 +1,22 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PlayerProfile from '../../../components/player/PlayerProfile';
+import { platforms } from '../../../lib/player/contracts';
+import type { PlayerInitial } from '../../../components/player/client';
+import '../../../styles/player.css';
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+Astro.response.headers.set('X-Robots-Tag', 'noindex');
+const platform = (Astro.params.platform ?? '').toLowerCase();
+const puuid = Astro.params.puuid ?? '';
+if (!(platform in platforms) || !/^[A-Za-z0-9_-]{30,120}$/.test(puuid)) return Astro.redirect('/players', 302);
+const fields = ['queue', 'champion', 'result', 'view', 'name'] as const;
+const initial = {
+  platform, puuid,
+  ...Object.fromEntries(fields.map(key => [key, Astro.url.searchParams.get(key)?.slice(0, 150) ?? ''])),
+} as PlayerInitial;
+---
+<Layout title="Player profile · RiftScry" description="Your recent League of Legends matches, personal builds, and private Build Memory. Separate mode context, recorded evidence, and one useful next step." surface="player">
+  <div class="player-workspace player-profile-shell"><PlayerProfile initial={initial} client:load /></div>
+</Layout>

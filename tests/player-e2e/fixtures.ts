@@ -7,6 +7,8 @@ export const puuid = 'fixture-player-000000000000000000000000000000000';
 export const otherPuuid = 'other-fixture-player-000000000000000000000000000';
 export const player = `${platform}:${puuid}`;
 export const query = `platform=${platform}&puuid=${puuid}`;
+export const profilePath = `/players/${platform}/${puuid}`;
+export const otherProfilePath = `/players/${platform}/${otherPuuid}`;
 export const memoryKey = `riftscry:build-memory:v1:${player}`;
 export const baseTime = 1_780_000_000_000;
 export const trackingStart = baseTime + 2_000;
@@ -32,6 +34,38 @@ export const historicalMatch = makeMatch('EUN1_12346', baseTime + 1_000);
 export const alreadyStartedMatch = makeMatch('EUN1_12347', trackingStart);
 export const followUpMatch = makeMatch('EUN1_12348', trackingStart + 1_000, 3047);
 export const matches = [followUpMatch, historicalMatch, sourceMatch];
+
+// Deliberately distinguish date, queue, outcome and score: a 2025 ranked game
+// must not displace 2026 ARAM games or contaminate their descriptive averages.
+function modeMatch(id: string, date: string, queueId: number, gameMode: string, mapId: number, score: {
+  win: boolean; kills: number; deaths: number; assists: number; damage: number;
+}): Match {
+  const match = makeMatch(id, Date.parse(date));
+  return { ...match, info: {
+    ...match.info, queueId, gameMode, mapId,
+    participants: [{ ...match.info.participants[0]!,
+      teamPosition: gameMode === 'ARAM' ? '' : 'MIDDLE',
+      win: score.win, kills: score.kills, deaths: score.deaths, assists: score.assists,
+      totalDamageDealtToChampions: score.damage,
+      // Nonzero ARAM values catch accidental Summoner's Rift macro assessments.
+      totalMinionsKilled: gameMode === 'ARAM' ? 66 : 180,
+      neutralMinionsKilled: gameMode === 'ARAM' ? 0 : 12,
+      visionScore: gameMode === 'ARAM' ? 3 : 40,
+    }],
+  } };
+}
+export const oldRankedMatch = modeMatch('EUN1_22001', '2025-08-17T18:00:00Z', 420, 'CLASSIC', 11,
+  { win: true, kills: 30, deaths: 1, assists: 3, damage: 60_000 });
+oldRankedMatch.info.gameVersion = '15.16.1';
+export const recentAramWin = modeMatch('EUN1_22002', '2026-10-27T18:00:00Z', 450, 'ARAM', 12,
+  { win: true, kills: 18, deaths: 6, assists: 24, damage: 42_000 });
+export const recentAramLoss = modeMatch('EUN1_22003', '2026-10-26T18:00:00Z', 450, 'ARAM', 12,
+  { win: false, kills: 6, deaths: 4, assists: 12, damage: 18_000 });
+export const swiftplayMatch = modeMatch('EUN1_22004', '2026-10-25T18:00:00Z', 480, 'SWIFTPLAY', 11,
+  { win: false, kills: 2, deaths: 8, assists: 4, damage: 8_000 });
+export const mayhemMatch = modeMatch('EUN1_22005', '2026-10-24T18:00:00Z', 2400, 'ARAM', 12,
+  { win: false, kills: 0, deaths: 10, assists: 2, damage: 3_000 });
+export const mixedModeMatches = [oldRankedMatch, recentAramLoss, swiftplayMatch, recentAramWin, mayhemMatch];
 
 export const itemMetadata = {
   version: '16.21.1',
@@ -85,7 +119,15 @@ export const savedNote: Memory = {
   createdAt: trackingStart, trackingStartedAt: trackingStart, revisedAt: null,
 };
 
-type FixtureOptions = { matches?: Match[]; reviewFailure?: boolean; timelineFailure?: boolean };
+type FixtureOptions = {
+  matches?: Match[];
+  reviewFailure?: boolean;
+  timelineFailure?: boolean;
+  accountFailure?: boolean;
+  matchFailures?: string[];
+  historyIds?: (queue: string | null) => string[] | Promise<string[]>;
+  beforeMatch?: (id: string) => Promise<void>;
+};
 export async function installFixtures(page: Page, options: FixtureOptions = {}) {
   const records = options.matches ?? matches;
   const requests: { action: string; url: string; method: string }[] = [];
@@ -98,17 +140,41 @@ export async function installFixtures(page: Page, options: FixtureOptions = {}) 
     let payload: unknown;
     switch (action) {
       case 'lookup': payload = { puuid, gameName: 'Fixture Player', tagLine: 'TEST' }; break;
+      case 'account':
+        status = options.accountFailure ? 503 : 200;
+        payload = options.accountFailure
+          ? { error: 'Fixture account identity is temporarily unavailable.' }
+          : { puuid: url.searchParams.get('puuid') ?? puuid, gameName: url.searchParams.get('puuid') === otherPuuid ? 'Other Fixture Player' : 'Fixture Player', tagLine: 'TEST' };
+        break;
       case 'rank': payload = [{ queueType: 'RANKED_SOLO_5x5', tier: 'GOLD', rank: 'II', leaguePoints: 35 }]; break;
-      case 'history': payload = records.map(record => record.metadata.matchId); break;
+      case 'history': {
+        const queue = url.searchParams.get('queue');
+        payload = options.historyIds ? await options.historyIds(queue) : records
+          .filter(record => !queue || queue === 'all' || record.info.queueId === Number(queue))
+          .sort((a, b) => b.info.gameCreation - a.info.gameCreation)
+          .map(record => record.metadata.matchId);
+        break;
+      }
       case 'match': {
-        const record = records.find(record => record.metadata.matchId === url.searchParams.get('id'));
+        const id = url.searchParams.get('id') ?? '';
+        if (options.beforeMatch) await options.beforeMatch(id);
+        if (options.matchFailures?.includes(id)) {
+          status = 503;
+          payload = { error: 'Fixture match summary is temporarily unavailable.' };
+          break;
+        }
+        const record = records.find(record => record.metadata.matchId === id);
         status = record ? 200 : 404;
         payload = record && url.searchParams.get('puuid') === otherPuuid
           ? { ...record, info: { ...record.info, participants: record.info.participants.map(p => ({ ...p, puuid: otherPuuid })) } }
           : record ?? { error: 'Fixture match not found.' };
         break;
       }
-      case 'items': payload = itemMetadata; break;
+      case 'items': {
+        const record = records.find(record => record.metadata.matchId === url.searchParams.get('id'));
+        payload = { ...itemMetadata, version: record?.info.gameVersion ?? itemMetadata.version };
+        break;
+      }
       case 'timeline':
         status = options.timelineFailure ? 503 : 200;
         payload = options.timelineFailure ? { error: 'Fixture timeline unavailable.' } : timeline;

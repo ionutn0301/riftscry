@@ -49,7 +49,7 @@ export async function review(facts: Fact[], suggestions: AdjustmentDraft[] = [])
   const baseline = fallbackReview(facts, undefined, suggestions);
   const selected = selectReviewFacts(baseline.facts, suggestions.flatMap(s => s.evidence));
   try {
-    return await cached(`review:prompt-3:${ITEM_ADVICE_VERSION}:evidence-3:${model}:${JSON.stringify({ facts: baseline.facts, suggestions })}`, 86400, async () => {
+    return await cached(`review:prompt-4-mode-aware:${ITEM_ADVICE_VERSION}:evidence-4:${model}:${JSON.stringify({ facts: baseline.facts, suggestions })}`, 86400, async () => {
       const { output } = await generateText({
         model,
         maxOutputTokens: 1600,
@@ -64,6 +64,7 @@ export async function review(facts: Fact[], suggestions: AdjustmentDraft[] = [])
 
 Keep the main report around 150–250 words. Ground every section in the referenced facts. Every number in a section must already occur in that section's referenced evidence; preserve the recorded precision rather than inventing or rounding measurements. Do not repeat a generic disclaimer in every paragraph: the interface already explains the limits. Clearly qualify tentative interpretation.
 Use only supplied evidence. A final inventory is not purchase order. Raw purchases can be undone or sold. A base-stat comparison does not model passives, upgrades, abilities, swaps or affordability. Rates are match-wide, not laning-phase measurements. Support/jungle roles have different contexts; do not import rank or role benchmarks. Do not invent comparisons with other matches, enemy threats, hidden information, positioning judgments, mental state, true rank, causal outcomes, or unprovided item advice. Never claim an alternative would prevent a death or win a game. Reference checks do not independently verify your interpretation. If useful data is absent, ask a specific replay question rather than inventing an answer.
+The mode-context fact is a hard applicability boundary. Keep ARAM, ARAM: Mayhem, Swiftplay, ranked, normal and other queues separate. Never apply Summoner's Rift lane, farming, vision or standard item advice to ARAM/Arena/rotating modes. Mayhem and Arena augments are not modeled, and their effects must not be invented. Swiftplay has different progression and item rules: its rates are observations for that queue only. A recorded win flag is not an Arena placement. Current rank is separate from these match facts.
 Evidence (an even sample of recorded events when the timeline is long): ${JSON.stringify(selected)}
 Optional adjustment drafts: ${JSON.stringify(suggestions)}`,
       });

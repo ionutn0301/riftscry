@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import useSWR from 'swr';
 import ItemPicker, { ItemLabel, type ItemMetadata } from './ItemPicker';
-import { eligibility, structuralEligibility, patchOf, participant, type Match, type Memory, type Timeline } from '../../lib/player/contracts';
+import { comparisonRole, comparisonRoleLabel, eligibility, structuralEligibility, patchOf, participant, queues, type Match, type Memory, type Timeline } from '../../lib/player/contracts';
 import type { AdjustmentDraft } from '../../lib/player/advice';
-import { api, fetcher, playerLink } from './client';
+import { api, fetcher, matchLink, playerLink } from './client';
 import { parseMemories, filterMemories, reviseMemory, confirmMatchApplicability, type MemoryFilter } from '../../lib/player/memory';
 
 const GENERAL_CONDITION = 'Same champion, role, queue and patch';
@@ -25,11 +25,13 @@ type Props = {
   matchesLoading?: boolean;
   draft?: AdjustmentDraft;
   metadata?: ItemMetadata;
+  back?: string;
+  onLeave?: () => void;
   onDraftConsumed?: () => void;
 };
 type Save = (next: Memory[], message?: string) => boolean;
 
-export default function BuildMemory({ player, puuid, platform, source, matches, matchesLoading = false, draft, metadata, onDraftConsumed }: Props) {
+export default function BuildMemory({ player, puuid, platform, source, matches, matchesLoading = false, draft, metadata, back, onLeave, onDraftConsumed }: Props) {
   const filterId = useId();
   const { data: notes = [], error, isLoading: notesLoading, mutate } = useSWR<Memory[]>(['memory', player], () => load(player), { revalidateOnFocus: true });
   const [status, setStatus] = useState('');
@@ -91,7 +93,7 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
     }
     const next: Memory = {
       createdAt: now, trackingStartedAt: now, revisedAt: null, confirmedMatchIds: [], id, player,
-      champion: selectedPlayer.championName, role: selectedPlayer.teamPosition,
+      champion: selectedPlayer.championName, role: comparisonRole(source, puuid),
       queue: source.info.queueId, patch: patchOf(source.info.gameVersion),
       source: source.metadata.matchId, sourceDate: source.info.gameCreation,
       evidence: draft?.evidence.length ? [...new Set(draft.evidence)].slice(0, 50) : ['inventory', 'result'],
@@ -130,7 +132,7 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
       <p role="status">Showing {visibleNotes.length} of {notes.length} saved adjustments.</p>
     </div>}
     {!!notes.length && !visibleNotes.length && <p>No adjustments match these filters. Clear filters to see all notes.</p>}
-    {visibleNotes.map(note => <SavedAdjustment key={note.id} note={note} notes={notes} save={save} matches={matches} matchesLoading={matchesLoading} puuid={puuid} platform={platform} />)}
+    {visibleNotes.map(note => <SavedAdjustment key={note.id} note={note} notes={notes} save={save} matches={matches} matchesLoading={matchesLoading} puuid={puuid} platform={platform} back={back} onLeave={onLeave} />)}
   </section>;
 }
 
@@ -174,8 +176,8 @@ function AdjustmentForm({ draft, platform, puuid, sourceId, metadata, disabled, 
   </form>;
 }
 
-function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, platform }: {
-  note: Memory; notes: Memory[]; save: Save; matches?: Match[]; matchesLoading: boolean; puuid: string; platform: string;
+function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, platform, back, onLeave }: {
+  note: Memory; notes: Memory[]; save: Save; matches?: Match[]; matchesLoading: boolean; puuid: string; platform: string; back?: string; onLeave?: () => void;
 }) {
   const fieldId = useId();
   const [editing, setEditing] = useState(false);
@@ -184,10 +186,11 @@ function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, pl
   const firstEvidence = note.evidence[0] ?? 'inventory';
   return <article className="memory-note" id={`memory-${note.id}`} tabIndex={-1}>
     <header><h3>{note.champion} · {note.alternative}</h3><span className="memory-status">{note.status}</span></header>
-    <p>{note.condition} · {note.role || 'Unknown role'} · ruleset {note.patch}</p>
+    <p className="player-kicker">{queues[note.queue] ?? `Queue ${note.queue}`} / PATCH {note.patch}</p>
+    <p>{note.condition} · {comparisonRoleLabel(note.role)}</p>
     <p><strong>Reconsider:</strong> {note.original}</p>
     <p><strong>Reason:</strong> {note.reason}</p><p><strong>Tradeoff:</strong> {note.tradeoff}</p>
-    <a href={`/matches/${note.source}?platform=${platform}&puuid=${encodeURIComponent(puuid)}#fact-${encodeURIComponent(firstEvidence)}`}>Original match and supporting evidence</a>
+    <a onClick={onLeave} href={`${matchLink(note.source, platform, puuid, back ?? recentUrl)}#fact-${encodeURIComponent(firstEvidence)}`}>Original match and supporting evidence</a>
     <div className="player-field"><label htmlFor={`${fieldId}-status`}>Status</label><select id={`${fieldId}-status`} value={note.status} onChange={event => replace({ ...note, status: event.target.value as Memory['status'] })}>{['active', 'revised', 'completed', 'archived'].map(value => <option key={value}>{value}</option>)}</select></div>
     <details open={editing} onToggle={event => setEditing(event.currentTarget.open)}><summary>Revise this adjustment</summary>{editing && <RevisionForm key={`${note.id}:${note.revisedAt ?? 0}`} note={note} platform={platform} puuid={puuid} onSave={change => { if (replace(reviseMemory(note, change, Date.now()))) setEditing(false); }} />}</details>
     <div className="player-actions">
@@ -196,7 +199,7 @@ function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, pl
     </div>
     {note.trackingStartedAt == null ? <div><p>Legacy adjustment: creation time is unknown. Older games are not prospective tests.</p><button onClick={() => replace({ ...note, trackingStartedAt: Date.now(), confirmedMatchIds: [] }, 'Tracking starts now. Earlier games remain historical comparisons.')}>Start tracking from now</button></div> : <p className="player-help">Tracking matches starting after {new Date(note.trackingStartedAt).toLocaleString()}. {note.createdAt == null ? 'Original creation time unknown.' : `Created ${new Date(note.createdAt).toLocaleString()}.`}</p>}
     <p><a href={recentUrl}>Check recent matches →</a></p>
-    {matches === undefined ? <p className="player-help">Open recent matches to check this adjustment. No follow-up sample has been loaded on this page.</p> : <FollowUp key={`${note.id}:${note.trackingStartedAt}:${note.targetItem}`} note={note} matches={matches} loading={matchesLoading} puuid={puuid} platform={platform} onConfirmation={(match, applies) => replace(confirmMatchApplicability(note, match, puuid, applies), applies ? 'Condition confirmed for this match. This records your assessment, not an automatic verdict.' : 'Condition confirmation removed. Applicability is unknown again.')} />}
+    {matches === undefined ? <p className="player-help">Open recent matches to check this adjustment. No follow-up sample has been loaded on this page.</p> : <FollowUp key={`${note.id}:${note.trackingStartedAt}:${note.targetItem}`} note={note} matches={matches} loading={matchesLoading} puuid={puuid} platform={platform} back={back ?? recentUrl} onLeave={onLeave} onConfirmation={(match, applies) => replace(confirmMatchApplicability(note, match, puuid, applies), applies ? 'Condition confirmed for this match. This records your assessment, not an automatic verdict.' : 'Condition confirmation removed. Applicability is unknown again.')} />}
   </article>;
 }
 
@@ -224,7 +227,7 @@ function RevisionForm({ note, platform, puuid, onSave }: { note: Memory; platfor
   </form>;
 }
 
-function FollowUp({ note, matches, loading, puuid, platform, onConfirmation }: { note: Memory; matches: Match[]; loading: boolean; puuid: string; platform: string; onConfirmation: (match: Match, applies: boolean) => boolean }) {
+function FollowUp({ note, matches, loading, puuid, platform, back, onLeave, onConfirmation }: { note: Memory; matches: Match[]; loading: boolean; puuid: string; platform: string; back: string; onLeave?: () => void; onConfirmation: (match: Match, applies: boolean) => boolean }) {
   const fieldId = useId();
   const [chosen, setChosen] = useState('');
   const [candidateId, setCandidateId] = useState('');
@@ -257,12 +260,12 @@ function FollowUp({ note, matches, loading, puuid, platform, onConfirmation }: {
 
   return <div className="memory-followup"><h4>Follow-up</h4>
     {loading && <p role="status">Recent matches are still loading. The current sample is incomplete.</p>}
-    <p>{eligible.length} eligible later matches in the imported sample · {unknown.length} unknown (role, ruleset or condition unconfirmed).</p>
+    <p>{eligible.length} eligible later matches in the imported sample · {unknown.length} unknown (comparison context, ruleset or condition unconfirmed).</p>
     {!!candidates.length && <div className="memory-condition-confirmation">
       <h5>Check the condition</h5>
-      <p>These later matches have the same champion, known role, queue and patch. You decide whether this condition applied: <strong>{note.condition}</strong></p>
+      <p>These later matches have the same champion, queue, patch and known comparison context. You decide whether this condition applied: <strong>{note.condition}</strong></p>
       <div className="player-field"><label htmlFor={`${fieldId}-candidate`}>Match to check</label><select id={`${fieldId}-candidate`} value={candidate?.metadata.matchId ?? ''} onChange={event => setCandidateId(event.target.value)}><option value="">Choose a match to check</option>{candidates.map(candidate => <option key={candidate.metadata.matchId} value={candidate.metadata.matchId}>{new Date(candidate.info.gameCreation).toLocaleString()} · {candidate.metadata.matchId}</option>)}</select></div>
-      {candidate && <div className="player-actions"><a href={`/matches/${candidate.metadata.matchId}?platform=${platform}&puuid=${encodeURIComponent(puuid)}`}>Review this match first</a><button onClick={() => confirm(candidate, true)}>This condition applied</button></div>}
+      {candidate && <div className="player-actions"><a onClick={onLeave} href={matchLink(candidate.metadata.matchId, platform, puuid, back)}>Review this match first</a><button onClick={() => confirm(candidate, true)}>This condition applied</button></div>}
       <p className="player-help">Confirmation is your assessment of this one match. It does not confirm that the item was appropriate or improved the result. The most recent 100 confirmations are kept per adjustment.</p>
     </div>}
     {confirmationError && <p role="alert">{confirmationError}</p>}
@@ -270,6 +273,6 @@ function FollowUp({ note, matches, loading, puuid, platform, onConfirmation }: {
     {isLoading && <p role="status">Loading timeline…</p>}
     {error && <p role="alert">Timeline unavailable. Purchase observation is unknown.</p>}
     {match && note.confirmedMatchIds?.includes(match.metadata.matchId) && <div className="player-actions"><p>Condition confirmed by you for this match.</p><button className="player-button-secondary" onClick={() => confirm(match, false)}>Undo condition confirmation</button></div>}
-    {events && <><p>{purchases?.length ? `Purchase event observed at ${purchases.map(event => minute(event.timestamp)).join(', ')}.` : 'No matching purchase event in the returned timeline; this does not establish whether the adjustment was appropriate.'}</p><p className="player-help">Undo and sale events may reverse a purchase. Use these records to inspect the decision; they do not establish why the game was won or lost.</p><details><summary>Inspect all recorded item events</summary><ol className="purchase-timeline">{events.map((event, index) => <li key={`${event.timestamp}:${index}`}><time>{minute(event.timestamp)}</time><span>{event.type.replace('ITEM_', '').toLocaleLowerCase()}</span>{event.itemId ? <ItemLabel id={event.itemId} metadata={metadata} compact /> : <span>{event.beforeId ? <ItemLabel id={event.beforeId} metadata={metadata} compact /> : 'Unknown item'} → {event.afterId ? <ItemLabel id={event.afterId} metadata={metadata} compact /> : 'No item'}</span>}</li>)}</ol></details><a href={`/matches/${selected}?platform=${platform}&puuid=${encodeURIComponent(puuid)}`}>Open source match</a></>}
+    {events && <><p>{purchases?.length ? `Purchase event observed at ${purchases.map(event => minute(event.timestamp)).join(', ')}.` : 'No matching purchase event in the returned timeline; this does not establish whether the adjustment was appropriate.'}</p><p className="player-help">Undo and sale events may reverse a purchase. Use these records to inspect the decision; they do not establish why the game was won or lost.</p><details><summary>Inspect all recorded item events</summary><ol className="purchase-timeline">{events.map((event, index) => <li key={`${event.timestamp}:${index}`}><time>{minute(event.timestamp)}</time><span>{event.type.replace('ITEM_', '').toLocaleLowerCase()}</span>{event.itemId ? <ItemLabel id={event.itemId} metadata={metadata} compact /> : <span>{event.beforeId ? <ItemLabel id={event.beforeId} metadata={metadata} compact /> : 'Unknown item'} → {event.afterId ? <ItemLabel id={event.afterId} metadata={metadata} compact /> : 'No item'}</span>}</li>)}</ol></details><a onClick={onLeave} href={matchLink(selected, platform, puuid, back)}>Open source match</a></>}
   </div>;
 }

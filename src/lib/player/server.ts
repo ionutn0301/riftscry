@@ -3,6 +3,7 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { createHash, randomUUID } from 'node:crypto';
 import { platforms, type Platform, type Match, type Timeline } from './contracts';
 import { riotAccessAllowed } from './access';
+import { isSupportedMatchmade } from './modes';
 export class ServiceError extends Error { constructor(message: string, public status = 503, public retry = 0) { super(message); } }
 export function redis() {
   const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
@@ -44,7 +45,7 @@ export async function riot<T>(host: string, path: string, ttl = 300): Promise<T>
 }
 export async function getMatch(platform: Platform, id: string): Promise<Match> {
   const match = await riot<Match>(platforms[platform], `/lol/match/v5/matches/${id}`, 3600);
-  if (match.info.gameType !== 'MATCHED_GAME' || ![420,440,400,430,450].includes(match.info.queueId)) throw new ServiceError('Only supported public matchmade queues are available. Custom matches are excluded.', 404);
+  if (!isSupportedMatchmade(match)) throw new ServiceError('This recent entry is not a supported public matchmade queue. Custom, tutorial, bot and unrecognized queues are excluded.', 404);
   return match;
 }
 export function getTimeline(platform: Platform, id: string) { return riot<Timeline>(platforms[platform], `/lol/match/v5/matches/${id}/timeline`, 3600); }

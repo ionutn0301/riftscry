@@ -29,9 +29,11 @@ describe('review grounding', () => {
 
   it('samples the whole timeline including late moments while preserving summaries', () => {
     const events: Fact[] = Array.from({ length: 200 }, (_, i) => ({ id: `event-${i}`, kind: i % 11 === 0 ? 'death' : 'item', timestamp: i * 1000, text: `Recorded event ${i}.` }));
-    const selected = selectReviewFacts([...facts, ...events]);
+    const mode: Fact = { id: 'mode-context', kind: 'context', text: 'ARAM: Mayhem uses a separate queue. Summoner\'s Rift lane metrics do not apply.' };
+    const selected = selectReviewFacts([...facts, mode, ...events]);
     expect(selected.length).toBeLessThanOrEqual(64);
     expect(selected.some(f => f.id === 'result')).toBe(true);
+    expect(selected).toContainEqual(mode);
     expect(selected.some(f => f.id === 'event-199')).toBe(true);
     expect(selected.some(f => f.id === 'event-198')).toBe(true);
     expect(new Set(selected.map(f => f.id)).size).toBe(selected.length);

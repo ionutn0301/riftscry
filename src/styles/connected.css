@@ -63,3 +63,21 @@ body .route-arrival-copy, body .route-landscape img { animation: none; }
   body .rift-voyage .record-context { position: static; }
   body .wayfinder-trigger small { font-size: 12px; }
 }
+
+/* Player journeys keep the map in the shared controls so the opening can use
+   the full landscape without a second floating navigation layer. */
+.world-controls--player .world-utilities { gap: 18px; }
+.player-map-trigger { view-transition-name: world-wayfinder; color: var(--world-signal); }
+.player-map-trigger svg { width: 20px; height: 20px; flex: none; }
+@media (max-width: 700px) {
+  body:not(.is-home) .world-controls.world-controls--player { padding-inline: 16px; }
+  body:not(.is-home) .world-controls--player .world-utilities { gap: 8px; }
+  body:not(.is-home) .world-controls--player .world-search { font-size: 12px; gap: 5px; }
+  body:not(.is-home) .world-controls--player .player-map-trigger { padding-inline: 4px; }
+  .player-map-trigger svg { width: 16px; height: 16px; }
+}
+html[data-motion="reduced"]::view-transition-group(world-wayfinder),
+html[data-motion="reduced"]::view-transition-group(world-brand) { animation-duration: .01ms; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(world-wayfinder), ::view-transition-group(world-brand) { animation-duration: .01ms; }
+}

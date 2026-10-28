@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import { platforms, queues, evidence, participant, type Platform } from '../../../lib/player/contracts';
+import { platforms, evidence, participant, type Platform } from '../../../lib/player/contracts';
+import { isSupportedQueue } from '../../../lib/player/modes';
 import { riot, limit, ServiceError, getMatch, getTimeline } from '../../../lib/player/server';
 import { riotAccessAllowed } from '../../../lib/player/access';
 import { getItemMetadata } from '../../../lib/player/metadata';
@@ -14,7 +15,7 @@ const json = (body: unknown, status = 200, retry = 0) => new Response(JSON.strin
 export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => {
   try {
     const action = params.action;
-    if (!action || !['lookup', 'history', 'rank', 'match', 'timeline', 'review', 'items'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
+    if (!action || !['lookup', 'account', 'history', 'rank', 'match', 'timeline', 'review', 'items'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
     if (request.method !== (action === 'review' ? 'POST' : 'GET')) return json({ error: 'Method not allowed' }, 405);
     if (request.method === 'POST' && request.headers.get('origin') !== url.origin) return json({ error: 'Origin not allowed' }, 403);
     const platform = platformSchema.parse(url.searchParams.get('platform'));
@@ -27,10 +28,17 @@ export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => 
       return json(await riot(region, `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`));
     }
     const puuid = puuidSchema.parse(url.searchParams.get('puuid'));
+    if (action === 'account') return json(await riot(region, `/riot/account/v1/accounts/by-puuid/${puuid}`));
     if (action === 'history') {
-      const queue = z.coerce.number().refine((q) => q in queues).parse(url.searchParams.get('queue'));
-      const count = Math.min(20, Math.max(1, Number(process.env.RIOT_IMPORT_LIMIT) || 20));
-      return json(await riot(region, `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&queue=${queue}`, 120));
+      const requestedQueue = url.searchParams.get('queue');
+      const queue = !requestedQueue || requestedQueue === 'all' ? undefined :
+        z.string().regex(/^\d+$/).transform(Number).refine(isSupportedQueue).parse(requestedQueue);
+      const configuredCount = Number(process.env.RIOT_IMPORT_LIMIT);
+      const count = Number.isFinite(configuredCount) && configuredCount > 0 ? Math.min(20, Math.max(1, Math.floor(configuredCount))) : 20;
+      // Omit queue entirely for a genuinely recent cross-mode sample. Do not
+      // silently replace it with Solo/Duo or use a client-only mode filter.
+      const query = new URLSearchParams({ start: '0', count: String(count), ...(queue == null ? {} : { queue: String(queue) }) });
+      return json(await riot(region, `/lol/match/v5/matches/by-puuid/${puuid}/ids?${query}`, 120));
     }
     if (action === 'rank') return json(await riot(platform, `/lol/league/v4/entries/by-puuid/${puuid}`, 300));
     const id = idSchema.parse(url.searchParams.get('id'));

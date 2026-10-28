@@ -223,7 +223,7 @@ test("Rift map has real destinations, restores focus and hands search out of its
   const map = page.locator("#rift-map-dialog");
   await expect(map).toBeVisible();
   expect(await map.locator(".map-destination").evaluateAll((links) => links.map((link) => link.getAttribute("href"))))
-    .toEqual(["/", "/champions", "/patches", "/compare", "/pool"]);
+    .toEqual(["/", "/champions", "/patches", "/compare", "/pool", "/players"]);
   await page.keyboard.press("Escape");
   await expect(opener).toBeFocused();
   await opener.click();
