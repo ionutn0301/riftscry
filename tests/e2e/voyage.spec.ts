@@ -259,28 +259,82 @@ test("each reading destination has a distinct arrival and the shared map", async
       await expect(page.locator("#main h1")).toHaveCount(1);
       await expect(page.locator("#main h1")).toBeVisible();
       await expect(page.locator("#route-arrival")).toBeVisible();
-      if (path === "/champions" && await page.evaluate(() => matchMedia("(max-width: 700px)").matches)) {
-        // The compact directory uses the chapter rail instead of repeating the
-        // arrival navigation. Its destinations must remain visible and usable.
-        const rail = page.locator(".chapter-rail");
-        await expect(rail).toBeVisible();
-        const patchLabel = await page.locator(".roster-arrival-figures").getAttribute("aria-label");
-        expect(patchLabel).toMatch(/^Champions with records in patch \d+\.\d+$/);
-        const latestPatch = patchLabel!.replace("Champions with records in patch ", "");
-        const destinations = [
-          ["The full roster", "#roster"],
-          ["Your champion pool ↗", "/pool"],
-          ["Latest archived patch ↗", `/patch/${latestPatch}`],
-        ] as const;
-        await expect(rail.locator("ol a")).toHaveCount(destinations.length);
-        for (const [name, href] of destinations) {
-          const link = rail.getByRole("link", { name, exact: true });
-          await expect(link).toBeVisible();
-          await expect(link).toHaveAttribute("href", href);
+      if (await page.evaluate(() => matchMedia("(max-width: 700px)").matches)) {
+        // Compact reading pages use their chapter rail instead of duplicating
+        // the arrival navigation. The missing-page arrival has recovery actions.
+        if (surface === "missing") {
+          const actions = page.locator("#route-arrival .route-arrival-actions");
+          const returnLink = actions.getByRole("link", { name: "Return to the journey", exact: true });
+          await expect(returnLink).toBeVisible();
+          await expect(returnLink).toHaveAttribute("href", "/");
+          await expect(actions.getByRole("button", { name: "Search the archive ↗", exact: true })).toBeVisible();
+          await returnLink.click();
+          await expect(page).toHaveURL((url) => url.pathname === "/" && url.hash === "");
+          await ready(page);
+          await expect(page.locator("#arrival h1")).toBeVisible();
+          await page.goBack();
+          await expect(page).toHaveURL((url) => url.pathname === path);
+          await expect(page.locator("body")).toHaveAttribute("data-surface", surface);
+        } else {
+          let latestPatch = "";
+          if (surface === "champions") {
+            const patchLabel = await page.locator(".roster-arrival-figures").getAttribute("aria-label");
+            expect(patchLabel).toMatch(/^Champions with records in patch \d+\.\d+$/);
+            latestPatch = patchLabel!.replace("Champions with records in patch ", "");
+          } else if (surface === "pool") {
+            latestPatch = (await page.locator("#route-arrival .arrival-period-number").textContent())!.trim();
+            expect(latestPatch).toMatch(/^\d+\.\d+$/);
+          }
+          const destinations: ReadonlyArray<readonly [string, string, string?]> = ({
+            champions: [
+              ["The full roster", "#roster", "Who are you here for?"],
+              ["Your champion pool ↗", "/pool"],
+              ["Latest archived patch ↗", `/patch/${latestPatch}`],
+            ],
+            champion: [
+              ["Recorded history", "#history", "The changes leave a trace."],
+              ["Coverage & sources", "#perspective", "A record, with its context."],
+              ["My Pool ↗", "/pool"],
+            ],
+            patches: [
+              ["Every archived patch", "#archive", "Choose your moment."],
+              ["Compare an interval ↗", "/compare"],
+              ["Your pool's perspective ↗", "/pool"],
+            ],
+            patch: [
+              ["Your perspective", "#your-perspective", "Start with your side of the Rift."],
+              ["Champions", "#champions", "Champions"],
+              ["Items", "#items", "The tools change too."],
+              ["Systems", "#systems", "The rules around the fight."],
+            ],
+            compare: [
+              ["Follow the interval", "#comparison", "Every change has a place."],
+              ["Items in the interval", "#items", "Items across the interval."],
+              ["Systems in the interval", "#systems", "Changes to the wider game."],
+            ],
+            pool: [
+              ["Your return briefing", "#briefing", "A place to pick things up."],
+              ["Edit your champion pool", "#edit-pool", "Who belongs in your pool?"],
+              ["Open your patch ↗", `/patch/${latestPatch}?pool=1`],
+            ],
+          } as const)[surface];
+          const rail = page.locator(".chapter-rail");
+          await expect(rail).toBeVisible();
+          await expect(rail.locator("ol a")).toHaveCount(destinations.length);
+          for (const [name, href, heading] of destinations) {
+            const link = rail.getByRole("link", { name, exact: true });
+            await expect(link).toBeVisible();
+            await expect(link).toHaveAttribute("href", href);
+            if (heading) await expect(page.locator(`${href} > .chapter-heading h2`)).toHaveText(heading);
+          }
+          const [name, href, heading] = destinations[0]!;
+          await rail.getByRole("link", { name, exact: true }).click();
+          await expect(page).toHaveURL((url) => url.pathname.replace(/\/$/, "") === path && url.hash === href);
+          const targetHeading = page.locator(`${href} > .chapter-heading h2`);
+          await targetHeading.scrollIntoViewIfNeeded();
+          await expect(targetHeading).toHaveText(heading!);
+          await expect(targetHeading).toBeVisible();
         }
-        await rail.getByRole("link", { name: "The full roster", exact: true }).click();
-        await expect(page).toHaveURL(/\/champions\/?#roster$/);
-        await expect(page.locator("#roster h2")).toBeVisible();
       } else {
         await expect(page.getByRole("navigation", { name: "Explore this page" })).toBeVisible();
       }
