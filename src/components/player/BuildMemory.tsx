@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import useSWR from 'swr';
 import ItemPicker, { ItemLabel, type ItemMetadata } from './ItemPicker';
 import { eligibility, structuralEligibility, patchOf, participant, type Match, type Memory, type Timeline } from '../../lib/player/contracts';
@@ -30,6 +30,7 @@ type Props = {
 type Save = (next: Memory[], message?: string) => boolean;
 
 export default function BuildMemory({ player, puuid, platform, source, matches, matchesLoading = false, draft, metadata, onDraftConsumed }: Props) {
+  const filterId = useId();
   const { data: notes = [], error, isLoading: notesLoading, mutate } = useSWR<Memory[]>(['memory', player], () => load(player), { revalidateOnFocus: true });
   const [status, setStatus] = useState('');
   const [open, setOpen] = useState(false);
@@ -122,8 +123,8 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
     <p role="status" aria-live="polite" className="memory-save-status">{status}</p>
     {!notesLoading && !error && !notes.length && <p>No saved adjustments for this player yet. {source ? 'Prepare one from this match or choose a suggestion above.' : 'Open a match to start one.'}</p>}
     {!!notes.length && <div className="player-form" role="group" aria-label="Filter saved adjustments">
-      <label>Champion<select value={filter.champion} onChange={event => setFilter({ ...filter, champion: event.target.value })}><option value="">All champions</option>{[...new Set(notes.map(note => note.champion))].sort().map(name => <option key={name}>{name}</option>)}</select></label>
-      <label>Adjustment status<select value={filter.status} onChange={event => setFilter({ ...filter, status: event.target.value })}><option value="">All statuses</option>{['active', 'revised', 'completed', 'archived'].map(value => <option key={value}>{value}</option>)}</select></label>
+      <div className="player-field"><label htmlFor={`${filterId}-champion`}>Champion</label><select id={`${filterId}-champion`} value={filter.champion} onChange={event => setFilter({ ...filter, champion: event.target.value })}><option value="">All champions</option>{[...new Set(notes.map(note => note.champion))].sort().map(name => <option key={name}>{name}</option>)}</select></div>
+      <div className="player-field"><label htmlFor={`${filterId}-status`}>Adjustment status</label><select id={`${filterId}-status`} value={filter.status} onChange={event => setFilter({ ...filter, status: event.target.value })}><option value="">All statuses</option>{['active', 'revised', 'completed', 'archived'].map(value => <option key={value}>{value}</option>)}</select></div>
       <button type="button" aria-pressed={filter.favorites} onClick={() => setFilter({ ...filter, favorites: !filter.favorites })}>Favorites only</button>
       <button type="button" onClick={() => setFilter({ champion: '', status: '', favorites: false })}>Clear filters</button>
       <p role="status">Showing {visibleNotes.length} of {notes.length} saved adjustments.</p>
@@ -137,6 +138,7 @@ function AdjustmentForm({ draft, platform, puuid, sourceId, metadata, disabled, 
   draft?: AdjustmentDraft; platform: string; puuid: string; sourceId: string; metadata?: ItemMetadata;
   disabled: boolean; onSave: (form: FormData) => void; onCancel: () => void;
 }) {
+  const fieldId = useId();
   const { data: fetched } = useSWR<ItemMetadata>(metadata ? null : api('items', { platform, puuid, id: sourceId }), fetcher, { shouldRetryOnError: false });
   const items = metadata ?? fetched;
   const [original, setOriginal] = useState(draft?.original ?? '');
@@ -161,12 +163,12 @@ function AdjustmentForm({ draft, platform, puuid, sourceId, metadata, disabled, 
 
   return <form onSubmit={event => { event.preventDefault(); onSave(new FormData(event.currentTarget)); }} className="player-form">
     {draft && <div className="memory-source player-field-wide"><p className="player-kicker">DRAFT FROM THIS MATCH</p><p>{targetChanged ? 'You changed the tracked item. Add a reason and tradeoff for your new choice.' : 'This suggestion is a starting point. Confirm when it applies and make it your own.'}</p>{draft.source && /^https:\/\//.test(draft.source.url) && <a href={draft.source.url} target="_blank" rel="noreferrer">Reference: {draft.source.label}</a>}</div>}
-    <label>When it applies<select name="condition" value={condition} onChange={event => setCondition(event.target.value)}>{conditions.map(value => <option key={value}>{value}</option>)}</select></label>
-    <label>Decision being reconsidered<input name="original" required maxLength={600} value={original} onChange={event => setOriginal(event.target.value)} /></label>
-    <label>Proposed alternative<input name="alternative" required maxLength={600} value={alternative} onChange={event => setAlternative(event.target.value)} /></label>
+    <div className="player-field"><label htmlFor={`${fieldId}-condition`}>When it applies</label><select id={`${fieldId}-condition`} name="condition" value={condition} onChange={event => setCondition(event.target.value)}>{conditions.map(value => <option key={value}>{value}</option>)}</select></div>
+    <div className="player-field"><label htmlFor={`${fieldId}-original`}>Decision being reconsidered</label><input id={`${fieldId}-original`} name="original" required maxLength={600} value={original} onChange={event => setOriginal(event.target.value)} /></div>
+    <div className="player-field"><label htmlFor={`${fieldId}-alternative`}>Proposed alternative</label><input id={`${fieldId}-alternative`} name="alternative" required maxLength={600} value={alternative} onChange={event => setAlternative(event.target.value)} /></div>
     <ItemPicker platform={platform} puuid={puuid} id={sourceId} value={target} onChange={chooseTarget} metadata={items} />
-    <label>Reason<textarea name="reason" required maxLength={600} value={reason} onChange={event => setReason(event.target.value)} /></label>
-    <label>Tradeoff<textarea name="tradeoff" required maxLength={600} value={tradeoff} onChange={event => setTradeoff(event.target.value)} /></label>
+    <div className="player-field"><label htmlFor={`${fieldId}-reason`}>Reason</label><textarea id={`${fieldId}-reason`} name="reason" required maxLength={600} value={reason} onChange={event => setReason(event.target.value)} /></div>
+    <div className="player-field"><label htmlFor={`${fieldId}-tradeoff`}>Tradeoff</label><textarea id={`${fieldId}-tradeoff`} name="tradeoff" required maxLength={600} value={tradeoff} onChange={event => setTradeoff(event.target.value)} /></div>
     <div className="player-actions player-field-wide"><button disabled={disabled}>Keep adjustment</button><button type="button" className="player-button-secondary" onClick={onCancel}>Close draft</button></div>
     <p className="player-help player-field-wide">Keeping this starts tracking future games. A custom condition needs your confirmation; the app will not assume it was met.</p>
   </form>;
@@ -175,6 +177,7 @@ function AdjustmentForm({ draft, platform, puuid, sourceId, metadata, disabled, 
 function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, platform }: {
   note: Memory; notes: Memory[]; save: Save; matches?: Match[]; matchesLoading: boolean; puuid: string; platform: string;
 }) {
+  const fieldId = useId();
   const [editing, setEditing] = useState(false);
   const recentUrl = playerLink(platform, puuid, `&queue=${note.queue}&view=memory`);
   const replace = (next: Memory, message?: string) => save(notes.map(saved => saved.id === note.id ? next : saved), message);
@@ -185,7 +188,7 @@ function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, pl
     <p><strong>Reconsider:</strong> {note.original}</p>
     <p><strong>Reason:</strong> {note.reason}</p><p><strong>Tradeoff:</strong> {note.tradeoff}</p>
     <a href={`/matches/${note.source}?platform=${platform}&puuid=${encodeURIComponent(puuid)}#fact-${encodeURIComponent(firstEvidence)}`}>Original match and supporting evidence</a>
-    <label>Status<select value={note.status} onChange={event => replace({ ...note, status: event.target.value as Memory['status'] })}>{['active', 'revised', 'completed', 'archived'].map(value => <option key={value}>{value}</option>)}</select></label>
+    <div className="player-field"><label htmlFor={`${fieldId}-status`}>Status</label><select id={`${fieldId}-status`} value={note.status} onChange={event => replace({ ...note, status: event.target.value as Memory['status'] })}>{['active', 'revised', 'completed', 'archived'].map(value => <option key={value}>{value}</option>)}</select></div>
     <details open={editing} onToggle={event => setEditing(event.currentTarget.open)}><summary>Revise this adjustment</summary>{editing && <RevisionForm key={`${note.id}:${note.revisedAt ?? 0}`} note={note} platform={platform} puuid={puuid} onSave={change => { if (replace(reviseMemory(note, change, Date.now()))) setEditing(false); }} />}</details>
     <div className="player-actions">
       <button aria-pressed={note.favorite} className="player-button-secondary" onClick={() => replace({ ...note, favorite: !note.favorite })}>{note.favorite ? 'Unfavorite' : 'Favorite'}</button>
@@ -199,6 +202,7 @@ function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, pl
 
 type Revision = Pick<Memory, 'alternative' | 'targetItem' | 'condition' | 'reflection' | 'reason' | 'tradeoff'>;
 function RevisionForm({ note, platform, puuid, onSave }: { note: Memory; platform: string; puuid: string; onSave: (change: Revision) => void }) {
+  const fieldId = useId();
   const { data: items } = useSWR<ItemMetadata>(api('items', { platform, puuid, id: note.source }), fetcher, { shouldRetryOnError: false });
   const [alternative, setAlternative] = useState(note.alternative);
   const [target, setTarget] = useState(note.targetItem);
@@ -209,18 +213,19 @@ function RevisionForm({ note, platform, puuid, onSave }: { note: Memory; platfor
     event.preventDefault(); const form = new FormData(event.currentTarget);
     onSave({ alternative: alternative.trim().slice(0, 600), targetItem: target, condition, reason: reason.trim().slice(0, 600), tradeoff: tradeoff.trim().slice(0, 600), reflection: textValue(form, 'reflection') });
   }}>
-    <label>Revise alternative<input name="alternative" value={alternative} onChange={event => setAlternative(event.target.value)} maxLength={600} required /></label>
+    <div className="player-field"><label htmlFor={`${fieldId}-alternative`}>Revise alternative</label><input id={`${fieldId}-alternative`} name="alternative" value={alternative} onChange={event => setAlternative(event.target.value)} maxLength={600} required /></div>
     <ItemPicker platform={platform} puuid={puuid} id={note.source} value={target} metadata={items} onChange={item => { setTarget(item); setAlternative(`Consider ${items?.data[item]?.name ?? `item ${item}`} in a future eligible game.`); setReason(''); setTradeoff(''); }} />
-    <label>Applicability<select name="condition" value={condition} onChange={event => setCondition(event.target.value)}>{[...new Set([condition, GENERAL_CONDITION, CUSTOM_CONDITION])].map(value => <option key={value}>{value}</option>)}</select></label>
-    <label>Reason<textarea name="reason" value={reason} onChange={event => setReason(event.target.value)} maxLength={600} required /></label>
-    <label>Tradeoff<textarea name="tradeoff" value={tradeoff} onChange={event => setTradeoff(event.target.value)} maxLength={600} required /></label>
-    <label>Optional reflection<textarea name="reflection" defaultValue={note.reflection} maxLength={600} /></label>
+    <div className="player-field"><label htmlFor={`${fieldId}-condition`}>Applicability</label><select id={`${fieldId}-condition`} name="condition" value={condition} onChange={event => setCondition(event.target.value)}>{[...new Set([condition, GENERAL_CONDITION, CUSTOM_CONDITION])].map(value => <option key={value}>{value}</option>)}</select></div>
+    <div className="player-field"><label htmlFor={`${fieldId}-reason`}>Reason</label><textarea id={`${fieldId}-reason`} name="reason" value={reason} onChange={event => setReason(event.target.value)} maxLength={600} required /></div>
+    <div className="player-field"><label htmlFor={`${fieldId}-tradeoff`}>Tradeoff</label><textarea id={`${fieldId}-tradeoff`} name="tradeoff" value={tradeoff} onChange={event => setTradeoff(event.target.value)} maxLength={600} required /></div>
+    <div className="player-field"><label htmlFor={`${fieldId}-reflection`}>Optional reflection</label><textarea id={`${fieldId}-reflection`} name="reflection" defaultValue={note.reflection} maxLength={600} /></div>
     <p className="player-help player-field-wide">Changing the decision, tracked item, reason, tradeoff, or applicability starts a new tracking period. Reflection-only edits preserve it.</p>
     <button>Save revision</button>
   </form>;
 }
 
 function FollowUp({ note, matches, loading, puuid, platform, onConfirmation }: { note: Memory; matches: Match[]; loading: boolean; puuid: string; platform: string; onConfirmation: (match: Match, applies: boolean) => boolean }) {
+  const fieldId = useId();
   const [chosen, setChosen] = useState('');
   const [candidateId, setCandidateId] = useState('');
   const [confirmationError, setConfirmationError] = useState('');
@@ -256,12 +261,12 @@ function FollowUp({ note, matches, loading, puuid, platform, onConfirmation }: {
     {!!candidates.length && <div className="memory-condition-confirmation">
       <h5>Check the condition</h5>
       <p>These later matches have the same champion, known role, queue and patch. You decide whether this condition applied: <strong>{note.condition}</strong></p>
-      <label>Match to check<select value={candidate?.metadata.matchId ?? ''} onChange={event => setCandidateId(event.target.value)}><option value="">Choose a match to check</option>{candidates.map(candidate => <option key={candidate.metadata.matchId} value={candidate.metadata.matchId}>{new Date(candidate.info.gameCreation).toLocaleString()} · {candidate.metadata.matchId}</option>)}</select></label>
+      <div className="player-field"><label htmlFor={`${fieldId}-candidate`}>Match to check</label><select id={`${fieldId}-candidate`} value={candidate?.metadata.matchId ?? ''} onChange={event => setCandidateId(event.target.value)}><option value="">Choose a match to check</option>{candidates.map(candidate => <option key={candidate.metadata.matchId} value={candidate.metadata.matchId}>{new Date(candidate.info.gameCreation).toLocaleString()} · {candidate.metadata.matchId}</option>)}</select></div>
       {candidate && <div className="player-actions"><a href={`/matches/${candidate.metadata.matchId}?platform=${platform}&puuid=${encodeURIComponent(puuid)}`}>Review this match first</a><button onClick={() => confirm(candidate, true)}>This condition applied</button></div>}
       <p className="player-help">Confirmation is your assessment of this one match. It does not confirm that the item was appropriate or improved the result. The most recent 100 confirmations are kept per adjustment.</p>
     </div>}
     {confirmationError && <p role="alert">{confirmationError}</p>}
-    {!eligible.length ? <p>{note.trackingStartedAt == null ? 'Tracking has not started. Use Start tracking from now.' : loading ? 'Waiting for the remaining match summaries before checking for follow-up.' : !matches.some(candidate => candidate.info.gameCreation > note.trackingStartedAt!) ? 'No later games available in the imported sample. Check recent matches to refresh.' : unknown.length ? 'Later games exist, but eligibility is unconfirmed for some records.' : 'Later games exist, but none meet this adjustment’s champion, role, queue and patch conditions.'}</p> : <label>Inspect purchase evidence<select value={selected} onChange={event => setChosen(event.target.value)}><option value="">Choose a match — loads timeline</option>{eligible.map(candidate => <option key={candidate.metadata.matchId} value={candidate.metadata.matchId}>{new Date(candidate.info.gameCreation).toLocaleString()} · {candidate.metadata.matchId}</option>)}</select></label>}
+    {!eligible.length ? <p>{note.trackingStartedAt == null ? 'Tracking has not started. Use Start tracking from now.' : loading ? 'Waiting for the remaining match summaries before checking for follow-up.' : !matches.some(candidate => candidate.info.gameCreation > note.trackingStartedAt!) ? 'No later games available in the imported sample. Check recent matches to refresh.' : unknown.length ? 'Later games exist, but eligibility is unconfirmed for some records.' : 'Later games exist, but none meet this adjustment’s champion, role, queue and patch conditions.'}</p> : <div className="player-field"><label htmlFor={`${fieldId}-evidence`}>Inspect purchase evidence</label><select id={`${fieldId}-evidence`} value={selected} onChange={event => setChosen(event.target.value)}><option value="">Choose a match — loads timeline</option>{eligible.map(candidate => <option key={candidate.metadata.matchId} value={candidate.metadata.matchId}>{new Date(candidate.info.gameCreation).toLocaleString()} · {candidate.metadata.matchId}</option>)}</select></div>}
     {isLoading && <p role="status">Loading timeline…</p>}
     {error && <p role="alert">Timeline unavailable. Purchase observation is unknown.</p>}
     {match && note.confirmedMatchIds?.includes(match.metadata.matchId) && <div className="player-actions"><p>Condition confirmed by you for this match.</p><button className="player-button-secondary" onClick={() => confirm(match, false)}>Undo condition confirmation</button></div>}
