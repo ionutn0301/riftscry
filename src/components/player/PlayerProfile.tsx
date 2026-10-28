@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from 'react';
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
 import { participant, type SummonerProfile } from '../../lib/player/contracts';
 import { historyAvailabilityForQueue, historyOptions } from '../../lib/player/modes';
+import { briefingLink } from '../../lib/player/identity';
 import { api, fetcher, playerLink, type PlayerInitial, type PlayerView } from './client';
 import { usePlayerHistory } from './usePlayerHistory';
 import { itemMetadataKey } from './useItemMetadata';
@@ -43,8 +44,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
   const profile = { ...initial, ...filters, name };
   const back = playerLink(platform, puuid, { ...filters, name });
-  const nextGameQuery = new URLSearchParams({ ...(filters.champion ? { champion: filters.champion } : {}), ...(filters.queue !== 'all' ? { queue: filters.queue } : {}) });
-  const nextGameHref = `/next-game${nextGameQuery.size ? `?${nextGameQuery}` : ''}`;
+  const nextGameHref = briefingLink({ platform, puuid, name }, { champion: filters.champion, queue: filters.queue });
   const advancedFilterCount = Number(!!filters.champion) + Number(!!filters.result);
   const matches = history.matches.filter(match => {
     const player = participant(match, puuid);
@@ -136,7 +136,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
         <nav className="player-tabs" aria-label="Player views">
           {views.map(view => <button type="button" key={view.id} aria-pressed={filters.view === view.id} aria-controls="player-view" onClick={() => change({ view: view.id })}><PlayerIcon name={view.icon} />{view.label}</button>)}
         </nav>
-        <a className="player-text-link player-next-game-link" href={nextGameHref}><PlayerIcon name="target" />Next game<PlayerIcon name="arrow-right" size={16} /></a>
+        <a className="player-text-link player-next-game-link" href={nextGameHref}><PlayerIcon name="target" />Automatic briefing<PlayerIcon name="arrow-right" size={16} /></a>
       </div>
       <div className="profile-controls" role="group" aria-label="Filter match sample">
         <PlayerModePicker value={filters.queue} onChange={queue => change({ queue })} />

@@ -1,6 +1,7 @@
 import { useEffect, useId, useState, type SubmitEvent } from 'react';
 import { platforms } from '../../lib/player/contracts';
 import { historyOptions } from '../../lib/player/modes';
+import { rememberRecentPlayer } from '../../lib/player/identity';
 import { api, fetcher, playerLink, type PlayerView } from './client';
 import { usePlayerCooldown } from './usePlayerCooldown';
 import PlayerIcon from './PlayerIcon';
@@ -65,7 +66,9 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
     try {
       const selectedPlatform = String(form.get('platform'));
       const account = await fetcher<{ puuid: string; gameName: string; tagLine: string }>(api('lookup', { name: gameName, tag, platform: selectedPlatform }));
-      window.location.assign(playerLink(selectedPlatform, account.puuid, { ...filters, name: `${account.gameName}#${account.tagLine}`, view }));
+      const name = `${account.gameName}#${account.tagLine}`;
+      rememberRecentPlayer({ platform: selectedPlatform, puuid: account.puuid, name });
+      window.location.assign(playerLink(selectedPlatform, account.puuid, { ...filters, name, view }));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Lookup is unavailable. Please try again.');
       setBusy(false);
@@ -111,6 +114,6 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
         <span className="player-kicker"><PlayerIcon name="bookmark" size={16} /> SAVED PLAYER</span><strong>{remembered.name || 'Your remembered player'}</strong><span>{destinationLabel} <PlayerIcon name="arrow-right" size={16} /></span>
       </a>}
     </div>
-    <footer className="gateway-footnote"><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />Private beta</summary><p>Notes stay on this browser. Looking up a player does not verify account ownership.</p></details></footer>
+    <footer className="gateway-footnote"><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />Private beta</summary><p>Your last player stays selected on this browser when storage is available. Looking up a player does not verify account ownership.</p></details></footer>
   </section>;
 }

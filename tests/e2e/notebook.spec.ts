@@ -18,7 +18,7 @@ async function seed(page: Page, state: CompanionState) {
     if (localStorage.getItem(key) === null) localStorage.setItem(key, JSON.stringify(value));
   }, { key: COMPANION_KEY, value: state });
 }
-async function open(page: Page, path = '/next-game') {
+async function open(page: Page, path = '/notebook') {
   await page.goto(path, { waitUntil: 'domcontentloaded' });
   const island = page.locator('astro-island:has([data-rift-recall])');
   await expect(island).not.toHaveAttribute('ssr', '');
@@ -78,7 +78,7 @@ test('exact modes and selected situations control recall and persist after a dee
     makeNote({ id: 'poke', situation: 'vs-poke', text: 'My poke matchup reminder.' }),
     makeNote({ id: 'general', champion: '', queue: 'all', text: 'A general reminder.' }),
   ]));
-  await open(page, '/next-game?champion=Azir&queue=2400');
+  await open(page, '/notebook?champion=Azir&queue=2400');
   await expect(page.getByRole('radio', { name: 'My Mayhem reminder.', exact: true })).toBeVisible();
   await expect(page.getByRole('radio', { name: 'My regular ARAM reminder.', exact: true })).toHaveCount(0);
   await page.getByLabel('Game mode for next game', { exact: true }).selectOption('450');

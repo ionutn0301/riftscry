@@ -5,7 +5,7 @@ const rememberedKey = 'riftscry:remembered-player:v1';
 const destinations = ['/players', '/next-game', '/pool', '/champions', '/patches', '/compare', '/explore'];
 
 async function homeReady(page: Page) {
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Review your games. Prepare for the next.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your next game. Already prepared.');
   await expect(page.locator('astro-island[component-url*="HomeReturn"]')).not.toHaveAttribute('ssr', '');
   await page.evaluate(() => document.fonts.ready);
 }
@@ -39,11 +39,11 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) {
     });
     await page.goto('/');
     await homeReady(page);
-    await expect(page.getByRole('heading', { name: 'Rift Recall', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your automatic briefing', exact: true })).toBeVisible();
     await expect(page.locator('.companion-welcome')).toContainText('ARAM');
     const tasks = [
+      ['Get my briefing', '/next-game'],
       ['Find my games', '/players'],
-      ['Prepare my next game', '/next-game'],
       ['See my champion changes', '/pool#briefing'],
     ] as const;
     for (const [name, href] of tasks) {
@@ -56,9 +56,10 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) {
 
     // The dynamic player entry is exercised end-to-end in companion-integration.
     // This suite serves the production build's static archive/preparation output.
-    await page.getByRole('link', { name: 'Prepare my next game', exact: true }).click();
+    await page.getByRole('link', { name: 'Get my briefing', exact: true }).click();
     await expect(page).toHaveURL(/\/next-game\/?$/);
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Next game.');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your next game.');
+    await expect(page.locator('[data-automatic-briefing]')).toBeVisible();
     await page.goBack();
     await homeReady(page);
     await page.getByRole('link', { name: 'See my champion changes', exact: true }).click();
@@ -91,15 +92,19 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] 
   });
 }
 
-test('the saved-player shortcut validates browser data and uses a canonical games route', async ({ page }) => {
+test('the saved-player shortcut validates browser data and opens the automatic briefing', async ({ page }) => {
   await page.addInitScript(({ key, player }) => localStorage.setItem(key, JSON.stringify(player)), { key: rememberedKey, player: savedPlayer });
   const requests: string[] = [];
   page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) requests.push(request.url()); });
   await page.goto('/');
   await homeReady(page);
-  const shortcut = page.getByRole('link', { name: /Return to Fixture Player#TEST/ });
+  const shortcut = page.getByRole('link', { name: /Your briefing for Fixture Player#TEST/ });
   await expect(shortcut).toBeVisible();
-  await expect(shortcut).toHaveAttribute('href', `/players/${savedPlayer.platform}/${savedPlayer.puuid}?view=history`);
+  const destination = new URL(await shortcut.getAttribute('href') ?? '', page.url());
+  expect(destination.pathname).toBe('/next-game');
+  expect(destination.searchParams.get('platform')).toBe(savedPlayer.platform);
+  expect(destination.searchParams.get('puuid')).toBe(savedPlayer.puuid);
+  expect(destination.searchParams.get('name')).toBe(savedPlayer.name);
   expect(requests).toEqual([]);
 
   for (const invalid of [
@@ -123,10 +128,34 @@ test('blocked browser storage leaves the public companion actions available', as
   await page.goto('/');
   await homeReady(page);
   await expect(page.locator('.companion-return')).toHaveCount(0);
-  await page.getByRole('link', { name: 'Prepare my next game', exact: true }).click();
+  await page.getByRole('link', { name: 'Get my briefing', exact: true }).click();
   await expect(page).toHaveURL(/\/next-game\/?$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Next game.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your next game.');
+  await expect(page.locator('[data-automatic-briefing]')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('the most recently selected player returns directly to a briefing without a homepage request', async ({ page }) => {
+  const recent = { ...savedPlayer, name: 'Recent Player#TEST', puuid: 'recent-player-0000000000000000000000000000000000' };
+  await page.addInitScript(({ remembered, selected }) => {
+    localStorage.setItem('riftscry:remembered-player:v1', JSON.stringify(remembered));
+    localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected));
+  }, { remembered: savedPlayer, selected: recent });
+  const requests: string[] = [];
+  page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) requests.push(request.url()); });
+  await page.goto('/');
+  await homeReady(page);
+  const shortcut = page.locator('.companion-return');
+  await expect(shortcut).toContainText(recent.name);
+  expect(new URL(await shortcut.getAttribute('href') ?? '', page.url()).searchParams.get('puuid')).toBe(recent.puuid);
+
+  await page.evaluate(selected => {
+    localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected));
+    window.dispatchEvent(new Event('riftscry:recent-player-change'));
+  }, savedPlayer);
+  await expect(shortcut).toContainText(savedPlayer.name);
+  expect(new URL(await shortcut.getAttribute('href') ?? '', page.url()).pathname).toBe('/next-game');
+  expect(requests).toEqual([]);
 });
 
 test('old journey links retain their champion, interval and saved reading place', async ({ page }) => {

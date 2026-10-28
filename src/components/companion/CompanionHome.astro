@@ -1,6 +1,5 @@
 ---
 import { getLatestPatch } from '../../lib/data';
-import { platforms } from '../../lib/player/contracts';
 import HomeReturn from './HomeReturn';
 import '../../styles/companion-home.css';
 const latest = getLatestPatch();
@@ -13,37 +12,37 @@ const latest = getLatestPatch();
     <div class="companion-intro-grid">
       <div class="companion-intro-copy">
         <p class="companion-eyebrow">YOUR LEAGUE OF LEGENDS COMPANION</p>
-        <h1 id="companion-heading"><span>Review your games.</span> <em>Prepare for the next.</em></h1>
-        <p class="companion-description">Find your recent matches, keep a useful build or note, and see what changed for the champions you play.</p>
+        <h1 id="companion-heading"><span>Your next game.</span> <em>Already prepared.</em></h1>
+        <p class="companion-description">Enter your Riot ID. Get a session recap, changes for your champions, and a useful focus from your recent games.</p>
         <div class="companion-main-actions">
-          <a class="companion-action" href="/players">Find my games <span aria-hidden="true">↗</span></a>
-          <a class="companion-action companion-action--quiet" href="/next-game">Prepare my next game <span aria-hidden="true">↗</span></a>
+          <a class="companion-action" href="/next-game">Get my briefing <span aria-hidden="true">↗</span></a>
+          <a class="companion-action companion-action--quiet" href="/players">Find my games <span aria-hidden="true">↗</span></a>
         </div>
         <a class="companion-text-link companion-patch-link" href="/pool#briefing">See my champion changes <span aria-hidden="true">↗</span></a>
-        <HomeReturn platforms={Object.keys(platforms)} client:load />
+        <HomeReturn client:load />
         <p class="companion-welcome">Ranked, ARAM, or a game with friends.</p>
       </div>
-      <aside class="companion-recall" aria-labelledby="home-recall-heading">
-        <div class="companion-recall-title"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="m24 3 18 21-18 21L6 24 24 3Z" stroke="currentColor" /><path d="m24 12 10 12-10 12-10-12 10-12Z" stroke="currentColor" /><path d="M24 3v9m0 24v9M6 24h8m20 0h8" stroke="currentColor" /></svg><h2 id="home-recall-heading">Rift Recall</h2><span class="companion-feature-mark">YOUR NEXT GAME</span></div>
-        <p class="companion-recall-promise">Your own advice,<br />back when you need it.</p>
-        <p class="companion-recall-description">Choose your champion, mode and situation. Bring a matching note and a saved build into one card for your next game.</p>
-        <ol class="companion-recall-steps">
-          <li><span aria-hidden="true">01</span><div><strong>Remember what matters</strong><p>Your quick notes and builds from your matches.</p></div></li>
-          <li><span aria-hidden="true">02</span><div><strong>Keep the patch in view</strong><p>Earlier-patch material is marked for review.</p></div></li>
-          <li><span aria-hidden="true">03</span><div><strong>Come back to it</strong><p>Keep a reflection on what helped or needs another try.</p></div></li>
+      <aside class="companion-briefing" aria-labelledby="home-briefing-heading">
+        <div class="companion-briefing-title"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="m24 3 18 21-18 21L6 24 24 3Z" stroke="currentColor" /><path d="m24 12 10 12-10 12-10-12 10-12Z" stroke="currentColor" /><path d="M24 3v9m0 24v9M6 24h8m20 0h8" stroke="currentColor" /></svg><h2 id="home-briefing-heading">Your automatic briefing</h2><span class="companion-feature-mark">FROM THE GAMES YOU PLAY</span></div>
+        <p class="companion-briefing-promise">What matters<br />before you queue.</p>
+        <p class="companion-briefing-description">RiftScry reads your available match history and brings the useful parts together, ready when you open it.</p>
+        <ol class="companion-briefing-steps">
+          <li><span aria-hidden="true">01</span><div><strong>Your latest session, reviewed</strong><p>Results and patterns from the games already recorded.</p></div></li>
+          <li><span aria-hidden="true">02</span><div><strong>Changes since you played</strong><p>Patch records for champions found in your recent games.</p></div></li>
+          <li><span aria-hidden="true">03</span><div><strong>One useful next focus</strong><p>A practical starting point, with the evidence behind it.</p></div></li>
         </ol>
-        <a class="companion-text-link" href="/next-game">Open Rift Recall <span aria-hidden="true">↗</span></a>
-        <p class="companion-local-note">Start with a note. No player lookup needed.</p>
+        <a class="companion-text-link" href="/next-game">See my briefing <span aria-hidden="true">↗</span></a>
+        <p class="companion-local-note">Generated from available matches. Your player stays selected in this browser.</p>
       </aside>
     </div>
   </section>
 
   <section class="companion-everyday" aria-labelledby="everyday-heading">
-    <header><p class="companion-eyebrow">A LITTLE LESS TO REMEMBER</p><h2 id="everyday-heading">From your last game<br />to your next.</h2><p>Look something up, save a reminder, or spend a moment with a match. Go as deep as you need.</p></header>
+    <header><p class="companion-eyebrow">THE REVIEW IS ALREADY DONE</p><h2 id="everyday-heading">You play.<br />RiftScry catches up.</h2><p>Open your briefing for the useful details. Follow the evidence when you want to understand more.</p></header>
     <div class="companion-task-list">
-      <a href="/players"><span class="companion-task-number" aria-hidden="true">01</span><div><h3>Open your recent games</h3><p>See the result, champion, mode and recorded loadout. Open a match to inspect its timeline and review.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
-      <a href="/next-game"><span class="companion-task-number" aria-hidden="true">02</span><div><h3>Keep a useful reminder</h3><p>A quick note for ARAM nights, a build to revisit, or one thing to try next. Your preparation stays on this browser.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
-      <a href="/pool#briefing"><span class="companion-task-number" aria-hidden="true">03</span><div><h3>Catch up on your champions</h3><p>Save your pool and review exact changes since the patch you last marked reviewed, with links to Riot’s notes.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
+      <a href="/next-game"><span class="companion-task-number" aria-hidden="true">01</span><div><h3>See what your games reveal</h3><p>Your recent session and a useful next focus are assembled from the available match sample.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
+      <a href="/next-game#changes"><span class="companion-task-number" aria-hidden="true">02</span><div><h3>Catch changes you missed</h3><p>See archived changes since the last recorded game on each of your recent champions. Your matches choose the starting point.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
+      <a href="/players?view=builds"><span class="companion-task-number" aria-hidden="true">03</span><div><h3>Find the build you played</h3><p>Recorded loadouts are grouped from your matches, with their champion, mode and source game ready to inspect.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
     </div>
   </section>
 

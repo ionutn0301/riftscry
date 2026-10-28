@@ -2,28 +2,32 @@
   <img src="src/assets/brand/logo-desktop-dark.png" alt="RiftScry" width="420" />
 </p>
 
-<h3 align="center">Review your games. Prepare for the next.</h3>
+<h3 align="center">Your next game. Already prepared.</h3>
 
-RiftScry is a personal League of Legends companion. Review recent matches, keep useful
-loadouts and reminders, and revisit the changes affecting the champions you play.
+RiftScry is a League of Legends companion that turns available match history into
+an automatic briefing. Enter a Riot ID once, then return for the useful details:
+what changed since you played, how your latest session went, and one thing to review.
 
-- **Matches and builds:** Riot-backed recent history, exact-mode filters, recorded
-  loadouts, and match review with linked evidence. The imported sample is bounded;
-  it is not a complete season history or a global build recommendation.
-- **Next game / Rift Recall:** choose a champion, exact queue, and situation. Recall
-  your own relevant notes and saved loadout, review newer archive records, choose
-  one focus, then reflect afterward. Each card preserves what you originally chose.
-- **Quick notes and preparation backups:** save a short reminder without needing a
-  match or tracked item. Export/import your preparation to transfer it between browsers.
-- **Build Memory:** maintain separate, player-scoped item adjustments with explicit
-  comparison conditions and later-game evidence.
-- **Champion changes:** structured before/after patch records, your champion pool,
-  source links, and comparisons through the committed archive. The immersive archive
-  journey remains at `/explore`.
+- **Automatic briefing:** `/next-game` discovers recent champions, exact queues and
+  recorded loadouts from imported games. It assembles a session recap and a focus
+  supported by available evidence. No notes, saved cards or reflections are required.
+- **Personal patch catch-up:** compare each recent champion's latest imported game
+  against newer archived champion and verified item changes, with before/after
+  records and source links. Unknown patch baselines remain unknown.
+- **Recent games and builds:** exact-mode history, automatically grouped observed
+  loadouts, match facts, and optional timeline or AI-assisted review. The sample is
+  bounded; it is not a complete season history or a global build recommendation.
+- **Champion archive:** structured changes, your optional champion pool, comparisons,
+  and the immersive archive journey at `/explore`.
+- **Existing notebook and Build Memory:** previously saved preparation remains at
+  `/notebook`; player-scoped item adjustments remain in Build Memory. These optional
+  records are independent of the automatic briefing.
 
-Preparation lives in the current browser. There is no automatic device sync or account
-ownership verification. Manual notes and preparation also work when match imports are
-unavailable, including ARAM: Mayhem's currently private Riot history.
+A successful lookup remembers the recent player on this browser when storage is
+available. Direct player links still work without storage. There is no automatic
+cross-device account sync or ownership verification. Automatic results require exposed
+match history; Riot currently keeps ARAM: Mayhem history private, so the site explains
+that gap instead of inventing a report or substituting ordinary ARAM.
 
 ![RiftScry patch page](docs/screenshots/patch-desktop.png)
 
@@ -34,28 +38,38 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm build` creates the Astro/Vercel output: prerendered archive and preparation pages,
+`pnpm build` creates Astro/Vercel output: prerendered archive and briefing shells,
 plus server-rendered player routes and the protected player API. A static file server
-alone cannot serve the player API. The existing Vercel Git integration builds previews
-for PRs and production from `main`.
+alone cannot serve the player API or populate an automatic briefing. The existing
+Vercel Git integration builds previews for PRs and production from `main`.
 
 ## How it works
 
-Official Riot patch notes → parsed into normalized, schema-validated JSON
-(`src/data/patches/*.json`, one file per patch, committed to git) → Astro prerenders the
-archive. React islands personalize the experience after hydration. The Next game
-workspace makes no Riot player-data or AI requests; its patch context is built from that archive.
+Official Riot patch notes are parsed into schema-validated JSON in
+`src/data/patches/*.json`. Astro uses that committed archive to build pages and serialize
+relevant patch records. React islands personalize the experience after hydration.
 
-Player routes call `/api/player/*`, which validates access and identifiers, budgets
-Riot requests, caches records, and returns private/no-store responses. Optional AI
-reviews are requested explicitly and retain deterministic fallbacks. Production player
-access requires the configured Riot access mode and server-side credentials; see
-[the player release notes](docs/player-release.md). Never expose those credentials to
-the client or commit deployment environment files.
+The briefing imports up to 20 recent match IDs using the existing player API and loads
+details in bounded batches. A deterministic model derives session groups, recent
+champions, patch catch-up and a review focus. Personal comparisons keep the same
+champion, exact queue, role and patch. A sparse sample produces a factual recap rather
+than a performance claim. Session grouping uses an explicit 90-minute gap estimate.
 
-- [Architecture](docs/ARCHITECTURE.md) — archive, player API, browser preparation, deployment
-- [Data & methodology](docs/DATA.md) — schema, deterministic buff/nerf classification, provenance
-- [Contributing](CONTRIBUTING.md) — fix a patch with a five-line PR
+While visible, the briefing checks for updates every two minutes and when the player
+returns after that interval. Cached data may persist for up to two minutes. History
+errors and rate limits pause automatic checks; an explicit Refresh can retry them.
+The briefing does not request AI reviews, timelines, ranks or summoner profiles.
+
+`/api/player/*` validates access and identifiers, budgets Riot requests, caches records,
+and returns private/no-store responses. Production player access requires the configured
+Riot access mode, server-side credentials and Redis cache/budget state; see
+[the player release notes](docs/player-release.md). Never expose credentials to the
+client or commit deployment environment files.
+
+- [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
+- [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
+- [Data & methodology](docs/DATA.md) — schema, classification and provenance
+- [Contributing](CONTRIBUTING.md) — checks and contribution workflow
 
 ## Commands
 
@@ -64,11 +78,11 @@ the client or commit deployment environment files.
 | `pnpm dev` | Dev server |
 | `pnpm build` | Astro/Vercel production build |
 | `pnpm check` | Typecheck Astro and TypeScript |
-| `pnpm test` | Unit tests + schema validation of all committed patch data |
-| `pnpm e2e` | Playwright end-to-end suite (build first) |
-| `pnpm exec playwright test --config=playwright.player.config.ts` | Player routes and preparation integration tests against the dev server |
+| `pnpm test` | Unit tests and schema validation of committed patch data |
+| `pnpm e2e` | Playwright shared browser suite (build first) |
+| `pnpm exec playwright test --config=playwright.player.config.ts` | Player and automatic briefing integration against the dev server |
 | `pnpm ingest 26.17` | Ingest a patch from the official notes |
-| `pnpm ingest --validate` | Re-validate committed patch files (offline) |
+| `pnpm ingest --validate` | Re-validate committed patch files offline |
 
 ## Legal
 

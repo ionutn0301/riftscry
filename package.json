@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "RiftScry — review your League of Legends games, prepare for the next, and remember what matters.",
+  "description": "RiftScry — automatic League of Legends briefings from your recent games, champion changes, and recorded builds.",
   "license": "MIT",
   "engines": {
     "node": ">=22"
