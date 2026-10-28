@@ -215,7 +215,7 @@ test('partial imports stay visibly incomplete and refresh repairs the sample and
     await expect(modeSummary(page, 450)).toHaveCount(0);
     release();
     await expect(sample).toContainText('1 of 2 recent matches imported');
-    await expect(sample).toContainText(/incomplete|unavailable/i);
+    await expect(sample.getByRole('status')).toContainText(/incomplete|unavailable/i);
     await expect(rows(page)).toHaveCount(1);
     await expectSummary(page, 450, { matches: 1, wins: 1, winRate: 100, kda: [18, 6, 24] });
 
@@ -224,7 +224,8 @@ test('partial imports stay visibly incomplete and refresh repairs the sample and
     await expect(sample).toContainText('2 of 2 recent matches imported');
     await expect(rows(page)).toHaveCount(2);
     await expectSummary(page, 450, { matches: 2, wins: 1, winRate: 50, kda: [12, 5, 18] });
-    await expect(sample).not.toContainText(/incomplete|unavailable/i);
+    await expect(sample.getByRole('status')).not.toContainText(/incomplete|unavailable/i);
+    await expect(sample).toHaveAttribute('aria-busy', 'false');
     const detailRequests = requests.filter(request => request.action === 'match');
     expect(detailRequests.filter(request => new URL(request.url).searchParams.get('id') === recentAramWin.metadata.matchId)).toHaveLength(1);
     expect(detailRequests.filter(request => new URL(request.url).searchParams.get('id') === recentAramLoss.metadata.matchId)).toHaveLength(2);
