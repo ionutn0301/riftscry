@@ -1,0 +1,467 @@
+{
+  "id": "26.21",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+  "checkedAt": "2026-10-28T08:24:00.218Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Azir"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Caitlyn"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Darius"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jinx"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lee Sin"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Locke"
+      ],
+      "sourceLines": 6,
+      "parsedLines": 6
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Miss Fortune"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nidalee"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nunu & Willump"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Orianna"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Qiyana"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rammus"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ryze"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Sion"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Taliyah"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Taric"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tristana"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Twisted Fate"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Varus"
+      ],
+      "sourceLines": 6,
+      "parsedLines": 6
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vel'Koz"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Viktor"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Wukong"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xin Zhao"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yone"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zyra"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Bastion Breaker",
+        "Dawncore",
+        "Gluttonous Greaves",
+        "Hubris"
+      ],
+      "sourceLines": 8,
+      "parsedLines": 8
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Azir",
+        "records": 1
+      },
+      {
+        "name": "Caitlyn",
+        "records": 2
+      },
+      {
+        "name": "Darius",
+        "records": 1
+      },
+      {
+        "name": "Jinx",
+        "records": 2
+      },
+      {
+        "name": "Lee Sin",
+        "records": 4
+      },
+      {
+        "name": "Locke",
+        "records": 6
+      },
+      {
+        "name": "Miss Fortune",
+        "records": 2
+      },
+      {
+        "name": "Nidalee",
+        "records": 2
+      },
+      {
+        "name": "Nunu & Willump",
+        "records": 1
+      },
+      {
+        "name": "Orianna",
+        "records": 2
+      },
+      {
+        "name": "Qiyana",
+        "records": 1
+      },
+      {
+        "name": "Rammus",
+        "records": 2
+      },
+      {
+        "name": "Ryze",
+        "records": 3
+      },
+      {
+        "name": "Sion",
+        "records": 3
+      },
+      {
+        "name": "Taliyah",
+        "records": 3
+      },
+      {
+        "name": "Taric",
+        "records": 4
+      },
+      {
+        "name": "Tristana",
+        "records": 1
+      },
+      {
+        "name": "Twisted Fate",
+        "records": 1
+      },
+      {
+        "name": "Varus",
+        "records": 6
+      },
+      {
+        "name": "Vel'Koz",
+        "records": 1
+      },
+      {
+        "name": "Viktor",
+        "records": 2
+      },
+      {
+        "name": "Wukong",
+        "records": 2
+      },
+      {
+        "name": "Xin Zhao",
+        "records": 2
+      },
+      {
+        "name": "Yone",
+        "records": 1
+      },
+      {
+        "name": "Zyra",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Bastion Breaker",
+        "records": 4
+      },
+      {
+        "name": "Dawncore",
+        "records": 1
+      },
+      {
+        "name": "Gluttonous Greaves",
+        "records": 1
+      },
+      {
+        "name": "Hubris",
+        "records": 2
+      }
+    ],
+    "systems": []
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Azir",
+        "records": 1
+      },
+      {
+        "id": "Caitlyn",
+        "records": 2
+      },
+      {
+        "id": "Darius",
+        "records": 1
+      },
+      {
+        "id": "Jinx",
+        "records": 2
+      },
+      {
+        "id": "LeeSin",
+        "records": 4
+      },
+      {
+        "id": "Locke",
+        "records": 6
+      },
+      {
+        "id": "MissFortune",
+        "records": 2
+      },
+      {
+        "id": "Nidalee",
+        "records": 2
+      },
+      {
+        "id": "Nunu",
+        "records": 1
+      },
+      {
+        "id": "Orianna",
+        "records": 2
+      },
+      {
+        "id": "Qiyana",
+        "records": 1
+      },
+      {
+        "id": "Rammus",
+        "records": 2
+      },
+      {
+        "id": "Ryze",
+        "records": 3
+      },
+      {
+        "id": "Sion",
+        "records": 3
+      },
+      {
+        "id": "Taliyah",
+        "records": 3
+      },
+      {
+        "id": "Taric",
+        "records": 4
+      },
+      {
+        "id": "Tristana",
+        "records": 1
+      },
+      {
+        "id": "TwistedFate",
+        "records": 1
+      },
+      {
+        "id": "Varus",
+        "records": 6
+      },
+      {
+        "id": "Velkoz",
+        "records": 1
+      },
+      {
+        "id": "Viktor",
+        "records": 2
+      },
+      {
+        "id": "MonkeyKing",
+        "records": 2
+      },
+      {
+        "id": "XinZhao",
+        "records": 2
+      },
+      {
+        "id": "Yone",
+        "records": 1
+      },
+      {
+        "id": "Zyra",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Bastion Breaker",
+        "records": 4
+      },
+      {
+        "name": "Dawncore",
+        "records": 1
+      },
+      {
+        "name": "Gluttonous Greaves",
+        "records": 1
+      },
+      {
+        "name": "Hubris",
+        "records": 2
+      }
+    ],
+    "systems": []
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

@@ -27,7 +27,7 @@ describes it; the code defines it). Malformed data fails the build.
             { "kind": "numeric", "label": "Damage",
               "before": "60 / 80 / 100 / 120 / 140 (+35 / 40 / 45 / 50 / 55% AP)",
               "after":  "75 / 95 / 115 / 135 / 155 (+35 / 40 / 45 / 50 / 55% AP)",
-              "direction": "buff" }
+              "direction": "neutral" }
           ]
         }
       ]
@@ -40,8 +40,10 @@ describes it; the code defines it). Malformed data fails the build.
 ```
 
 `before`/`after` keep Riot's verbatim value strings — rank arrays are the domain's
-native shape. The relative-delta chip shown in the UI is derived from the first rank
-value (`src/lib/deltas.ts`).
+native shape. Only matching literal scalar values receive a relative-delta chip.
+Percent scalars use percentage points; rank arrays use per-rank absolute changes.
+Recipes, formulas, ranges, conditional values, mismatched units, and zero baselines
+receive no invented aggregate (`src/lib/deltas.ts`).
 
 ## Classification: deterministic, no scores
 
@@ -57,8 +59,11 @@ an increase helps the champion.
 
 Rules that keep it honest:
 
-- **First-rank comparison.** `20/25/30% ⇒ 20/23/26%` where rank 1 is unchanged reads as
-  *neutral* — the full values are always displayed, so nothing is hidden.
+- **All-rank comparison.** `20/25/30% ⇒ 20/23/26%` is decreasing at ranks 2 and 3.
+  `5/15/25% ⇒ 6/13/20%` is mixed and has neutral direction, not a buff.
+  Unsupported structures retain exact values without inferred direction.
+- Badges are **RiftScry interpretations**, including explicit curated overrides,
+  not Riot-stated classifications. Source context excerpts remain separately attributed.
 - **Champion rollup:** all buffs → `buff`; all nerfs → `nerf`; anything mixed (or all
   neutral) → `adjustment`. `rework` is never inferred — only set by an override.
 - **No opaque impact scores.** If RiftScry shows a judgment, you can recompute it from
@@ -74,10 +79,13 @@ parser patch. See [CONTRIBUTING.md](../CONTRIBUTING.md) for a worked example.
 ## Hotfix markers
 
 The schema, override path (`addHotfixes`), and patch-page UI all support mid-patch
-hotfix entries, but **no hotfixes are curated yet**: RiftScry only records data it can
-trace to a source, and Riot does not publish hotfixes in the patch-notes pages this
-pipeline ingests. Adding one is a five-line override PR with the source in the
-description — see [CONTRIBUTING.md](../CONTRIBUTING.md).
+hotfix entries. Scheduled refreshes now refetch every available season article,
+including existing URLs, so structured mid-patch edits can enter a review PR.
+This is not a guarantee that prose-only corrections become dated hotfix markers;
+those still require source review and an explicit override. Coverage reports in
+`docs/coverage/` list source headings and line counts, parsed/normalized entities,
+exclusions, and overrides. Missing structured entities or lines block publication.
+The reviewed 26.7 Shyvana prose-only correction is retained via an override.
 
 ## Provenance guarantees
 

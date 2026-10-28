@@ -4,7 +4,7 @@
   "assetVersion": "16.2.1",
   "releaseDate": "2026-01-21",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-2-notes/",
-  "ingestedAt": "2026-08-21T21:18:47.575Z",
+  "ingestedAt": "2026-10-28T08:22:31.580Z",
   "champions": [
     {
       "championId": "Aatrox",
@@ -61,7 +61,7 @@
     },
     {
       "championId": "Gwen",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Gwen jungle has skyrocketed in both pickrate and winrate.",
       "abilities": [
         {
@@ -73,7 +73,7 @@
               "label": "Monster Damage Cap",
               "before": "5 (+10% AP)",
               "after": "3 (+5% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -101,7 +101,7 @@
     },
     {
       "championId": "Lillia",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Lillia has been in a dream since the changes to Rift.",
       "abilities": [
         {
@@ -126,7 +126,7 @@
               "label": "AP Ratio",
               "before": "35% AP",
               "after": "30% AP",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -146,7 +146,7 @@
               "label": "Monster Damage",
               "before": "2x",
               "after": "1.8x",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -159,7 +159,7 @@
               "label": "Damage",
               "before": "80 / 120 / 160 / 200 / 240 (+ 60% AP) (+ 40% armor)",
               "after": "60 / 95 / 130 / 165 / 200 (+ 60% AP) (+ 40% armor)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -179,7 +179,7 @@
               "label": "Cooldown",
               "before": "130 / 105 / 80",
               "after": "130 / 115 / 100",
-              "direction": "neutral"
+              "direction": "nerf"
             }
           ]
         }
@@ -220,7 +220,7 @@
     },
     {
       "championId": "Nunu",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Nunu & Willump are devouring the competition in the new season, so we’re here to bring them back to a fairer level of power.",
       "abilities": [
         {
@@ -232,7 +232,7 @@
               "label": "Cooldown",
               "before": "12 / 11 / 10 / 9 / 8",
               "after": "13 / 12 / 11 / 10 / 9 seconds",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -245,7 +245,7 @@
               "label": "Maximum Damage",
               "before": "180 / 225 / 270 / 315 / 360 (+ 150% AP)",
               "after": "150 / 195 / 240 / 285 / 330 (+ 150% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -258,7 +258,7 @@
               "label": "Damage per Hit",
               "before": "16 / 24 / 32 / 40 / 48 (+ 15% AP)",
               "after": "14 / 21 / 28 / 35 / 42",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -358,7 +358,7 @@
               "label": "Maximum Charge Base Damage",
               "before": "80 / 150 / 220 / 290 / 360",
               "after": "80 / 160 / 240 / 320 / 400",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         },
@@ -419,7 +419,7 @@
     },
     {
       "championId": "Zed",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Zed’s recent jungle changes didn't affect him as strongly as we had anticipated, and players have noticed, resulting in a resurgence of pick and ban rate.",
       "abilities": [
         {
@@ -431,7 +431,7 @@
               "label": "Monster Damage",
               "before": "1.8x",
               "after": "1.2x",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -441,21 +441,21 @@
   "items": [
     {
       "name": "Bandlepipes",
-      "classification": "nerf",
+      "classification": "adjustment",
       "changes": [
         {
           "kind": "numeric",
           "label": "Price",
           "before": "2000",
           "after": "2300 gold",
-          "direction": "nerf"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
           "label": "Combine Cost",
           "before": "500",
           "after": "800 gold",
-          "direction": "nerf"
+          "direction": "neutral"
         }
       ]
     },

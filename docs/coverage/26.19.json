@@ -1,0 +1,326 @@
+{
+  "id": "26.19",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+  "checkedAt": "2026-10-28T08:23:59.691Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aatrox"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aphelios"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aurora"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Draven"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Elise"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Fiora"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kha'Zix"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lillia"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lucian"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Master Yi"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nasus"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nocturne"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Poppy"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rumble"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ryze"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vi"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Volibear"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-systems",
+      "headings": [],
+      "sourceLines": 3,
+      "parsedLines": 3
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Aatrox",
+        "records": 2
+      },
+      {
+        "name": "Aphelios",
+        "records": 5
+      },
+      {
+        "name": "Aurora",
+        "records": 2
+      },
+      {
+        "name": "Draven",
+        "records": 1
+      },
+      {
+        "name": "Elise",
+        "records": 2
+      },
+      {
+        "name": "Fiora",
+        "records": 4
+      },
+      {
+        "name": "Kha'Zix",
+        "records": 3
+      },
+      {
+        "name": "Lillia",
+        "records": 2
+      },
+      {
+        "name": "Lucian",
+        "records": 2
+      },
+      {
+        "name": "Master Yi",
+        "records": 1
+      },
+      {
+        "name": "Nasus",
+        "records": 1
+      },
+      {
+        "name": "Nocturne",
+        "records": 1
+      },
+      {
+        "name": "Poppy",
+        "records": 1
+      },
+      {
+        "name": "Rumble",
+        "records": 2
+      },
+      {
+        "name": "Ryze",
+        "records": 3
+      },
+      {
+        "name": "Vi",
+        "records": 2
+      },
+      {
+        "name": "Volibear",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "World Atlas and Runic Compass",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Teleport Cooldown",
+        "records": 3
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Aatrox",
+        "records": 2
+      },
+      {
+        "id": "Aphelios",
+        "records": 5
+      },
+      {
+        "id": "Aurora",
+        "records": 2
+      },
+      {
+        "id": "Draven",
+        "records": 1
+      },
+      {
+        "id": "Elise",
+        "records": 2
+      },
+      {
+        "id": "Fiora",
+        "records": 4
+      },
+      {
+        "id": "Khazix",
+        "records": 3
+      },
+      {
+        "id": "Lillia",
+        "records": 2
+      },
+      {
+        "id": "Lucian",
+        "records": 2
+      },
+      {
+        "id": "MasterYi",
+        "records": 1
+      },
+      {
+        "id": "Nasus",
+        "records": 1
+      },
+      {
+        "id": "Nocturne",
+        "records": 1
+      },
+      {
+        "id": "Poppy",
+        "records": 1
+      },
+      {
+        "id": "Rumble",
+        "records": 2
+      },
+      {
+        "id": "Ryze",
+        "records": 3
+      },
+      {
+        "id": "Vi",
+        "records": 2
+      },
+      {
+        "id": "Volibear",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "World Atlas and Runic Compass",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Teleport Cooldown",
+        "records": 3
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

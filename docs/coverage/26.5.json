@@ -1,0 +1,307 @@
+{
+  "id": "26.5",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-5-notes/",
+  "checkedAt": "2026-10-28T08:22:33.013Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Akali"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Azir"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Garen"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kha’Zix"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lee Sin"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lillia"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mel"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Neeko"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nocturne"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Orianna"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Samira"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Taliyah"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Varus"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Volibear"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Hubris"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Locket of the Iron Solari"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-ranked-and-matchmaking",
+      "headings": [],
+      "sourceLines": 0,
+      "parsedLines": 0
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Akali",
+        "records": 1
+      },
+      {
+        "name": "Azir",
+        "records": 1
+      },
+      {
+        "name": "Garen",
+        "records": 2
+      },
+      {
+        "name": "Kha’Zix",
+        "records": 2
+      },
+      {
+        "name": "Lee Sin",
+        "records": 1
+      },
+      {
+        "name": "Lillia",
+        "records": 5
+      },
+      {
+        "name": "Mel",
+        "records": 4
+      },
+      {
+        "name": "Neeko",
+        "records": 2
+      },
+      {
+        "name": "Nocturne",
+        "records": 2
+      },
+      {
+        "name": "Orianna",
+        "records": 1
+      },
+      {
+        "name": "Samira",
+        "records": 3
+      },
+      {
+        "name": "Taliyah",
+        "records": 2
+      },
+      {
+        "name": "Varus",
+        "records": 2
+      },
+      {
+        "name": "Volibear",
+        "records": 4
+      }
+    ],
+    "items": [
+      {
+        "name": "Hubris",
+        "records": 2
+      },
+      {
+        "name": "Locket of the Iron Solari",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Aegis of Valor",
+        "records": 0
+      },
+      {
+        "name": "Autofill and Secondary Matchmaking Improvements",
+        "records": 0
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Akali",
+        "records": 1
+      },
+      {
+        "id": "Azir",
+        "records": 1
+      },
+      {
+        "id": "Garen",
+        "records": 2
+      },
+      {
+        "id": "Khazix",
+        "records": 2
+      },
+      {
+        "id": "LeeSin",
+        "records": 1
+      },
+      {
+        "id": "Lillia",
+        "records": 5
+      },
+      {
+        "id": "Mel",
+        "records": 4
+      },
+      {
+        "id": "Neeko",
+        "records": 2
+      },
+      {
+        "id": "Nocturne",
+        "records": 2
+      },
+      {
+        "id": "Orianna",
+        "records": 1
+      },
+      {
+        "id": "Samira",
+        "records": 3
+      },
+      {
+        "id": "Taliyah",
+        "records": 2
+      },
+      {
+        "id": "Varus",
+        "records": 2
+      },
+      {
+        "id": "Volibear",
+        "records": 4
+      }
+    ],
+    "items": [
+      {
+        "name": "Hubris",
+        "records": 2
+      },
+      {
+        "name": "Locket of the Iron Solari",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Aegis of Valor",
+        "records": 0
+      },
+      {
+        "name": "Autofill and Secondary Matchmaking Improvements",
+        "records": 0
+      }
+    ]
+  },
+  "exclusions": {
+    "patch-aram:-mayhem": 1,
+    "patch-arena": 1
+  },
+  "overrides": null,
+  "unparsed": []
+}

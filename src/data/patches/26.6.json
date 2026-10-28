@@ -4,7 +4,7 @@
   "assetVersion": "16.6.1",
   "releaseDate": "2026-03-17",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-6-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.263Z",
+  "ingestedAt": "2026-10-28T08:22:33.237Z",
   "champions": [
     {
       "championId": "Ahri",
@@ -93,7 +93,7 @@
               "label": "Bonus Magic Damage to Poisoned Targets",
               "before": "20 / 43 / 66 / 89 / 112",
               "after": "20 / 45 / 70 / 90 / 120",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -159,7 +159,7 @@
               "label": "Slow Amount",
               "before": "25 / 30 / 40 / 45% for 1.5- 2.5 seconds (based on distance)",
               "after": "30 / 40 / 45 / 50% for 1-3 seconds (based on distance)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -188,7 +188,7 @@
               "label": "Damage to Self",
               "before": "30% of Damage Dealt",
               "after": "40% of Damage Dealt",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -295,7 +295,7 @@
               "label": "Secondary Damage",
               "before": "40 / 60 / 80 / 100 / 120 (+ 50% bonus AD)",
               "after": "30 / 50 / 70 / 90 / 110 (+ 30% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -332,7 +332,7 @@
           "label": "Total Cost",
           "before": "3100",
           "after": "3000 gold",
-          "direction": "buff"
+          "direction": "neutral"
         }
       ]
     },

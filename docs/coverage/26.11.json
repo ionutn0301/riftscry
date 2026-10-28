@@ -1,0 +1,325 @@
+{
+  "id": "26.11",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-11-notes/",
+  "checkedAt": "2026-10-28T08:28:52.825Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-support-adjustments",
+      "headings": [
+        "Summon Aery",
+        "Aftershock",
+        "Guardian",
+        "Dream Maker",
+        "Moonstone Renewer",
+        "Imperial Mandate",
+        "Echoes of Helia",
+        "Locket of the Iron Solari",
+        "Knight’s Vow",
+        "Zeke’s Convergence"
+      ],
+      "sourceLines": 24,
+      "parsedLines": 24
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Brand"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Diana"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ekko"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Heimerdinger"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kassadin"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Quinn"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Smolder"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Teemo"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xin Zhao"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Experimental Hexplate",
+        "Heartsteel",
+        "Statikk Shiv"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Deathfire Touch"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Brand",
+        "records": 1
+      },
+      {
+        "name": "Diana",
+        "records": 2
+      },
+      {
+        "name": "Ekko",
+        "records": 1
+      },
+      {
+        "name": "Heimerdinger",
+        "records": 4
+      },
+      {
+        "name": "Kassadin",
+        "records": 2
+      },
+      {
+        "name": "Quinn",
+        "records": 2
+      },
+      {
+        "name": "Smolder",
+        "records": 2
+      },
+      {
+        "name": "Teemo",
+        "records": 2
+      },
+      {
+        "name": "Xin Zhao",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Experimental Hexplate",
+        "records": 1
+      },
+      {
+        "name": "Heartsteel",
+        "records": 1
+      },
+      {
+        "name": "Statikk Shiv",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Support Adjustments",
+        "records": 2
+      },
+      {
+        "name": "Summon Aery",
+        "records": 1
+      },
+      {
+        "name": "Aftershock",
+        "records": 1
+      },
+      {
+        "name": "Guardian",
+        "records": 2
+      },
+      {
+        "name": "Dream Maker",
+        "records": 4
+      },
+      {
+        "name": "Moonstone Renewer",
+        "records": 2
+      },
+      {
+        "name": "Imperial Mandate",
+        "records": 7
+      },
+      {
+        "name": "Echoes of Helia",
+        "records": 1
+      },
+      {
+        "name": "Locket of the Iron Solari",
+        "records": 1
+      },
+      {
+        "name": "Knight’s Vow",
+        "records": 2
+      },
+      {
+        "name": "Zeke’s Convergence",
+        "records": 1
+      },
+      {
+        "name": "Deathfire Touch",
+        "records": 1
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Brand",
+        "records": 1
+      },
+      {
+        "id": "Diana",
+        "records": 2
+      },
+      {
+        "id": "Ekko",
+        "records": 1
+      },
+      {
+        "id": "Heimerdinger",
+        "records": 4
+      },
+      {
+        "id": "Kassadin",
+        "records": 2
+      },
+      {
+        "id": "Quinn",
+        "records": 2
+      },
+      {
+        "id": "Smolder",
+        "records": 2
+      },
+      {
+        "id": "Teemo",
+        "records": 2
+      },
+      {
+        "id": "XinZhao",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Experimental Hexplate",
+        "records": 1
+      },
+      {
+        "name": "Heartsteel",
+        "records": 1
+      },
+      {
+        "name": "Statikk Shiv",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Support Adjustments",
+        "records": 2
+      },
+      {
+        "name": "Summon Aery",
+        "records": 1
+      },
+      {
+        "name": "Aftershock",
+        "records": 1
+      },
+      {
+        "name": "Guardian",
+        "records": 2
+      },
+      {
+        "name": "Dream Maker",
+        "records": 4
+      },
+      {
+        "name": "Moonstone Renewer",
+        "records": 2
+      },
+      {
+        "name": "Imperial Mandate",
+        "records": 7
+      },
+      {
+        "name": "Echoes of Helia",
+        "records": 1
+      },
+      {
+        "name": "Locket of the Iron Solari",
+        "records": 1
+      },
+      {
+        "name": "Knight’s Vow",
+        "records": 2
+      },
+      {
+        "name": "Zeke’s Convergence",
+        "records": 1
+      },
+      {
+        "name": "Deathfire Touch",
+        "records": 1
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

@@ -11,7 +11,7 @@ export default function ComparePicker({
   older: string;
 }) {
   const go = (a: string, b: string) => {
-    if (a !== b) window.location.href = `/compare/${a}/${b}`;
+    if (a !== b) window.location.href = `/compare/${a}/${b}${window.location.search}`;
   };
 
   return (

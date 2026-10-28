@@ -1,0 +1,11 @@
+{
+  "replaceChampions": [{
+    "championId": "Shyvana",
+    "classification": "adjustment",
+    "abilities": [{
+      "ability": "other",
+      "name": "Ultimate haste",
+      "changes": [{"kind": "prose", "label": "Fury generation", "text": "Ultimate haste no longer provides passive 0.015 passive fury generation per second but instead amplifies all fury generation by 1% per 1 ultimate haste."}]
+    }]
+  }]
+}

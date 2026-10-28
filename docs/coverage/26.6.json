@@ -1,0 +1,232 @@
+{
+  "id": "26.6",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-6-notes/",
+  "checkedAt": "2026-10-28T08:22:33.237Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ahri"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Azir"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Cassiopeia"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lissandra"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Olaf"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Pyke"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Shen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Skarner"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tryndamere"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zaahen"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Chempunk Chainsword"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Sunfire Aegis"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-systems",
+      "headings": [],
+      "sourceLines": 2,
+      "parsedLines": 2
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Ahri",
+        "records": 1
+      },
+      {
+        "name": "Azir",
+        "records": 3
+      },
+      {
+        "name": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "name": "Lissandra",
+        "records": 2
+      },
+      {
+        "name": "Olaf",
+        "records": 5
+      },
+      {
+        "name": "Pyke",
+        "records": 1
+      },
+      {
+        "name": "Shen",
+        "records": 1
+      },
+      {
+        "name": "Skarner",
+        "records": 2
+      },
+      {
+        "name": "Tryndamere",
+        "records": 1
+      },
+      {
+        "name": "Zaahen",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Chempunk Chainsword",
+        "records": 2
+      },
+      {
+        "name": "Sunfire Aegis",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "FARMING AS SUPPORTS",
+        "records": 2
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Ahri",
+        "records": 1
+      },
+      {
+        "id": "Azir",
+        "records": 3
+      },
+      {
+        "id": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "id": "Lissandra",
+        "records": 2
+      },
+      {
+        "id": "Olaf",
+        "records": 5
+      },
+      {
+        "id": "Pyke",
+        "records": 1
+      },
+      {
+        "id": "Shen",
+        "records": 1
+      },
+      {
+        "id": "Skarner",
+        "records": 2
+      },
+      {
+        "id": "Tryndamere",
+        "records": 1
+      },
+      {
+        "id": "Zaahen",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Chempunk Chainsword",
+        "records": 2
+      },
+      {
+        "name": "Sunfire Aegis",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "FARMING AS SUPPORTS",
+        "records": 2
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

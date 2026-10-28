@@ -4,7 +4,7 @@
   "assetVersion": "16.11.1",
   "releaseDate": "2026-05-27",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-11-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.323Z",
+  "ingestedAt": "2026-10-28T08:28:52.825Z",
   "champions": [
     {
       "championId": "Brand",
@@ -151,7 +151,7 @@
               "label": "Base Magic Damage",
               "before": "20 (+10% AP)",
               "after": "25 (+10% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -192,7 +192,7 @@
     },
     {
       "championId": "Smolder",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "The baby dragon has been absolutely blasting his opponents since getting his hands on Deathfire Touch.",
       "abilities": [
         {
@@ -204,14 +204,14 @@
               "label": "Bonus Magic Damage on Q",
               "before": "40% * (1 + (Crit Chance *.5 * (1 + Bonus Crit Damage)) of Passive stacks (60% at 100% Crit, 66% if you have IE)",
               "after": "25% * (1 + (Crit Chance * 1.2 * (1 + Bonus Crit Damage)) of Passive stacks",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Bonus Magic Damage on E",
               "before": "12% of Passive stacks",
               "after": "8% * (1 + (Crit Chance * .6 * (1 + Bonus Crit Damage)) of Passive stacks",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -219,7 +219,7 @@
     },
     {
       "championId": "Teemo",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "We'd love (fear) a world where Teemo could be equally happy building AP, on-hit, and AD for his new ratios, but as it stands, Shiv is ahead of the pack.",
       "abilities": [
         {
@@ -231,7 +231,7 @@
               "label": "Armor Growth",
               "before": "4.95 per level",
               "after": "4.5 per level",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -281,7 +281,7 @@
   "items": [
     {
       "name": "Experimental Hexplate",
-      "classification": "buff",
+      "classification": "adjustment",
       "changes": [
         {
           "kind": "numeric",
@@ -289,14 +289,26 @@
           "before": "On ulting, 50% bonus AS and 20% bonus MS for 8 seconds",
           "after": "Ranged: 35% bonus AS and 14% bonus MS for 8 seconds (unchanged for melee)",
           "direction": "neutral"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Heartsteel",
+      "classification": "buff",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Damage To Permanent Health Conversion Rate",
           "before": "8%",
           "after": "10%",
           "direction": "buff"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Statikk Shiv",
+      "classification": "buff",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Attack Damage",
@@ -309,7 +321,7 @@
   ],
   "systems": [
     {
-      "name": "Summon Aery",
+      "name": "Support Adjustments",
       "classification": "system",
       "changes": [
         {
@@ -317,49 +329,73 @@
           "label": "Damage Per Tick, Per Grub",
           "before": "3 / 9 / 12 || 1.5 / 4.5 / 6",
           "after": "4 / 12 / 16 || 2 / 6 / 8",
-          "direction": "buff"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
           "label": "Summoned Voidmite HP",
           "before": "60% of Melee Minion",
           "after": "100% of Melee Minion",
-          "direction": "buff"
-        },
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Summon Aery",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Shielding",
           "before": "30 - 100 (Levels 1 - 18) (+10% bonus AD) (+5% AP)",
           "after": "20 - 100 (Levels 1 - 18) (+10% bonus AD) (+5% AP)",
-          "direction": "nerf"
-        },
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Aftershock",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Armor and MR",
           "before": "35 (+80% bonus)",
           "after": "45 (+75% bonus)",
-          "direction": "buff"
-        },
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Guardian",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Cooldown",
           "before": "90 - 40 (Level 1 - 18)",
           "after": "75 - 40 (Level 1 - 18)",
-          "direction": "buff"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
           "label": "Shield",
           "before": "45 - 180 (+25% AP) (+5% bonus HP)",
           "after": "40 - 150 (+20% AP) (+6% bonus HP)",
-          "direction": "nerf"
-        },
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Dream Maker",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Blue Bubble Damage Reduction",
           "before": "75 - 255 (Level 1 - 18)",
           "after": "50 - 194 (Level 1 - 18)",
-          "direction": "nerf"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
@@ -373,7 +409,7 @@
           "label": "Purple Bubble Damage",
           "before": "50 - 170 (Level 1 - 18)",
           "after": "40 - 160 (Level 1 - 18)",
-          "direction": "nerf"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
@@ -381,7 +417,13 @@
           "before": "Damage triggers on hit, or on certain abilities / items",
           "after": "Damage triggers on next damaging attack or ability, reduced for AoE effects (i.e. Nami E)",
           "direction": "neutral"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Moonstone Renewer",
+      "classification": "system",
+      "changes": [
         {
           "kind": "prose",
           "label": "Change",
@@ -391,7 +433,13 @@
           "kind": "prose",
           "label": "Change",
           "text": "Bounces now prioritize lower health allies"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Imperial Mandate",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Build Path",
@@ -434,21 +482,39 @@
           "kind": "prose",
           "label": "Unique - Command",
           "text": "On immobilizing an enemy champion, mark them as 6% Vulnerable for 4s (Vulnerable enemies take % increased damage)"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Echoes of Helia",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Damage Stored",
           "before": "35%",
           "after": "30%",
           "direction": "nerf"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Locket of the Iron Solari",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Armor and Magic Resist",
           "before": "25",
           "after": "30",
           "direction": "buff"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Knight’s Vow",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Damage Redirection",
@@ -462,7 +528,13 @@
           "before": "10%",
           "after": "12%",
           "direction": "buff"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Zeke’s Convergence",
+      "classification": "system",
+      "changes": [
         {
           "kind": "numeric",
           "label": "Frostfire Tempest",

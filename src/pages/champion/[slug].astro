@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import RouteArrival from "../../components/experience/RouteArrival.astro";
 import TimelineEntry from "../../components/TimelineEntry.astro";
+import SaveChampion from "../../components/experience/SaveChampion.astro";
 import { getAllPatches, getChampionHistory, getChampionMeta, getRoles, getLatestPatch } from "../../lib/data";
 import { assetFor } from "../../lib/investigation";
 
@@ -34,7 +35,7 @@ const journeyUrl = "/?champion=" + encodeURIComponent(championId) + "&beat=subje
         {href:"/pool",label:"Make it personal",detail:"Keep your champion in My Pool"},
       ]}>
       <div slot="identity"><p class="arrival-champion-title">{meta.title}</p><p class="champion-roles">{roles.map((role) => <span>{roleLabels[role]}</span>)}</p></div>
-      <div slot="actions"><a class="route-action" href="#history">Enter the history <span aria-hidden="true">↓</span></a></div>
+      <div slot="actions"><a class="route-action" href="#history">Enter the history <span aria-hidden="true">↓</span></a><SaveChampion id={championId} name={meta.name} /></div>
       <figure slot="figure" class="champion-arrival-art">
         <picture><source media="(max-width:700px)" srcset={artwork.portrait} /><img src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture>
         <figcaption>RIOT GAMES / COMPLETE ORIGINAL SOURCE ARTWORK</figcaption>

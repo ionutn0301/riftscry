@@ -32,8 +32,8 @@ functional promise remains **The patch notes, diffed**.
   presentation changes. All champions in the roster can be selected, including
   those without a recent direct change.
 
-At this refactor the committed data has **173 champions and 16 patches**, from
-**26.1 / 2026-01-07** through **26.16 / 2026-08-11**. These are archive facts,
+At the October 28 refresh the committed data has **173 champions and 21 patches**, from
+**26.1 / 2026-01-07** through **26.21 / 2026-10-20**. These are archive facts,
 not a claim to represent the current live game. Show “latest archived” and its
 date where freshness matters. The scheduled ingestion workflow may propose new
 data by pull request; it does not automatically merge or guarantee a daily update.
@@ -70,6 +70,10 @@ routes provide understandable recovery choices.
 
 The return briefing is grounded in device-local state and real archived records:
 
+- **Kept findings** retain up to 50 exact dated records in `riftscry:kept-findings`
+  on this device, independently of the active champion or interval. The briefing
+  supports removal and restoration of the last removed finding; failed writes
+  show an explicit message rather than claiming the finding was kept.
 - **My Pool** retains `riftscry:pool`, the existing canonical-ID storage contract
   and shared `?champions=` links.
 - **Reviewed baseline** uses `riftscry:last-reviewed-patch`. Only the explicit
@@ -116,9 +120,9 @@ and CSS cross-document transitions enhance native routes. Reader pages share an
 arrival and chapter composition without replacing the existing filter,
 comparison, timeline, or pool logic.
 
-Source implementation is not a claim of tested performance or finished visual
-quality. Dependency installation was rejected by automatic approval review in
-this session; build, type, browser, e2e, and performance verification remain
-outstanding. The current acceptance criteria and test-migration requirements are
-in `DESIGN.md`. Do not call this refactor verified, production-ready, deployed, or
-legally guaranteed until the relevant evidence exists.
+The October 28 revision passes typechecking, production build, and 241 unit/integration
+tests. Browser acceptance is blocked locally: the hosted preview bridge returned
+SANDBOX_NOT_FOUND, and installed Playwright Chromium cannot launch without libnspr4.so.
+New acceptance tests are committed but have not passed here. Visual baselines,
+recordings, deployed mobile performance, and complete motion review remain release
+requirements. See `docs/RELEASE_EVIDENCE.md`; do not treat compile success as visual sign-off.

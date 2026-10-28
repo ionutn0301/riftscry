@@ -145,7 +145,7 @@ test("interval boundaries, invalid input and a quiet champion stay honest", asyn
   await expect(page.locator("[data-history-trace] [data-select-record]")).toHaveCount(1);
   await expect(page.locator("[data-record-before]")).toHaveText("110");
   await expect(page.locator("[data-record-after]")).toHaveText("105");
-  await expect(page.locator("[data-compare-link]")).toHaveAttribute("href", "/compare/26.16/26.15");
+  await expect(page.locator("[data-compare-link]")).toHaveAttribute("href", "/compare/26.16/26.15?champions=Belveth");
   const validUrl = page.url();
   await page.locator("[data-period-older]").selectOption("26.16");
   await expect(page.locator("[data-period-status]")).toHaveAttribute("data-invalid", "true");
@@ -162,7 +162,7 @@ test("interval boundaries, invalid input and a quiet champion stay honest", asyn
 
 test("a failed champion request keeps the last readable perspective and a retry", async ({ page }) => {
   await page.route("**/journey/Azir.json", (route) => route.fulfill({ status: 503, body: "temporarily unavailable" }));
-  await page.goto("/");
+  await page.goto("/?champion=Belveth&older=26.14&newer=26.16");
   await ready(page);
   await page.locator('.quick-perspectives [data-choose-champion="Azir"]').click();
   await ready(page);

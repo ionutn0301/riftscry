@@ -1,5 +1,15 @@
 # RiftScry — cinematic journey refactor
 
+## Current revision — 28 October 2026
+
+Started from fetched main `8320ee96dc2925dd39a8b82f42abdc23aef51d54`, preserving
+subsequent mobile/search fixes. Reproduced the four advancing-archive test failures;
+historical tests now use explicit endpoints. Corrected multi-entity parsing,
+refreshed through official patch 26.21, and added per-patch coverage inventories.
+See `docs/RELEASE_EVIDENCE.md` for current checks and remaining release blockers.
+All earlier sections below are historical evidence, not a claim that this revision
+has passed browser, motion, visual-baseline, or deployed-performance acceptance.
+
 ## Receiving-environment validation — 27 October 2026
 
 The supplied ZIP patch applied cleanly to its exact base, `5f473dd`. Installed with `pnpm install --frozen-lockfile`. Fixed the readonly pool-subscriber type contract and marked the embedded Astro JSON script explicitly inline. The production build and Vitest suite passed. Desktop Chromium acceptance passed all 24 active original tests; additional layout/storage cases passed at 835×833, 1440×900, 1280×720, 390×844, and 844×390. Added a separate mobile Chromium project (without replacing WebKit): its active touch acceptance and all layout/storage cases passed. The existing Windows-only visual baselines remain skipped.

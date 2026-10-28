@@ -23,6 +23,7 @@ export type RawSection = { name: string; summary?: string; blocks: RawBlock[] };
 export type RawPatch = { champions: RawSection[]; items: RawSection[]; systems: RawSection[] };
 export type ParseReport = {
   championCount: number;
+  sourceBlocks: { section: string; headings: string[]; sourceLines: number; parsedLines: number }[];
   arrowLines: number;
   proseLines: number;
   unparsedBlocks: string[];
@@ -97,29 +98,43 @@ function parseBlock(
   const title = block.querySelector("h3.change-title");
 
   if (title) {
-    // Champion-style block: h3 names the section, h4s name ability groups.
-    const name = cleanText(title);
-    const summaryEl = block.querySelector("blockquote");
-    const summary = summaryEl ? cleanText(summaryEl) : undefined;
-
-    const blocks: RawBlock[] = [];
+    // A single wrapper can contain several h3 entities, even with duplicate IDs.
+    const sections: RawSection[] = [];
+    let section: RawSection | null = null;
     let current: RawBlock | null = null;
-    for (const el of block.querySelectorAll("h4, ul")) {
-      if (el.tagName === "H4") {
+    for (const el of block.querySelectorAll("h3.change-title, h4, blockquote, li")) {
+      if (!section && el.tagName === "LI") {
+        section = { name: sectionTitle, blocks: [] };
+        sections.push(section);
+      }
+      if (el.tagName === "H3") {
+        section = { name: cleanText(el), blocks: [] };
+        sections.push(section);
+        current = null;
+      } else if (section && el.tagName === "BLOCKQUOTE") {
+        section.summary ??= cleanText(el);
+      } else if (section && el.tagName === "H4") {
         current = { header: cleanText(el), lines: [] };
-        blocks.push(current);
-      } else {
+        section.blocks.push(current);
+      } else if (section && el.tagName === "LI" && !el.querySelector("li")) {
         if (!current) {
           current = { header: "General", lines: [] };
-          blocks.push(current);
+          section.blocks.push(current);
         }
-        for (const li of el.querySelectorAll("li")) {
-          const line = parseLine(li, report);
-          if (line) current.lines.push(line);
-        }
+        const line = parseLine(el, report);
+        if (line) current.lines.push(line);
       }
     }
-    return [{ name, summary, blocks: blocks.filter((b) => b.lines.length > 0 || blocks.length === 0) }];
+    for (const section of sections) {
+      if (!section.blocks.some((group) => group.lines.length) && /^\[REMOVED\]/i.test(section.name)) {
+        section.blocks.push({ header: "General", lines: [{ label: "Removal", text: section.name }] });
+        report.proseLines += 1;
+      }
+      if (!section.blocks.some((group) => group.lines.length)) {
+        report.unparsedBlocks.push(`${sectionId}: ${section.name} has no structured records; review prose-only source`);
+      }
+    }
+    return sections;
   }
 
   // Item/system-style block: no h3 — each h4 IS a section name
@@ -172,6 +187,7 @@ export function parsePatchHtml(html: string): { raw: RawPatch; report: ParseRepo
   const raw: RawPatch = { champions: [], items: [], systems: [] };
   const report: ParseReport = {
     championCount: 0,
+    sourceBlocks: [],
     arrowLines: 0,
     proseLines: 0,
     unparsedBlocks: [],
@@ -194,7 +210,14 @@ export function parsePatchHtml(html: string): { raw: RawPatch; report: ParseRepo
       report.skippedSections[currentSection] = (report.skippedSections[currentSection] ?? 0) + 1;
       continue;
     }
-    raw[target].push(...parseBlock(el, currentSection, currentTitle, report));
+    const sections = parseBlock(el, currentSection, currentTitle, report);
+    const headings = el.querySelectorAll('h3.change-title').map(cleanText);
+    const sourceLines = el.querySelectorAll('li').filter((li) => !li.querySelector('li') && cleanText(li)).length;
+    const parsedLines = sections.reduce((sum, section) => sum + section.blocks.reduce((n, block) => n + block.lines.length, 0), 0);
+    report.sourceBlocks.push({ section: currentSection, headings, sourceLines, parsedLines });
+    for (const name of headings) if (!sections.some((section) => section.name === name)) report.unparsedBlocks.push(`${currentSection}: missing entity ${name}`);
+    if (sourceLines > parsedLines) report.unparsedBlocks.push(`${currentSection}: ${sourceLines - parsedLines} source lines missing`);
+    raw[target].push(...sections);
   }
 
   report.championCount = raw.champions.length;

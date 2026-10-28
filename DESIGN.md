@@ -1,5 +1,25 @@
 # RiftScry design
 
+## October 28 amendment — current implementation
+
+`docs/CONNECTED_STORYBOARD.md` specifies the connected observation sequence.
+`src/styles/connected.css` now shortens task-route arrivals, reserves a desktop
+navigation lane, raises metadata readability, and replaces history/return
+landscapes with quiet lit planes. Full-page route wipes are removed. The opening
+example derives from a real record in the latest archived patch.
+
+Findings persist across champions and intervals in a bounded device-local collection,
+with removal/restoration in the briefing. Quiet intervals link to the champion’s
+latest archived change without changing the selected dates. Champion pages expose
+a direct pool-save control. Comparisons retain champion/pool context and endpoint
+changes preserve query state. Numerical interpretation is conservative and exact.
+
+Current checks: production build, typecheck, and 241 unit/integration tests passed.
+Rendered review is blocked by preview routing and missing Chromium system libraries;
+see `docs/RELEASE_EVIDENCE.md`. The verification narrative below records the previous
+refactor handoff and is historical, not the current check result. No new visual
+baseline or motion sign-off is claimed.
+
 ## Current direction: a journey through a changing game
 
 This is the active design contract for the complete October 2026 refactor. It

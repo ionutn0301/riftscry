@@ -4,7 +4,7 @@
   "assetVersion": "16.1.1",
   "releaseDate": "2026-01-07",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/",
-  "ingestedAt": "2026-08-21T21:18:46.815Z",
+  "ingestedAt": "2026-10-28T08:22:30.528Z",
   "champions": [
     {
       "championId": "Cassiopeia",
@@ -53,14 +53,14 @@
               "label": "Q Non-Crit Damage",
               "before": "5/10/15/20/25 (+ 95/102.5/110/117.5/125% total AD)",
               "after": "0/5/10/15/20 (+ 110% total AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Q Critical Strike Damage",
               "before": "1.25/1.65x with IE",
               "after": "50% of bonus crit damage: 1.5/1.65x with IE",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -73,14 +73,14 @@
               "label": "R Non-Crit Damage",
               "before": "5/15/25 + 45% total AD",
               "after": "20/40/60 + 30% total AD",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "R Critical Damage",
               "before": "1.75/2.15x with IE",
               "after": "100% of bonus crit damage: 2.0/2.3x with IE",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -131,7 +131,7 @@
               "label": "Duskwave Active Damage",
               "before": "25/31.67/38.33/45/51.67/58.33/65 (+ 56/60/64/68/72/76/80% bonus AD)",
               "after": "20/35/50/65/80/95/110 (+ 10/11/12/13/14/15/16% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -167,7 +167,7 @@
               "label": "Follow-Up Attack Critical Damage",
               "before": "1.2/1.6x with IE",
               "after": "30% of bonus critical strike damage: 1.3/1.39x with IE",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -175,7 +175,7 @@
     },
     {
       "championId": "Caitlyn",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Caitlyn's top-end Headshot damage has gotten out of hand and with the value of critical strikes going up it's about to get even stronger, so we're taking a heavy swing to Headshot's top end.",
       "abilities": [
         {
@@ -187,7 +187,7 @@
               "label": "Crit Scaling",
               "before": "0-148.75/182.75% total AD",
               "after": "100%*Bonus Crit Damage (0-100/130% total AD)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -200,7 +200,7 @@
               "label": "Crit Scaling",
               "before": "Up to 1.5x",
               "after": "30% of bonus critical strike damage: up to 1.3/1.39x with IE",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -208,7 +208,7 @@
     },
     {
       "championId": "Tristana",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Tristana's E is one of the sharpest-scaling abilities in the game, and considering her late game is already poised to be great with a strong attack speed steroid, long range, and lots of crit damage,…",
       "abilities": [
         {
@@ -227,7 +227,7 @@
               "label": "Crit Scaling",
               "before": "100%: Up to 1.75/2.15x with IE",
               "after": "40% of critical strike damage: 1.40/1.52x with IE",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -235,7 +235,7 @@
     },
     {
       "championId": "Nilah",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Nilah's in an interesting place where her Q didn't scale with Infinity Edge, so unlocking that avenue marks a small power increase on top of her basic attacks getting better, so we sought to find…",
       "abilities": [
         {
@@ -260,14 +260,14 @@
               "label": "Active Damage",
               "before": "5/10/15/20/25 (+ 90/95/100/105/110% total AD)",
               "after": "0/10/20/30/40 (+ 100% total AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Crit Scaling",
               "before": "Up to 2x",
               "after": "80% of bonus crit damage: 1.8/2.04x",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -320,7 +320,7 @@
               "label": "Maximum Flat Damage",
               "before": "250/400/550 (+ 130% bonus AD)",
               "after": "200/350/500 (+ 120% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -328,7 +328,7 @@
     },
     {
       "championId": "Jhin",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Jhin won't behave any differently next season as we want to avoid letting his guaranteed crit fourth shot do too much damage.",
       "abilities": [
         {
@@ -340,7 +340,7 @@
               "label": "Multiplicative Crit Damage Mod",
               "before": "86%",
               "after": "75% (1.505x ⇒ 1.5x)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -348,7 +348,7 @@
     },
     {
       "championId": "Sivir",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "As Sivir's going to gain a lot of power from stronger Ricochet crits, we're reducing her Q's scaling.",
       "abilities": [
         {
@@ -367,7 +367,7 @@
               "label": "Crit Scaling",
               "before": "Up to 1.5x",
               "after": "40%: 1.4/1.52x",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -394,7 +394,7 @@
               "label": "Through-Wall Damage",
               "before": "1.75x, 2.15x with IE",
               "after": "75% of bonus critical strike damage: 1.75/1.975x",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -417,14 +417,14 @@
               "label": "Damage",
               "before": "20/22/24/26/28 (+12% bonus AD)",
               "after": "17/19/21/23/25 (+ 10% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Crit Scaling",
               "before": "Up to 1.85x every hit",
               "after": "100% of bonus crit damage on crit: 2.0/2.3x",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -437,7 +437,7 @@
               "label": "Active Damage",
               "before": "200/300/400 (+ 100% bonus AD)",
               "after": "150/250/350 (+ 100% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -445,7 +445,7 @@
     },
     {
       "championId": "Lucian",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Lucian's builds are pretty sensible and as a spell-focused ADC, but we want to make sure his spell scaling is good.",
       "abilities": [
         {
@@ -477,7 +477,7 @@
               "label": "Damage",
               "before": "85/115/145/175/205 (+ 60/75/90/105/120% bonus AD)",
               "after": "80/115/150/185/220 (+ 100% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -490,7 +490,7 @@
               "label": "R Extra Bolts from Crit Chance",
               "before": "Up to 25",
               "after": "100% of bonus crit damage: Up to 22/28",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -505,7 +505,7 @@
     },
     {
       "championId": "Xayah",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "We're updating Xayah's E to care about crit damage and adjusting her E's overall damage profile to be more reliable and less snowbally.",
       "abilities": [
         {
@@ -517,14 +517,14 @@
               "label": "Damage",
               "before": "55/65/75/85/95 (+ 60% bonus AD)",
               "after": "50/65/80/95/110 (+ 40% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Crit Scaling",
               "before": "Up to 75%",
               "after": "Up to 50% of bonus crit damage: 1.5/1.65x",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -590,7 +590,7 @@
               "label": "Damage",
               "before": "175/350/525 (+ 150% bonus AD)",
               "after": "160/320/480 (+ 120% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -610,7 +610,7 @@
               "label": "P second shot crit damage",
               "before": "30% of bonus crit damage (1.225/1.345x)",
               "after": "100% of bonus crit damage: 2/2.3x",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -628,7 +628,7 @@
               "label": "Damage",
               "before": "5/25/45/65/85 (+ 80% total AD)",
               "after": "45/75/105/135/165 (+ 70% bonus AD)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -641,14 +641,14 @@
               "label": "Damage",
               "before": "15/30/45/60/75 (+ 15% total AD)",
               "after": "8/16/24/32/40 (+ 25% total AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Crit Scaling",
               "before": "1.575/1.935x",
               "after": "50% of bonus crit damage: 1.5/1.65x",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -666,7 +666,7 @@
               "label": "Crit Scaling",
               "before": "1.5/1.7x",
               "after": "30% of bonus crit damage: 1.3/1.42x",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -674,7 +674,7 @@
     },
     {
       "championId": "Gangplank",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Gangplank is one of two champions (alongside Smolder) who we think is going to gain extra power due to Essence Reaver once again building from Sheen.",
       "abilities": [
         {
@@ -699,7 +699,7 @@
               "label": "Bonus Champion Damage",
               "before": "75 / 105 / 135 / 165 / 195",
               "after": "75 / 95 / 115 / 135 / 155",
-              "direction": "neutral"
+              "direction": "nerf"
             },
             {
               "kind": "prose",
@@ -717,7 +717,7 @@
     },
     {
       "championId": "Yone",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Yone won't be much different this year.",
       "abilities": [
         {
@@ -729,7 +729,7 @@
               "label": "Crit Damage",
               "before": "1.75/2.15x",
               "after": "90% (1.8/2.07x)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -737,7 +737,7 @@
     },
     {
       "championId": "Yasuo",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Yasuo won't be much different this year.",
       "abilities": [
         {
@@ -749,7 +749,7 @@
               "label": "Crit Damage",
               "before": "1.75/2.15x",
               "after": "90% (1.8/2.07x)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -769,7 +769,7 @@
               "label": "Active Critical Damage",
               "before": "1.75/2.15x",
               "after": "50% of bonus crit damage (1.5/1.65x)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -782,14 +782,14 @@
               "label": "Damage",
               "before": "80% total AD (+ 25% AP)",
               "after": "20 / 30 / 40 (+60% Total AD) (+ 25% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Crit Scaling",
               "before": "1.2/1.28x",
               "after": "30% of bonus crit damage (1.3/1.39x)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -797,7 +797,7 @@
     },
     {
       "championId": "Tryndamere",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Tryndamere is getting some real gameplay updates with this patch and some very real nerfs due to how much critical strike chance he normally has.",
       "abilities": [
         {
@@ -809,14 +809,14 @@
               "label": "Bonus AD",
               "before": "5 / 10 / 15 / 20 / 25 (+ up to 15 / 25 / 35 / 45 / 55 based on missing health)",
               "after": "0 (+20 / 35 / 50 / 65 / 80 based on missing health)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Maximum Bonus AD",
               "before": "Max at 0% remaining HP",
               "after": "Max at 10% remaining HP",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -844,7 +844,7 @@
               "label": "Slow",
               "before": "30 / 37.5 / 45 / 52.5 / 60%",
               "after": "30 / 35 / 40 / 45 / 50%",
-              "direction": "neutral"
+              "direction": "nerf"
             },
             {
               "kind": "prose",
@@ -862,7 +862,7 @@
               "label": "Damage",
               "before": "75 / 105 / 135 / 165 / 195 (+ 130% Bonus AD)",
               "after": "70 / 105 / 140 / 175 / 210 (+ 100% Bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -963,7 +963,7 @@
     },
     {
       "championId": "Smolder",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Smolder, like Gangplank, stands to gain a lot of power from Essence Reaver's changes in this patch so we're taking a swing at how strongly his Q scales with critical strike purchases.",
       "abilities": [
         {
@@ -975,7 +975,7 @@
               "label": "Crit Scaling",
               "before": "Up to 1.75/2.15x",
               "after": "50% of bonus crit damage (Up to 1.5/1.65x) (also affects passive Q stacks)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -995,21 +995,21 @@
               "label": "Missing Health Crit",
               "before": "1.5/1.9x if target is below 25-75% (based on crit chance) Health",
               "after": "50% of bonus crit chance and crit damage always (up to 1.5/1.65x)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Pounce Damage",
               "before": "1.75/2.15x on crit",
               "after": "50% of bonus crit chance and crit damage always (up to 1.5/1.65x)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Monster Damage Cap",
               "before": "300 including base damage and bonus AD ratio",
               "after": "200 to only the %HP portion (This is a buff in almost all scenarios)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -1017,7 +1017,7 @@
     },
     {
       "championId": "Corki",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Corki isn't particularly strong at the moment, so while this is a nerf on paper, we expect Corki will be overall stronger at the start of the season.",
       "abilities": [
         {
@@ -1029,7 +1029,7 @@
               "label": "Damage per second",
               "before": "40 / 55 / 70 / 85 / 100 (+40% bonus AD) (+ 30% AP)",
               "after": "30 / 45 / 60 / 75 / 90 (+40% bonus AD) (+ 30% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -1096,14 +1096,14 @@
               "label": "Crit Damage",
               "before": "45% of bonus (33.75/51.75%)",
               "after": "35% of bonus (35/45.5%)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Total Damage on Crit",
               "before": "250-357% total AD",
               "after": "252-360% total AD",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -1111,7 +1111,7 @@
     },
     {
       "championId": "Quinn",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "As Quinn builds a decent amount of crit and that crit manifests in stronger autos and more passive procs, we're compensation nerfing those same auto-reliant passive procs.",
       "abilities": [
         {
@@ -1123,7 +1123,7 @@
               "label": "Damage",
               "before": "10-95 (based on level) (+ 16-50% (based on level) total AD)",
               "after": "15-120 (based on level) (+ 40% bonus AD)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -1131,7 +1131,7 @@
     },
     {
       "championId": "Senna",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Like Jhin, Yasuo, and Yone, Senna's guaranteed critical strikes cannot sustain a 2x modifier, so we're lowering her base crit damage down to a value similar to last year.",
       "abilities": [
         {
@@ -1143,7 +1143,7 @@
               "label": "Crit Damage",
               "before": "100% of total crit damage (1.75/2.15x)",
               "after": "90% of total (1.8/2.07x)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -1151,7 +1151,7 @@
     },
     {
       "championId": "Garen",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Critical strike chance on Garen is pretty good since both his basic attacks and Judgment are improved by it.",
       "abilities": [
         {
@@ -1163,7 +1163,7 @@
               "label": "E Crit Ratio",
               "before": "80% of total (1.4/1.72x)",
               "after": "30% of bonus (1.3/1.39x)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -1227,7 +1227,7 @@
               "label": "% Current HP Crit Scaling",
               "before": "100% of total (1.75/2.15x)",
               "after": "50% of bonus (1.5/1.65x)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -1241,7 +1241,7 @@
               "label": "Active Crit Mod",
               "before": "100% of total (Up to 1.75/2.15x)",
               "after": "50% of bonus (Up to 1.5/1.65x)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -1254,7 +1254,7 @@
               "label": "Crit Scaling",
               "before": "Up to 2x",
               "after": "70% of bonus (Up to 1.7/1.91x)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -1274,14 +1274,14 @@
               "label": "Monster Damage Cap",
               "before": "75/100/125/150/175",
               "after": "65/85/105/125/145 (+ 90% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Maximum Damage to Monsters",
               "before": "115/170/225/280/335",
               "after": "105155/205/255/305 (+ 90% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -1423,7 +1423,7 @@
           "label": "Smite damage",
           "before": "600/900/1200",
           "after": "600/1000/1400",
-          "direction": "neutral"
+          "direction": "buff"
         },
         {
           "kind": "prose",

@@ -1,0 +1,320 @@
+{
+  "id": "26.2",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-2-notes/",
+  "checkedAt": "2026-10-28T08:22:31.580Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aatrox"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ashe"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Gwen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jayce"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lillia"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Malphite"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Master Yi"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nunu & Willump"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Sivir"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Smolder"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Taliyah"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Varus"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Viego"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zed"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [],
+      "sourceLines": 0,
+      "parsedLines": 0
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Bandlepipes"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Fiendhunter Bolts"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Hexoptics C44"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-wasd",
+      "headings": [],
+      "sourceLines": 3,
+      "parsedLines": 3
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Aatrox",
+        "records": 2
+      },
+      {
+        "name": "Ashe",
+        "records": 1
+      },
+      {
+        "name": "Gwen",
+        "records": 1
+      },
+      {
+        "name": "Jayce",
+        "records": 1
+      },
+      {
+        "name": "Lillia",
+        "records": 2
+      },
+      {
+        "name": "Malphite",
+        "records": 4
+      },
+      {
+        "name": "Master Yi",
+        "records": 2
+      },
+      {
+        "name": "Nunu & Willump",
+        "records": 3
+      },
+      {
+        "name": "Sivir",
+        "records": 2
+      },
+      {
+        "name": "Smolder",
+        "records": 1
+      },
+      {
+        "name": "Taliyah",
+        "records": 2
+      },
+      {
+        "name": "Varus",
+        "records": 2
+      },
+      {
+        "name": "Viego",
+        "records": 3
+      },
+      {
+        "name": "Zed",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Bandlepipes",
+        "records": 2
+      },
+      {
+        "name": "Fiendhunter Bolts",
+        "records": 3
+      },
+      {
+        "name": "Hexoptics C44",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "WASD",
+        "records": 3
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Aatrox",
+        "records": 2
+      },
+      {
+        "id": "Ashe",
+        "records": 1
+      },
+      {
+        "id": "Gwen",
+        "records": 1
+      },
+      {
+        "id": "Jayce",
+        "records": 1
+      },
+      {
+        "id": "Lillia",
+        "records": 2
+      },
+      {
+        "id": "Malphite",
+        "records": 4
+      },
+      {
+        "id": "MasterYi",
+        "records": 2
+      },
+      {
+        "id": "Nunu",
+        "records": 3
+      },
+      {
+        "id": "Sivir",
+        "records": 2
+      },
+      {
+        "id": "Smolder",
+        "records": 1
+      },
+      {
+        "id": "Taliyah",
+        "records": 2
+      },
+      {
+        "id": "Varus",
+        "records": 2
+      },
+      {
+        "id": "Viego",
+        "records": 3
+      },
+      {
+        "id": "Zed",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Bandlepipes",
+        "records": 2
+      },
+      {
+        "name": "Fiendhunter Bolts",
+        "records": 3
+      },
+      {
+        "name": "Hexoptics C44",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "WASD",
+        "records": 3
+      }
+    ]
+  },
+  "exclusions": {
+    "patch-thoughts-on-how-26.1-landed": 1
+  },
+  "overrides": null,
+  "unparsed": []
+}

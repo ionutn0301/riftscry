@@ -4,7 +4,7 @@
   "assetVersion": "16.12.1",
   "releaseDate": "2026-06-09",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-12-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.334Z",
+  "ingestedAt": "2026-10-28T08:23:58.055Z",
   "champions": [
     {
       "championId": "Aatrox",
@@ -40,7 +40,7 @@
               "label": "Base Damage Per Snip",
               "before": "10/13.5/17/20.5/24",
               "after": "10/14/18/22/26",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         },
@@ -133,7 +133,7 @@
               "label": "Target Max Health Damage",
               "before": "3.5% minimum damage / 7% maximum damage",
               "after": "4% minimum damage / 8% maximum damage",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -166,7 +166,7 @@
               "label": "Damage",
               "before": "65 / 95 / 125 / 155 / 185 (+95% bonus AD)",
               "after": "60 / 90 / 120 / 150 / 180 (+90% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -179,7 +179,7 @@
               "label": "Damage",
               "before": "65 / 95 / 125 / 155 / 185 (+95% bonus AD)",
               "after": "60 / 90 / 120 / 150 / 180 (+90% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -187,7 +187,7 @@
     },
     {
       "championId": "Nocturne",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Nocturne has been in quite a strong spot for a while, especially in the higher echelons of play.",
       "abilities": [
         {
@@ -199,7 +199,7 @@
               "label": "Damage",
               "before": "65 / 110 / 155 / 200 / 245",
               "after": "65 / 105 / 145 / 185 / 225",
-              "direction": "neutral"
+              "direction": "nerf"
             }
           ]
         }
@@ -245,7 +245,7 @@
               "label": "Damage",
               "before": "250/400/550 (+95% AP)",
               "after": "225/350/475 (+110% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -338,7 +338,7 @@
               "label": "Damage",
               "before": "80-220 (+65% AP)",
               "after": "90-230 (+70% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -391,14 +391,14 @@
               "label": "On Non-Champ Kill AD and AP",
               "before": "10% of his Total AS",
               "after": "11% of his Total AS",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "On Champ Kill AD and AP",
               "before": "25% of his Total AS",
               "after": "33% of his Total AS",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -431,7 +431,7 @@
               "label": "On-Hit Damage",
               "before": "8 / 17 / 26 / 35 / 44 (+15% bonus AD) (+25% AP)",
               "after": "4 / 13 / 22 / 31 / 40 (+15% bonus AD) (+25% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -451,7 +451,7 @@
               "label": "Healing",
               "before": "3 / 4 / 5% Max HP (+45 / 55 / 80% AP)",
               "after": "2 / 3.5 / 5% Max HP (+40 / 50 / 70% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -528,7 +528,7 @@
           "label": "Max Health Shield",
           "before": "30% for 30 seconds",
           "after": "35% for 10 seconds",
-          "direction": "buff"
+          "direction": "neutral"
         }
       ]
     }

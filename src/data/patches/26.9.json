@@ -4,7 +4,7 @@
   "assetVersion": "16.9.1",
   "releaseDate": "2026-04-28",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-9-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.297Z",
+  "ingestedAt": "2026-10-28T08:23:56.969Z",
   "champions": [
     {
       "championId": "Ambessa",
@@ -48,7 +48,7 @@
     },
     {
       "championId": "Ezreal",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "We want to bring back some playstyles that have been lost to the sands of time.",
       "abilities": [
         {
@@ -60,7 +60,7 @@
               "label": "AP Ratio",
               "before": "15% AP",
               "after": "40% AP",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -73,7 +73,7 @@
               "label": "AP Ratio",
               "before": "70 - 90%",
               "after": "90%",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -93,7 +93,7 @@
               "label": "Damage To Minions / Non-Epic Monsters",
               "before": "175 / 275 / 375 (+50% bonus AD) (+45% AP)",
               "after": "150 / 225 / 300 (+100% bonus AD) (+110% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -233,7 +233,7 @@
               "label": "Shield",
               "before": "60 / 80 / 100 / 120 / 140 (+ 5% max health)",
               "after": "75 / 95 / 115 / 135 / 155 (+12% bonus health)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -247,7 +247,7 @@
               "label": "Dragon Form Heal",
               "before": "75 – 214.71 (based on level) (+ 10% bonus AD) (+ 5% AP), increased by 0% – 100% (based on her missing health) for a maximum heal of 150 – 429.41 (based on level) (+ 20% bonus AD) (+ 10% AP)",
               "after": "60 - 100 + 4-8% missing health (based on level)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -265,14 +265,14 @@
               "label": "Cooldown",
               "before": "12 / 11.5 / 11 / 10.5 / 10",
               "after": "12 / 11 / 10 / 9 / 8",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "numeric",
               "label": "Magic Damage",
               "before": "80 / 110 / 140 / 170 / 200 (+ 35% bonus AD) (+ 70% AP)",
               "after": "50 / 65 / 80 / 95 / 110 (+ 60 / 65 / 70 / 75 / 80% AP) + 5% Target Max Health",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -286,7 +286,7 @@
               "label": "Slow",
               "before": "20 / 25 / 30 / 35 / 40%",
               "after": "30%",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -294,7 +294,7 @@
     },
     {
       "championId": "TahmKench",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Last patch's adjustment last patch ended up a very slight nerf (less than .5%) for both top and support.",
       "abilities": [
         {
@@ -306,7 +306,7 @@
               "label": "Grey Health to HP conversion",
               "before": "45 - 100% (Level 1 - 18)",
               "after": "60 - 100% (Level 1 - 18)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -319,7 +319,7 @@
               "label": "Move Speed On Ally Devour",
               "before": "40% for 3 seconds",
               "after": "60% for 3 seconds",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -377,7 +377,7 @@
     },
     {
       "championId": "Udyr",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Currently, we feel that Udyr's AD Q builds are extremely one note—which makes sense when you look at their scaling.",
       "abilities": [
         {
@@ -396,7 +396,7 @@
               "label": "Bonus Damage On-Hit for 4 seconds",
               "before": "5 / 13 / 21 / 29 / 37 / 45 (+25% bonus AD)",
               "after": "6 / 12 / 18 / 24 / 30 / 36 (+20% bonus AD) (+1 - 2% bonus HP)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -455,7 +455,7 @@
     },
     {
       "championId": "Warwick",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "Our favorite wolf-boy Warwick has been struggling to find his place over game time.",
       "abilities": [
         {
@@ -467,7 +467,7 @@
               "label": "On-hit Damage",
               "before": "6 / 16 / 26 / 36 / 46",
               "after": "6 / 18.25 / 30.5 / 42.75 / 55",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -475,7 +475,7 @@
     },
     {
       "championId": "XinZhao",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Our fourth lost playstyle is centered around Xin Zhao—particularly attack speed and AP Xin Zhao.",
       "abilities": [
         {
@@ -520,7 +520,7 @@
               "label": "Attack Speed Buff",
               "before": "40 / 50 / 60 / 70 / 80% for 5 seconds",
               "after": "38 / 46 / 54 / 62 / 70% (+1% per 5% permanent AS) (+10% per 100 AP) for 5 seconds",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -547,7 +547,7 @@
               "label": "Execute threshold",
               "before": "60 / 82.5 / 105 / 127.5 / 150 (+ 18% AP)",
               "after": "70 / 92.5 / 115 / 137.5 / 160 (+ 20% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -560,7 +560,7 @@
               "label": "Damage",
               "before": "15 / 17 / 19 / 21 / 23 (+ 104 / 108 / 112 / 116 / 120% AD)",
               "after": "21 / 24 / 27 / 30 / 33 (+ 102 / 104 / 106 / 108 / 110% AD)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -605,7 +605,7 @@
               "label": "Bonus Magic Damage",
               "before": "17 / 19 / 21 / 23 / 25 (+ 10% bonus AD) (+ 20% AP)",
               "after": "22 / 24 / 26 / 28 / 30 (+ 20% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -666,14 +666,14 @@
               "label": "Damage Per Bolt",
               "before": "20 / 30 / 40 / 50 / 60 (+ 15% AP)",
               "after": "15 / 25 / 35 / 45 / 55 (+ 10% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Total Damage",
               "before": "60 / 90 / 120 / 150 / 180 (+ 45% AP)",
               "after": "45 / 75 / 105 / 135 / 165 (+ 30% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -837,7 +837,7 @@
     },
     {
       "name": "Hubris",
-      "classification": "adjustment",
+      "classification": "nerf",
       "changes": [
         {
           "kind": "numeric",
@@ -851,21 +851,27 @@
           "label": "Passive AD per Stack",
           "before": "+2",
           "after": "+3",
-          "direction": "buff"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
           "label": "Bonus AD",
           "before": "+15",
           "after": "+12",
-          "direction": "nerf"
+          "direction": "neutral"
         }
       ]
     },
     {
       "name": "[REMOVED] Opportunity",
       "classification": "adjustment",
-      "changes": []
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Removal",
+          "text": "[REMOVED] Opportunity"
+        }
+      ]
     },
     {
       "name": "Staff of Flowing Water",
@@ -931,11 +937,17 @@
     {
       "name": "[REMOVED] Trailblazer",
       "classification": "adjustment",
-      "changes": []
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Removal",
+          "text": "[REMOVED] Trailblazer"
+        }
+      ]
     },
     {
       "name": "[REWORKED] Voltaic Cyclosword",
-      "classification": "adjustment",
+      "classification": "nerf",
       "changes": [
         {
           "kind": "prose",
@@ -952,7 +964,7 @@
           "label": "Cost",
           "before": "3000g",
           "after": "2900g",
-          "direction": "buff"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
@@ -979,7 +991,13 @@
     {
       "name": "[REMOVED] Phase Rush",
       "classification": "system",
-      "changes": []
+      "changes": [
+        {
+          "kind": "prose",
+          "label": "Removal",
+          "text": "[REMOVED] Phase Rush"
+        }
+      ]
     },
     {
       "name": "[NEW] Stormraider's Surge",
@@ -1021,7 +1039,7 @@
           "label": "Damage",
           "before": "30 - 130 (based on level) + 10% bonus AD + 5% AP",
           "after": "15 - 100 (based on level) + 10% bonus AD + 5% AP",
-          "direction": "nerf"
+          "direction": "neutral"
         }
       ]
     },
@@ -1034,7 +1052,7 @@
           "label": "Attack Speed",
           "before": "[160% Melee || 80% Ranged] for 3 attacks, increased by +1 attack if you cast an ability that resets your auto attack",
           "after": "[120% Melee || 60% Ranged] for 3 attacks, increased by +1 attack if you cast an ability that resets your auto attack up to +2 attacks",
-          "direction": "nerf"
+          "direction": "neutral"
         },
         {
           "kind": "prose",

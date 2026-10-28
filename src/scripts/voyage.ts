@@ -2,6 +2,7 @@ import type { JourneyModel, JourneyIdentity } from '../lib/voyage-data';
 import { voyagePeriod, voyageFields, voyageSelection, voyageConnection, recordText, normalizeChampionName } from '../lib/voyage-state';
 import { $pool, togglePool, inPool } from '../lib/pool';
 import { rememberReading } from '../lib/return-briefing';
+import { readFindings, writeFindings, FINDINGS_LIMIT } from '../lib/kept-findings';
 
 const voyage = document.querySelector<HTMLElement>('[data-voyage]');
 const initialData = document.querySelector<HTMLScriptElement>('#voyage-initial-data');
@@ -115,6 +116,10 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     setHidden('[data-record-unit]', record?.change.kind !== 'numeric' || !record.change.unit);
     if (!record) {
       delete recordArticle.dataset.recordId;
+      const last = model.records.at(-1);
+      const recovery = query<HTMLAnchorElement>('[data-historical-recovery]');
+      recovery.hidden = !last;
+      if (last) { recovery.href = '/patch/' + last.patch + '#' + model.identity.id.toLowerCase(); recovery.textContent = `Open latest archived change · ${last.date} · Patch ${last.patch} ↗`; }
       const explanation = query('[data-record-quiet] p');
       explanation.textContent = model.records.length
         ? `No direct record for ${model.identity.name} in (${older}, ${newer}]. Choose a wider interval below or open the complete champion history. Items, systems, and other champions can still affect the game.`
@@ -183,7 +188,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       container.append(button);
     }
     renderTraceReading();
-    setHref('[data-compare-link]', '/compare/' + newer + '/' + older);
+    setHref('[data-compare-link]', '/compare/' + newer + '/' + older + '?champions=' + model.identity.id);
     olderInput.value = older;
     newerInput.value = newer;
     query('[data-period-status]').dataset.invalid = 'false';
@@ -208,7 +213,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
   function renderFindings() {
     const list = query('[data-findings-list]');
     list.replaceChildren();
-    const explored = period.records.filter((record) => seen.has(record.id));
+    const explored = model.records.filter((record) => seen.has(record.id));
     setHidden('[data-journey-findings]', explored.length === 0);
     for (const record of explored) {
       const item = document.createElement('li');
@@ -244,7 +249,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     newer = requestedNewer;
     period = nextPeriod;
     selected = voyageSelection(period.records, field || selected?.field, event);
-    seen = new Set([...seen].filter((id) => period.records.some((record) => record.id === id)));
+    // Kept records belong to the collection, not the current interval.
     renderFields();
     renderRecord();
     renderHistory();
@@ -351,7 +356,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       if (request.signal.aborted) return;
       const changedChampion = model.identity.id !== next.identity.id;
       model = next;
-      if (changedChampion) seen.clear();
+      if (changedChampion) seen = new Set(readFindings().map((finding) => finding.id));
       const requestedOlder = options.older ?? older;
       const requestedNewer = options.newer ?? newer;
       const requestedPeriod = voyagePeriod(model, requestedOlder, requestedNewer);
@@ -359,7 +364,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       newer = requestedPeriod.valid ? requestedNewer : model.newer;
       period = voyagePeriod(model, older, newer);
       selected = voyageSelection(period.records, options.field ?? '', options.event ?? '');
-      if (options.seen !== undefined) seen = new Set(options.seen.split('|').filter((id) => period.records.some((record) => record.id === id)));
+      if (options.seen !== undefined) seen = new Set([...readFindings().map((finding) => finding.id), ...options.seen.split('|').filter((id) => model.records.some((record) => record.id === id))]);
       renderAll();
       if (!requestedPeriod.valid) {
         query('[data-period-status]').dataset.invalid = 'true';
@@ -429,12 +434,17 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       return;
     }
     if (target?.closest('[data-focus-record], [data-keep-trace]') && selected) {
-      if (seen.has(selected.id)) seen.delete(selected.id);
+      const collection = readFindings();
+      const removing = seen.has(selected.id);
+      if (!removing && collection.length >= FINDINGS_LIMIT) { setText('[data-findings-status]', 'Your collection holds 50 findings. Remove one in your briefing before keeping another.'); return; }
+      const next = removing ? collection.filter((finding) => finding.id !== selected!.id) : [...collection.filter((finding) => finding.id !== selected!.id), { id: selected.id, champion: model.identity.id, name: model.identity.name, patch: selected.patch, date: selected.date, label: selected.change.label, text: recordText(selected), href: '/patch/' + selected.patch + '#' + model.identity.id.toLowerCase() }];
+      if (!writeFindings(next)) { setText('[data-findings-status]', 'Device storage is unavailable. This finding was not saved; keep the record URL instead.'); return; }
+      if (removing) seen.delete(selected.id);
       else seen.add(selected.id);
       focused = seen.has(selected.id);
       recordArticle.classList.toggle('is-focused', focused);
       updateFindingControls();
-      setText('[data-findings-status]', `${selected.change.label}, patch ${selected.patch}: ${focused ? 'kept for the end of your journey' : 'removed from your collected findings'}.`);
+      setText('[data-findings-status]', `${selected.change.label}, patch ${selected.patch}: ${focused ? 'saved on this device in Your briefing' : 'removed from your collected findings'}.`);
       renderFindings();
       updateUrl('replace');
       rememberPerspective();

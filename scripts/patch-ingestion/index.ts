@@ -56,7 +56,7 @@ async function ingestPatch(id: string, versions: string[]): Promise<boolean> {
   for (const candidate of notesUrlCandidatesFor(id)) {
     const slug = candidate.split("/").filter(Boolean).pop()!;
     try {
-      html = await fetchWithCache(candidate, `${slug}.html`);
+      html = await fetchWithCache(candidate, `${slug}.html`, { maxAgeMs: 0 });
       url = candidate;
       break;
     } catch (err) {
@@ -85,8 +85,26 @@ async function ingestPatch(id: string, versions: string[]): Promise<boolean> {
     loadOverride(id),
   );
 
+  const coverage = {
+    id, sourceUrl: url, checkedAt: patch.ingestedAt, sourceBlocks: report.sourceBlocks,
+    sections: Object.fromEntries(Object.entries(raw).map(([kind, sections]) => [kind, sections.map((section) => ({ name: section.name, records: section.blocks.reduce((total, block) => total + block.lines.length, 0) }))])),
+    normalized: { champions: patch.champions.map((c) => ({ id: c.championId, records: c.abilities.reduce((n, a) => n + a.changes.length, 0) })), items: patch.items.map((i) => ({ name: i.name, records: i.changes.length })), systems: patch.systems.map((s) => ({ name: s.name, records: s.changes.length })) },
+    exclusions: report.skippedSections, overrides: loadOverride(id) ?? null, unparsed: report.unparsedBlocks,
+  };
+  mkdirSync("docs/coverage", { recursive: true });
+  const destination = join(PATCHES_DIR, `${id}.json`);
+  const existing = existsSync(destination) ? JSON.parse(readFileSync(destination, "utf8")) : null;
+  const unchanged = existing && JSON.stringify({ ...existing, ingestedAt: null }) === JSON.stringify({ ...patch, ingestedAt: null });
+  if (unchanged) coverage.checkedAt = existing.ingestedAt;
+  writeFileSync(`docs/coverage/${id}.json`, JSON.stringify(coverage, null, 2) + "\n");
+  const unresolved = report.unparsedBlocks.filter((entry) => {
+    const name = entry.split(": ")[1]?.split(" has no")[0];
+    const override = loadOverride(id);
+    return !override?.replaceChampions?.some((c) => c.championId === championIds[name ?? ""] && c.abilities.some((a) => a.changes.length));
+  });
+  if (unresolved.length) throw new Error(`${id}: incomplete source coverage; publication blocked: ${unresolved.join("; ")}`);
   mkdirSync(PATCHES_DIR, { recursive: true });
-  writeFileSync(join(PATCHES_DIR, `${id}.json`), JSON.stringify(patch, null, 2) + "\n", "utf8");
+  if (!unchanged) writeFileSync(destination, JSON.stringify(patch, null, 2) + "\n", "utf8");
 
   // Coverage report — unknown labels & unparsed blocks must be visible.
   const unknownLabels = new Set<string>();

@@ -4,7 +4,7 @@
   "assetVersion": "16.5.1",
   "releaseDate": "2026-03-03",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-5-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.248Z",
+  "ingestedAt": "2026-10-28T08:22:33.013Z",
   "champions": [
     {
       "championId": "Akali",
@@ -106,7 +106,7 @@
               "label": "Bonus AD",
               "before": "+ 110% (231% isolated bonus)",
               "after": "+ 105% (220.5% isolated bonus)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -194,7 +194,7 @@
     },
     {
       "championId": "Mel",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "Mel’s recent update and follow-up balance work has succeeded in creating more counterplay and thus reducing her frustration and ban rate with a similar win rate to the preceding patches.",
       "abilities": [
         {
@@ -206,7 +206,7 @@
               "label": "Minion Damage Modifier",
               "before": "0.6x",
               "after": "0.5x",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -219,14 +219,14 @@
               "label": "Base Damage per Bolt",
               "before": "5 / 6 / 7 / 8 / 9",
               "after": "5 / 7 / 9 / 11 / 13",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "numeric",
               "label": "Total Q Base Damage",
               "before": "90 / 132 / 176 / 222 / 270",
               "after": "90 / 145 / 200 / 255 / 310",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         },
@@ -423,7 +423,7 @@
               "label": "Bonus physical damage",
               "before": "+140%",
               "after": "+160%",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -443,7 +443,7 @@
               "label": "Wounded bonus",
               "before": "+ 15% per 100 bonus AD",
               "after": "+ 25% per 100 bonus AD",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -486,21 +486,21 @@
     },
     {
       "name": "Locket of the Iron Solari",
-      "classification": "buff",
+      "classification": "adjustment",
       "changes": [
         {
           "kind": "numeric",
           "label": "SHIELD",
           "before": "200 - 360, scaling after level 1",
           "after": "290 - 360, scaling after level 8",
-          "direction": "buff"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
           "label": "Functional Shield Level 8-18",
           "before": "265 - 360",
           "after": "290 - 360",
-          "direction": "buff"
+          "direction": "neutral"
         }
       ]
     }

@@ -1,0 +1,260 @@
+{
+  "id": "26.18",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-18-notes/",
+  "checkedAt": "2026-10-28T08:23:59.517Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Bard"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Cassiopeia"
+      ],
+      "sourceLines": 10,
+      "parsedLines": 10
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ekko"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kassadin"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Master Yi"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nautilus"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Seraphine"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Syndra"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Viego"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zaahen"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zeri"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Guinsoo's Rageblade"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-classic",
+      "headings": [],
+      "sourceLines": 34,
+      "parsedLines": 34
+    },
+    {
+      "section": "patch-classic",
+      "headings": [],
+      "sourceLines": 0,
+      "parsedLines": 0
+    },
+    {
+      "section": "patch-classic",
+      "headings": [],
+      "sourceLines": 7,
+      "parsedLines": 7
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Bard",
+        "records": 1
+      },
+      {
+        "name": "Cassiopeia",
+        "records": 10
+      },
+      {
+        "name": "Ekko",
+        "records": 2
+      },
+      {
+        "name": "Kassadin",
+        "records": 2
+      },
+      {
+        "name": "Master Yi",
+        "records": 2
+      },
+      {
+        "name": "Nautilus",
+        "records": 2
+      },
+      {
+        "name": "Seraphine",
+        "records": 1
+      },
+      {
+        "name": "Syndra",
+        "records": 2
+      },
+      {
+        "name": "Viego",
+        "records": 2
+      },
+      {
+        "name": "Zaahen",
+        "records": 2
+      },
+      {
+        "name": "Zeri",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Guinsoo's Rageblade",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Council - Poll 1 Results",
+        "records": 34
+      },
+      {
+        "name": "Systems",
+        "records": 0
+      },
+      {
+        "name": "Bugfixes",
+        "records": 7
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Bard",
+        "records": 1
+      },
+      {
+        "id": "Cassiopeia",
+        "records": 10
+      },
+      {
+        "id": "Ekko",
+        "records": 2
+      },
+      {
+        "id": "Kassadin",
+        "records": 2
+      },
+      {
+        "id": "MasterYi",
+        "records": 2
+      },
+      {
+        "id": "Nautilus",
+        "records": 2
+      },
+      {
+        "id": "Seraphine",
+        "records": 1
+      },
+      {
+        "id": "Syndra",
+        "records": 2
+      },
+      {
+        "id": "Viego",
+        "records": 2
+      },
+      {
+        "id": "Zaahen",
+        "records": 2
+      },
+      {
+        "id": "Zeri",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Guinsoo's Rageblade",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Council - Poll 1 Results",
+        "records": 34
+      },
+      {
+        "name": "Systems",
+        "records": 0
+      },
+      {
+        "name": "Bugfixes",
+        "records": 7
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

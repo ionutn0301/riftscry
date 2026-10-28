@@ -1,0 +1,328 @@
+{
+  "id": "26.13",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-13-notes/",
+  "checkedAt": "2026-10-28T08:23:58.264Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aphelios"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Bard"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Brand"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Cassiopeia"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Draven"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kai'Sa"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "K'Sante"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "LeBlanc"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Olaf"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Poppy"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Qiyana"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rek'Sai"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rumble"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Senna"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Sion"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vex"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zaahen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Doran's Helm"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Imperial Mandate"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Aphelios",
+        "records": 4
+      },
+      {
+        "name": "Bard",
+        "records": 1
+      },
+      {
+        "name": "Brand",
+        "records": 3
+      },
+      {
+        "name": "Cassiopeia",
+        "records": 1
+      },
+      {
+        "name": "Draven",
+        "records": 2
+      },
+      {
+        "name": "Kai'Sa",
+        "records": 2
+      },
+      {
+        "name": "K'Sante",
+        "records": 1
+      },
+      {
+        "name": "LeBlanc",
+        "records": 3
+      },
+      {
+        "name": "Olaf",
+        "records": 1
+      },
+      {
+        "name": "Poppy",
+        "records": 1
+      },
+      {
+        "name": "Qiyana",
+        "records": 1
+      },
+      {
+        "name": "Rek'Sai",
+        "records": 2
+      },
+      {
+        "name": "Rumble",
+        "records": 1
+      },
+      {
+        "name": "Senna",
+        "records": 4
+      },
+      {
+        "name": "Sion",
+        "records": 2
+      },
+      {
+        "name": "Vex",
+        "records": 2
+      },
+      {
+        "name": "Zaahen",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Doran's Helm",
+        "records": 2
+      },
+      {
+        "name": "Imperial Mandate",
+        "records": 4
+      }
+    ],
+    "systems": []
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Aphelios",
+        "records": 4
+      },
+      {
+        "id": "Bard",
+        "records": 1
+      },
+      {
+        "id": "Brand",
+        "records": 3
+      },
+      {
+        "id": "Cassiopeia",
+        "records": 1
+      },
+      {
+        "id": "Draven",
+        "records": 2
+      },
+      {
+        "id": "Kaisa",
+        "records": 2
+      },
+      {
+        "id": "KSante",
+        "records": 1
+      },
+      {
+        "id": "Leblanc",
+        "records": 3
+      },
+      {
+        "id": "Olaf",
+        "records": 1
+      },
+      {
+        "id": "Poppy",
+        "records": 1
+      },
+      {
+        "id": "Qiyana",
+        "records": 1
+      },
+      {
+        "id": "RekSai",
+        "records": 2
+      },
+      {
+        "id": "Rumble",
+        "records": 1
+      },
+      {
+        "id": "Senna",
+        "records": 4
+      },
+      {
+        "id": "Sion",
+        "records": 2
+      },
+      {
+        "id": "Vex",
+        "records": 2
+      },
+      {
+        "id": "Zaahen",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Doran's Helm",
+        "records": 2
+      },
+      {
+        "name": "Imperial Mandate",
+        "records": 4
+      }
+    ],
+    "systems": []
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

@@ -1,0 +1,280 @@
+{
+  "id": "26.17",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-17-notes/",
+  "checkedAt": "2026-10-28T08:23:59.350Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aurelion Sol"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Cho'Gath"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Graves"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Irelia"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "LeBlanc"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nasus"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nocturne"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Qiyana"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Thresh"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Trundle"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vayne"
+      ],
+      "sourceLines": 6,
+      "parsedLines": 6
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xerath"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yasuo"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yone"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Stormrazor"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Sundered Sky"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Aurelion Sol",
+        "records": 2
+      },
+      {
+        "name": "Cho'Gath",
+        "records": 1
+      },
+      {
+        "name": "Graves",
+        "records": 2
+      },
+      {
+        "name": "Irelia",
+        "records": 3
+      },
+      {
+        "name": "LeBlanc",
+        "records": 4
+      },
+      {
+        "name": "Nasus",
+        "records": 1
+      },
+      {
+        "name": "Nocturne",
+        "records": 2
+      },
+      {
+        "name": "Qiyana",
+        "records": 2
+      },
+      {
+        "name": "Thresh",
+        "records": 1
+      },
+      {
+        "name": "Trundle",
+        "records": 1
+      },
+      {
+        "name": "Vayne",
+        "records": 6
+      },
+      {
+        "name": "Xerath",
+        "records": 2
+      },
+      {
+        "name": "Yasuo",
+        "records": 1
+      },
+      {
+        "name": "Yone",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Stormrazor",
+        "records": 1
+      },
+      {
+        "name": "Sundered Sky",
+        "records": 2
+      }
+    ],
+    "systems": []
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "AurelionSol",
+        "records": 2
+      },
+      {
+        "id": "Chogath",
+        "records": 1
+      },
+      {
+        "id": "Graves",
+        "records": 2
+      },
+      {
+        "id": "Irelia",
+        "records": 3
+      },
+      {
+        "id": "Leblanc",
+        "records": 4
+      },
+      {
+        "id": "Nasus",
+        "records": 1
+      },
+      {
+        "id": "Nocturne",
+        "records": 2
+      },
+      {
+        "id": "Qiyana",
+        "records": 2
+      },
+      {
+        "id": "Thresh",
+        "records": 1
+      },
+      {
+        "id": "Trundle",
+        "records": 1
+      },
+      {
+        "id": "Vayne",
+        "records": 6
+      },
+      {
+        "id": "Xerath",
+        "records": 2
+      },
+      {
+        "id": "Yasuo",
+        "records": 1
+      },
+      {
+        "id": "Yone",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Stormrazor",
+        "records": 1
+      },
+      {
+        "name": "Sundered Sky",
+        "records": 2
+      }
+    ],
+    "systems": []
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

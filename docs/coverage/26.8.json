@@ -1,0 +1,182 @@
+{
+  "id": "26.8",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-8-notes/",
+  "checkedAt": "2026-10-28T08:23:15.713Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Dr. Mundo"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Hwei"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Karma"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lillia"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lucian"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mel"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tahm Kench"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yuumi"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zilean"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zyra"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Dr. Mundo",
+        "records": 2
+      },
+      {
+        "name": "Hwei",
+        "records": 3
+      },
+      {
+        "name": "Karma",
+        "records": 3
+      },
+      {
+        "name": "Lillia",
+        "records": 1
+      },
+      {
+        "name": "Lucian",
+        "records": 2
+      },
+      {
+        "name": "Mel",
+        "records": 3
+      },
+      {
+        "name": "Tahm Kench",
+        "records": 1
+      },
+      {
+        "name": "Yuumi",
+        "records": 4
+      },
+      {
+        "name": "Zilean",
+        "records": 1
+      },
+      {
+        "name": "Zyra",
+        "records": 1
+      }
+    ],
+    "items": [],
+    "systems": []
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "DrMundo",
+        "records": 2
+      },
+      {
+        "id": "Hwei",
+        "records": 3
+      },
+      {
+        "id": "Karma",
+        "records": 3
+      },
+      {
+        "id": "Lillia",
+        "records": 1
+      },
+      {
+        "id": "Lucian",
+        "records": 2
+      },
+      {
+        "id": "Mel",
+        "records": 3
+      },
+      {
+        "id": "TahmKench",
+        "records": 1
+      },
+      {
+        "id": "Yuumi",
+        "records": 4
+      },
+      {
+        "id": "Zilean",
+        "records": 1
+      },
+      {
+        "id": "Zyra",
+        "records": 1
+      }
+    ],
+    "items": [],
+    "systems": []
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

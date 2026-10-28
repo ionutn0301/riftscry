@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { $pool } from '../../lib/pool';
+import KeptFindings from './KeptFindings';
 import {
   RETURN_STATE_EVENT, REVIEWED_PATCH_KEY, RESUME_KEY,
   dailyArchiveInsight, deriveReturnBriefing, markPatchReviewed, readReturnState,
@@ -83,8 +84,8 @@ export default function PersonalBriefing({ archive, champions, insights, initial
         </div>}
 
         <div className="return-briefing__actions">
-          <a className="return-briefing__primary" href={latest ? `/patch/${latest.id}${pool.length ? '?pool=1' : ''}` : '/patches'}>{pool.length ? 'Review my pool’s patch' : 'Read the latest archive'} <span aria-hidden="true">↗</span></a>
-          <a className="return-briefing__text-link" href="/pool">{pool.length ? 'Manage My Pool' : 'Build My Pool'} ↗</a>
+          <a className="return-briefing__primary" href={briefing.mode === 'new-records' && latest && device.reviewedPatch ? `/compare/${latest.id}/${device.reviewedPatch}?pool=1` : latest ? `/patch/${latest.id}${pool.length ? '?pool=1' : ''}` : '/patches'}>{briefing.mode === 'new-records' ? 'Review records since my baseline' : pool.length ? 'Review my pool’s patch' : 'Read the latest archive'} <span aria-hidden="true">↗</span></a>
+          <a className="return-briefing__text-link" href="/pool#edit-pool">{pool.length ? 'Manage My Pool' : 'Build My Pool'} ↗</a>
           <a className="return-briefing__text-link" href="/compare">Compare patches ↗</a>
         </div>
 
@@ -120,6 +121,7 @@ export default function PersonalBriefing({ archive, champions, insights, initial
         </article> : <p>Source records will appear here as the archive grows.</p>}
       </section>
     </div>
+    <KeptFindings />
     <footer className="return-briefing__footer">
       <span>{latest ? <>Archive through <time dateTime={latest.date}>{dateLabel(latest.date)}</time> · Patch {latest.id}</> : 'No archived patches loaded.'}</span>
       <span>Saved on this device. No account required.</span>
