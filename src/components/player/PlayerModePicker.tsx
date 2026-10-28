@@ -24,9 +24,9 @@ export default function PlayerModePicker({ value, onChange }: { value: string; o
   return <div className="player-mode-picker">
     <div className="mode-families" role="group" aria-label="Game modes">
       {groups.map(candidate => <button type="button" key={candidate.id} data-mode-category={candidate.id}
-        aria-pressed={candidate.id === group.id} aria-controls="player-view"
+        aria-pressed={candidate.id === group.id} aria-controls="player-view" aria-label={candidate.id === 'all' ? 'All games' : undefined}
         onClick={() => chooseGroup(candidate)}>
-        <PlayerIcon name={candidate.icon} size={19} /><span>{candidate.label}</span>
+        <PlayerIcon name={candidate.icon} size={19} /><span>{candidate.id === 'all' ? <><span className="mode-label-full">All games</span><span className="mode-label-compact">All</span></> : candidate.label}</span>
       </button>)}
     </div>
     {group.queues.length > 0 && <div className="mode-queue-choice">

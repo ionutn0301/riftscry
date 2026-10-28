@@ -32,6 +32,7 @@
 .profile-controls { display: flex; flex-wrap: wrap; align-items: start; gap: 12px; }
 .player-mode-picker { flex: 1; min-width: 0; }
 .mode-families { display: flex; flex-wrap: wrap; gap: 6px; }
+.mode-label-compact { display: none; }
 .profile-hub .mode-families button { background: #102128; color: #acbdb9; border-color: transparent; border-radius: 9px; gap: 8px; padding: 10px 17px; min-height: 44px; font-size: 13px; }
 .profile-hub .mode-families button:hover { background: #163039; color: #e8f3ed; }
 .profile-hub .mode-families button[aria-pressed="true"] { background: #1c3b40; color: #baf4e8; border-color: #6da79c8f; box-shadow: inset 0 1px 0 #abdfd311; }
@@ -133,16 +134,23 @@
   .profile-hub .player-tabs { gap: 20px; margin-bottom: 14px; }
   .profile-hub .player-tabs button { flex: 1; justify-content: center; min-height: 48px; font-size: 12px; gap: 6px; white-space: nowrap; }
   .profile-hub .player-tabs .player-icon { width: 15px; height: 15px; }
-  .player-mode-picker { flex-basis: 100%; }
+  .player-mode-picker { min-width: 0; }
   .mode-families { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
-  .profile-hub .mode-families button { flex-direction: column; gap: 6px; min-height: 58px; padding: 8px 3px; font-size: 11px; }
-  .mode-queue-choice { margin-top: 10px; gap: 10px; }
+  .mode-label-full { display: none; }
+  .mode-label-compact { display: inline; }
+  .profile-hub .mode-families button { flex-direction: column; gap: 6px; min-height: 58px; padding: 8px 2px; font-size: 10px; }
+  .mode-queue-choice { margin-top: 10px; gap: 10px; width: calc(100% + 56px); }
   .mode-queue-choice label { font-size: 11px; }
-  .profile-hub .mode-queue-choice select { flex: 1; font-size: 13px; }
-  .profile-hub .profile-filter-details { margin-left: auto; }
-  .profile-controls { gap: 8px; }
-  .profile-filter-details > summary { min-height: 36px; padding: 7px 10px; font-size: 11px; }
-  .profile-filter-details[open] { margin-left: 0; }
+  .profile-hub .mode-queue-choice select { flex: 1; min-width: 0; font-size: 13px; }
+  .profile-hub .profile-filter-details { margin-left: 0; grid-column: 2; grid-row: 1; min-width: 0; }
+  .profile-controls { display: grid; grid-template-columns: minmax(0, 1fr) 50px; gap: 6px; }
+  .profile-filter-details > summary { position: relative; flex-direction: column; justify-content: center; gap: 6px; min-height: 58px; padding: 8px 2px; font-size: 10px; }
+  .profile-filter-details > summary .filter-count { position: absolute; top: 3px; right: 3px; width: 14px; height: 14px; font-size: 8px; }
+  .profile-hub .profile-filter-details[open] { grid-column: 1 / -1; grid-row: auto; }
+  .profile-filter-details[open] > summary { flex-direction: row; min-height: 40px; padding: 8px 12px; font-size: 12px; }
+  .profile-filter-details[open] > summary .filter-count { position: static; width: 18px; height: 18px; font-size: 10px; }
+  .profile-hub[data-view="memory"] .profile-controls { grid-template-columns: 1fr; }
+  .profile-hub[data-view="memory"] .mode-queue-choice { width: 100%; }
   .profile-filter-fields { padding: 12px; margin-top: 8px; }
   .profile-filter-fields > .player-field { min-width: 120px; }
   .profile-hub .player-sample { margin-top: 0; gap: 0 12px; }
