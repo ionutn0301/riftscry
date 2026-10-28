@@ -1,53 +1,63 @@
 ---
 import { getLatestPatch } from '../../lib/data';
 import HomeReturn from './HomeReturn';
+import HomeSignals from './HomeSignals.astro';
 import '../../styles/companion-home.css';
 const latest = getLatestPatch();
+const patchDate = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${latest.releaseDate}T00:00:00Z`));
 ---
 <div class="companion-home">
-  <section class="companion-intro" aria-labelledby="companion-heading">
-    <div class="companion-landscape" aria-hidden="true">
+  <section class="home-arrival" aria-labelledby="companion-heading">
+    <div class="home-landscape" aria-hidden="true">
       <picture><source media="(max-width: 700px)" srcset="/images/voyage/rift-overlook-mobile.webp" /><img src="/images/voyage/rift-overlook.webp" width="1672" height="941" alt="" fetchpriority="high" decoding="async" /></picture>
     </div>
-    <div class="companion-intro-grid">
-      <div class="companion-intro-copy">
-        <p class="companion-eyebrow">YOUR LEAGUE OF LEGENDS COMPANION</p>
-        <h1 id="companion-heading"><span>Your next game.</span> <em>Already prepared.</em></h1>
-        <p class="companion-description">Enter your Riot ID. Get a session recap, changes for your champions, and a useful focus from your recent games.</p>
-        <div class="companion-main-actions">
-          <a class="companion-action" href="/next-game">Get my briefing <span aria-hidden="true">↗</span></a>
-          <a class="companion-action companion-action--quiet" href="/players">Find my games <span aria-hidden="true">↗</span></a>
-        </div>
-        <a class="companion-text-link companion-patch-link" href="/pool#briefing">See my champion changes <span aria-hidden="true">↗</span></a>
+    <div class="home-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="home-arrival-grid">
+      <div class="home-intro">
+        <p class="home-eyebrow"><span class="home-scry-mark" aria-hidden="true"></span>YOUR COMPANION BETWEEN GAMES</p>
+        <h1 id="companion-heading"><span>The Rift changes.</span> <em>You’re ready.</em></h1>
+        <p class="home-description">An automatic League of Legends briefing. Your recent games, the changes you missed, and a useful next focus.</p>
         <HomeReturn client:load />
-        <p class="companion-welcome">Ranked, ARAM, or a game with friends.</p>
+        <p class="home-modes"><span>Ranked focus.</span><span>ARAM chaos.</span><span>Your kind of League.</span></p>
       </div>
-      <aside class="companion-briefing" aria-labelledby="home-briefing-heading">
-        <div class="companion-briefing-title"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="m24 3 18 21-18 21L6 24 24 3Z" stroke="currentColor" /><path d="m24 12 10 12-10 12-10-12 10-12Z" stroke="currentColor" /><path d="M24 3v9m0 24v9M6 24h8m20 0h8" stroke="currentColor" /></svg><h2 id="home-briefing-heading">Your automatic briefing</h2><span class="companion-feature-mark">FROM THE GAMES YOU PLAY</span></div>
-        <p class="companion-briefing-promise">What matters<br />before you queue.</p>
-        <p class="companion-briefing-description">RiftScry reads your available match history and brings the useful parts together, ready when you open it.</p>
-        <ol class="companion-briefing-steps">
-          <li><span aria-hidden="true">01</span><div><strong>Your latest session, reviewed</strong><p>Results and patterns from the games already recorded.</p></div></li>
-          <li><span aria-hidden="true">02</span><div><strong>Changes since you played</strong><p>Patch records for champions found in your recent games.</p></div></li>
-          <li><span aria-hidden="true">03</span><div><strong>One useful next focus</strong><p>A practical starting point, with the evidence behind it.</p></div></li>
-        </ol>
-        <a class="companion-text-link" href="/next-game">See my briefing <span aria-hidden="true">↗</span></a>
-        <p class="companion-local-note">Generated from available matches. Your player stays selected in this browser.</p>
-      </aside>
+      <div class="home-proof">
+        <div class="home-proof-coordinate" aria-hidden="true"><span>RIFTSCRY / A CLOSER LOOK</span><span>01 — 03</span></div>
+        <HomeSignals />
+      </div>
     </div>
+    <div class="home-arrival-footer"><p>YOU PLAY. <span>WE CONNECT THE DOTS.</span></p><a href="#home-routine">Find your rhythm <span aria-hidden="true">↓</span></a></div>
   </section>
 
-  <section class="companion-everyday" aria-labelledby="everyday-heading">
-    <header><p class="companion-eyebrow">THE REVIEW IS ALREADY DONE</p><h2 id="everyday-heading">You play.<br />RiftScry catches up.</h2><p>Open your briefing for the useful details. Follow the evidence when you want to understand more.</p></header>
-    <div class="companion-task-list">
-      <a href="/next-game"><span class="companion-task-number" aria-hidden="true">01</span><div><h3>See what your games reveal</h3><p>Your recent session and a useful next focus are assembled from the available match sample.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
-      <a href="/next-game#changes"><span class="companion-task-number" aria-hidden="true">02</span><div><h3>Catch changes you missed</h3><p>See archived changes since the last recorded game on each of your recent champions. Your matches choose the starting point.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
-      <a href="/players?view=builds"><span class="companion-task-number" aria-hidden="true">03</span><div><h3>Find the build you played</h3><p>Recorded loadouts are grouped from your matches, with their champion, mode and source game ready to inspect.</p></div><span class="companion-task-arrow" aria-hidden="true">↗</span></a>
+  <section class="home-routine" id="home-routine" aria-labelledby="routine-heading">
+    <header class="home-section-heading"><div><p class="home-eyebrow">LESS CATCHING UP. MORE PLAYING.</p><h2 id="routine-heading">Every kind of<br /><em>“one more game.”</em></h2></div><p>A fresh start, a familiar champion, a build worth another look. Pick up right where your games left off.</p></header>
+    <div class="home-routine-grid">
+      <a class="home-routine-card" href="/next-game#changes">
+        <div class="home-routine-top"><span>01 / BACK AFTER A BREAK</span><span aria-hidden="true">↗</span></div>
+        <svg class="home-routine-art" viewBox="0 0 280 112" fill="none" aria-hidden="true"><path class="home-art-line" d="M12 78h55l27-42h54l22 27h97M12 93h255"/><path class="home-art-accent" d="m76 77 25-41h47l22 27h76"/><circle cx="101" cy="36" r="7"/><circle cx="170" cy="63" r="7"/><path d="m228 55 8 8-8 8"/><path class="home-art-faint" d="M101 44v49m69-22v22M12 21h255"/></svg>
+        <h3>“What did I miss?”</h3>
+        <p>Changes since your last recorded game on each champion. Your match history sets the starting point.</p>
+        <span class="home-routine-action">Catch up on changes <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="home-routine-card" href="/players?view=builds">
+        <div class="home-routine-top"><span>02 / FIND THAT LOADOUT</span><span aria-hidden="true">↗</span></div>
+        <svg class="home-routine-art" viewBox="0 0 280 112" fill="none" aria-hidden="true"><path class="home-art-faint" d="M12 21h255M12 93h255"/><rect x="28" y="34" width="43" height="43" rx="4"/><rect x="88" y="34" width="43" height="43" rx="4"/><rect x="148" y="34" width="43" height="43" rx="4"/><path class="home-art-accent" d="m49 42 10 14-10 14-10-14 10-14Zm60 0 10 14-10 14-10-14 10-14Z"/><path d="m163 55 5 5 10-12m30 7h37m-8-8 8 8-8 8"/></svg>
+        <h3>“That build felt good.”</h3>
+        <p>Find the items and runes you actually used, with the champion, mode, and source match together.</p>
+        <span class="home-routine-action">Find a recorded build <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="home-routine-card" href="/next-game">
+        <div class="home-routine-top"><span>03 / BEFORE YOU QUEUE</span><span aria-hidden="true">↗</span></div>
+        <svg class="home-routine-art" viewBox="0 0 280 112" fill="none" aria-hidden="true"><path class="home-art-faint" d="M12 21h255M12 93h255M140 10v91"/><circle cx="140" cy="56" r="35"/><circle class="home-art-accent" cx="140" cy="56" r="22"/><path d="m140 42 10 14-10 14-10-14 10-14ZM45 56h48m94 0h48m-10-8 10 8-10 8"/></svg>
+        <h3>“Okay. One more.”</h3>
+        <p>Your latest session and one useful focus, assembled from available games with the evidence attached.</p>
+        <span class="home-routine-action">Open the next-game briefing <span aria-hidden="true">→</span></span>
+      </a>
     </div>
+    <p class="home-routine-footnote"><span aria-hidden="true">✦</span> Ready from your records. No notes to write. No cards to create.</p>
   </section>
 
   <section class="companion-explore" aria-labelledby="home-explore-heading">
-    <div><p class="companion-eyebrow">CHAMPIONS &amp; PATCHES</p><h2 id="home-explore-heading">Every change has a history.</h2><p>Take the scenic route through champions, patches and the records that connect them.</p></div>
-    <div class="companion-explore-actions"><a class="companion-action companion-action--quiet" href="/explore">Explore the Rift <span aria-hidden="true">↗</span></a><a class="companion-text-link" href={`/patch/${latest.id}`}>Latest archived patch · {latest.id} <span aria-hidden="true">↗</span></a></div>
+    <div class="home-explore-art" aria-hidden="true"><img src="/images/voyage/history-strata.webp" alt="" width="1672" height="941" loading="lazy" decoding="async" /><svg viewBox="0 0 360 360" fill="none"><circle cx="180" cy="180" r="120"/><circle cx="180" cy="180" r="138"/><path d="m180 72 78 108-78 108-78-108 78-108Zm0-48v48m0 216v48M24 180h78m156 0h78"/><circle cx="180" cy="180" r="8"/></svg><span>THERE’S MORE TO THE RIFT.</span></div>
+    <div class="home-explore-copy"><p class="home-eyebrow">FOR THE CURIOUS BETWEEN QUEUES</p><h2 id="home-explore-heading">Follow a champion.<br /><em>Find a story.</em></h2><p>Every buff, nerf, and unexpected turn has a history. Wander through the archive and see how the Rift got here.</p><div class="companion-explore-actions"><a class="companion-action companion-action--quiet" href="/explore">Explore the Rift <span aria-hidden="true">↗</span></a><a class="companion-text-link" href="/champions">Browse champions <span aria-hidden="true">↗</span></a></div><a class="home-archive-stamp" href={`/patch/${latest.id}`}><span>Latest archived patch <strong>{latest.id}</strong></span><span>{patchDate}<span aria-hidden="true">↗</span></span></a></div>
   </section>
 </div>
