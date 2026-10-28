@@ -30,11 +30,24 @@ motionButton?.addEventListener('click', () => {
 const map = document.querySelector<HTMLDialogElement>('#rift-map-dialog');
 const trigger = document.querySelector<HTMLButtonElement>('[data-map-open]');
 let mapOpener: HTMLElement | null = null;
-function openMap() {
+function openMap(event?: Event) {
   if (!map || map.open) return;
-  mapOpener = document.activeElement instanceof HTMLElement ? document.activeElement : trigger;
+  mapOpener = event?.currentTarget instanceof HTMLElement
+    ? event.currentTarget
+    : document.activeElement instanceof HTMLElement && document.activeElement !== document.body
+      ? document.activeElement
+      : trigger;
   map.showModal();
-  map.querySelector<HTMLAnchorElement>('[aria-current="page"]')?.focus();
+  const navigation = map.querySelector<HTMLElement>('.navigation-landscape');
+  const current = map.querySelector<HTMLAnchorElement>('[aria-current="page"]');
+  navigation?.scrollTo({ top: 0, behavior: 'instant' });
+  current?.focus({ preventScroll: true });
+  // Enlarged text or a very short viewport may need one internal scroll to
+  // reveal the focused destination; never move the page behind the dialog.
+  if (navigation && current) {
+    const hiddenBelow = current.getBoundingClientRect().bottom - navigation.getBoundingClientRect().bottom;
+    if (hiddenBelow > 0) navigation.scrollBy({ top: hiddenBelow + 4, behavior: 'instant' });
+  }
 }
 trigger?.addEventListener('click', openMap);
 document.querySelector('[data-map-close]')?.addEventListener('click', () => map?.close());

@@ -24,26 +24,25 @@ const label = surface === 'player' ? 'Player profile' : surface === 'match' ? 'M
   <div class="world-utilities">
     {!isPlayerArea && <a href="/players">Players</a>}
     {isPlayerArea && <button type="button" class="world-search player-map-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 2 9 10-9 10L3 12 12 2Zm0 5 4 5-4 5-4-5 4-5Z" stroke="currentColor" /></svg><span>Rift map</span></button>}
+    {!isPlayerArea && <div class="wayfinder-dock">
+      <button type="button" class="wayfinder-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M">
+        <svg class="mini-world" viewBox="0 0 140 92" fill="none" aria-hidden="true">
+          <path class="mini-contour" d="m10 62 21-45 38-8 57 24 7 35-40 16-53-2zM21 60l17-34 29-8 49 20 6 23-31 14-44-1zM36 56l12-21 23-5 31 12 6 16-22 8-32-2z"/>
+          <path class="mini-route" d="m23 66 23-41 30 20 30-24 10 49-44 1"/>
+          {destinations.map((destination) => <circle cx={destination.x * 1.35} cy={destination.y} r={active === destination.id ? 4 : 2.4} class:list={['mini-point', { 'is-current': active === destination.id }]} />)}
+        </svg>
+        <span><strong>Rift map</strong><small>Choose your destination <kbd title="Alt+M / Option+M">Alt M</kbd></small></span><span class="map-open-mark" aria-hidden="true">↗</span>
+      </button>
+      <a class="briefing-shortcut" href="/pool#briefing" aria-label="Open your champion briefing">Your briefing <span data-world-pool-count>0</span><span aria-hidden="true">↗</span></a>
+    </div>}
     <button type="button" class="world-search" data-palette-trigger aria-label={isPlayerArea ? 'Search the archive' : undefined}>{isPlayerArea ? 'Archive' : 'Search'} <kbd>⌘ K</kbd></button>
     <button type="button" class="motion-choice" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><span aria-hidden="true">◐</span><span data-motion-label>Motion on</span></button>
   </div>
 </div>
 
-{!isPlayerArea && <div class="wayfinder-dock">
-  <button type="button" class="wayfinder-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M">
-    <svg class="mini-world" viewBox="0 0 140 92" fill="none" aria-hidden="true">
-      <path class="mini-contour" d="m10 62 21-45 38-8 57 24 7 35-40 16-53-2zM21 60l17-34 29-8 49 20 6 23-31 14-44-1zM36 56l12-21 23-5 31 12 6 16-22 8-32-2z"/>
-      <path class="mini-route" d="m23 66 23-41 30 20 30-24 10 49-44 1"/>
-      {destinations.map((destination) => <circle cx={destination.x * 1.35} cy={destination.y} r={active === destination.id ? 4 : 2.4} class:list={['mini-point', { 'is-current': active === destination.id }]} />)}
-    </svg>
-    <span><strong>Rift map</strong><small>Choose your destination <kbd title="Alt+M / Option+M">Alt M</kbd></small></span><span class="map-open-mark" aria-hidden="true">↗</span>
-  </button>
-  <a class="briefing-shortcut" href="/pool#briefing" aria-label="Open your champion briefing">Your briefing <span data-world-pool-count>0</span><span aria-hidden="true">↗</span></a>
-</div>}
-
 <dialog id="rift-map-dialog" class="world-map-dialog" aria-labelledby="rift-map-title">
   <div class="map-dialog-inner">
-    <header class="map-dialog-heading"><div><p class="world-eyebrow">RIFTSCRY / FIND YOUR WAY</p><h2 id="rift-map-title">A different way<br />through the game.</h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
+    <header class="map-dialog-heading"><div><p class="world-eyebrow">RIFTSCRY / FIND YOUR WAY</p><h2 id="rift-map-title"><span class="map-title-expanded">A different way<br />through the game.</span><span class="map-title-compact">Explore the Rift</span></h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
     <nav class="navigation-landscape" aria-label="RiftScry destinations">
       <svg viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true" class="navigation-terrain">
         <path class="terrain-contour" d="M50 310 170 100 420 40 780 90 950 280 760 410 360 400Z M120 300 220 150 440 90 730 130 860 270 710 355 370 350Z M200 285 290 200 460 150 690 180 770 260 670 310 410 300Z"/>
@@ -53,7 +52,7 @@ const label = surface === 'player' ? 'Player profile' : surface === 'match' ? 'M
         <span class="destination-coordinate">0{index + 1}<i aria-hidden="true"></i></span><strong>{destination.label}</strong><span>{destination.description}</span><b aria-hidden="true">↗</b>
       </a>)}
     </nav>
-    <footer class="map-dialog-footer"><span>Archive through {latest.releaseDate}</span><button type="button" data-palette-trigger>Search champions, patches, items <span aria-hidden="true">⌘ K / Ctrl K</span></button><span>Choose a place. Make it yours.</span></footer>
+    <footer class="map-dialog-footer"><span>Archive through {latest.releaseDate}</span><button type="button" data-palette-trigger>Search the archive <span aria-hidden="true">⌘ K / Ctrl K</span></button><span>Choose a place. Make it yours.</span></footer>
   </div>
 </dialog>
 <noscript><nav class="world-nojs-nav" aria-label="RiftScry destinations">{destinations.map((destination) => <a href={destination.href}>{destination.label}</a>)}</nav></noscript>

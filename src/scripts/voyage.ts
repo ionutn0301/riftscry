@@ -307,6 +307,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     if (rosterDialog.open) return;
     rosterOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     rosterDialog.showModal();
+    rosterDialog.scrollTop = 0;
     rosterInput.focus({ preventScroll: true });
     setText('[data-roster-status]', 'Opening the full champion roster…');
     try { await loadRoster(); renderRoster(); }

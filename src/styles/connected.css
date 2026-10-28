@@ -1,5 +1,5 @@
 /* Task destinations reserve a navigation lane instead of competing with a fixed dock. */
-body:not(.is-home) .reader-experience .route-arrival { min-height: auto; padding-block: 112px 32px; overflow: visible; }
+body:not(.is-home) .reader-experience .route-arrival { min-height: auto; padding-block: calc(var(--world-header-height, 88px) + 24px + env(safe-area-inset-top)) 32px; overflow: visible; }
 body:not(.is-home) .reader-experience .route-arrival-grid { padding-block: 12px 24px; }
 body:not(.is-home) .reader-experience .route-arrival:not(.route-arrival--champion) .route-arrival-grid { grid-template-columns: 1fr; }
 body:not(.is-home) .route-arrival:not(.route-arrival--champion) .route-arrival-figure { display: none; }
@@ -37,12 +37,11 @@ body .briefing-shortcut, body .route-chapters small, body .route-chapters-captio
 body .reading-meta, body .chapter-rail a, body .record-context, body .history-validation { font-size: 13px; }
 body .world-search, body .world-close { font-size: 14px; }
 body .world-search, body .motion-choice { min-width: 44px; }
-body .journey-coordinates .coordinate-label { opacity: 1; transform: none; font-size: 12px; }
 body .journey-coordinates .coordinate-number { font-size: 12px; }
 body .route-arrival-copy, body .route-landscape img { animation: none; }
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 
-@media (min-width: 951px) {
+@media (min-width: 1051px) and (min-height: 601px) and (pointer: fine) {
   body:not(.is-home) .wayfinder-dock { inset: 100px auto auto 18px; flex-direction: column; align-items: stretch; width: 188px; gap: 10px; }
   body:not(.is-home) .wayfinder-dock .mini-world { display: none; }
   body:not(.is-home) main { padding-left: 220px; }
@@ -51,12 +50,7 @@ body .route-arrival-copy, body .route-landscape img { animation: none; }
   body:not(.is-home) .chapter-rail ol { display: flex; flex-wrap: wrap; gap: 16px; border-left: 0; }
   body:not(.is-home) .chapter-rail > p, body:not(.is-home) .chapter-rail > .route-text-link { display: none; }
 }
-@media (max-width: 950px) and (min-width: 701px) {
-  body:not(.is-home) .wayfinder-dock { top: 86px; bottom: auto; right: 22px; left: auto; }
-  body:not(.is-home) .route-arrival { padding-top: 176px !important; }
-}
 @media (max-width: 700px) {
-  body:not(.is-home) .reader-experience .route-arrival { padding-top: 96px; }
   body:not(.is-home) .reader-experience .route-chapters { display: none; }
   body:not(.is-home) .reader-experience .champion-arrival-art { height: 240px; }
   .kept-collection li { align-items: flex-start; flex-direction: column; gap: 12px; }
@@ -70,10 +64,6 @@ body .route-arrival-copy, body .route-landscape img { animation: none; }
 .player-map-trigger { view-transition-name: world-wayfinder; color: var(--world-signal); }
 .player-map-trigger svg { width: 20px; height: 20px; flex: none; }
 @media (max-width: 700px) {
-  body:not(.is-home) .world-controls.world-controls--player { padding-inline: 16px; }
-  body:not(.is-home) .world-controls--player .world-utilities { gap: 8px; }
-  body:not(.is-home) .world-controls--player .world-search { font-size: 12px; gap: 5px; }
-  body:not(.is-home) .world-controls--player .player-map-trigger { padding-inline: 4px; }
   .player-map-trigger svg { width: 16px; height: 16px; }
 }
 html[data-motion="reduced"]::view-transition-group(world-wayfinder),

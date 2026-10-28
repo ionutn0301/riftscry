@@ -1,6 +1,6 @@
 /* A player profile is a place to use every day: identity, modes, then games. */
 .profile-hub { --hub-width: 1180px; --hub-gutter: clamp(18px, 4vw, 48px); }
-.player-identity-header { position: relative; isolation: isolate; padding: 94px var(--hub-gutter) 22px; background: #081319; }
+.player-identity-header { position: relative; isolation: isolate; padding: calc(94px + env(safe-area-inset-top)) max(var(--hub-gutter), env(safe-area-inset-right)) 22px max(var(--hub-gutter), env(safe-area-inset-left)); background: #081319; }
 .identity-environment img { object-position: 50% 42%; opacity: .36; animation: player-view-arrival 500ms ease-out both; }
 .identity-environment::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #081319b8, #08131924 70%), linear-gradient(0deg, #081319, #08131922 85%); }
 .player-identity-wrap { max-width: var(--hub-width); margin: auto; }
@@ -25,7 +25,7 @@
 .identity-rank strong { color: #e1c38f; font-weight: 500; }
 .identity-rank + .identity-rank { padding-left: 16px; border-left: 1px solid #7999914a; }
 
-.profile-hub .player-records { max-width: calc(var(--hub-width) + 2 * var(--hub-gutter)); padding: 0 var(--hub-gutter) 70px; }
+.profile-hub .player-records { max-width: calc(var(--hub-width) + 2 * var(--hub-gutter)); padding: 0 max(var(--hub-gutter), env(safe-area-inset-right)) 70px max(var(--hub-gutter), env(safe-area-inset-left)); }
 .profile-hub .player-tabs { gap: 30px; margin-bottom: 18px; }
 .profile-hub .player-tabs button { flex: none; min-height: 54px; padding: 12px 2px; font-size: 14px; gap: 8px; }
 .profile-hub .player-tabs .player-icon { width: 17px; height: 17px; }
@@ -112,11 +112,11 @@
 
 @media (max-width: 1000px) {
   .profile-hub .match-row { grid-template-columns: minmax(190px, 1.2fr) 110px minmax(120px, 1fr) 112px 18px; gap: 12px; padding-inline: 14px; }
-  .profile-hub .match-open { font-size: 0; }
+  .profile-hub .match-open { font-size: 0; gap: 0; }
   .profile-hub .mode-families button { padding-inline: 12px; }
 }
 @media (max-width: 760px) {
-  .player-identity-header { padding-top: 80px; padding-bottom: 18px; }
+  .player-identity-header { padding-top: calc(80px + env(safe-area-inset-top)); padding-bottom: 18px; }
   .profile-hub .identity-back { margin-bottom: 8px; }
   .player-identity-row { align-items: stretch; flex-direction: column; gap: 16px; }
   .player-identity-person { gap: 16px; }
@@ -161,7 +161,7 @@
   .profile-hub .player-section-heading { gap: 10px; margin-bottom: 12px; }
   .profile-hub .player-section-heading h2 { font-size: 22px; }
   .profile-hub .player-section-caption { font-size: 10px; }
-  .profile-hub .match-row { grid-template-columns: minmax(0, 1fr) 100px 14px; gap: 12px 9px; padding: 14px 12px; border-radius: 10px; }
+  .profile-hub .match-row { grid-template-columns: minmax(0, 1fr) 100px 16px; gap: 12px 9px; padding: 14px 12px; border-radius: 10px; }
   .profile-hub .match-identity { grid-column: 1 / 3; grid-row: 1; gap: 10px; padding-right: 80px; }
   .profile-hub .match-identity h3 { font-size: 16px; }
   .profile-hub .match-status { grid-column: 2 / 4; grid-row: 1; justify-self: end; align-items: end; gap: 4px; width: 90px; }
@@ -181,8 +181,12 @@
   .profile-hub .profile-identity-copy h1 { font-size: 25px; }
   .profile-hub .player-tabs { gap: 12px; }
   .profile-hub .player-tabs button { font-size: 11px; gap: 5px; }
-  .profile-hub .match-row { grid-template-columns: minmax(0, 1fr) 89px 12px; gap: 10px 7px; padding-inline: 10px; }
+  .profile-hub .match-row { grid-template-columns: minmax(0, 1fr) 89px 16px; gap: 10px 7px; padding-inline: 10px; }
   .profile-hub .match-identity { padding-right: 76px; gap: 8px; }
   .profile-hub .match-status { width: 82px; }
   .profile-hub .match-score > strong { font-size: 13px; }
+}
+@media (max-width: 900px), (pointer: coarse) {
+  .profile-hub .mode-queue-choice select,
+  .profile-hub .profile-filter-fields select { font-size: 16px; min-height: 44px; }
 }

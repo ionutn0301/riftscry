@@ -93,3 +93,7 @@
   .filter-bar .seg { width: 100%; min-width: 0; }
   .filter-bar .seg button { flex: 1; min-width: 0; padding-inline: 4px; letter-spacing: .02em; }
 }
+
+@media (max-width: 900px), (pointer: coarse) {
+  .filter-bar input[type="search"] { font-size: 16px; }
+}

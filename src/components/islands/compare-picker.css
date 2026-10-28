@@ -2,6 +2,7 @@
   display: flex;
   align-items: end;
   gap: var(--s4);
+  max-width: 100%;
 }
 
 .compare-picker label {
@@ -12,6 +13,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--cream-faint);
+  min-width: 0;
 }
 
 .compare-picker select {
@@ -21,6 +23,8 @@
   font-size: var(--text-lg);
   padding: var(--s2) var(--s3);
   border-radius: 2px;
+  min-width: 0;
+  width: 100%;
 }
 
 .compare-picker .delta-mark {

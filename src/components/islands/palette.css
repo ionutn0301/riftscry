@@ -9,13 +9,14 @@
 .palette {
   position: fixed;
   z-index: 100;
-  top: clamp(1rem, 10dvh, 6rem);
-  max-height: calc(100dvh - clamp(1rem, 10dvh, 6rem) - 1rem);
+  top: max(clamp(1rem, 10dvh, 6rem), env(safe-area-inset-top));
+  max-height: calc(100dvh - max(clamp(1rem, 10dvh, 6rem), env(safe-area-inset-top)) - max(1rem, env(safe-area-inset-bottom)));
   display: flex;
   flex-direction: column;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(38rem, calc(100vw - 2rem));
+  left: max(1rem, env(safe-area-inset-left));
+  right: max(1rem, env(safe-area-inset-right));
+  margin-inline: auto;
+  width: min(38rem, calc(100% - max(1rem, env(safe-area-inset-left)) - max(1rem, env(safe-area-inset-right))));
   background: var(--ink-2);
   border: 1px solid var(--line-strong);
   border-top: 2px solid var(--gold);
@@ -28,6 +29,7 @@
   gap: var(--s3);
   padding: var(--s3) var(--s4);
   border-bottom: 1px solid var(--line);
+  flex: none;
 }
 
 .palette-caret {
@@ -106,6 +108,8 @@
 }
 
 .palette .item-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--cream);
   font-size: var(--text-sm);
 }
@@ -116,5 +120,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 14rem;
+  max-width: min(14rem, 100%);
+}
+
+@media (max-width: 650px) {
+  .palette-head { gap: 8px; padding-inline: 12px; }
+  .palette [cmdk-input] { font-size: 16px; }
+  .palette [cmdk-item] { column-gap: 12px; row-gap: 4px; }
 }

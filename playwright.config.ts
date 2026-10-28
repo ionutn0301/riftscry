@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const chromiumLaunch = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+  ? { launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } }
+  : {};
+
 export default defineConfig({
   testDir: "tests/e2e",
   // Earlier presentations remain archived. Voyage, keyboard, spatial-history
@@ -36,9 +40,10 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1440, height: 900 },
+        ...chromiumLaunch,
       },
     },
     { name: "mobile", use: { ...devices["iPhone 13"] } },
-    { name: "mobile-chromium", use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 } } },
+    { name: "mobile-chromium", use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 }, ...chromiumLaunch } },
   ],
 });

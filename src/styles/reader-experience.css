@@ -18,7 +18,7 @@
 .reader-experience :where(button,a,input,select):focus-visible { outline: 2px solid var(--reader-signal); outline-offset: 5px; }
 .reader-experience :where(a,button):hover { color: var(--reader-signal); }
 .reader-experience [hidden] { display: none !important; }
-.reader-experience :where(section,article,[id]) { scroll-margin-top: 90px; }
+.reader-experience :where(section,article,[id]) { scroll-margin-top: calc(var(--world-header-height, 88px) + 18px + env(safe-area-inset-top)); }
 .route-arrival {
   position: relative;
   min-height: 100svh;
@@ -205,7 +205,7 @@
 
 /* Comparison carries the two selected dates into every contributing trail. */
 .reader-experience .compare-picker { margin-top: 25px; gap: 25px; }
-.reader-experience .compare-picker select { background: #081319; border-color: #5c7b7a; color: var(--reader-paper); min-height: 46px; font-family: var(--font-ui); font-size: 15px; }
+.reader-experience .compare-picker select { background: #081319; border-color: #5c7b7a; color: var(--reader-paper); min-height: 46px; font-family: var(--font-ui); font-size: 16px; }
 .compare-range-note { color: var(--reader-muted); font-size: 12px; max-width: 62ch; line-height: 1.7; margin-bottom: 25px; }
 .compare-group { padding-top: 25px; }
 .compare-group + .compare-group { margin-top: 45px; }
@@ -332,6 +332,16 @@
   .compare-group h3 { font-size: 28px; }
   .reader-missing-code { font-size: 170px; }
   .reader-recovery { flex-direction: column; align-items: start; padding: 55px 22px 90px; }
+  .reader-experience .compare-picker { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); gap: 14px; width: 100%; }
+  .route-arrival-actions > div { min-width: 0; max-width: 100%; }
+  .reader-experience .pool-bar { bottom: 0; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); flex-wrap: wrap; gap: 10px 16px; }
+  .reader-experience .pool-bar .cta { display: inline-flex; align-items: center; min-height: 44px; padding-inline: 12px; }
+}
+@media (max-width: 480px) {
+  .reader-experience .route-arrival--champion .route-arrival-grid { grid-template-columns: minmax(0,1fr); gap: 24px; }
+  .route-arrival--champion .route-arrival-actions > div { display: flex; flex-wrap: wrap; gap: 12px; }
+  .route-arrival--champion .route-arrival-figure { width: 100%; }
+  .route-arrival--champion .champion-arrival-art { max-width: 100%; margin-inline: auto; }
 }
 @media (max-height: 700px) and (min-width: 701px) {
   .route-arrival { padding-top: 75px; }
