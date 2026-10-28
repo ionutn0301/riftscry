@@ -4,6 +4,8 @@ export { queues } from './modes';
 
 export const platforms = { na1: 'americas', br1: 'americas', la1: 'americas', la2: 'americas', euw1: 'europe', eun1: 'europe', tr1: 'europe', ru: 'europe', kr: 'asia', jp1: 'asia', oc1: 'sea', ph2: 'sea', sg2: 'sea', th2: 'sea', tw2: 'sea', vn2: 'sea', me1: 'europe' } as const;
 export type Platform = keyof typeof platforms;
+/** Optional League profile data; Riot ID remains owned by account-v1. */
+export type SummonerProfile = { puuid: string; profileIconId: number; summonerLevel?: number };
 export type Participant = { puuid: string; participantId: number; teamId?: number; championName: string; teamPosition: string; win: boolean; kills: number; deaths: number; assists: number; totalMinionsKilled: number; neutralMinionsKilled: number; goldEarned: number; totalDamageDealtToChampions: number; visionScore: number; item0: number; item1: number; item2: number; item3: number; item4: number; item5: number; item6: number; perks?: { styles: { selections: { perk: number }[] }[] } };
 export type Match = { metadata: { matchId: string }; info: { gameCreation: number; gameDuration: number; gameVersion: string; queueId: number; gameMode: string; gameType: string; mapId?: number; participants: Participant[] } };
 export type TimelineEvent = { type: string; timestamp: number; participantId?: number; killerId?: number; victimId?: number; itemId?: number; beforeId?: number; afterId?: number };

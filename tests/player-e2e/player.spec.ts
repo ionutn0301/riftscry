@@ -4,6 +4,7 @@ import {
   otherProfilePath, platform, profilePath, query, readNotes, savedNote, seedNotes,
   sourceMatch, suggestion, trackingStart,
 } from './fixtures';
+import { openFilters } from './profile-controls';
 
 const matchUrl = `/matches/${sourceMatch.metadata.matchId}?${query}`;
 
@@ -20,7 +21,8 @@ test('lookup opens readable profile and grouped builds without eager timeline or
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fixture Player#TEST');
   await expect(page.locator('.match-row')).toHaveCount(3);
   await expect(page.locator('.match-row').first().locator('.item-label[title="Plated Steelcaps"]')).toBeVisible();
-  await expect(page.locator('.match-row').first().locator('.rune-label[title="Electrocute"]')).toBeVisible();
+  await expect(page.locator('.match-row').first().locator('[data-match-mode]')).toHaveText('Ranked Solo/Duo');
+  await expect(page.locator('[data-player-avatar] img')).toHaveAttribute('src', /\/img\/profileicon\/29\.png$/);
   const lookup = requests.find(request => request.action === 'lookup');
   expect(new URL(lookup!.url).searchParams.get('name')).toBe('Fixture Player');
   expect(new URL(lookup!.url).searchParams.get('tag')).toBe('TEST');
@@ -37,6 +39,7 @@ test('lookup opens readable profile and grouped builds without eager timeline or
   await expect(builds.first().locator(`a[href^="/matches/${sourceMatch.metadata.matchId}?"]`)).toBeVisible();
   await expect(builds.first().locator(`a[href^="/matches/${historicalMatch.metadata.matchId}?"]`)).toBeVisible();
   await page.getByRole('button', { name: 'Matches', exact: true }).click();
+  await openFilters(page);
   await page.getByLabel('Champion', { exact: true }).selectOption('Ahri');
   await page.getByLabel('Result', { exact: true }).selectOption('win');
   await page.locator('.match-row').first().click();

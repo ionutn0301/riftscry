@@ -44,6 +44,7 @@ export function riotMethod(path: string): string {
   if (/^\/lol\/match\/v5\/matches\/[^/]+\/timeline$/.test(pathname)) return 'match-timeline';
   if (/^\/lol\/match\/v5\/matches\/[^/]+$/.test(pathname)) return 'match-details';
   if (pathname.startsWith('/lol/league/v4/entries/by-puuid/')) return 'league-entries';
+  if (pathname.startsWith('/lol/summoner/v4/summoners/by-puuid/')) return 'summoner-by-puuid';
   return 'other';
 }
 

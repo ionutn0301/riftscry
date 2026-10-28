@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { platforms, evidence, participant, type Platform } from '../../../lib/player/contracts';
 import { isSupportedQueue } from '../../../lib/player/modes';
-import { riot, limit, ServiceError, getMatch, getTimeline } from '../../../lib/player/server';
+import { riot, limit, ServiceError, getMatch, getTimeline, getSummoner } from '../../../lib/player/server';
 import { riotAccessAllowed } from '../../../lib/player/access';
 import { getItemMetadata } from '../../../lib/player/metadata';
 import { buildSuggestions } from '../../../lib/player/advice';
@@ -15,7 +15,7 @@ const json = (body: unknown, status = 200, retry = 0, scope?: 'player' | 'review
 export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => {
   try {
     const action = params.action;
-    if (!action || !['lookup', 'account', 'history', 'rank', 'match', 'timeline', 'review', 'items'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
+    if (!action || !['lookup', 'account', 'summoner', 'history', 'rank', 'match', 'timeline', 'review', 'items'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
     if (request.method !== (action === 'review' ? 'POST' : 'GET')) return json({ error: 'Method not allowed' }, 405);
     if (request.method === 'POST' && request.headers.get('origin') !== url.origin) return json({ error: 'Origin not allowed' }, 403);
     const platform = platformSchema.parse(url.searchParams.get('platform'));
@@ -29,6 +29,7 @@ export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => 
     }
     const puuid = puuidSchema.parse(url.searchParams.get('puuid'));
     if (action === 'account') return json(await riot(region, `/riot/account/v1/accounts/by-puuid/${puuid}`, 300, beforeFetch));
+    if (action === 'summoner') return json(await getSummoner(platform, puuid, beforeFetch));
     if (action === 'history') {
       const requestedQueue = url.searchParams.get('queue');
       const queue = !requestedQueue || requestedQueue === 'all' ? undefined :

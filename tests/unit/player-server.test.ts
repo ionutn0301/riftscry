@@ -36,13 +36,14 @@ vi.mock('@upstash/ratelimit', () => ({ Ratelimit: class {
   limit = mock.rateLimit;
 } }));
 
-import { cached, getMatch, getTimeline, hash, limit, MATCH_CACHE_SECONDS, riot, ServiceError } from '../../src/lib/player/server';
+import { cached, getMatch, getTimeline, getSummoner, hash, limit, MATCH_CACHE_SECONDS, SUMMONER_CACHE_SECONDS, riot, ServiceError } from '../../src/lib/player/server';
 import { reserveRiotBudget } from '../../src/lib/player/riot-budget';
 
 const now = 1793200000000;
 const host = 'europe';
 const path = '/lol/match/v5/matches/EUN1_123456';
 const digest = (key: string) => `rs:v1:${hash(key)}`;
+const profilePuuid = 'fixture-profile-000000000000000000000';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -138,6 +139,67 @@ describe('shared player cache', () => {
     await getTimeline('eun1', 'EUN1_123456', charge);
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(charge).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('optional summoner profile', () => {
+  it('coalesces icon reads, reuses the five-minute shared cache, and refreshes after expiry', async () => {
+    const data = { puuid: profilePuuid, profileIconId: 685, summonerLevel: 340, revisionDate: now, unused: 'not returned' };
+    vi.mocked(fetch).mockImplementation(async () => new Response(JSON.stringify(data)));
+    const charge = vi.fn().mockResolvedValue(undefined);
+    const expected = { puuid: profilePuuid, profileIconId: 685, summonerLevel: 340 };
+    expect(await Promise.all([getSummoner('eun1', profilePuuid, charge), getSummoner('eun1', profilePuuid, charge)])).toEqual([expected, expected]);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(charge).toHaveBeenCalledTimes(1);
+    const key = digest(`riot:eun1/lol/summoner/v4/summoners/by-puuid/${profilePuuid}`);
+    expect(mock.values.get(key)?.expires).toBe(now + SUMMONER_CACHE_SECONDS * 1000);
+    vi.setSystemTime(now + 299_999);
+    expect(await getSummoner('eun1', profilePuuid, charge)).toEqual(expected);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    vi.setSystemTime(now + 300_001);
+    expect(await getSummoner('eun1', profilePuuid, charge)).toEqual(expected);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(charge).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps different platform and player profiles separate', async () => {
+    vi.mocked(fetch).mockImplementation(async input => {
+      const url = new URL(String(input));
+      return new Response(JSON.stringify({ puuid: url.pathname.split('/').at(-1), profileIconId: url.host.startsWith('eun1.') ? 685 : 686, summonerLevel: 25 }));
+    });
+    expect((await getSummoner('eun1', profilePuuid)).profileIconId).toBe(685);
+    expect((await getSummoner('euw1', profilePuuid)).profileIconId).toBe(686);
+    expect((await getSummoner('eun1', `${profilePuuid}-other`)).puuid).toBe(`${profilePuuid}-other`);
+    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(String(vi.mocked(fetch).mock.calls[0]![0])).toBe(`https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${profilePuuid}`);
+  });
+
+  it.each([
+    null,
+    { puuid: `${profilePuuid}-other`, profileIconId: 685 },
+    { puuid: profilePuuid, profileIconId: -1 },
+    { puuid: profilePuuid, profileIconId: 1.5 },
+    { puuid: profilePuuid, profileIconId: '685' },
+    { puuid: profilePuuid, profileIconId: 2147483648 },
+    { puuid: profilePuuid },
+  ])('rejects a mismatched identity or malformed icon payload without exposing it (%j)', async value => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(value)));
+    await expect(getSummoner('eun1', profilePuuid)).rejects.toMatchObject({ status: 502, message: 'Player icon is temporarily unavailable.' });
+  });
+
+  it.each([undefined, null, -1, 0, '340', 1.5, Number.MAX_SAFE_INTEGER + 1])('retains a valid default icon without inventing an optional level (%s)', async level => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ puuid: profilePuuid, profileIconId: 0, summonerLevel: level })));
+    expect(await getSummoner('eun1', profilePuuid)).toEqual({ puuid: profilePuuid, profileIconId: 0 });
+  });
+
+  it('does not cache a missing League profile or prevent a separate history request', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response('["EUN1_123456"]'))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ puuid: profilePuuid, profileIconId: 685 })));
+    await expect(getSummoner('eun1', profilePuuid)).rejects.toMatchObject({ status: 404 });
+    expect(await riot('europe', `/lol/match/v5/matches/by-puuid/${profilePuuid}/ids?start=0&count=20`, 120)).toEqual(['EUN1_123456']);
+    expect(await getSummoner('eun1', profilePuuid)).toEqual({ puuid: profilePuuid, profileIconId: 685 });
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 });
 

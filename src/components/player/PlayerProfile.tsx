@@ -1,20 +1,21 @@
 import { useEffect, useId, useState } from 'react';
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
-import { participant } from '../../lib/player/contracts';
+import { participant, type SummonerProfile } from '../../lib/player/contracts';
 import { historyOptions } from '../../lib/player/modes';
 import { api, fetcher, playerLink, type PlayerInitial, type PlayerView } from './client';
 import { usePlayerHistory } from './usePlayerHistory';
 import { itemMetadataKey } from './useItemMetadata';
-import PlayerArrival from './PlayerArrival';
+import PlayerArrival, { type PlayerRank } from './PlayerArrival';
 import PlayerSample from './PlayerSample';
 import PlayerHistory from './PlayerHistory';
 import BuildMemory from './BuildMemory';
 import PersonalBuilds from './PersonalBuilds';
 import PlayerIcon from './PlayerIcon';
 import { championDisplayName } from './championArtwork';
+import PlayerModePicker from './PlayerModePicker';
+import ChampionPortrait from './ChampionPortrait';
 
 type Filters = { queue: string; champion: string; result: string; view: PlayerView };
-type Rank = { queueType: string; tier: string; rank: string; leaguePoints: number };
 type Account = { puuid: string; gameName: string; tagLine: string };
 const views: { id: PlayerView; label: string; icon: 'history' | 'build' | 'bookmark' }[] = [
   { id: 'history', label: 'Matches', icon: 'history' },
@@ -23,14 +24,6 @@ const views: { id: PlayerView; label: string; icon: 'history' | 'build' | 'bookm
 ];
 const viewOf = (value: string): PlayerView => value === 'builds' || value === 'memory' ? value : 'history';
 const queueOf = (value: string) => historyOptions.some(option => option.value === value) ? value : 'all';
-
-function CurrentRanks({ ranks, failed }: { ranks?: Rank[]; failed: boolean }) {
-  return <aside className="player-ranks" aria-label="Current ranked status">
-    <p className="player-kicker"><PlayerIcon name="trophy" />RANKED</p>
-    <div>{ranks ? ranks.length ? ranks.map(rank => <p key={rank.queueType}><span>{rank.queueType === 'RANKED_SOLO_5x5' ? 'Solo / Duo' : rank.queueType === 'RANKED_FLEX_SR' ? 'Ranked Flex' : rank.queueType}</span><strong>{rank.tier} {rank.rank}</strong><span>{rank.leaguePoints} LP</span></p>) : <p>Unranked</p> : <p>{failed ? 'Current rank unavailable' : 'Loading rank…'}</p>}</div>
-    <details className="player-disclosure rank-disclosure"><summary><PlayerIcon name="info" size={16} />About rank</summary><p>Current Riot rank, separate from these matches. Historical LP changes are not available.</p></details>
-  </aside>;
-}
 
 export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   const filterId = useId();
@@ -41,12 +34,13 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   const { cache, mutate } = useSWRConfig();
   const query = { platform, puuid };
   const { data: account, error: accountError, mutate: retryAccount } = useSWR<Account>(api('account', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
-  const { data: ranks, error: rankError, mutate: retryRanks } = useSWR<Rank[]>(api('rank', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: ranks, error: rankError, mutate: retryRanks } = useSWR<PlayerRank[]>(api('rank', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: summoner, error: summonerError, mutate: retrySummoner } = useSWR<SummonerProfile>(api('summoner', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const history = usePlayerHistory(platform, puuid, filters.queue);
   const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
   const profile = { ...initial, ...filters, name };
   const back = playerLink(platform, puuid, { ...filters, name });
-  const scope = historyOptions.find(option => option.value === filters.queue)?.label ?? 'All recent';
+  const advancedFilterCount = Number(!!filters.champion) + Number(!!filters.result);
   const matches = history.matches.filter(match => {
     const player = participant(match, puuid);
     return player && (!filters.champion || player.championName === filters.champion) &&
@@ -123,26 +117,34 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
         history.refresh(),
         ...(accountError ? [retryAccount()] : []),
         ...(rankError ? [retryRanks()] : []),
+        ...(summonerError ? [retrySummoner()] : []),
         ...failedReferences.map(key => mutate(key)),
       ]);
     } finally { setRefreshing(false); }
   }
 
-  return <div className="player-profile" data-player-profile data-view={filters.view}>
-    <PlayerArrival initial={profile} matches={history.matches} scope={scope} back={back} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} onLeave={leave} />
+  return <div className="player-profile profile-hub" data-player-profile data-view={filters.view}>
+    <PlayerArrival initial={profile} summoner={summoner?.puuid === puuid ? summoner : undefined} ranks={ranks} rankFailed={!!rankError} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} />
     <div className="player-records" id="player-records">
       {accountError && <p className="player-help" role="status">Name unavailable. Your matches are still here.</p>}
       <nav className="player-tabs" aria-label="Player views">
         {views.map(view => <button type="button" key={view.id} aria-pressed={filters.view === view.id} aria-controls="player-view" onClick={() => change({ view: view.id })}><PlayerIcon name={view.icon} />{view.label}</button>)}
       </nav>
-      <div className="player-filters" role="group" aria-label="Filter match sample">
-        <div className="player-field"><label htmlFor={`${filterId}-queue`}>Game mode</label><select id={`${filterId}-queue`} value={filters.queue} onChange={event => change({ queue: event.target.value })}>{historyOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>
-        {filters.view !== 'memory' && <>
+      <div className="profile-controls" role="group" aria-label="Filter match sample">
+        <PlayerModePicker value={filters.queue} onChange={queue => change({ queue })} />
+        {filters.view !== 'memory' && <details className="profile-filter-details">
+          <summary><PlayerIcon name="filter" size={17} />Filters{advancedFilterCount > 0 && <span className="filter-count">{advancedFilterCount}</span>}</summary>
+          <div className="profile-filter-fields">
           <div className="player-field"><label htmlFor={`${filterId}-champion`}>Champion</label><select id={`${filterId}-champion`} value={filters.champion} onChange={event => change({ champion: event.target.value })}><option value="">All champions</option>{filters.champion && !champions.includes(filters.champion) && <option value={filters.champion}>{championDisplayName(filters.champion)} · not loaded</option>}{champions.map(champion => <option key={champion} value={champion}>{championDisplayName(champion)}</option>)}</select></div>
           <div className="player-field"><label htmlFor={`${filterId}-result`}>Result</label><select id={`${filterId}-result`} value={filters.result} onChange={event => change({ result: event.target.value })}><option value="">All results</option><option value="win">Win</option><option value="loss">Loss</option></select></div>
-        </>}
-        {(filters.queue !== 'all' || (filters.view !== 'memory' && (filters.champion || filters.result))) && <button type="button" className="player-button-text" onClick={() => change(filters.view === 'memory' ? { queue: 'all' } : { queue: 'all', champion: '', result: '' })}><PlayerIcon name="close" size={16} />Clear filters</button>}
+          {advancedFilterCount > 0 && <button type="button" className="player-button-text" onClick={() => change({ champion: '', result: '' })}><PlayerIcon name="close" size={16} />Clear filters</button>}
+          </div>
+        </details>}
       </div>
+      {filters.view !== 'memory' && advancedFilterCount > 0 && <div className="profile-active-filters" aria-label="Active filters">
+        {filters.champion && <button type="button" aria-label={`Remove champion filter: ${championDisplayName(filters.champion)}`} onClick={() => change({ champion: '' })}><ChampionPortrait champion={filters.champion} size={22} />{championDisplayName(filters.champion)}<PlayerIcon name="close" size={13} /></button>}
+        {filters.result && <button type="button" aria-label={`Remove ${filters.result === 'win' ? 'Wins' : 'Losses'} filter`} onClick={() => change({ result: '' })}>{filters.result === 'win' ? 'Wins' : 'Losses'}<PlayerIcon name="close" size={13} /></button>}
+      </div>}
       {filters.view === 'memory' && <p className="player-help">Mode filters your follow-up games.</p>}
       <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} retrySeconds={history.retrySeconds} showBreakdown={filters.view === 'history'} />
       <div className="player-view" id="player-view" key={filters.view}>
@@ -150,7 +152,6 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
           filters.view === 'builds' ? <PersonalBuilds matches={matches} platform={platform} puuid={puuid} back={back} onLeave={leave} /> :
             <BuildMemory player={`${platform}:${puuid}`} platform={platform} puuid={puuid} matches={history.matches} matchesLoading={history.loading} back={back} onLeave={leave} />}
       </div>
-      <CurrentRanks ranks={ranks} failed={!!rankError} />
     </div>
   </div>;
 }

@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
-import { installFixtures, mixedModeMatches, platform, profilePath, puuid, query, recentAramLoss, recentAramWin, savedNote, seedNotes } from './fixtures';
+import { installFixtures, platform, profilePath, puuid, query, recentAramLoss, recentAramWin, savedNote, seedNotes, visualMatches } from './fixtures';
+import { expectSelectedQueue, selectQueue } from './profile-controls';
 
 // Success artifacts for human design review. These are not pixel baselines and
 // never represent the user's live identity, history, rank, or AI responses.
@@ -45,7 +46,7 @@ for (const viewport of [
   test(`${viewport.name}: gateway and mode-specific profiles remain usable with reduced motion`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    const requests = await installFixtures(page, { matches: mixedModeMatches });
+    const requests = await installFixtures(page, { matches: visualMatches });
     if (viewport.name === 'desktop') await seedNotes(page, [{
       ...savedNote, role: 'MODE:aram', queue: 450,
       source: recentAramLoss.metadata.matchId, sourceDate: recentAramLoss.info.gameCreation,
@@ -63,14 +64,24 @@ for (const viewport of [
     const sample = page.getByRole('region', { name: 'Recent match sample', exact: true });
     await expect(sample).toContainText('5 of 5 recent matches imported');
     await expect(page.locator('.match-row')).toHaveCount(5);
+    await expect(page.locator('.match-row').first().locator('.loadout-items li')).toHaveCount(7);
     await expect(page.locator('[data-player-profile]')).toBeVisible();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(identity);
     await expect(page.getByRole('heading', { level: 1 })).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('[data-player-avatar] img')).toHaveAttribute('src', /\/img\/profileicon\/29\.png$/);
+    await settledFonts(page);
+    await expectSelectedQueue(page, 'all');
+    await expect(page.locator('.match-row').first()).toBeInViewport({ ratio: viewport.name === 'compact' ? .15 : 1 });
+    const statsSummary = sample.locator('summary').filter({ hasText: 'Stats by mode' });
+    const stats = statsSummary.locator('..');
+    const filtersSummary = page.locator('summary').filter({ hasText: /^Filters/ });
+    const filters = filtersSummary.locator('..');
+    await expect(stats).toHaveJSProperty('open', false);
+    await expect(filters).toHaveJSProperty('open', false);
     if (viewport.name === 'desktop') {
       const recordReads = () => requests.filter(request => ['history', 'match'].includes(request.action)).length;
       const before = recordReads();
-      for (const title of ['About this sample', 'About these stats']) {
-        const summary = sample.locator('summary').filter({ hasText: title }).first();
+      for (const summary of [filtersSummary, statsSummary]) {
         const disclosure = summary.locator('..');
         await expect(disclosure).toHaveJSProperty('open', false);
         await summary.focus();
@@ -86,7 +97,7 @@ for (const viewport of [
     await capture(page, `${viewport.name}-profile-all`, true);
 
     for (const mode of [{ id: '450', name: 'aram', count: 2 }, { id: '420', name: 'ranked', count: 1 }]) {
-      await page.getByLabel('Game mode', { exact: true }).selectOption(mode.id);
+      await selectQueue(page, mode.id);
       await expect(sample).toContainText(`${mode.count} of ${mode.count} recent matches imported`);
       await expect(page.locator('.match-row')).toHaveCount(mode.count);
       await expect(page.locator('[data-mode-summary]')).toHaveCount(1);
@@ -98,7 +109,7 @@ for (const viewport of [
     expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);
 
     if (viewport.name === 'desktop') {
-      await page.getByLabel('Game mode', { exact: true }).selectOption('450');
+      await selectQueue(page, '450');
       await expect(sample).toContainText('2 of 2 recent matches imported');
       const views = page.getByRole('navigation', { name: 'Player views', exact: true });
       await views.getByRole('button', { name: 'Builds', exact: true }).click();
@@ -125,10 +136,10 @@ for (const viewport of [
   });
 }
 
-test('short-laptop gateway keeps lookup, saved player and footer visible with full motion', async ({ page }) => {
+test('short-laptop gateway and profile keep their useful first actions visible with full motion', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const requests = await installFixtures(page, { matches: mixedModeMatches });
+  const requests = await installFixtures(page, { matches: visualMatches });
   await page.addInitScript(remembered => {
     localStorage.setItem('riftscry:remembered-player:v1', JSON.stringify(remembered));
   }, { platform, puuid, name: identity });
@@ -145,4 +156,15 @@ test('short-laptop gateway keeps lookup, saved player and footer visible with fu
   // pixel assertion against a particular animation frame.
   await page.screenshot({ path: `${captureDirectory}/desktop-gateway-full-motion.png`, animations: 'allow', timeout: 10_000 });
   expect(requests).toEqual([]);
+
+  await page.goto(namedProfile, { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('region', { name: 'Recent match sample', exact: true })).toContainText('5 of 5 recent matches imported');
+  await settledFonts(page);
+  await expect(page.locator('[data-player-avatar]')).toBeInViewport({ ratio: 1 });
+  await expect(page.getByRole('heading', { level: 1 })).toBeInViewport({ ratio: 1 });
+  await expect(page.getByRole('group', { name: 'Game modes', exact: true })).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.match-row').first()).toBeInViewport({ ratio: 1 });
+  await expectNoHorizontalOverflow(page);
+  await capture(page, 'laptop-profile-first-screen');
+  expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);
 });

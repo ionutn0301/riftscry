@@ -1,7 +1,7 @@
 import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import { createHash, randomUUID } from 'node:crypto';
-import { platforms, type Platform, type Match, type Timeline } from './contracts';
+import { platforms, type Platform, type Match, type Timeline, type SummonerProfile } from './contracts';
 import { riotAccessAllowed } from './access';
 import { isSupportedMatchmade } from './modes';
 import { observeRiotBudget, reserveRiotBudget, retryAfterSeconds, riotMethod, type RiotBudget } from './riot-budget';
@@ -11,6 +11,7 @@ export class ServiceError extends Error {
 }
 export type BeforeFetch = () => Promise<void>;
 export const MATCH_CACHE_SECONDS = 7 * 24 * 60 * 60;
+export const SUMMONER_CACHE_SECONDS = 5 * 60;
 const pendingFills = new Map<string, Promise<unknown>>();
 const wait = (milliseconds: number) => new Promise(resolve => setTimeout(resolve, milliseconds));
 const releaseLock = 'if redis.call("get", KEYS[1]) == ARGV[1] then return redis.call("del", KEYS[1]) else return 0 end';
@@ -116,5 +117,23 @@ export async function getMatch(platform: Platform, id: string, beforeFetch?: Bef
   const match = await riot<Match>(platforms[platform], `/lol/match/v5/matches/${id}`, MATCH_CACHE_SECONDS, beforeFetch);
   if (!isSupportedMatchmade(match)) throw new ServiceError('This recent entry is not a supported public matchmade queue. Custom, tutorial, bot and unrecognized queues are excluded.', 404);
   return match;
+}
+/**
+ * A platform-scoped, optional profile read. Never use this response as a Riot ID.
+ * https://developer.riotgames.com/apis#summoner-v4/GET_getByPUUID
+ * https://developer.riotgames.com/docs/lol#data-dragon_other
+ */
+export async function getSummoner(platform: Platform, puuid: string, beforeFetch?: BeforeFetch): Promise<SummonerProfile> {
+  const value = await riot<Record<string, unknown> | null>(platform, `/lol/summoner/v4/summoners/by-puuid/${puuid}`, SUMMONER_CACHE_SECONDS, beforeFetch);
+  if (!value || value.puuid !== puuid || !Number.isSafeInteger(value.profileIconId) || Number(value.profileIconId) < 0 || Number(value.profileIconId) > 2147483647) {
+    throw new ServiceError('Player icon is temporarily unavailable.', 502);
+  }
+  // Keep a usable icon when the optional level is absent or malformed. Do not
+  // return unrelated upstream fields or a fabricated level to the browser.
+  const level = value.summonerLevel;
+  return {
+    puuid, profileIconId: value.profileIconId as number,
+    ...(Number.isSafeInteger(level) && Number(level) > 0 ? { summonerLevel: level as number } : {}),
+  };
 }
 export function getTimeline(platform: Platform, id: string, beforeFetch?: BeforeFetch) { return riot<Timeline>(platforms[platform], `/lol/match/v5/matches/${id}/timeline`, MATCH_CACHE_SECONDS, beforeFetch); }

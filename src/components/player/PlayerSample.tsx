@@ -41,8 +41,12 @@ export default function PlayerSample({ matches, puuid, imported, available, load
       {showBreakdown && matches.length !== imported && <span className="sample-filter-count">{matches.length} shown</span>}
     </div>
     {error && <p role="alert">{error.message}</p>}
-    <details className="player-disclosure sample-details"><summary><PlayerIcon name="info" size={16} />About this sample</summary><p>Recent results may be cached for up to 2 minutes. Refresh checks for new games and retries missing records.</p><p>Stats use the matches shown, grouped by exact mode. Unavailable records never count as losses.</p></details>
-    {!!summaries.length && <><header className="sample-heading"><h2>By game mode</h2><span className={`sample-state${incomplete ? ' is-partial' : ''}`}>{incomplete ? 'Partial sample' : 'Recent sample'}</span></header><div className="mode-summary-grid">{summaries.map(stats => <QueueSummary key={stats.queueId} stats={stats} />)}</div></>}
-    {showBreakdown && !summaries.length && !loading && !error && <p className="player-help">No matching games. Try another filter.</p>}
+    <details className="player-statistics sample-details"><summary><PlayerIcon name={showBreakdown ? 'layers' : 'info'} size={16} />{showBreakdown ? 'Stats by mode' : 'About these games'}</summary>
+      <div className="sample-expanded">
+        {!!summaries.length && <><header className="sample-heading"><h2>Stats by mode</h2><span className={`sample-state${incomplete ? ' is-partial' : ''}`}>{incomplete ? 'Partial sample' : 'Recent sample'}</span></header><div className="mode-summary-grid">{summaries.map(stats => <QueueSummary key={stats.queueId} stats={stats} />)}</div></>}
+        {showBreakdown && !summaries.length && !loading && !error && <p className="player-help">No matching games. Try another filter.</p>}
+        <p>Recent results may be cached for up to 2 minutes. Refresh checks for new games and retries missing records.</p><p>Stats use the matches shown, grouped by exact mode. Unavailable records never count as losses.</p>
+      </div>
+    </details>
   </section>;
 }

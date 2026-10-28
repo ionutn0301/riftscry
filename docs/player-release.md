@@ -1,5 +1,33 @@
 # Player beta delivery
 
+## Player hub follow-up — 2026-10-28
+
+Starting point: deployed main `d126aa3cf0f4cbd950c9d88ef287530c05a3d157`.
+Branch: `codex/player-profile-hub`.
+
+The profile now leads with a compact account identity and recent match cards.
+It replaces the large profile introduction, duplicate recent-match path and
+always-visible mode-statistics grid. Named category buttons expose exact queue
+choices, while champion/result filters and statistics become optional. Match
+cards retain exact mode, real result, KDA, inventory, date and duration.
+
+An optional `summoner` action returns the validated player's profile icon ID and
+level. Its platform-scoped Riot request uses a five-minute shared cache and
+five-minute tab cache, preserving existing request coalescing and budget guards.
+It cannot replace verified Riot ID lookup or block history when unavailable.
+The neutral avatar fallback is not a fabricated account or champion image.
+
+Local unit/integration checks passed with 415 tests across 42 files. The browser
+suite retains 30 workflows and plans 20 success captures, including first-match
+visibility on a small laptop. Browser discovery is not a rendered pass; exact
+CI, visual review and production results are recorded in this change's PR.
+No secrets, public-access flags or deployment protection are changed.
+
+References: [Riot Summoner-v4](https://developer.riotgames.com/apis#summoner-v4/GET_getByPUUID),
+[Data Dragon profile icons](https://developer.riotgames.com/docs/lol#data-dragon_other),
+[recognition](https://www.nngroup.com/articles/recognition-and-recall/),
+[progressive disclosure](https://www.nngroup.com/articles/progressive-disclosure/).
+
 ## Visual clarity follow-up — 2026-10-28
 
 This follow-up starts from deployed `main` commit `bcca807f676ae60d45d94f5d021d70b951d60266` on `codex/player-visual-clarity`. It simplifies the player gateway, profile, match review, builds and Build Memory while preserving the protected deployment and cache release below.

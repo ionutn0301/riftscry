@@ -12,6 +12,7 @@ export const otherProfilePath = `/players/${platform}/${otherPuuid}`;
 export const memoryKey = `riftscry:build-memory:v1:${player}`;
 export const baseTime = 1_780_000_000_000;
 export const trackingStart = baseTime + 2_000;
+export const summoner = { puuid, profileIconId: 29, summonerLevel: 438 };
 
 const participant = {
   puuid, participantId: 1, championName: 'Ahri', teamPosition: 'MIDDLE', win: true,
@@ -67,12 +68,35 @@ export const mayhemMatch = modeMatch('EUN1_22005', '2026-10-24T18:00:00Z', 2400,
   { win: false, kills: 0, deaths: 10, assists: 2, damage: 3_000 });
 export const mixedModeMatches = [oldRankedMatch, recentAramLoss, swiftplayMatch, recentAramWin, mayhemMatch];
 
+// Keep behavioral fixtures stable. These visual-only variations expose portrait
+// and name layout differences while the ARAM pair remains comparable for Memory.
+// Seven populated inventory slots stress the layout; these synthetic loadouts
+// are neither gameplay recommendations nor a claim about mode item eligibility.
+export const visualMatches = mixedModeMatches.map(match => ({
+  ...match,
+  info: { ...match.info, participants: match.info.participants.map(player => ({
+    ...player,
+    championName: match.info.queueId === 420 ? 'Urgot' : match.info.queueId === 480 ? 'Jinx'
+      : match.info.queueId === 2400 ? 'Braum' : player.championName,
+    item0: 3020, item1: 6655, item2: 3089, item3: 3157,
+    item4: 3135, item5: 4645, item6: 3364,
+  })) },
+}));
+
 export const itemMetadata = {
   version: '16.21.1',
   data: {
     1001: { name: 'Boots', plaintext: 'Movement speed', image: { full: '1001.png' } },
     3006: { name: "Berserker's Greaves", plaintext: 'Attack speed', image: { full: '3006.png' } },
     3047: { name: 'Plated Steelcaps', plaintext: 'Armor', image: { full: '3047.png' } },
+    // Names/asset IDs checked against Riot's official 16.21.1 item catalogue.
+    3020: { name: "Sorcerer's Shoes", plaintext: '', image: { full: '3020.png' } },
+    3089: { name: "Rabadon's Deathcap", plaintext: '', image: { full: '3089.png' } },
+    3135: { name: 'Void Staff', plaintext: '', image: { full: '3135.png' } },
+    3157: { name: "Zhonya's Hourglass", plaintext: '', image: { full: '3157.png' } },
+    6655: { name: "Luden's Echo", plaintext: '', image: { full: '6655.png' } },
+    4645: { name: 'Shadowflame', plaintext: '', image: { full: '4645.png' } },
+    3364: { name: 'Oracle Lens', plaintext: '', image: { full: '3364.png' } },
   },
   runes: { 8112: { name: 'Electrocute', icon: 'perk-images/Styles/Domination/Electrocute/Electrocute.png' } },
   notice: 'Isolated browser-test metadata; not a live source.',
@@ -126,6 +150,7 @@ type FixtureOptions = {
   reviewFailure?: boolean;
   timelineFailure?: boolean;
   accountFailure?: boolean;
+  summonerFailure?: boolean;
   matchFailures?: string[];
   historyIds?: (queue: string | null) => string[] | Promise<string[]>;
   beforeMatch?: (id: string) => Promise<void>;
@@ -156,6 +181,12 @@ export async function installFixtures(page: Page, options: FixtureOptions = {}) 
           : { puuid: url.searchParams.get('puuid') ?? puuid, gameName: url.searchParams.get('puuid') === otherPuuid ? 'Other Fixture Player' : 'Fixture Player', tagLine: 'TEST' };
         break;
       case 'rank': payload = [{ queueType: 'RANKED_SOLO_5x5', tier: 'GOLD', rank: 'II', leaguePoints: 35 }]; break;
+      case 'summoner':
+        status = options.summonerFailure ? 503 : 200;
+        payload = options.summonerFailure
+          ? { error: 'Fixture summoner profile is temporarily unavailable.' }
+          : { ...summoner, puuid: url.searchParams.get('puuid') ?? puuid };
+        break;
       case 'history': {
         const queue = url.searchParams.get('queue');
         payload = options.historyIds ? await options.historyIds(queue) : records
