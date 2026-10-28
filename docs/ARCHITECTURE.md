@@ -8,7 +8,7 @@ serves dynamic player routes and API handlers. React islands import and render p
 
 | Route | Purpose | Data boundary |
 | --- | --- | --- |
-| `/` | Explain automatic preparation and offer direct actions | Static content; validated local recent-player shortcut |
+| `/` | Introduce automatic preparation, show archive examples and launch the selected player's next task | Prerendered archive examples; validated local identity; no player API requests |
 | `/next-game` | Automatic session recap, personal patch catch-up, review focus and recorded loadout | Existing account/history/match/items API; build-time archive |
 | `/notebook` | Existing Rift Recall notes, saved loadouts, original cards and backups | Existing browser-local preparation document |
 | `/players` | Riot ID lookup with preserved task and filters | Dynamic shell; explicit lookup API request |
@@ -16,6 +16,37 @@ serves dynamic player routes and API handlers. React islands import and render p
 | `/matches/:id` | Match facts, optional timeline/AI review, direct automatic briefing link | Requested match API data; optional Build Memory |
 | `/champions`, `/champion/:slug`, `/patches`, `/patch/:id`, `/compare/*`, `/pool` | Structured changes and optional personal champion pool | Committed patch data; local pool/reviewed baseline |
 | `/explore` | Immersive archive journey | Prerendered content and on-demand archive JSON |
+
+## Homepage
+
+`CompanionHome.astro` introduces the companion with a single hero, an interactive
+archive example, three everyday task links, and an archive exploration section.
+`HomeReturn.tsx` owns the hero action area: the server-rendered newcomer state offers
+briefing and player-lookup links, while the hydrated returning state shows the validated
+selected player and server with explicit-identity briefing, match, build and catch-up
+links. Change player opens the existing lookup flow. No match-history requests or
+claims about new games are made on the homepage.
+
+The launcher uses `readRecentPlayer`, including the legacy remembered-player fallback,
+and listens for storage, recent-player and `pageshow` events. When no valid identity can
+be read, the public actions remain available. Selecting another identity updates all direct links;
+the homepage does not write a second identity or personal-report cache.
+
+`HomeSignals.astro` receives three examples from the build-time `buildHomeSignals`
+selector in `src/lib/home-signals.ts`. It prefers readable numeric records from the
+newest committed patch, a mix of available source directions, and distinct known
+champions. Older patches only fill a shortage and keep their actual patch labels.
+Values, champion classifications, source URLs and record anchors come directly from
+the archive. The UI says **From the archive**, **Latest archived patch**, and **An
+archive example**; it does not present these records as a live patch feed or the selected
+player's personal changes.
+
+The example switcher uses native buttons, tab/panel relationships, roving focus and
+Arrow/Home/End navigation. It never rotates automatically. The first complete record
+and source links are available without JavaScript; selection buttons enable after
+initialization. Homepage motion follows both the OS and saved reduced-motion setting.
+Legacy homepage journey parameters and hashes still redirect to `/explore` with their
+query and reading position intact. See the [homepage audit](homepage-refresh/README.md).
 
 ## Patch ingestion and matching
 

@@ -2,12 +2,16 @@
   <img src="src/assets/brand/logo-desktop-dark.png" alt="RiftScry" width="420" />
 </p>
 
-<h3 align="center">Your next game. Already prepared.</h3>
+<h3 align="center">The Rift changes. You’re ready.</h3>
 
 RiftScry is a League of Legends companion that turns available match history into
 an automatic briefing. Enter a Riot ID once, then return for the useful details:
 what changed since you played, how your latest session went, and one thing to review.
 
+- **A useful first visit and a faster return:** the homepage shows real, source-linked
+  archive examples before a player lookup. Returning visitors get their selected
+  player's briefing, matches, builds and catch-up links together, without a homepage
+  match-history request.
 - **Automatic briefing:** `/next-game` discovers recent champions, exact queues and
   recorded loadouts from imported games. It assembles a session recap and a focus
   supported by available evidence. No notes, saved cards or reflections are required.
@@ -29,7 +33,7 @@ cross-device account sync or ownership verification. Automatic results require e
 match history; Riot currently keeps ARAM: Mayhem history private, so the site explains
 that gap instead of inventing a report or substituting ordinary ARAM.
 
-![RiftScry patch page](docs/screenshots/patch-desktop.png)
+![RiftScry homepage](docs/homepage-refresh/after/home-1440.webp)
 
 ## Run it
 
@@ -67,6 +71,7 @@ Riot access mode, server-side credentials and Redis cache/budget state; see
 client or commit deployment environment files.
 
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
+- [Homepage refresh](docs/homepage-refresh/README.md) — newcomer and returning-player paths, archive examples and responsive audit
 - [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
 - [Data & methodology](docs/DATA.md) — schema, classification and provenance
 - [Contributing](CONTRIBUTING.md) — checks and contribution workflow
