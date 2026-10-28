@@ -119,6 +119,8 @@ export const savedNote: Memory = {
   createdAt: trackingStart, trackingStartedAt: trackingStart, revisedAt: null,
 };
 
+export type FixtureRequest = { action: string; url: string; method: string };
+type FixtureResponse = { status: number; json: unknown; headers?: Record<string, string> };
 type FixtureOptions = {
   matches?: Match[];
   reviewFailure?: boolean;
@@ -127,15 +129,22 @@ type FixtureOptions = {
   matchFailures?: string[];
   historyIds?: (queue: string | null) => string[] | Promise<string[]>;
   beforeMatch?: (id: string) => Promise<void>;
+  response?: (request: FixtureRequest) => FixtureResponse | undefined | Promise<FixtureResponse | undefined>;
 };
 export async function installFixtures(page: Page, options: FixtureOptions = {}) {
   const records = options.matches ?? matches;
-  const requests: { action: string; url: string; method: string }[] = [];
+  const requests: FixtureRequest[] = [];
   await page.route('**/api/player/**', async route => {
     const request = route.request();
     const url = new URL(request.url());
     const action = url.pathname.split('/').at(-1) ?? '';
-    requests.push({ action, url: request.url(), method: request.method() });
+    const recorded = { action, url: request.url(), method: request.method() };
+    requests.push(recorded);
+    const response = await options.response?.(recorded);
+    if (response) {
+      await route.fulfill(response);
+      return;
+    }
     let status = 200;
     let payload: unknown;
     switch (action) {

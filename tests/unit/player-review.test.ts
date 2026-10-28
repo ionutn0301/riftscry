@@ -3,7 +3,8 @@ vi.mock('ai', () => ({ generateText: vi.fn(), Output: { object: vi.fn(value => v
 vi.mock('../../src/lib/player/server', () => ({ cached: vi.fn((_key, _ttl, fn) => fn()) }));
 import { generateText } from 'ai';
 import { groundedSections, review, selectReviewFacts } from '../../src/lib/player/review';
-import type { Fact } from '../../src/lib/player/contracts';
+import { fallbackReview, type Fact } from '../../src/lib/player/contracts';
+import { cached } from '../../src/lib/player/server';
 
 const facts: Fact[] = [
   { id: 'result', kind: 'result', text: 'Jhin won a 20-minute match.' },
@@ -11,7 +12,10 @@ const facts: Fact[] = [
   { id: 'inventory', kind: 'inventory', text: 'Boots of Swiftness in final inventory.' },
 ];
 const output = { sections: Array.from({ length: 4 }, (_, index) => ({ index, text: 'Recorded match interpretation tied to this evidence.', evidence: [index === 2 ? 'inventory' : 'result'] })) };
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.mocked(cached).mockImplementation((_key, _ttl, fill) => fill());
+});
 
 describe('review grounding', () => {
   it('rejects unknown evidence and duplicate section indices', () => {
@@ -41,10 +45,32 @@ describe('review grounding', () => {
 
   it('returns a labeled successful interpretation with validated evidence', async () => {
     vi.mocked(generateText).mockResolvedValue({ output } as Awaited<ReturnType<typeof generateText>>);
-    const result = await review(facts);
+    const beforeGenerate = vi.fn().mockResolvedValue(undefined);
+    const result = await review(facts, [], beforeGenerate);
     expect(result.mode).toBe('ai');
     expect(result.sections[2]?.text).toBe(output.sections[2]?.text);
     expect(result.notice).toContain('AI interpretation');
+    expect(beforeGenerate).toHaveBeenCalledTimes(1);
+    expect(beforeGenerate.mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(generateText).mock.invocationCallOrder[0]!);
+  });
+
+  it('returns a cached interpretation without consuming another generation allowance', async () => {
+    const previous = { ...fallbackReview(facts), mode: 'ai' as const, notice: 'Previously generated fixture interpretation.' };
+    vi.mocked(cached).mockResolvedValue(previous);
+    const beforeGenerate = vi.fn().mockRejectedValue(new Error('Generation budget exhausted.'));
+    expect(await review(facts, [], beforeGenerate)).toEqual(previous);
+    expect(beforeGenerate).not.toHaveBeenCalled();
+    expect(generateText).not.toHaveBeenCalled();
+  });
+
+  it('retains factual evidence and avoids generation when an uncached review exceeds its allowance', async () => {
+    const beforeGenerate = vi.fn().mockRejectedValue(new Error('Generation budget exhausted.'));
+    const result = await review(facts, [], beforeGenerate);
+    expect(beforeGenerate).toHaveBeenCalledTimes(1);
+    expect(generateText).not.toHaveBeenCalled();
+    expect(result.mode).toBe('deterministic');
+    expect(result.facts).toEqual(facts);
+    expect(result.sections).toHaveLength(4);
   });
 
   it('keeps the deterministic review when generation fails or evidence is fabricated', async () => {

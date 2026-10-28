@@ -3,12 +3,14 @@ import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
 import type { Match } from '../../lib/player/contracts';
 import { api, fetcher } from './client';
+import { usePlayerCooldown } from './usePlayerCooldown';
 
 type MatchBatch = { matches: Match[]; failedIds: string[]; requestedIds: string[]; revision: string };
 const BATCH_SIZE = 4;
 
 /** Keep Riot detail requests bounded while progressively exposing real records. */
 export function usePlayerHistory(platform: string, puuid: string, queue: string) {
+  const retrySeconds = usePlayerCooldown();
   const { data: ids, error, isLoading: idsLoading, isValidating: idsRefreshing, mutate: refreshIds } = useSWR<string[]>(
     api('history', { platform, puuid, queue }), fetcher,
     { shouldRetryOnError: false, revalidateOnFocus: false },
@@ -34,8 +36,8 @@ export function usePlayerHistory(platform: string, puuid: string, queue: string)
   const currentBatches = useMemo(() => (batches ?? []).filter(batch => batch.revision === revision), [batches, revision]);
 
   useEffect(() => {
-    if (ids && currentBatches.length === size && size * BATCH_SIZE < ids.length && !isValidating && !idsRefreshing) void setSize(size + 1);
-  }, [ids, currentBatches, size, isValidating, idsRefreshing, setSize]);
+    if (ids && currentBatches.length === size && size * BATCH_SIZE < ids.length && !isValidating && !idsRefreshing && !retrySeconds) void setSize(size + 1);
+  }, [ids, currentBatches, size, isValidating, idsRefreshing, retrySeconds, setSize]);
 
   const matches = useMemo(() => {
     const requestedIds = new Set(ids ?? []);
@@ -46,16 +48,17 @@ export function usePlayerHistory(platform: string, puuid: string, queue: string)
   }, [currentBatches, ids]);
   const failed = new Set(currentBatches.flatMap(batch => batch.failedIds)).size;
   const attempted = new Set(currentBatches.flatMap(batch => batch.requestedIds)).size;
-  const loading = idsLoading || idsRefreshing || isValidating || (!!ids?.length && attempted < ids.length && !error);
+  const loading = idsLoading || idsRefreshing || isValidating || (!!ids?.length && attempted < ids.length && !error && !retrySeconds);
 
   async function refresh() {
+    if (retrySeconds) return;
     try {
       const nextIds = await refreshIds();
       // A changed key starts a fresh import automatically. Revalidating an old
       // mutate closure here would refetch the previous sample instead.
-      if (nextIds && JSON.stringify([platform, puuid, queue, nextIds]) === revision) await refreshBatches();
+      if (nextIds && JSON.stringify([platform, puuid, queue, nextIds]) === revision && failed > 0) await refreshBatches();
     } catch { /* SWR exposes the request error while the previous data remains available. */ }
   }
 
-  return { matches, available: ids?.length, failed, loading, error, refresh };
+  return { matches, available: ids?.length, failed, loading, error, retrySeconds, refresh };
 }

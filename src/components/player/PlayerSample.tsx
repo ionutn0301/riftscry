@@ -19,17 +19,18 @@ function QueueSummary({ stats }: { stats: QueueStats }) {
   </article>;
 }
 
-export default function PlayerSample({ matches, puuid, imported, available, loading, failed, error, showBreakdown = true }: {
-  matches: Match[]; puuid: string; imported: number; available?: number; loading: boolean; failed: number; error?: Error; showBreakdown?: boolean;
+export default function PlayerSample({ matches, puuid, imported, available, loading, failed, error, retrySeconds = 0, showBreakdown = true }: {
+  matches: Match[]; puuid: string; imported: number; available?: number; loading: boolean; failed: number; error?: Error; retrySeconds?: number; showBreakdown?: boolean;
 }) {
   const summaries = showBreakdown ? summarizeByQueue(matches, puuid) : [];
-  const incomplete = loading || failed > 0 || !!error;
+  const incomplete = loading || failed > 0 || !!error || retrySeconds > 0;
   return <section className="player-sample" aria-label="Recent match sample" aria-busy={loading}>
     <div className="sample-status" role="status" aria-live="polite">
       <span className="player-signal" aria-hidden="true" />
       <p>{error ? imported ? `${imported} previously imported matches remain available.` : 'Recent match records are unavailable.' : available == null ? 'Finding recent match records…' : `${imported} of ${available} recent matches imported.`}
-        {error ? ' The latest history could not be loaded. Sample incomplete; refresh to retry.' : loading ? ' Importing summaries in small batches. Sample incomplete.' : failed ? ` Sample incomplete: ${failed} recent ${failed === 1 ? 'entry is' : 'entries are'} unavailable or excluded. Refresh to retry.` : showBreakdown ? ' Newest first. Each mode is measured separately.' : ' Newest first.'}</p>
+        {retrySeconds ? ` Requests are paused. Retry in ${retrySeconds} seconds. Imported records remain available.` : error ? ' The latest history could not be loaded. Sample incomplete; refresh to retry.' : loading ? ' Importing summaries in small batches. Sample incomplete.' : failed ? ` Sample incomplete: ${failed} recent ${failed === 1 ? 'entry is' : 'entries are'} unavailable or excluded. Refresh to retry.` : showBreakdown ? ' Newest first. Each mode is measured separately.' : ' Newest first.'}</p>
     </div>
+    <p className="player-help">Recent results may be cached for up to 2 minutes. Refresh checks the recent match list and retries unavailable details.</p>
     {error && <p role="alert">{error.message}</p>}
     {failed > 0 && <p className="player-help">Unavailable records are not counted as losses.{showBreakdown && ' These averages describe only imported matches matching your filters.'}</p>}
     {!!summaries.length && <><header className="sample-heading"><h2>Your games, in context.</h2><p>{incomplete ? 'An evolving sample, not a completed report.' : 'A sample of your recent play.'} Filters apply to every number below.</p></header>{summaries.map(stats => <QueueSummary key={stats.queueId} stats={stats} />)}</>}

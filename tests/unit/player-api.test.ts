@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/lib/player/server', () => ({
   limit: vi.fn(), riot: vi.fn(), getMatch: vi.fn(), getTimeline: vi.fn(),
-  ServiceError: class ServiceError extends Error { constructor(message: string, public status = 503, public retry = 0) { super(message); } },
+  ServiceError: class ServiceError extends Error { constructor(message: string, public status = 503, public retry = 0, public scope?: 'player' | 'review') { super(message); } },
 }));
 vi.mock('../../src/lib/player/metadata', () => ({ getItemMetadata: vi.fn() }));
 vi.mock('../../src/lib/player/review', () => ({ review: vi.fn() }));
 import { ALL } from '../../src/pages/api/player/[action]';
-import { getMatch, getTimeline, limit, riot } from '../../src/lib/player/server';
+import { getMatch, getTimeline, limit, riot, ServiceError } from '../../src/lib/player/server';
 import { getItemMetadata } from '../../src/lib/player/metadata';
 import { review } from '../../src/lib/player/review';
 import { fallbackReview, type Match, type Participant } from '../../src/lib/player/contracts';
@@ -32,12 +32,14 @@ async function request(action: string, params: Record<string, string> = {}, meth
 }
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  vi.resetAllMocks();
   vi.stubEnv('RIOT_API_KEY', 'test-only-placeholder');
   vi.stubEnv('RIOT_PUBLIC_ACCESS_APPROVED', 'false');
   vi.stubEnv('RIOT_PRIVATE_TESTING_ENABLED', 'true');
+  vi.stubEnv('RIOT_PROTECTED_PRODUCTION_ENABLED', 'false');
   vi.stubEnv('VERCEL_ENV', 'preview');
   vi.stubEnv('NODE_ENV', 'production');
+  vi.mocked(limit).mockResolvedValue(undefined);
   vi.mocked(getMatch).mockResolvedValue(match);
   vi.mocked(getTimeline).mockResolvedValue({ info: { frames: [] } });
   vi.mocked(getItemMetadata).mockResolvedValue(metadata);
@@ -61,12 +63,26 @@ describe('player API access and review integration', () => {
     for (const fn of [limit, riot, getMatch, getTimeline, getItemMetadata, review]) expect(fn).not.toHaveBeenCalled();
   });
 
+  it('allows account and history reads only after the protected Vercel production opt-in is explicitly enabled', async () => {
+    vi.stubEnv('VERCEL', '1');
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('RIOT_PROTECTED_PRODUCTION_ENABLED', 'true');
+    vi.mocked(riot).mockResolvedValueOnce({ puuid, gameName: 'Fixture Player', tagLine: 'TEST' }).mockResolvedValueOnce([match.metadata.matchId]);
+    const account = await request('account', { platform: 'eun1', puuid });
+    const history = await request('history', { platform: 'eun1', puuid, queue: 'all' });
+    expect(account.status).toBe(200);
+    expect((await account.json()).puuid).toBe(puuid);
+    expect(history.status).toBe(200);
+    expect(await history.json()).toEqual([match.metadata.matchId]);
+    expect(process.env.RIOT_PUBLIC_ACCESS_APPROVED).toBe('false');
+  });
+
   it('resolves canonical account identity from PUUID rather than trusting a profile name query', async () => {
     vi.mocked(riot).mockResolvedValue({ puuid, gameName: 'Canonical Player', tagLine: 'EUNE' });
     const result = await request('account', { platform: 'eun1', puuid, name: 'Untrusted display hint' });
     expect(result.status).toBe(200);
     expect(await result.json()).toEqual({ puuid, gameName: 'Canonical Player', tagLine: 'EUNE' });
-    expect(riot).toHaveBeenCalledWith('europe', `/riot/account/v1/accounts/by-puuid/${puuid}`);
+    expect(riot).toHaveBeenCalledWith('europe', `/riot/account/v1/accounts/by-puuid/${puuid}`, 300, expect.any(Function));
     expect(getMatch).not.toHaveBeenCalled();
   });
 
@@ -75,7 +91,7 @@ describe('player API access and review integration', () => {
     const result = await request('history', { platform: 'eun1', puuid, ...(queue == null ? {} : { queue }) });
     expect(result.status).toBe(200);
     expect(await result.json()).toEqual(['EUN1_123456']);
-    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20`, 120);
+    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20`, 120, expect.any(Function));
     expect(getMatch).not.toHaveBeenCalled();
     expect(review).not.toHaveBeenCalled();
   });
@@ -85,13 +101,14 @@ describe('player API access and review integration', () => {
     const result = await request('history', { platform: 'eun1', puuid, queue });
     expect(result.status).toBe(200);
     expect(await result.json()).toEqual([]);
-    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&queue=${queue}`, 120);
+    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&queue=${queue}`, 120, expect.any(Function));
   });
 
   it.each(['0', '870', '999999', 'aram', '-450', '4.5e2'])('rejects unsupported or ambiguous queue %s without Riot work', async queue => {
     const result = await request('history', { platform: 'eun1', puuid, queue });
     expect(result.status).toBe(400);
     expect(riot).not.toHaveBeenCalled();
+    expect(limit).not.toHaveBeenCalled();
   });
 
   it('caps recent imports and does not accept client pagination as a way to exceed the bound', async () => {
@@ -99,7 +116,7 @@ describe('player API access and review integration', () => {
     vi.mocked(riot).mockResolvedValue([]);
     const result = await request('history', { platform: 'eun1', puuid, count: '100', start: '20' });
     expect(result.status).toBe(200);
-    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20`, 120);
+    expect(riot).toHaveBeenCalledWith('europe', `/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20`, 120, expect.any(Function));
   });
 
   it('passes compatible item names and bounded suggestions into a protected review', async () => {
@@ -108,7 +125,9 @@ describe('player API access and review integration', () => {
     const body = await result.json();
     expect(body.facts.find((fact: { id: string }) => fact.id === 'inventory').text).toContain('Boots of Swiftness');
     expect(body.suggestions).toEqual(expect.arrayContaining([expect.objectContaining({ targetItem: 3047 })]));
-    expect(limit).toHaveBeenCalledWith('127.0.0.1', true);
+    expect(review).toHaveBeenCalledWith(expect.any(Array), expect.any(Array), expect.any(Function));
+    // The cached/factual result does not generate another AI response.
+    expect(limit).not.toHaveBeenCalled();
     expect(review).toHaveBeenCalledTimes(1);
   });
 
@@ -121,5 +140,86 @@ describe('player API access and review integration', () => {
     expect(body.facts.some((fact: { id: string }) => fact.id === 'result')).toBe(true);
     expect(body.facts.find((fact: { id: string }) => fact.id === 'inventory').text).toContain('item 3009');
     expect(body.suggestions).toEqual([]);
+  });
+});
+
+describe('player API budgets apply to upstream work rather than cached reads', () => {
+  it('keeps more than 90 cached match reads available even when the upstream-fill quota is exhausted', async () => {
+    vi.mocked(limit).mockRejectedValue(new ServiceError('Fixture upstream-fill quota reached.', 429, 37));
+    // The server owns Redis cache behavior. This route-level stub models a
+    // successful cache hit, which must not call its beforeFetch callback.
+    for (let index = 0; index < 96; index++) {
+      const result = await request('match', { platform: 'eun1', puuid, id: match.metadata.matchId });
+      expect(result.status).toBe(200);
+      expect((await result.json()).metadata.matchId).toBe(match.metadata.matchId);
+      expect(result.headers.get('cache-control')).toBe('private, no-store');
+    }
+    expect(getMatch).toHaveBeenCalledTimes(96);
+    expect(limit).not.toHaveBeenCalled();
+  });
+
+  it.each(['lookup', 'account', 'history', 'rank', 'match', 'timeline', 'items', 'review'])('does not charge cached %s responses before the server checks its cache', async action => {
+    vi.mocked(limit).mockRejectedValue(new ServiceError('Fixture upstream-fill quota reached.', 429, 37));
+    vi.mocked(riot).mockResolvedValue([]);
+    const result = await request(action, { platform: 'eun1', puuid, id: match.metadata.matchId, name: 'Fixture Player', tag: 'TEST' }, action === 'review' ? 'POST' : 'GET');
+    expect(result.status).toBe(200);
+    expect(limit).not.toHaveBeenCalled();
+  });
+
+  it.each(['lookup', 'account', 'history', 'rank'])('passes an enforced caller budget to an uncached %s request and retains Retry-After', async action => {
+    vi.mocked(limit).mockRejectedValue(new ServiceError('Fixture upstream-fill quota reached.', 429, 37, 'player'));
+    vi.mocked(riot).mockImplementation(async (_host, _path, _ttl, beforeFetch) => {
+      expect(beforeFetch).toEqual(expect.any(Function));
+      await beforeFetch!();
+      throw new Error('An exhausted budget must stop the upstream request.');
+    });
+    const result = await request(action, { platform: 'eun1', puuid, name: 'Fixture Player', tag: 'TEST' });
+    expect(result.status).toBe(429);
+    expect(result.headers.get('retry-after')).toBe('37');
+    expect(result.headers.get('x-ratelimit-scope')).toBe('player');
+    expect(await result.json()).toEqual({ error: 'Fixture upstream-fill quota reached.' });
+    expect(limit).toHaveBeenCalledExactlyOnceWith('127.0.0.1');
+  });
+
+  it.each(['match', 'timeline', 'items', 'review'])('protects the uncached summary required by %s before downstream processing', async action => {
+    vi.mocked(limit).mockRejectedValue(new ServiceError('Fixture upstream-fill quota reached.', 429, 19));
+    vi.mocked(getMatch).mockImplementation(async (_platform, _id, beforeFetch) => {
+      expect(beforeFetch).toEqual(expect.any(Function));
+      await beforeFetch!();
+      return match;
+    });
+    const result = await request(action, { platform: 'eun1', puuid, id: match.metadata.matchId }, action === 'review' ? 'POST' : 'GET');
+    expect(result.status).toBe(429);
+    expect(result.headers.get('retry-after')).toBe('19');
+    expect(limit).toHaveBeenCalledExactlyOnceWith('127.0.0.1');
+    expect(getTimeline).not.toHaveBeenCalled();
+    expect(getItemMetadata).not.toHaveBeenCalled();
+    expect(review).not.toHaveBeenCalled();
+  });
+
+  it('charges a missing timeline separately while preserving a warm match summary', async () => {
+    vi.mocked(limit).mockRejectedValue(new ServiceError('Fixture timeline budget reached.', 429, 23));
+    vi.mocked(getTimeline).mockImplementation(async (_platform, _id, beforeFetch) => {
+      expect(beforeFetch).toEqual(expect.any(Function));
+      await beforeFetch!();
+      return { info: { frames: [] } };
+    });
+    const result = await request('timeline', { platform: 'eun1', puuid, id: match.metadata.matchId });
+    expect(result.status).toBe(429);
+    expect(result.headers.get('retry-after')).toBe('23');
+    expect(limit).toHaveBeenCalledExactlyOnceWith('127.0.0.1');
+    expect((await request('match', { platform: 'eun1', puuid, id: match.metadata.matchId })).status).toBe(200);
+    expect(limit).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps generation on its smaller independent budget after cached evidence is read', async () => {
+    vi.mocked(review).mockImplementation(async (facts, suggestions, beforeGenerate) => {
+      expect(beforeGenerate).toEqual(expect.any(Function));
+      await beforeGenerate!();
+      return fallbackReview(facts, undefined, suggestions);
+    });
+    const result = await request('review', { platform: 'eun1', puuid, id: match.metadata.matchId }, 'POST');
+    expect(result.status).toBe(200);
+    expect(limit).toHaveBeenCalledExactlyOnceWith('127.0.0.1', true);
   });
 });

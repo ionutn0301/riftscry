@@ -24,7 +24,7 @@ The tester has supplied a Riot ID for EUNE. That account is not hardcoded, commi
 
 ## Private deployment boundary
 
-`RIOT_PRIVATE_TESTING_ENABLED=true` enables private Riot calls only in development or a protected Vercel preview. `RIOT_PUBLIC_ACCESS_APPROVED` remains a separate gate and must remain false for this private beta. The API checks the access gate before Redis rate limiting or provider work. Unknown endpoints are rejected without upstream requests.
+`RIOT_PRIVATE_TESTING_ENABLED=true` enables private Riot calls in development or a protected Vercel preview. The protected main deployment additionally requires the production-only `RIOT_PROTECTED_PRODUCTION_ENABLED=true` flag and Vercel's runtime marker (`VERCEL=1`, `VERCEL_ENV=production`). Production remains denied by default. The additional flag attests to a verified deployment configuration; it does not authenticate requests or replace Vercel Authentication. Disable private production access before removing deployment protection. `RIOT_PUBLIC_ACCESS_APPROVED` remains a separate gate and must remain false for this private beta. The API checks the access gate before cache reads, rate limiting or provider work. Unknown endpoints are rejected without upstream requests.
 
 Keep Vercel Authentication enabled for all deployments. Earlier in this session, the now-authorized Vercel management connection verified SSO protection enabled with `deploymentType: all`, a READY branch preview, private testing enabled and public approval disabled. Anonymous page/API requests reached Vercel sign-in. These observations do not prove that the agent's browser has an authenticated deployment session or that the live Riot/model integrations work. No protection setting has been weakened by this iteration.
 
@@ -35,10 +35,31 @@ Server configuration:
 - `KV_REST_API_URL` / `KV_REST_API_TOKEN`, or `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`.
 - `RIOT_API_KEY`, server-only and used within its permitted scope.
 - `RIOT_PRIVATE_TESTING_ENABLED=true` for protected private testing.
+- `RIOT_PROTECTED_PRODUCTION_ENABLED=true` only on the production target, after verifying Vercel Authentication covers all deployment URLs and anonymous page/API requests reach sign-in. This allows the private beta on the main URL; it does not authorize a public Riot launch.
 - `RIOT_PUBLIC_ACCESS_APPROVED=false` until separately approved for public use.
 - Optional `RIOT_IMPORT_LIMIT`, default and maximum 20.
 
 The model remains `google/gemini-3.8-flash`, using the existing runtime-managed Vercel AI Gateway authentication. Its successful runtime execution has not been verified in this iteration. No API key or authentication token is committed, exposed to the client, or requested in chat.
+
+## Cache, refresh and upstream budgets
+
+The earlier route charged every HTTP request against its 90-request allowance before reading the shared cache. Refresh also revalidated successful detail batches. This could exhaust the application's own allowance even while Riot responses were already cached. Caller admission now runs inside an actual upstream fill; cached reads do not consume Riot or AI generation allowances.
+
+| Data | Shared server cache | Browser reuse |
+| --- | --- | --- |
+| Recent match IDs, including exact queue filters | 2 minutes | Explicit refresh checks the list; no persistent history-ID cache |
+| Account identity and ranked status | 5 minutes | 5 minutes in the current tab session |
+| Completed match details and timelines | 7 days | 24 hours in the current tab session |
+| Patch item/rune references | 24 hours | 24 hours, shared by player/server/compatible patch |
+| Validated AI review | 24 hours | No persistent browser cache |
+
+The tab cache is bounded to 120 entries and approximately 3 MB. It stores the record fields used by the interface, never local notes or AI responses. Storage failure leaves in-memory reuse available. Keys retain player and platform context; successful records survive full-page navigation and reload in that tab. Browser requests are coalesced and capped at four in flight. Refresh retries unavailable details without refetching successful records, and a changed match-ID sample remains isolated from prior batches. The UI explains that recent results can lag Riot by the two-minute history cache. Expired history does not silently fall back to stale server data.
+
+Shared Redis cache fills use an owned lock, a bounded wait for another worker, and in-process promise coalescing. Only successful results are cached. Riot misses obey both application and method windows: conservative local caps of 15 requests per second and 90 per 120 seconds are combined with the limits/counts advertised by Riot. Shared updates are atomic, preserve counts under out-of-order responses, and honor `Retry-After`. Existing provider cooldowns survive the rollout; new caller-budget namespaces avoid inheriting counters previously charged for cache hits. The caller allowance remains 90 new upstream requests per 10 minutes, with a separate allowance of four new AI generations per 10 minutes.
+
+Cooldowns pause new browser requests and expose a countdown while loaded records remain usable. A review-only limit does not pause ordinary history requests. Private API responses retain `Cache-Control: private, no-store`; shared caching happens inside the authenticated server path, not in a publicly cacheable CDN response. Provider key expiry, another consumer exhausting the same Riot key, or genuine quota exhaustion can still interrupt new requests.
+
+Rate-limit behavior follows Riot's [developer portal](https://developer.riotgames.com/docs/portal) and [developer support overview](https://support-developer.riotgames.com/hc/en-us/articles/22698431229203-Developer-Portal-Overview). Live limits come from the provider rather than an assumption that the default quota is guaranteed.
 
 ## Evidence and item advice
 
@@ -69,6 +90,10 @@ Custom-condition confirmations are stored as bounded, unique match IDs. Structur
 
 ## Validation checkpoints
 
+### Cached refresh and protected-main release
+
+The additional tests cover cache hits under exhausted allowances, simultaneous/distributed fills, lock deadlines, successful-result retention, history expiry, advertised provider windows, out-of-order observations, scoped cooldowns, denied caller admission and Redis revision conflicts. Browser regressions exercise repeated refresh, queue changes, profile-to-match navigation, reload, retained rows during a cooldown and recovery afterward. The final counts and deployment SHA are recorded in the pull request and its exact-commit CI checks. Controlled provider/Redis tests do not claim a live authenticated Riot lookup.
+
 ### Cinematic profile and mode-aware history refactor
 
 The new source adds unit coverage for unfiltered history, exact queue requests, bounded imports, verified account identity, per-queue statistics, missing-value denominators, mode-aware evidence and non-lane prospective memory. The local full suite passes **330 tests in 39 files**; Astro typecheck and the production build pass. The dedicated player browser suite preserves the ten existing workflows and adds canonical-route, mode, refresh and visual coverage. Its controlled history includes recent ARAM, older ranked, Swiftplay and Mayhem games, never the tester's real identity.
@@ -76,6 +101,8 @@ The new source adds unit coverage for unfiltered history, exact queue requests, 
 CI writes fifteen successful visual captures to the `player-experience` artifact: desktop, portrait and short-phone gateway/profile views, a full-motion gateway, and compact Builds/Memory views. Fixtures also cover partial imports/retry, a changed history tail during refresh, forged query identity, legacy redirects, keyboard/map navigation and reduced motion. The infinite history cache includes the complete ordered ID sample; old batches cannot count toward a new sample. Progressive loading does not refetch its first four details on each new batch. Current browser execution results must be read from the latest pull-request checks; test discovery alone is not a browser pass.
 
 At the first rendered refactor checkpoint, commit `640c469` passed all **330 unit tests**, **26 player browser cases**, and **138 general browser cases**, with **21 existing conditional skips**, plus typecheck/build in [CI run 85](https://github.com/ionutn0301/riftscry/actions/runs/40695076522). The protected preview was READY and the management API confirmed Vercel Authentication for all deployments. Successful captures at 1440×900, 390×844 and 359×603 were reviewed; the search fit those viewports, and profile modes remained separate. That review led to distinct profile scenery, singular-count polish and more direct Builds/Memory navigation. The pull request's latest CI verifies the final polish and includes the additional view-switch regression.
+
+The completed visual refactor at `b78e057` subsequently passed **330 unit tests**, **27 player browser cases**, and **138 general browser cases**, with **21 existing conditional skips**, plus typecheck/build in [CI run 86](https://github.com/ionutn0301/riftscry/actions/runs/40696945177). Its protected preview was READY, and all fifteen successful visual captures were reviewed before the cache release work began.
 
 ### Earlier player beta baseline (`7b30ff6`)
 
@@ -88,4 +115,4 @@ At the first rendered refactor checkpoint, commit `640c469` passed all **330 uni
 
 Browser assertions are not reported as passed locally. The ordinary sandbox disallowed network sockets; the dev server started successfully with execution permission. The local browser download was truncated and unusable, and the cloud browser could not reach the local server. The first CI browser run executed all ten scenarios: six passed and four exposed inconsistent accessible form labels around nested selects and prefilled textareas. Those controls now use explicit label/control associations. The hosted player suite subsequently passed all ten scenarios on commit `490c677` after also fixing submission before hydration. The broader static-site test server had still targeted `dist/`; it now serves the Vercel adapter's `dist/client/` output, whose readiness URL was verified as HTTP 200. That broader run executed 159 cases: 121 passed, 21 were skipped by existing configuration, and 17 failed across six repeated scenarios. It exposed a saved-pool hydration mismatch, now covered by a stable server snapshot and a hydration regression test. The other failures came from outdated test assumptions about archived buff counts, the homepage's active patch, an already-cached champion, and intentionally compact mobile navigation. Tests now check the current canonical data and usable navigation while preserving failure/retry, history and storage assertions. The pull request's latest CI run records the final regression result. These browser checks are distinct from the successful production build.
 
-Before treating the beta as validated, run the supplied account through the authenticated protected preview: resolve PUUID, import current rank/history, open a real match, inspect its timeline, request a real review, save/reopen an adjustment, and confirm that public production access remains disabled. The controlled browser tests do not substitute for those live checks.
+Before treating the live beta integration as validated, run the supplied account through the authenticated protected deployment: resolve PUUID, import current rank/history, open a real match, inspect its timeline, request a real review, save/reopen an adjustment, and confirm that public Riot access remains disabled. The controlled browser tests do not substitute for those live checks.

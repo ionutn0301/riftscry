@@ -10,13 +10,14 @@ type Props = {
   allModes: boolean;
   back: string;
   loading: boolean;
+  retrySeconds: number;
   message: string;
   onRemember: () => void;
   onRefresh: () => void;
   onLeave: () => void;
 };
 
-export default function PlayerArrival({ initial, matches, scope, allModes, back, loading, message, onRemember, onRefresh, onLeave }: Props) {
+export default function PlayerArrival({ initial, matches, scope, allModes, back, loading, retrySeconds, message, onRemember, onRefresh, onLeave }: Props) {
   const [highlight, setHighlight] = useState<string>();
   const recent = matches.slice(0, 7);
   const selected = recent.find(match => match.metadata.matchId === highlight) ?? recent[0];
@@ -40,7 +41,7 @@ export default function PlayerArrival({ initial, matches, scope, allModes, back,
         <div className="player-actions profile-arrival-actions">
           <a className="player-primary-link" href="#player-records">{destination} <span aria-hidden="true">↓</span></a>
           <button className="player-button-secondary" type="button" onClick={onRemember}>Remember player</button>
-          <button className="player-button-text" type="button" disabled={loading} onClick={onRefresh}>{loading ? 'Importing matches…' : 'Refresh recent matches'}</button>
+          <button className="player-button-text" type="button" disabled={loading || retrySeconds > 0} onClick={onRefresh}>{retrySeconds ? `Retry in ${retrySeconds}s` : loading ? 'Importing matches…' : 'Refresh recent matches'}</button>
         </div>
         <p className="profile-local-status" role="status" aria-live="polite">{message}</p>
       </div>

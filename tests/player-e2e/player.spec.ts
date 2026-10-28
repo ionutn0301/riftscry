@@ -199,15 +199,33 @@ test('a custom condition requires explicit match confirmation and can be undone'
   expect((await readNotes(page))[0]!.confirmedMatchIds).toEqual([]);
 });
 
-test('timeline and AI failures keep the loaded match summary usable', async ({ page }) => {
-  await installFixtures(page, { reviewFailure: true, timelineFailure: true });
+test('timeline and AI failures keep the loaded match summary usable while unavailable item details can be retried', async ({ page }) => {
+  let itemsAvailable = false;
+  const requests = await installFixtures(page, {
+    reviewFailure: true, timelineFailure: true,
+    response: ({ action }) => action === 'items' && !itemsAvailable
+      ? { status: 503, json: { error: 'Fixture historical item details unavailable.' } }
+      : undefined,
+  });
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
+  const overview = page.getByRole('region', { name: 'Match overview', exact: true });
+  await expect(overview).toContainText('Historical item details are unavailable. Recorded IDs are retained.');
+  await expect(overview.getByText('Item 1001', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Load timeline on demand', exact: true }).click();
   await expect(page.getByText(/Timeline unavailable/).first()).toBeVisible();
   await page.getByRole('button', { name: 'Request evidence-assisted review', exact: true }).click();
   await expect(page.getByText(/Deterministic summary remains available/)).toBeVisible();
   await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
   await expect(page.getByText('Your build', { exact: true })).toBeVisible();
+  itemsAvailable = true;
+  await overview.getByRole('button', { name: 'Retry item details', exact: true }).click();
+  await expect(overview.getByText('Boots', { exact: true })).toBeVisible();
+  await expect(overview.getByText('Electrocute', { exact: true })).toBeVisible();
+  await expect(overview).not.toContainText('Historical item details are unavailable.');
+  expect(requests.filter(request => request.action === 'items')).toHaveLength(2);
+  expect(requests.filter(request => request.action === 'match')).toHaveLength(1);
+  expect(requests.filter(request => request.action === 'timeline')).toHaveLength(1);
+  expect(requests.filter(request => request.action === 'review')).toHaveLength(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 

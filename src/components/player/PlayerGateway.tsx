@@ -1,6 +1,7 @@
 import { useEffect, useId, useState, type SubmitEvent } from 'react';
 import { platforms } from '../../lib/player/contracts';
 import { api, fetcher, playerLink, type PlayerView } from './client';
+import { usePlayerCooldown } from './usePlayerCooldown';
 
 const platformNames: Record<string, string> = {
   eun1: 'EUNE · Nordic & East', euw1: 'EUW · Europe West', na1: 'NA · North America',
@@ -23,6 +24,7 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
   const [message, setMessage] = useState('');
   const [view, setView] = useState<PlayerView>('history');
   const [remembered, setRemembered] = useState<RememberedPlayer | null>(null);
+  const retrySeconds = usePlayerCooldown();
 
   useEffect(() => {
     setReady(true);
@@ -38,7 +40,7 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
 
   async function lookup(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!ready || busy) return;
+    if (!ready || busy || retrySeconds) return;
     const form = new FormData(event.currentTarget);
     const riotId = String(form.get('riotId') ?? '').trim();
     const separator = riotId.lastIndexOf('#');
@@ -83,7 +85,7 @@ export default function PlayerGateway({ name = '', platform = '' }: { name?: str
             {Object.keys(platforms).map(value => <option key={value} value={value}>{platformNames[value] ?? value.toUpperCase()}</option>)}
           </select>
         </div>
-        <button type="submit" disabled={!ready || busy}>{busy ? 'Looking up…' : !ready ? 'Preparing lookup…' : 'Find player →'}</button>
+        <button type="submit" disabled={!ready || busy || retrySeconds > 0}>{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Looking up…' : !ready ? 'Preparing lookup…' : 'Find player →'}</button>
       </form>
       <p id={`${id}-lookup-status`} className="lookup-status" role={message ? 'alert' : 'status'} aria-live="polite">{message || (busy ? 'Finding this player. Your match journey is next.' : '')}</p>
 

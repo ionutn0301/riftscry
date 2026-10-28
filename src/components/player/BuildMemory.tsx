@@ -141,7 +141,7 @@ function AdjustmentForm({ draft, platform, puuid, sourceId, metadata, disabled, 
   disabled: boolean; onSave: (form: FormData) => void; onCancel: () => void;
 }) {
   const fieldId = useId();
-  const { data: fetched } = useSWR<ItemMetadata>(metadata ? null : api('items', { platform, puuid, id: sourceId }), fetcher, { shouldRetryOnError: false });
+  const { data: fetched } = useSWR<ItemMetadata>(metadata ? null : api('items', { platform, puuid, id: sourceId }), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const items = metadata ?? fetched;
   const [original, setOriginal] = useState(draft?.original ?? '');
   const [alternative, setAlternative] = useState(draft?.alternative ?? '');
@@ -206,7 +206,7 @@ function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, pl
 type Revision = Pick<Memory, 'alternative' | 'targetItem' | 'condition' | 'reflection' | 'reason' | 'tradeoff'>;
 function RevisionForm({ note, platform, puuid, onSave }: { note: Memory; platform: string; puuid: string; onSave: (change: Revision) => void }) {
   const fieldId = useId();
-  const { data: items } = useSWR<ItemMetadata>(api('items', { platform, puuid, id: note.source }), fetcher, { shouldRetryOnError: false });
+  const { data: items } = useSWR<ItemMetadata>(api('items', { platform, puuid, id: note.source }), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const [alternative, setAlternative] = useState(note.alternative);
   const [target, setTarget] = useState(note.targetItem);
   const [reason, setReason] = useState(note.reason);
@@ -238,8 +238,8 @@ function FollowUp({ note, matches, loading, puuid, platform, back, onLeave, onCo
   const candidate = candidates.find(match => match.metadata.matchId === candidateId);
   const match = eligible.find(candidate => candidate.metadata.matchId === chosen);
   const selected = match?.metadata.matchId ?? '';
-  const { data, error, isLoading } = useSWR<Timeline>(selected ? api('timeline', { platform, puuid, id: selected }) : null, fetcher, { shouldRetryOnError: false });
-  const { data: metadata } = useSWR<ItemMetadata>(selected ? api('items', { platform, puuid, id: selected }) : null, fetcher, { shouldRetryOnError: false });
+  const { data, error, isLoading } = useSWR<Timeline>(selected ? api('timeline', { platform, puuid, id: selected }) : null, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
+  const { data: metadata } = useSWR<ItemMetadata>(selected ? api('items', { platform, puuid, id: selected }) : null, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const p = match && participant(match, puuid);
   const events = p ? data?.info.frames.flatMap(frame => frame.events).filter(event => event.participantId === p.participantId && ['ITEM_PURCHASED', 'ITEM_SOLD', 'ITEM_UNDO', 'ITEM_DESTROYED'].includes(event.type)).sort((a, b) => a.timestamp - b.timestamp) : undefined;
   const purchases = events?.filter(event => event.type === 'ITEM_PURCHASED' && event.itemId === note.targetItem);

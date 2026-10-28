@@ -2,7 +2,7 @@ import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import { fallbackReview, type Fact, type Review } from './contracts';
 import { ITEM_ADVICE_VERSION, type AdjustmentDraft } from './advice';
-import { cached } from './server';
+import { cached, type BeforeFetch } from './server';
 
 const model = 'google/gemini-3.8-flash';
 export const reviewSchema = z.object({
@@ -45,11 +45,12 @@ export function groundedSections(raw: unknown, facts: Fact[]): z.infer<typeof re
   return sections;
 }
 
-export async function review(facts: Fact[], suggestions: AdjustmentDraft[] = []): Promise<Review> {
+export async function review(facts: Fact[], suggestions: AdjustmentDraft[] = [], beforeGenerate?: BeforeFetch): Promise<Review> {
   const baseline = fallbackReview(facts, undefined, suggestions);
   const selected = selectReviewFacts(baseline.facts, suggestions.flatMap(s => s.evidence));
   try {
     return await cached(`review:prompt-4-mode-aware:${ITEM_ADVICE_VERSION}:evidence-4:${model}:${JSON.stringify({ facts: baseline.facts, suggestions })}`, 86400, async () => {
+      await beforeGenerate?.();
       const { output } = await generateText({
         model,
         maxOutputTokens: 1600,

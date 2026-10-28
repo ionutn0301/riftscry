@@ -225,6 +225,9 @@ test('partial imports stay visibly incomplete and refresh repairs the sample and
     await expect(rows(page)).toHaveCount(2);
     await expectSummary(page, 450, { matches: 2, wins: 1, winRate: 50, kda: [12, 5, 18] });
     await expect(sample).not.toContainText(/incomplete|unavailable/i);
+    const detailRequests = requests.filter(request => request.action === 'match');
+    expect(detailRequests.filter(request => new URL(request.url).searchParams.get('id') === recentAramWin.metadata.matchId)).toHaveLength(1);
+    expect(detailRequests.filter(request => new URL(request.url).searchParams.get('id') === recentAramLoss.metadata.matchId)).toHaveLength(2);
   } finally {
     release();
   }

@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import useSWR from 'swr';
 import { api, fetcher } from './client';
 import type { ItemMetadata } from '../../lib/player/advice';
+import { usePlayerCooldown } from './usePlayerCooldown';
 
 export type { ItemMetadata } from '../../lib/player/advice';
 
@@ -20,8 +21,9 @@ export default function ItemPicker({ platform, puuid, id, initial = 0, value, on
   const [search, setSearch] = useState('');
   const [localSelection, setLocalSelection] = useState(initial);
   const selected = value ?? localSelection;
-  const { data: fetched, error, isLoading } = useSWR<ItemMetadata>(
-    metadata ? null : api('items', { platform, puuid, id }), fetcher, { shouldRetryOnError: false },
+  const retrySeconds = usePlayerCooldown();
+  const { data: fetched, error, isLoading, isValidating, mutate: retryItems } = useSWR<ItemMetadata>(
+    metadata ? null : api('items', { platform, puuid, id }), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false },
   );
   const data = metadata ?? fetched;
   const query = search.trim().toLocaleLowerCase();
@@ -44,7 +46,7 @@ export default function ItemPicker({ platform, puuid, id, initial = 0, value, on
       {options.map(([key, item]) => <option key={key} value={key}>{item.name}</option>)}
     </select>
     {selected > 0 && data?.data[selected] && <p className="item-picker-selection"><ItemLabel id={selected} metadata={data} /></p>}
-    {error && <p role="status">Item details are unavailable. Your existing target is preserved.</p>}
+    {error && <div><p role="status">Item details are unavailable. Your existing target is preserved.</p><button type="button" disabled={isValidating || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button></div>}
     {!isLoading && data && !Object.keys(data.data).length && <p role="status">No compatible item catalogue is available for this match.</p>}
     {!!query && !options.length && <p role="status">No items match this search.</p>}
     <p id={`${uid}-help`} className="player-help">Choose the item you want to observe in future games. Eligibility and purchase budget depend on the game.</p>

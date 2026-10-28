@@ -1,9 +1,10 @@
 import { useEffect, useId, useState } from 'react';
-import useSWR from 'swr';
+import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
 import { participant } from '../../lib/player/contracts';
 import { historyOptions } from '../../lib/player/modes';
 import { api, fetcher, playerLink, type PlayerInitial, type PlayerView } from './client';
 import { usePlayerHistory } from './usePlayerHistory';
+import { itemMetadataKey } from './useItemMetadata';
 import PlayerArrival from './PlayerArrival';
 import PlayerSample from './PlayerSample';
 import PlayerHistory from './PlayerHistory';
@@ -34,9 +35,11 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   const { platform, puuid } = initial;
   const [filters, setFilters] = useState<Filters>({ queue: queueOf(initial.queue), champion: initial.champion, result: initial.result, view: viewOf(initial.view) });
   const [message, setMessage] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const { cache, mutate } = useSWRConfig();
   const query = { platform, puuid };
-  const { data: account, error: accountError } = useSWR<Account>(api('account', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
-  const { data: ranks, error: rankError } = useSWR<Rank[]>(api('rank', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: account, error: accountError, mutate: retryAccount } = useSWR<Account>(api('account', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: ranks, error: rankError, mutate: retryRanks } = useSWR<Rank[]>(api('rank', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
   const history = usePlayerHistory(platform, puuid, filters.queue);
   const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
   const profile = { ...initial, ...filters, name };
@@ -101,8 +104,30 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
     catch { /* Match navigation remains available without browser storage. */ }
   }
 
+  async function refresh() {
+    if (refreshing || history.retrySeconds) return;
+    setRefreshing(true);
+    // Only references already requested and failed are retried. Successful or
+    // unopened item views keep their cache and do not create extra requests.
+    const references = new Map<string, string | readonly string[]>();
+    for (const match of history.matches) {
+      for (const key of [itemMetadataKey(match, platform, puuid), api('items', { platform, puuid, id: match.metadata.matchId })]) {
+        references.set(unstable_serialize(key), key);
+      }
+    }
+    const failedReferences = [...references].filter(([key]) => cache.get(key)?.error).map(([, key]) => key);
+    try {
+      await Promise.allSettled([
+        history.refresh(),
+        ...(accountError ? [retryAccount()] : []),
+        ...(rankError ? [retryRanks()] : []),
+        ...failedReferences.map(key => mutate(key)),
+      ]);
+    } finally { setRefreshing(false); }
+  }
+
   return <div className="player-profile" data-player-profile data-view={filters.view}>
-    <PlayerArrival initial={profile} matches={history.matches} scope={scope} allModes={filters.queue === 'all'} back={back} loading={history.loading} message={message} onRemember={remember} onRefresh={() => void history.refresh()} onLeave={leave} />
+    <PlayerArrival initial={profile} matches={history.matches} scope={scope} allModes={filters.queue === 'all'} back={back} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} onLeave={leave} />
     <div className="player-records" id="player-records">
       {accountError && <p className="player-help" role="status">The Riot identity is unavailable right now. This canonical player’s match records can still be explored.</p>}
       <nav className="player-tabs" aria-label="Player views">
@@ -117,7 +142,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
         {(filters.queue !== 'all' || (filters.view !== 'memory' && (filters.champion || filters.result))) && <button type="button" className="player-button-text" onClick={() => change(filters.view === 'memory' ? { queue: 'all' } : { queue: 'all', champion: '', result: '' })}>{filters.view === 'memory' ? 'Reset mode filter' : 'Reset sample filters'}</button>}
       </div>
       {filters.view === 'memory' && <p className="player-help">Game mode selects the recent matches used for follow-up. Filter your saved adjustments inside Build Memory below.</p>}
-      <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} showBreakdown={filters.view === 'history'} />
+      <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} retrySeconds={history.retrySeconds} showBreakdown={filters.view === 'history'} />
       <div className="player-view" id="player-view" key={filters.view}>
         {filters.view === 'history' ? <PlayerHistory matches={matches} platform={platform} puuid={puuid} back={back} loading={history.loading} onLeave={leave} /> :
           filters.view === 'builds' ? <PersonalBuilds matches={matches} platform={platform} puuid={puuid} back={back} onLeave={leave} /> :

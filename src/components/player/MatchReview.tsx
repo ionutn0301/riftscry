@@ -7,6 +7,7 @@ import { buildSuggestions, type AdjustmentDraft } from '../../lib/player/advice'
 import BuildMemory from './BuildMemory';
 import { ItemLabel, RuneLabel } from './ItemPicker';
 import { useItemMetadata } from './useItemMetadata';
+import { usePlayerCooldown } from './usePlayerCooldown';
 
 function clock(milliseconds: number) {
   const seconds = Math.max(0, Math.floor(milliseconds / 1000));
@@ -18,17 +19,25 @@ function evidenceLabel(fact?: Fact) {
   return ({ result: 'Match summary', farm: 'Farming record', inventory: 'Final inventory', vision: 'Vision record', economy: 'Economy', participation: 'Participation', damage: 'Damage record', rule: 'Item comparison', context: 'Match context' } as Record<string, string>)[fact.kind ?? fact.id] ?? 'Recorded evidence';
 }
 
+// Keep the component identity stable while cooldowns update once per second,
+// so a keyboard user's focused evidence link is not replaced during a retry.
+function EvidenceLink({ factId, fact, onReveal }: { factId: string; fact?: Fact; onReveal: (id: string) => void }) {
+  return <a className="review-evidence-link" href={`#fact-${encodeURIComponent(factId)}`} onClick={event => { event.preventDefault(); onReveal(factId); }}>{evidenceLabel(fact)} ↗</a>;
+}
+
 export default function MatchReview({ id, platform, puuid, back }: { id: string; platform: string; puuid: string; back: string }) {
   const values = { id, platform, puuid };
-  const { data: match, error, isLoading } = useSWR<Match>(api('match', values), fetcher, { shouldRetryOnError: false });
+  const { data: match, error, isLoading, mutate: retryMatch } = useSWR<Match>(api('match', values), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
+  const retrySeconds = usePlayerCooldown();
+  const reviewRetrySeconds = usePlayerCooldown('review');
   const [timelineRequested, setTimelineRequested] = useState(false);
   const [report, setReport] = useState<Review>();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [draft, setDraft] = useState<AdjustmentDraft>();
   const evidenceDetails = useRef<HTMLDetailsElement>(null);
-  const { data: timeline, error: timelineError, isLoading: timelineLoading, mutate: retryTimeline } = useSWR<Timeline>(timelineRequested ? api('timeline', values) : null, fetcher, { shouldRetryOnError: false });
-  const { data: items, error: itemError } = useItemMetadata(match, platform, puuid);
+  const { data: timeline, error: timelineError, isLoading: timelineLoading, mutate: retryTimeline } = useSWR<Timeline>(timelineRequested ? api('timeline', values) : null, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
+  const { data: items, error: itemError, isValidating: itemsLoading, mutate: retryItems } = useItemMetadata(match, platform, puuid);
   const p = match && participant(match, puuid);
   const mode = match && modeForMatch(match);
   const facts = useMemo(() => match && p ? evidence(match, puuid, timeline, items) : [], [match, p, puuid, timeline, items]);
@@ -71,13 +80,11 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   }, [shown.facts]);
 
   async function generate() {
+    if (busy || reviewRetrySeconds) return;
     setBusy(true);
     setMessage('');
     try {
-      const response = await fetch(api('review', values), { method: 'POST' });
-      if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('The review service is unavailable. Reopen the protected preview and try again.');
-      const body = await response.json();
-      if (!response.ok) throw new Error(`${typeof body.error === 'string' ? body.error : 'Review unavailable.'}${response.headers.get('Retry-After') ? ` Retry in ${response.headers.get('Retry-After')} seconds.` : ''}`);
+      const body = await fetcher<Review>(api('review', values), { method: 'POST' });
       if (!Array.isArray(body.sections) || !Array.isArray(body.facts) || !['ai', 'deterministic'].includes(body.mode)) throw new Error('The review could not be read. Please try again.');
       setReport(body as Review);
     } catch (failure) {
@@ -85,11 +92,6 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     } finally {
       setBusy(false);
     }
-  }
-
-  function EvidenceLink({ factId }: { factId: string }) {
-    const fact = shown.facts.find(candidate => candidate.id === factId);
-    return <a className="review-evidence-link" href={`#fact-${encodeURIComponent(factId)}`} onClick={event => { event.preventDefault(); revealEvidence(factId); }}>{evidenceLabel(fact)} ↗</a>;
   }
 
   return <>
@@ -101,7 +103,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       {mode && <p className="review-mode-context">{mode.context}</p>}
     </header>
     {isLoading && <p role="status">Loading match summary…</p>}
-    {error && <p role="alert">{error.message}</p>}
+    {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
     {match && !p && <p role="alert">This player is not present in the returned match. Return to the profile and choose another match.</p>}
     {match && p && <>
       <section className="profile-stats review-summary" aria-label="Match overview">
@@ -116,17 +118,18 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <ul className="review-inventory">{[p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6].filter(Boolean).map((itemId, index) => <li key={`${itemId}:${index}`}><ItemLabel id={itemId} metadata={items} compact /></li>)}</ul>
           <div className="review-runes">{mode?.runeSetup ? p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} />)) || <span>Runes unavailable</span> : <span>{mode?.queueId === 2400 || mode?.family === 'arena' ? 'Augments mode · rune settings not used' : 'Rune setup is not interpreted for this mode'}</span>}</div>
           <p className="player-help">{itemError ? 'Historical item details are unavailable. Recorded IDs are retained.' : items ? `${items.notice} Final inventory does not establish purchase order.` : 'Loading compatible item and rune details…'}</p>
+          {itemError && <button className="player-button-secondary" disabled={itemsLoading || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button>}
         </div>
       </section>
 
       <section aria-labelledby="short-review-heading">
         <div className="player-actions review-actions">
           <div><p className="player-kicker">01 / UNDERSTAND THIS GAME</p><h2 id="short-review-heading">A short review</h2></div>
-          <button disabled={busy} onClick={() => void generate()}>{busy ? 'Preparing review…' : 'Request evidence-assisted review'}</button>
+          <button disabled={busy || reviewRetrySeconds > 0} onClick={() => void generate()}>{reviewRetrySeconds ? `Review available in ${reviewRetrySeconds}s` : busy ? 'Preparing review…' : 'Request evidence-assisted review'}</button>
         </div>
         <p className="review-mode">{shown.mode === 'ai' ? 'AI-assisted interpretation · check cited evidence' : 'Recorded summary · available without AI'}</p>
         <p role="status" aria-live="polite">{busy ? 'Reviewing the recorded match. You can keep exploring while this loads.' : message}</p>
-        <div className="review-grid">{shown.sections.map(section => <article key={section.heading}><h3 className="player-kicker">{section.heading}</h3><p>{section.text}</p><div className="review-evidence-links">{section.evidence.map(factId => <EvidenceLink key={factId} factId={factId} />)}</div></article>)}</div>
+        <div className="review-grid">{shown.sections.map(section => <article key={section.heading}><h3 className="player-kicker">{section.heading}</h3><p>{section.text}</p><div className="review-evidence-links">{section.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div></article>)}</div>
         {shown.notice && <p className="player-help">{shown.notice}</p>}
       </section>
 
@@ -140,7 +143,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <p>{suggestion.reason}</p>
           <p className="suggestion-tradeoff"><strong>Tradeoff:</strong> {suggestion.tradeoff}</p>
           <p className="player-help">Applies when: {suggestion.condition}</p>
-          <div className="review-evidence-links">{suggestion.evidence.map(factId => <EvidenceLink key={factId} factId={factId} />)}</div>
+          <div className="review-evidence-links">{suggestion.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div>
           {suggestion.source && /^https:\/\//.test(suggestion.source.url) && <p><a href={suggestion.source.url} target="_blank" rel="noreferrer">{suggestion.source.label} ↗</a></p>}
           <button aria-controls="build-memory" onClick={() => setDraft({ ...suggestion })}>Try this next time</button>
         </article>)}
@@ -148,7 +151,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
 
       <section className="purchase-evidence" aria-labelledby="purchase-evidence-heading">
         <div className="player-actions"><h2 id="purchase-evidence-heading">Purchase evidence</h2>
-          <button onClick={() => timelineRequested ? void retryTimeline() : setTimelineRequested(true)} disabled={timelineLoading || (!!timeline && !timelineError)}>{timelineLoading ? 'Loading timeline…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Load timeline on demand'}</button>
+          <button onClick={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} disabled={timelineLoading || retrySeconds > 0 || (!!timeline && !timelineError)}>{retrySeconds && !timeline ? `Retry in ${retrySeconds}s` : timelineLoading ? 'Loading timeline…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Load timeline on demand'}</button>
         </div>
         <p>Follow actual purchases, sales, and undo events. An item event is a place to investigate, not a verdict about the decision.</p>
         {timelineLoading && <p role="status">Loading timeline…</p>}
