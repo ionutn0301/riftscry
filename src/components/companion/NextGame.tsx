@@ -131,7 +131,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
     <div className="recall-landscape" aria-hidden="true"><img src="/images/voyage/return-basin.webp" alt="" width="1672" height="941" /></div>
     <div className="recall-wrap">
       <header className="recall-header">
-        <div><p className="recall-eyebrow"><PlayerIcon name="bookmark" size={15} /> RIFT RECALL</p><h1>Next game.</h1><p className="recall-tagline">Your own advice, back when you need it.</p></div>
+        <div><p className="recall-eyebrow"><PlayerIcon name="bookmark" size={15} /> SAVED NOTEBOOK</p><h1>Saved notebook.</h1><p className="recall-tagline">Your previously saved reminders, loadouts, and game cards.</p></div>
         <div className="recall-header-note"><PlayerIcon name="user" size={18} /><p>Made by you.<br /><span>Saved in this browser.</span></p></div>
       </header>
 

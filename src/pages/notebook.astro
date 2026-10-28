@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NextGame from '../components/companion/NextGame';
+import { getChampionMeta } from '../lib/data';
+import { briefingArchive as archive } from '../lib/briefing-archive';
+import '../styles/companion.css';
+
+const champions = Object.entries(getChampionMeta()).map(([id, champion]) => ({ id, name: champion.name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+---
+<Layout surface="next-game" title="Saved notebook · RiftScry" description="Bring your own notes and saved loadouts into your next League of Legends game. Choose one focus, check its patch context, and leave yourself a reflection.">
+  <NextGame champions={champions} archive={archive} client:load />
+  <noscript><div class="recall-nojs"><h2>Your preparation stays in this browser.</h2><p>Enable JavaScript to read and save your Rift Recall notes. You can still <a href="/patches">browse the patch archive</a>.</p></div></noscript>
+</Layout>

@@ -34,8 +34,8 @@ export type RecallRun = {
   createdAt: number; outcome: RecallOutcome | null; reflection: string; closedAt: number | null;
 };
 export type CompanionState = { version: 1; context: RecallContext; notes: QuickNote[]; builds: SavedBuild[]; runs: RecallRun[] };
-export type RecallChange = { kind: 'champion' | 'item'; targetId: string; label: string; before: string; after: string };
-export type RecallPatch = { id: string; version: string; date: string; champions: string[]; items: { id?: number; name: string }[]; records?: RecallChange[] };
+export { archivePatchForVersion, patchReview } from './patch-context';
+export type { RecallChange, RecallPatch } from './patch-context';
 
 const id = z.string().min(1).max(240).regex(/^[A-Za-z0-9:_-]+$/);
 const champion = z.string().max(40).regex(/^[A-Za-z0-9]*$/);
@@ -167,25 +167,6 @@ export function finishRecall(state: CompanionState, runId: string, outcome: Reca
   if (!run || run.outcome !== null) throw new Error('This card is no longer waiting for a reflection.');
   if (now < run.createdAt) throw new Error('Your device clock is earlier than this card. Check the clock before saving a reflection.');
   return { ...state, runs: state.runs.map(record => record.id === runId ? { ...record, outcome, reflection: reflection.trim(), closedAt: now } : record) };
-}
-
-/** Resolve actual archive metadata, including Riot's 16.x game / 26.x public naming. */
-export function archivePatchForVersion(version: string, archive: RecallPatch[]): string | null {
-  const prefix = version.split('.').slice(0, 2).join('.');
-  return archive.find(entry => entry.id === version || entry.version.split('.').slice(0, 2).join('.') === prefix)?.id ?? null;
-}
-export function patchReview(record: Pick<QuickNote, 'champion' | 'patch' | 'reviewedPatch'> & { items?: { id: number; name: string }[] }, archive: RecallPatch[]) {
-  const latest = archive[0]?.id ?? '';
-  const baseline = archivePatchForVersion(record.reviewedPatch ?? record.patch, archive);
-  const baselineIndex = baseline ? archive.findIndex(entry => entry.id === baseline) : -1;
-  const status: 'current' | 'review' | 'unknown' = !latest || baselineIndex < 0 ? 'unknown' : baselineIndex === 0 ? 'current' : 'review';
-  // Item IDs are authoritative. Names alone do not establish an affected-item match.
-  const itemIds = new Set(record.items?.map(item => item.id) ?? []);
-  const changes = baselineIndex > 0 ? archive.slice(0, baselineIndex).filter(entry =>
-    (!!record.champion && entry.champions.includes(record.champion)) || entry.items.some(item => item.id != null && itemIds.has(item.id)))
-    .map(entry => ({ ...entry, records: entry.records?.filter(change => change.kind === 'champion'
-      ? !!record.champion && change.targetId === record.champion : itemIds.has(Number(change.targetId))) })) : [];
-  return { status, baseline, latest, changes };
 }
 
 export function makeSavedBuild(match: Match, selectedPlatform: string, selectedPuuid: string, metadata?: ItemMetadata, now = Date.now()): SavedBuild {
