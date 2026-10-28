@@ -45,6 +45,12 @@ describe('Riot regional budgets', () => {
     expect(reserveRiotBudget(state, method, now + 100).retry).toBeGreaterThan(0);
     expect(reserveRiotBudget(state, riotMethod('/lol/match/v5/matches/EUN1_999999/timeline'), now + 100).retry).toBe(0);
     expect(riotMethod('/lol/match/v5/matches/by-puuid/private-player/ids?queue=450')).toBe('match-history');
+    const summonerMethod = riotMethod('/lol/summoner/v4/summoners/by-puuid/private-player');
+    expect(summonerMethod).toBe('summoner-by-puuid');
+    expect(riotMethod('/lol/summoner/v4/summoners/by-puuid/another-player')).toBe(summonerMethod);
+    const iconBudget = observeRiotBudget(null, summonerMethod, new Headers({ 'Retry-After': '23', 'X-Rate-Limit-Type': 'method' }), 429, now, now);
+    expect(reserveRiotBudget(iconBudget, summonerMethod, now + 1000).retry).toBe(22);
+    expect(reserveRiotBudget(iconBudget, 'league-entries', now + 1000).retry).toBe(0);
   });
 
   it('does not lower counts when a slower response arrives with older usage', () => {

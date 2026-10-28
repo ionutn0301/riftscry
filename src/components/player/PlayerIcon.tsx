@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 export type PlayerIconName = 'search' | 'history' | 'build' | 'layers' | 'bookmark' | 'refresh' |
   'arrow-right' | 'arrow-left' | 'arrow-down' | 'chevron-right' | 'info' | 'trophy' | 'clock' |
   'check' | 'close' | 'x' | 'swords' | 'snowflake' | 'sparkles' | 'coins' | 'eye' | 'target' |
-  'star' | 'trash' | 'plus';
+  'star' | 'trash' | 'plus' | 'user' | 'filter';
 
 const check = <path d="m5 12 4 4L19 6" />;
 const close = <path d="m6 6 12 12M18 6 6 18" />;
@@ -31,6 +31,8 @@ const glyphs: Record<PlayerIconName, ReactNode> = {
   star: <path d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6Z" />,
   trash: <><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" /></>,
   plus: <path d="M12 4v16M4 12h16" />,
+  user: <><circle cx="12" cy="8" r="4" /><path d="M4 21v-2a8 8 0 0 1 16 0v2" /></>,
+  filter: <><path d="M4 6h16M4 12h16M4 18h16" /><circle cx="9" cy="6" r="2" fill="currentColor" /><circle cx="15" cy="12" r="2" fill="currentColor" /><circle cx="8" cy="18" r="2" fill="currentColor" /></>,
 };
 
 /** Decorative glyph: its adjacent label or control supplies the accessible name. */

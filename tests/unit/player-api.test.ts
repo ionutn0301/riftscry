@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/lib/player/server', () => ({
-  limit: vi.fn(), riot: vi.fn(), getMatch: vi.fn(), getTimeline: vi.fn(),
+  limit: vi.fn(), riot: vi.fn(), getMatch: vi.fn(), getTimeline: vi.fn(), getSummoner: vi.fn(),
   ServiceError: class ServiceError extends Error { constructor(message: string, public status = 503, public retry = 0, public scope?: 'player' | 'review') { super(message); } },
 }));
 vi.mock('../../src/lib/player/metadata', () => ({ getItemMetadata: vi.fn() }));
 vi.mock('../../src/lib/player/review', () => ({ review: vi.fn() }));
 import { ALL } from '../../src/pages/api/player/[action]';
-import { getMatch, getTimeline, limit, riot, ServiceError } from '../../src/lib/player/server';
+import { getMatch, getTimeline, getSummoner, limit, riot, ServiceError } from '../../src/lib/player/server';
 import { getItemMetadata } from '../../src/lib/player/metadata';
 import { review } from '../../src/lib/player/review';
 import { fallbackReview, type Match, type Participant } from '../../src/lib/player/contracts';
@@ -42,6 +42,7 @@ beforeEach(() => {
   vi.mocked(limit).mockResolvedValue(undefined);
   vi.mocked(getMatch).mockResolvedValue(match);
   vi.mocked(getTimeline).mockResolvedValue({ info: { frames: [] } });
+  vi.mocked(getSummoner).mockResolvedValue({ puuid, profileIconId: 685, summonerLevel: 340 });
   vi.mocked(getItemMetadata).mockResolvedValue(metadata);
   vi.mocked(review).mockImplementation(async (facts, suggestions) => fallbackReview(facts, undefined, suggestions));
 });
@@ -84,6 +85,24 @@ describe('player API access and review integration', () => {
     expect(await result.json()).toEqual({ puuid, gameName: 'Canonical Player', tagLine: 'EUNE' });
     expect(riot).toHaveBeenCalledWith('europe', `/riot/account/v1/accounts/by-puuid/${puuid}`, 300, expect.any(Function));
     expect(getMatch).not.toHaveBeenCalled();
+  });
+
+  it('reads optional League profile data for the requested platform and PUUID', async () => {
+    const result = await request('summoner', { platform: 'eun1', puuid, name: 'Untrusted display hint' });
+    expect(result.status).toBe(200);
+    expect(await result.json()).toEqual({ puuid, profileIconId: 685, summonerLevel: 340 });
+    expect(result.headers.get('cache-control')).toBe('private, no-store');
+    expect(getSummoner).toHaveBeenCalledExactlyOnceWith('eun1', puuid, expect.any(Function));
+    for (const fn of [riot, getMatch, getTimeline, review]) expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('keeps optional summoner access gated and validates identifiers before upstream work', async () => {
+    for (const params of [{ platform: 'europe', puuid }, { platform: 'eun1', puuid: '../invalid' }]) {
+      expect((await request('summoner', params)).status).toBe(400);
+    }
+    vi.stubEnv('VERCEL_ENV', 'production');
+    expect((await request('summoner', { platform: 'eun1', puuid })).status).toBe(503);
+    for (const fn of [getSummoner, riot, limit]) expect(fn).not.toHaveBeenCalled();
   });
 
   it.each([undefined, '', 'all'])('requests a bounded unfiltered recent history for queue %s', async queue => {
@@ -158,12 +177,25 @@ describe('player API budgets apply to upstream work rather than cached reads', (
     expect(limit).not.toHaveBeenCalled();
   });
 
-  it.each(['lookup', 'account', 'history', 'rank', 'match', 'timeline', 'items', 'review'])('does not charge cached %s responses before the server checks its cache', async action => {
+  it.each(['lookup', 'account', 'summoner', 'history', 'rank', 'match', 'timeline', 'items', 'review'])('does not charge cached %s responses before the server checks its cache', async action => {
     vi.mocked(limit).mockRejectedValue(new ServiceError('Fixture upstream-fill quota reached.', 429, 37));
     vi.mocked(riot).mockResolvedValue([]);
     const result = await request(action, { platform: 'eun1', puuid, id: match.metadata.matchId, name: 'Fixture Player', tag: 'TEST' }, action === 'review' ? 'POST' : 'GET');
     expect(result.status).toBe(200);
     expect(limit).not.toHaveBeenCalled();
+  });
+
+  it('passes the same enforced fill budget and Retry-After through the optional summoner endpoint', async () => {
+    vi.mocked(limit).mockRejectedValue(new ServiceError('Fixture upstream-fill quota reached.', 429, 37, 'player'));
+    vi.mocked(getSummoner).mockImplementation(async (_platform, _puuid, beforeFetch) => {
+      await beforeFetch!();
+      throw new Error('An exhausted budget must stop the upstream request.');
+    });
+    const result = await request('summoner', { platform: 'eun1', puuid });
+    expect(result.status).toBe(429);
+    expect(result.headers.get('retry-after')).toBe('37');
+    expect(result.headers.get('x-ratelimit-scope')).toBe('player');
+    expect(limit).toHaveBeenCalledExactlyOnceWith('127.0.0.1');
   });
 
   it.each(['lookup', 'account', 'history', 'rank'])('passes an enforced caller budget to an uncached %s request and retains Retry-After', async action => {

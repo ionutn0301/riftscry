@@ -1,6 +1,40 @@
 # RiftScry design
 
-## Player clarity follow-up — current presentation
+## Player hub — current presentation
+
+The profile is a practical daily destination. This supersedes the large arrival,
+duplicate match path and default statistics wall described in earlier amendments.
+The first screen should identify the player and expose actual recent matches.
+
+- A compact header groups the verified Riot ID, region, current rank, actual
+  League account icon and optional level. The icon comes from the platform's
+  Summoner-v4 response; a neutral fallback keeps the page usable when that
+  optional request or image fails. Query-string names are still untrusted.
+- All games, Ranked, ARAM, Normal and More are recognizable category controls.
+  A selected category shows its exact queue selector. Ranked starts at Solo/Duo,
+  ARAM at classic ARAM, Normal at Draft, and More at Arena. Returning to a category
+  restores the last queue chosen during this visit. The visible subtype, URL,
+  upstream request, match badge and statistics always refer to the exact
+  selected queue. Categories never introduce blended performance statistics.
+- Recent matches are compact whole-row links: champion portrait and name,
+  precise mode, result, KDA, final items, date and duration. Secondary metrics and
+  runes remain on match review. Unknown values are never fabricated as losses.
+- Champion/result filters and mode statistics are optional disclosures. Import
+  progress, partial samples, errors and cooldowns remain visible. Builds and
+  Build Memory retain separate views and the same saved-data contracts.
+- The profile keeps the original scenic setting and restrained motion without
+  a viewport-sized introduction or a second navigation path to the same games.
+  Check actual first-match visibility at 1280×720 and 390×844, with useful
+  progress on a 359×603 screen. Keep keyboard access and reduced motion.
+- Optional summoner metadata uses the same access gate, fill quotas, provider
+  budget and coalescing as other Riot reads, with five-minute server and tab
+  caches. A failed icon request is retried only through explicit Refresh.
+
+Primary design references are recognition-based controls and progressive
+disclosure from Nielsen Norman Group; account icons use Riot's documented
+Summoner-v4 and Data Dragon profile assets. Release evidence belongs in the PR.
+
+## Earlier player clarity follow-up
 
 The player experience now leads with recognizable League imagery and short,
 plain labels. Preserve the cinematic environments and connected routes while

@@ -192,7 +192,7 @@ export function playerRequest<T>(input: string, init?: RequestInit): Promise<T> 
   const key = canonical(url, method);
   const reference = method === 'GET' && action === 'items' ? itemKey(url) : undefined;
   const requestKey = reference ?? key;
-  const ttl = method !== 'GET' ? 0 : ['match', 'timeline', 'items'].includes(action) ? IMMUTABLE_TTL : action === 'account' || action === 'rank' ? 5 * 60 * 1000 : 0;
+  const ttl = method !== 'GET' ? 0 : ['match', 'timeline', 'items'].includes(action) ? IMMUTABLE_TTL : ['account', 'rank', 'summoner'].includes(action) ? 5 * 60 * 1000 : 0;
   const cached = ttl ? read(requestKey) ?? read(key) : undefined;
   if (cached !== undefined) return Promise.resolve(cached as T);
   const existing = inFlight.get(requestKey);

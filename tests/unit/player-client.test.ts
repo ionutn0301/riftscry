@@ -39,6 +39,41 @@ afterEach(() => {
 });
 
 describe('player request reuse and bounded imports', () => {
+  it('reuses the player icon across simultaneous reads and reloads for five minutes, then refreshes it', async () => {
+    let client = await freshClient();
+    const oldIcon = { puuid, profileIconId: 685, summonerLevel: 340 };
+    const newIcon = { puuid, profileIconId: 686, summonerLevel: 341 };
+    fetchMock.mockResolvedValueOnce(json(oldIcon)).mockResolvedValueOnce(json(newIcon));
+    const url = client.api('summoner', { platform: params.platform, puuid });
+    expect(await Promise.all([client.fetcher(url), client.fetcher(url)])).toEqual([oldIcon, oldIcon]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    window.dispatchEvent(new Event('pagehide'));
+    vi.resetModules();
+    client = await freshClient();
+    vi.setSystemTime(now + 299_999);
+    expect(await client.fetcher(url)).toEqual(oldIcon);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    vi.setSystemTime(now + 300_001);
+    expect(await client.fetcher(url)).toEqual(newIcon);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('isolates optional icon errors from history and keeps icons scoped to platform and player', async () => {
+    const { api, fetcher } = await freshClient();
+    fetchMock.mockImplementation(async input => {
+      const url = new URL(String(input), location.origin);
+      if (url.pathname.endsWith('/history')) return json([params.id]);
+      if (url.searchParams.get('platform') === 'eun1') return json({ error: 'Profile icon unavailable.' }, 404);
+      return json({ puuid: url.searchParams.get('puuid'), profileIconId: 685 });
+    });
+    await expect(fetcher(api('summoner', { platform: 'eun1', puuid }))).rejects.toMatchObject({ status: 404 });
+    expect(await fetcher(api('history', { platform: 'eun1', puuid, queue: 'all' }))).toEqual([params.id]);
+    for (const identity of [puuid, `${puuid}-other`]) {
+      expect(await fetcher(api('summoner', { platform: 'euw1', puuid: identity }))).toEqual({ puuid: identity, profileIconId: 685 });
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
   it('coalesces simultaneous canonical GETs and reuses the completed summary despite query ordering', async () => {
     const { api, fetcher } = await freshClient();
     let release!: (response: Response) => void;

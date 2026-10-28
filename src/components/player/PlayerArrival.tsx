@@ -1,71 +1,46 @@
-import { useState } from 'react';
-import { participant, type Match } from '../../lib/player/contracts';
-import { modeForMatch } from '../../lib/player/modes';
-import { matchLink, type PlayerInitial } from './client';
-import ChampionPortrait from './ChampionPortrait';
+import type { SummonerProfile } from '../../lib/player/contracts';
+import type { PlayerInitial } from './client';
+import PlayerAvatar from './PlayerAvatar';
 import PlayerIcon from './PlayerIcon';
-import { championDisplayName } from './championArtwork';
 
+export type PlayerRank = { queueType: string; tier: string; rank: string; leaguePoints: number };
 type Props = {
-  initial: PlayerInitial;
-  matches: Match[];
-  scope: string;
-  back: string;
-  loading: boolean;
-  retrySeconds: number;
-  message: string;
-  onRemember: () => void;
-  onRefresh: () => void;
-  onLeave: () => void;
+  initial: PlayerInitial; summoner?: SummonerProfile; ranks?: PlayerRank[]; rankFailed: boolean;
+  loading: boolean; retrySeconds: number; message: string; onRemember: () => void; onRefresh: () => void;
 };
+const regionLabels: Record<string, string> = { eun1: 'EUNE', euw1: 'EUW', na1: 'NA', br1: 'BR', la1: 'LAN', la2: 'LAS', tr1: 'TR', ru: 'RU', kr: 'KR', jp1: 'JP', oc1: 'OCE', ph2: 'PH', sg2: 'SG', th2: 'TH', tw2: 'TW', vn2: 'VN', me1: 'ME' };
+const tierLabel = (tier: string) => tier.charAt(0) + tier.slice(1).toLowerCase();
 
-export default function PlayerArrival({ initial, matches, scope, back, loading, retrySeconds, message, onRemember, onRefresh, onLeave }: Props) {
-  const [highlight, setHighlight] = useState<string>();
-  const recent = matches.slice(0, 7);
-  const selected = recent.find(match => match.metadata.matchId === highlight) ?? recent[0];
-  const selectedPlayer = selected && participant(selected, initial.puuid);
+export default function PlayerArrival({ initial, summoner, ranks, rankFailed, loading, retrySeconds, message, onRemember, onRefresh }: Props) {
   const separator = initial.name.lastIndexOf('#');
   const name = separator > 0 ? initial.name.slice(0, separator) : initial.name || 'Player profile';
   const tag = separator > 0 ? initial.name.slice(separator) : '';
-  const destinationLabel = initial.view === 'builds' ? 'View builds' : initial.view === 'memory' ? 'Build Memory' : 'View matches';
-
-  return <header className="profile-arrival" aria-labelledby="profile-identity">
-    <div className="player-environment profile-environment" aria-hidden="true">
-      <img src="/images/voyage/history-strata.webp" width="1672" height="941" alt="" decoding="async" />
-      <span className="player-horizon" /><span className="player-coordinate player-coordinate--two" />
-    </div>
-    <div className="profile-arrival-top"><a className="player-text-link" href="/players"><PlayerIcon name="search" size={16} />Find a player</a><span>{initial.platform.toUpperCase()}</span></div>
-    <div className="profile-arrival-body">
-      <div className="profile-identity-copy">
-        <p className="player-kicker">PLAYER PROFILE</p>
-        <h1 id="profile-identity">{name}{tag && <em>{tag}</em>}</h1>
-        <p className="profile-context"><span className="player-signal" aria-hidden="true" />{scope}</p>
-        <div className="player-actions profile-arrival-actions">
-          <a className="player-primary-link" href="#player-records">{destinationLabel}<PlayerIcon name="arrow-down" size={16} /></a>
-          <button className="player-button-secondary" type="button" aria-label="Save player on this browser" onClick={onRemember}><PlayerIcon name="bookmark" size={16} />Save player</button>
-          <button className="player-button-text" type="button" aria-label={!retrySeconds && !loading ? 'Refresh recent matches' : undefined} disabled={loading || retrySeconds > 0} onClick={onRefresh}><PlayerIcon name={retrySeconds ? 'clock' : 'refresh'} size={16} />{retrySeconds ? `Retry in ${retrySeconds}s` : loading ? 'Loading…' : 'Refresh'}</button>
+  return <header className="player-identity-header" aria-labelledby="profile-identity">
+    <div className="player-environment identity-environment" aria-hidden="true"><img src="/images/voyage/history-strata.webp" width="1672" height="941" alt="" decoding="async" /></div>
+    <div className="player-identity-wrap">
+      <a className="player-text-link identity-back" href="/players"><PlayerIcon name="arrow-left" size={16} />Find a player</a>
+      <div className="player-identity-row">
+        <div className="player-identity-person">
+          <PlayerAvatar name={initial.name} summoner={summoner} />
+          <div className="profile-identity-copy"><h1 id="profile-identity">{name}{tag && <em>{tag}</em>}</h1>
+            <span className="identity-region">{regionLabels[initial.platform] ?? initial.platform.toUpperCase()}<span aria-hidden="true"> · </span>League of Legends</span>
+          </div>
         </div>
-        <p className="profile-local-status" role="status" aria-live="polite">{message}</p>
+        <div className="player-identity-tools">
+          <div className="player-actions identity-actions">
+            <button className="player-button-secondary" type="button" aria-label="Save player on this browser" onClick={onRemember}><PlayerIcon name="bookmark" size={17} />Save player</button>
+            <button type="button" aria-label={!retrySeconds && !loading ? 'Refresh recent matches' : undefined} disabled={loading || retrySeconds > 0} onClick={onRefresh}><PlayerIcon name={retrySeconds ? 'clock' : 'refresh'} size={17} />{retrySeconds ? `Retry in ${retrySeconds}s` : loading ? 'Loading…' : 'Refresh'}</button>
+          </div>
+          <p className="identity-save-status" role="status" aria-live="polite">{message}</p>
+        </div>
       </div>
-
-      <div className="profile-path">
-        <div className="profile-path-heading"><span className="player-kicker">RECENT GAMES</span><span>{recent.length ? `${recent.length} ${recent.length === 1 ? 'GAME' : 'GAMES'}` : ''}</span></div>
-        {recent.length ? <>
-          <nav aria-label="Recent match path"><ol className="profile-match-path">{[...recent].reverse().map(match => {
-            const player = participant(match, initial.puuid);
-            const mode = modeForMatch(match);
-            if (!player) return null;
-            return <li key={match.metadata.matchId}><a href={matchLink(match.metadata.matchId, initial.platform, initial.puuid, back)}
-              className={player.win ? 'path-victory' : 'path-defeat'}
-              data-selected={selected?.metadata.matchId === match.metadata.matchId}
-              aria-label={`Open ${championDisplayName(player.championName)}, ${mode.label}, ${player.win ? 'win' : 'loss'}, ${new Date(match.info.gameCreation).toLocaleDateString()}`}
-              onPointerEnter={() => setHighlight(match.metadata.matchId)} onFocus={() => setHighlight(match.metadata.matchId)} onClick={onLeave}>
-              <span className="path-node path-portrait"><ChampionPortrait champion={player.championName} size={40} /><span className="path-outcome" aria-hidden="true">{player.win ? 'W' : 'L'}</span></span>
-            </a></li>;
-          })}</ol></nav>
-          {selected && <a className="profile-path-reading" href={matchLink(selected.metadata.matchId, initial.platform, initial.puuid, back)} onClick={onLeave} aria-live="polite"><strong>{selectedPlayer && championDisplayName(selectedPlayer.championName)}</strong><span>{modeForMatch(selected).label}</span><PlayerIcon name="arrow-right" size={16} /></a>}
-        </> : <div className="profile-path-empty"><PlayerIcon name="history" size={28} /><p>{loading ? 'Loading your games…' : 'No recent games yet.'}</p></div>}
-      </div>
+      <aside className="identity-ranks" aria-label="Current ranked status">
+        <PlayerIcon name="trophy" size={16} />
+        {ranks ? ranks.length ? ranks.map(rank => <span className="identity-rank" key={rank.queueType} title="Current Riot rank. Separate from the selected match sample.">
+          <span>{rank.queueType === 'RANKED_SOLO_5x5' ? 'Solo / Duo' : rank.queueType === 'RANKED_FLEX_SR' ? 'Ranked Flex' : rank.queueType}</span>
+          <strong>{tierLabel(rank.tier)} {rank.rank}</strong><span>{rank.leaguePoints} LP</span>
+        </span>) : <span>Unranked</span> : <span>{rankFailed ? 'Current rank unavailable' : 'Loading rank…'}</span>}
+      </aside>
     </div>
   </header>;
 }
