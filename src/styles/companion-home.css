@@ -279,6 +279,14 @@
   .home-arrival-footer { margin-top: 25px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .companion-home :where(a,button) { transition: none; }
+  /* Override the global .01ms duration too: child labels and icons should not
+     acquire their own color transitions when a reduced-motion tab changes. */
+  .companion-home,.companion-home::before,.companion-home::after,
+  .companion-home *,.companion-home *::before,.companion-home *::after { animation: none !important; transition: none !important; }
 }
-html[data-motion="reduced"] .companion-home :where(a,button) { transition: none; }
+html[data-motion="reduced"] .companion-home,
+html[data-motion="reduced"] .companion-home::before,
+html[data-motion="reduced"] .companion-home::after,
+html[data-motion="reduced"] .companion-home *,
+html[data-motion="reduced"] .companion-home *::before,
+html[data-motion="reduced"] .companion-home *::after { animation: none !important; transition: none !important; }
