@@ -1,35 +1,155 @@
-import { useEffect, useState } from 'react';
-import useSWR from 'swr';
-import useSWRInfinite from 'swr/infinite';
-import { platforms, queues, participant, type Match } from '../../lib/player/contracts';
-import { api, fetcher, playerLink } from './client';
+import { useEffect, useId, useState } from 'react';
+import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
+import { participant } from '../../lib/player/contracts';
+import { historyOptions } from '../../lib/player/modes';
+import { api, fetcher, playerLink, type PlayerInitial, type PlayerView } from './client';
+import { usePlayerHistory } from './usePlayerHistory';
+import { itemMetadataKey } from './useItemMetadata';
+import PlayerArrival from './PlayerArrival';
+import PlayerSample from './PlayerSample';
+import PlayerHistory from './PlayerHistory';
 import BuildMemory from './BuildMemory';
-import PersonalBuilds, {Loadout} from './PersonalBuilds';
-export default function PlayerProfile({ initial }: { initial: { platform: string; puuid: string; queue: string; champion: string; result: string; view: string; name: string } }) {
-  const [message, setMessage] = useState(''); const [busy,setBusy] = useState(false);
-  const { data: remembered } = useSWR('remembered-player', () => { try { return JSON.parse(localStorage.getItem('riftscry:remembered-player:v1') ?? 'null') as {platform:string;puuid:string;name:string}|null; } catch { return null; } });
-  async function lookup(event: React.FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); setMessage(''); const form = new FormData(event.currentTarget); const [name,...parts] = String(form.get('riotId')).trim().split('#'); const tag = parts.join('#'); const platform = String(form.get('platform')); try { if (!name || !tag) throw new Error('Enter a Riot ID including #tagline.'); const account = await fetcher<{puuid:string;gameName:string;tagLine:string}>(api('lookup',{name,tag,platform})); window.location.href = playerLink(platform,account.puuid,`&name=${encodeURIComponent(account.gameName + '#' + account.tagLine)}`); } catch(error) { setMessage(error instanceof Error ? error.message : 'Lookup unavailable'); } finally { setBusy(false); } }
-  return <><header className="player-hero"><p className="player-kicker">RIFTSCRY / PLAYER INTELLIGENCE</p><h1>A match ends.<br/><em>The learning stays.</em></h1><p>Recent games, recorded decisions, one adjustment to revisit. No hidden rating. No invented certainty.</p></header><form onSubmit={lookup} className="lookup-form"><label>Riot ID<input name="riotId" placeholder="Game name#TAG" required maxLength={50} defaultValue={initial.name} /></label><label>Platform<select name="platform" defaultValue={initial.platform || 'euw1'}>{Object.keys(platforms).map((p) => <option key={p} value={p}>{p.toUpperCase()}</option>)}</select></label><button disabled={busy}>{busy ? 'Looking up…' : 'Find player →'}</button></form><p>Public lookup does not verify account ownership. Only supported matchmade queues are shown.</p><p role="status">{message}</p>{remembered && remembered.platform in platforms && <p><a href={playerLink(remembered.platform,remembered.puuid,`&name=${encodeURIComponent(remembered.name)}&view=memory`)}>Return to {remembered.name || 'remembered player'} and Build Memory →</a></p>}{initial.puuid ? <Profile initial={initial} /> : <section className="player-empty"><p className="player-kicker">01 PROFILE → 02 MATCH → 03 BUILD MEMORY</p><h2>Start with what actually happened.</h2><p>Look up a player to import up to 20 recent matches in one queue. Details load in small batches; timelines and AI reviews load only when requested.</p><p>Private lookup is available only in enabled development and protected preview environments. Production Riot access remains disabled. If access is unavailable, this page shows an explicit error—not sample statistics.</p></section>}</>;
+import PersonalBuilds from './PersonalBuilds';
+
+type Filters = { queue: string; champion: string; result: string; view: PlayerView };
+type Rank = { queueType: string; tier: string; rank: string; leaguePoints: number };
+type Account = { puuid: string; gameName: string; tagLine: string };
+const views: { id: PlayerView; label: string }[] = [
+  { id: 'history', label: 'Match history' },
+  { id: 'builds', label: 'Personal builds' },
+  { id: 'memory', label: 'Build Memory' },
+];
+const viewOf = (value: string): PlayerView => value === 'builds' || value === 'memory' ? value : 'history';
+const queueOf = (value: string) => historyOptions.some(option => option.value === value) ? value : 'all';
+
+function CurrentRanks({ ranks, failed }: { ranks?: Rank[]; failed: boolean }) {
+  return <aside className="player-ranks" aria-label="Current ranked status">
+    <p className="player-kicker">CURRENT RANKED STATUS</p>
+    <div>{ranks ? ranks.length ? ranks.map(rank => <p key={rank.queueType}><span>{rank.queueType === 'RANKED_SOLO_5x5' ? 'Solo / Duo' : rank.queueType === 'RANKED_FLEX_SR' ? 'Ranked Flex' : rank.queueType}</span><strong>{rank.tier} {rank.rank}</strong><span>{rank.leaguePoints} LP</span></p>) : <p>No ranked entry returned</p> : <p>{failed ? 'Current rank unavailable' : 'Loading current rank…'}</p>}</div>
+    <small>Current official rank, separate from this match sample. No historical LP changes inferred.</small>
+  </aside>;
 }
-function Profile({ initial }: { initial: { platform:string;puuid:string;queue:string;champion:string;result:string;view:string;name:string } }) {
-  const { platform,puuid } = initial; const [queue,setQueue] = useState(initial.queue || '420'); const [champion,setChampion] = useState(initial.champion); const [result,setResult] = useState(initial.result); const [view,setView] = useState(initial.view || 'history'); const [localMessage,setLocalMessage] = useState('');
-  const query = { platform, puuid }; const player = `${platform}:${puuid}`;
-  const { data: ids, error: historyError, isLoading, mutate: refreshIds } = useSWR<string[]>(api('history',{...query,queue}),fetcher,{shouldRetryOnError:false,revalidateOnFocus:false});
-  const { data: ranks, error: rankError } = useSWR<{queueType:string;tier:string;rank:string;leaguePoints:number}[]>(api('rank',query),fetcher,{shouldRetryOnError:false});
-  const { data: batches, size, setSize, isValidating, mutate: refreshMatches } = useSWRInfinite<{matches:Match[];failed:number}>(index => ids && index * 4 < ids.length ? JSON.stringify([ids.slice(index*4,index*4+4),platform,puuid]) : null, async key => { const [batch,p,u] = JSON.parse(key); const results = await Promise.allSettled(batch.map((id:string)=>fetcher<Match>(api('match',{platform:p,puuid:u,id})))); return { matches: results.flatMap((r)=>r.status==='fulfilled'?[r.value as Match]:[]), failed: results.filter((r)=>r.status==='rejected').length }; },{shouldRetryOnError:false,revalidateOnFocus:false});
-  useEffect(() => { if (ids && batches?.length === size && size * 4 < ids.length && !isValidating) void setSize(size + 1); }, [ids, batches, size, isValidating, setSize]);
-  useEffect(() => { if (!isValidating && batches?.length === size) { try { const position = sessionStorage.getItem(`riftscry:scroll:${platform}:${puuid}`); if (position) { window.scrollTo(0, Number(position)); if (!ids || size * 4 >= ids.length) sessionStorage.removeItem(`riftscry:scroll:${platform}:${puuid}`); } } catch { /* Browsing still works if session storage is blocked. */ } } }, [batches, size, ids, isValidating, platform, puuid]);
-  const matches = batches?.flatMap((b)=>b.matches) ?? []; const failed = batches?.reduce((n,b)=>n+b.failed,0) ?? 0;
-  const visible = matches.filter((m)=> { const p=participant(m,puuid);return p && (!champion || p.championName===champion) && (!result || (result==='win')===p.win); });
-  const champions = [...new Set(matches.map(m=>participant(m,puuid)?.championName).filter(Boolean))] as string[];
-  function update(values: Record<string,string>) { const url=new URL(location.href); Object.entries(values).forEach(([k,v])=>v?url.searchParams.set(k,v):url.searchParams.delete(k)); history.replaceState(null,'',url); }
-  const roles = visible.reduce<Record<string,number>>((out,m)=>{const role=participant(m,puuid)?.teamPosition||'Unknown';out[role]=(out[role]??0)+1;return out;},{});
-  return <><section className="profile-heading"><h2>{initial.name || 'Player profile'}</h2><p>Canonical player · {platform.toUpperCase()} · lookup is not an ownership claim</p><div className="player-actions"><button onClick={()=>{try { localStorage.setItem('riftscry:remembered-player:v1',JSON.stringify({platform,puuid,name:initial.name}));setLocalMessage('Player remembered on this browser only.'); }catch{setLocalMessage('Could not save on this browser.');}}}>Remember player</button><button onClick={()=>{void refreshIds();void refreshMatches();}}>Refresh recent matches</button></div><p role="status">{localMessage}</p></section>
-    <div className="profile-stats"><section><p className="player-kicker">CURRENT OFFICIAL RANK</p>{ranks ? ranks.length ? ranks.map(r=><p key={r.queueType}>{r.queueType} · {r.tier} {r.rank} · {r.leaguePoints} LP</p>):<p>No ranked entry returned</p>:<p>{rankError ? 'Current rank unavailable' : 'Loading current rank…'}</p>}<small>Current rank only. No historical rank or LP change inferred.</small></section><section><p className="player-kicker">FILTERED SAMPLE</p><h3>{visible.length} matches · {visible.filter(m=>participant(m,puuid)?.win).length} wins</h3><p>{visible.length ? `${new Date(Math.min(...visible.map(m=>m.info.gameCreation))).toLocaleDateString()} – ${new Date(Math.max(...visible.map(m=>m.info.gameCreation))).toLocaleDateString()}`:'No history loaded'}</p><p>{Object.entries(roles).map(([r,n])=>`${r}: ${n}`).join(' · ')}</p><p>Champion counts: {Object.entries(visible.reduce<Record<string,number>>((counts,m)=>{const name=participant(m,puuid)!.championName;counts[name]=(counts[name]??0)+1;return counts;},{})).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([name,n])=>`${name}: ${n}`).join(' · ') || 'none'}. Descriptive only, not a skill or optimal-build estimate.</p></section></div>
-    <nav className="player-tabs" aria-label="Player views">{[['history','Match history'],['builds','Personal builds'],['memory','Build Memory']].map(([id,label])=><button key={id} aria-pressed={view===id} onClick={()=>{setView(id!);update({view:id!});}}>{label}</button>)}</nav>
-    <div className="player-filters"><label>Queue<select value={queue} onChange={e=>{setQueue(e.target.value);void setSize(1);update({queue:e.target.value});}}>{Object.entries(queues).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><label>Champion<select value={champion} onChange={e=>{setChampion(e.target.value);update({champion:e.target.value});}}><option value="">All in loaded sample</option>{champions.map(c=><option key={c}>{c}</option>)}</select></label><label>Result<select value={result} onChange={e=>{setResult(e.target.value);update({result:e.target.value});}}><option value="">All results</option><option value="win">Win</option><option value="loss">Loss</option></select></label></div>
-    {isLoading && <p role="status">Loading match IDs…</p>}{historyError && <p role="alert">{historyError.message}</p>}{failed>0 && <p role="alert">{failed} match details could not be imported. Sample is incomplete; use Refresh to retry.</p>}{isValidating && <p role="status">Importing the next four match summaries…</p>}
-    {view==='memory' ? <BuildMemory player={player} platform={platform} puuid={puuid} matches={matches}/> : view==='builds' ? <PersonalBuilds matches={visible} platform={platform} puuid={puuid}/> : <><h2>{view==='builds'?'Observed personal loadouts':'Recent matches'}</h2>{view==='builds'&&<p>Final inventories, not purchase sequences or recommendations. Filter to a champion. No reviewed specialist alternative is available; personal win counts do not establish an optimal build.</p>}{visible.map(m=>{const p=participant(m,puuid)!;const back=encodeURIComponent(`/players?${new URLSearchParams({platform,puuid,queue,champion,result,view,name:initial.name})}`);return <a className="match-row" key={m.metadata.matchId} onClick={()=>{try {sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`,String(window.scrollY));}catch {/* Optional navigation convenience only. */}}} href={`/matches/${m.metadata.matchId}?platform=${platform}&puuid=${puuid}&back=${back}`}><span className={p.win?'match-win':'match-loss'}>{p.win?'WIN':'LOSS'}</span><div><h3>{p.championName} <small>{p.teamPosition||'Role unavailable'}</small></h3><p>{queues[m.info.queueId]} · {new Date(m.info.gameCreation).toLocaleString()} · {Math.round(m.info.gameDuration/60)} min</p><Loadout match={m} platform={platform} puuid={puuid}/></div><div><strong>{p.kills} / {p.deaths} / {p.assists}</strong><p>{p.totalMinionsKilled+p.neutralMinionsKilled} CS · {p.visionScore} vision</p><small>Open match · review on request →</small></div></a>;})}{!visible.length&&!isLoading&&<p>No matches in this loaded sample match your filters. This is a valid state.</p>}</>}
-    {ids && size*4<ids.length && <button disabled={isValidating} onClick={()=>void setSize(size+1)}>Load next four matches ({matches.length} loaded / {ids.length} available)</button>}
-  </>;
+
+export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
+  const filterId = useId();
+  const { platform, puuid } = initial;
+  const [filters, setFilters] = useState<Filters>({ queue: queueOf(initial.queue), champion: initial.champion, result: initial.result, view: viewOf(initial.view) });
+  const [message, setMessage] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const { cache, mutate } = useSWRConfig();
+  const query = { platform, puuid };
+  const { data: account, error: accountError, mutate: retryAccount } = useSWR<Account>(api('account', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: ranks, error: rankError, mutate: retryRanks } = useSWR<Rank[]>(api('rank', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const history = usePlayerHistory(platform, puuid, filters.queue);
+  const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
+  const profile = { ...initial, ...filters, name };
+  const back = playerLink(platform, puuid, { ...filters, name });
+  const scope = historyOptions.find(option => option.value === filters.queue)?.label ?? 'All recent';
+  const matches = history.matches.filter(match => {
+    const player = participant(match, puuid);
+    return player && (!filters.champion || player.championName === filters.champion) &&
+      (!filters.result || (filters.result === 'win') === player.win);
+  });
+  const champions = [...new Set(history.matches.flatMap(match => {
+    const player = participant(match, puuid);
+    return player ? [player.championName] : [];
+  }))].sort();
+
+  useEffect(() => {
+    if (name) document.title = `${name} · RiftScry`;
+  }, [name]);
+
+  useEffect(() => {
+    const restore = () => {
+      const params = new URLSearchParams(window.location.search);
+      setFilters({ queue: queueOf(params.get('queue') ?? ''), champion: params.get('champion') ?? '', result: params.get('result') ?? '', view: viewOf(params.get('view') ?? '') });
+    };
+    window.addEventListener('popstate', restore);
+    return () => window.removeEventListener('popstate', restore);
+  }, []);
+
+  useEffect(() => {
+    if (history.loading) return;
+    let frame = 0;
+    try {
+      const key = `riftscry:scroll:${platform}:${puuid}`;
+      const saved = sessionStorage.getItem(key);
+      if (saved && Number.isFinite(Number(saved))) {
+        frame = requestAnimationFrame(() => {
+          window.scrollTo({ top: Number(saved), behavior: 'instant' });
+          sessionStorage.removeItem(key);
+        });
+      }
+    } catch { /* Scroll restoration is optional when browser storage is blocked. */ }
+    return () => cancelAnimationFrame(frame);
+  }, [history.loading, platform, puuid]);
+
+  function change(next: Partial<Filters>) {
+    const updated = { ...filters, ...next };
+    setFilters(updated);
+    window.history.replaceState(window.history.state, '', playerLink(platform, puuid, { ...updated, name }));
+  }
+
+  function remember() {
+    try {
+      localStorage.setItem('riftscry:remembered-player:v1', JSON.stringify({ platform, puuid, name }));
+      setMessage('Player remembered on this browser only. Return here from the player gateway.');
+    } catch {
+      setMessage('Could not remember this player. Browser storage is unavailable.');
+    }
+  }
+
+  function leave() {
+    try { sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`, String(window.scrollY)); }
+    catch { /* Match navigation remains available without browser storage. */ }
+  }
+
+  async function refresh() {
+    if (refreshing || history.retrySeconds) return;
+    setRefreshing(true);
+    // Only references already requested and failed are retried. Successful or
+    // unopened item views keep their cache and do not create extra requests.
+    const references = new Map<string, string | readonly string[]>();
+    for (const match of history.matches) {
+      for (const key of [itemMetadataKey(match, platform, puuid), api('items', { platform, puuid, id: match.metadata.matchId })]) {
+        references.set(unstable_serialize(key), key);
+      }
+    }
+    const failedReferences = [...references].filter(([key]) => cache.get(key)?.error).map(([, key]) => key);
+    try {
+      await Promise.allSettled([
+        history.refresh(),
+        ...(accountError ? [retryAccount()] : []),
+        ...(rankError ? [retryRanks()] : []),
+        ...failedReferences.map(key => mutate(key)),
+      ]);
+    } finally { setRefreshing(false); }
+  }
+
+  return <div className="player-profile" data-player-profile data-view={filters.view}>
+    <PlayerArrival initial={profile} matches={history.matches} scope={scope} allModes={filters.queue === 'all'} back={back} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} onLeave={leave} />
+    <div className="player-records" id="player-records">
+      {accountError && <p className="player-help" role="status">The Riot identity is unavailable right now. This canonical player’s match records can still be explored.</p>}
+      <nav className="player-tabs" aria-label="Player views">
+        {views.map((view, index) => <button type="button" key={view.id} aria-pressed={filters.view === view.id} aria-controls="player-view" onClick={() => change({ view: view.id })}><span aria-hidden="true">0{index + 1}</span>{view.label}<span className="player-tab-mark" aria-hidden="true">↗</span></button>)}
+      </nav>
+      <div className="player-filters" role="group" aria-label="Filter match sample">
+        <div className="player-field"><label htmlFor={`${filterId}-queue`}>Game mode</label><select id={`${filterId}-queue`} value={filters.queue} onChange={event => change({ queue: event.target.value })}>{historyOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>
+        {filters.view !== 'memory' && <>
+          <div className="player-field"><label htmlFor={`${filterId}-champion`}>Champion</label><select id={`${filterId}-champion`} value={filters.champion} onChange={event => change({ champion: event.target.value })}><option value="">All in loaded sample</option>{filters.champion && !champions.includes(filters.champion) && <option value={filters.champion}>{filters.champion} · outside this sample</option>}{champions.map(champion => <option key={champion}>{champion}</option>)}</select></div>
+          <div className="player-field"><label htmlFor={`${filterId}-result`}>Result</label><select id={`${filterId}-result`} value={filters.result} onChange={event => change({ result: event.target.value })}><option value="">All results</option><option value="win">Win</option><option value="loss">Loss</option></select></div>
+        </>}
+        {(filters.queue !== 'all' || (filters.view !== 'memory' && (filters.champion || filters.result))) && <button type="button" className="player-button-text" onClick={() => change(filters.view === 'memory' ? { queue: 'all' } : { queue: 'all', champion: '', result: '' })}>{filters.view === 'memory' ? 'Reset mode filter' : 'Reset sample filters'}</button>}
+      </div>
+      {filters.view === 'memory' && <p className="player-help">Game mode selects the recent matches used for follow-up. Filter your saved adjustments inside Build Memory below.</p>}
+      <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} retrySeconds={history.retrySeconds} showBreakdown={filters.view === 'history'} />
+      <div className="player-view" id="player-view" key={filters.view}>
+        {filters.view === 'history' ? <PlayerHistory matches={matches} platform={platform} puuid={puuid} back={back} loading={history.loading} onLeave={leave} /> :
+          filters.view === 'builds' ? <PersonalBuilds matches={matches} platform={platform} puuid={puuid} back={back} onLeave={leave} /> :
+            <BuildMemory player={`${platform}:${puuid}`} platform={platform} puuid={puuid} matches={history.matches} matchesLoading={history.loading} back={back} onLeave={leave} />}
+      </div>
+      <CurrentRanks ranks={ranks} failed={!!rankError} />
+      <div className="profile-next-step"><p className="player-kicker">ONE GAME BECOMES THE NEXT</p><h2>Keep the lesson.<br /><em>Leave the guesswork.</em></h2><p>A match review connects recorded facts to a question worth asking. Build Memory keeps the adjustment you choose to revisit.</p><button className="player-button-secondary" onClick={() => { change({ view: filters.view === 'memory' ? 'history' : 'memory' }); document.getElementById('player-records')?.scrollIntoView({ behavior: 'auto', block: 'start' }); }}>{filters.view === 'memory' ? 'Choose a match to review ↑' : 'Open Build Memory ↑'}</button></div>
+    </div>
+  </div>;
 }

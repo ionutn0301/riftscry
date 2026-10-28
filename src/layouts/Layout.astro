@@ -12,7 +12,7 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
-  surface?: "home" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "players" | "missing";
+  surface?: "home" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "players" | "player" | "match" | "missing";
 }
 
 const { title, description, ogImage = "/og-default.png", surface: requestedSurface } = Astro.props;

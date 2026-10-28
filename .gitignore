@@ -4,5 +4,10 @@ dist/
 .astro/
 test-results/
 playwright-report/
+player-visuals/
+.vercel/
+.env
+.env.*
+!.env.example
 *.log
 .DS_Store

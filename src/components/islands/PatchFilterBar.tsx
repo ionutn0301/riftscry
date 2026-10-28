@@ -35,8 +35,12 @@ const TYPE_OPTIONS = [
   { value: "rework", label: "Reworks" },
 ] as const;
 
+// Persisted selections are browser-only. React must hydrate the same empty
+// snapshot the server rendered before subscribing to this device's saved pool.
+const emptyServerPool: string[] = [];
+
 export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) {
-  const pool = useStore($pool);
+  const pool = useStore($pool, { ssr: () => emptyServerPool });
   const [filters, setFilters] = useState<PatchFilters>(EMPTY_FILTERS);
   const [ready, setReady] = useState(false);
   const anchorRestored = useRef(false);

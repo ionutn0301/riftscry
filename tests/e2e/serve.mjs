@@ -1,11 +1,11 @@
-// Minimal foreground static server for dist/ — Playwright's webServer needs a
+// Minimal foreground server for Vercel's dist/client static output. Playwright needs a
 // process that stays attached (astro 7's `preview` daemonizes).
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { gzipSync } from "node:zlib";
 
-const ROOT = new URL("../../dist", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+const ROOT = new URL("../../dist/client", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const PORT = 4322;
 const TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -54,5 +54,5 @@ createServer(async (req, res) => {
     res.end("bad request");
   }
 }).listen(PORT, "127.0.0.1", () => {
-  console.log(`serving dist/ on http://127.0.0.1:${PORT}`);
+  console.log(`serving dist/client/ on http://127.0.0.1:${PORT}`);
 });

@@ -1,14 +1,70 @@
 import { useId, useState } from 'react';
 import useSWR from 'swr';
 import { api, fetcher } from './client';
-export type ItemMetadata = {runes?:Record<string,{name:string;icon:string}>;version:string|null;data:Record<string,{name:string;plaintext?:string;image?:{full:string}}> ;notice:string};
-export default function ItemPicker({platform,puuid,id,initial=0}:{platform:string;puuid:string;id:string;initial?:number}) {
-  const uid=useId();const [search,setSearch]=useState('');const [selected,setSelected]=useState(initial);
-  const {data,error}=useSWR<ItemMetadata>(api('items',{platform,puuid,id}),fetcher,{shouldRetryOnError:false});
-  const options=Object.entries(data?.data??{}).filter(([key,item])=>key===String(selected)||item.name.toLowerCase().includes(search.toLowerCase())).sort((a,b)=>a[1].name.localeCompare(b[1].name));
-  return <div><label htmlFor={`${uid}-search`}>Search patch items</label><input id={`${uid}-search`} type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by item name"/><label htmlFor={`${uid}-item`}>Tracked item</label><select id={`${uid}-item`} name="item" required value={selected||''} onChange={e=>setSelected(Number(e.target.value))}><option value="">Choose an item</option>{selected>0&&!data?.data[selected]&&<option value={selected}>Item {selected} — metadata unavailable</option>}{options.map(([key,item])=><option key={key} value={key}>{item.name} · {key}</option>)}</select>{error&&<p>Metadata unavailable. An existing target is preserved; retry before choosing a new target.</p>}<p>Selection is a personal hypothesis, not a claim of champion eligibility or affordability.</p></div>;
+import type { ItemMetadata } from '../../lib/player/advice';
+import { usePlayerCooldown } from './usePlayerCooldown';
+
+export type { ItemMetadata } from '../../lib/player/advice';
+
+type ItemPickerProps = {
+  platform: string;
+  puuid: string;
+  id: string;
+  initial?: number;
+  value?: number;
+  onChange?: (item: number) => void;
+  metadata?: ItemMetadata;
+};
+
+export default function ItemPicker({ platform, puuid, id, initial = 0, value, onChange, metadata }: ItemPickerProps) {
+  const uid = useId();
+  const [search, setSearch] = useState('');
+  const [localSelection, setLocalSelection] = useState(initial);
+  const selected = value ?? localSelection;
+  const retrySeconds = usePlayerCooldown();
+  const { data: fetched, error, isLoading, isValidating, mutate: retryItems } = useSWR<ItemMetadata>(
+    metadata ? null : api('items', { platform, puuid, id }), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false },
+  );
+  const data = metadata ?? fetched;
+  const query = search.trim().toLocaleLowerCase();
+  const options = Object.entries(data?.data ?? {})
+    .filter(([key, item]) => key === String(selected) || item.name.toLocaleLowerCase().includes(query) || key === query)
+    .sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+  function choose(item: number) {
+    setLocalSelection(item);
+    onChange?.(item);
+  }
+
+  return <div className="item-picker">
+    <label htmlFor={`${uid}-search`}>Search patch items</label>
+    <input id={`${uid}-search`} type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Search by item name" />
+    <label htmlFor={`${uid}-item`}>Tracked item</label>
+    <select id={`${uid}-item`} name="item" required value={selected || ''} onChange={event => choose(Number(event.target.value))} aria-describedby={`${uid}-help`}>
+      <option value="">{isLoading ? 'Loading patch items…' : 'Choose an item'}</option>
+      {selected > 0 && !data?.data[selected] && <option value={selected}>Item {selected} — metadata unavailable</option>}
+      {options.map(([key, item]) => <option key={key} value={key}>{item.name}</option>)}
+    </select>
+    {selected > 0 && data?.data[selected] && <p className="item-picker-selection"><ItemLabel id={selected} metadata={data} /></p>}
+    {error && <div><p role="status">Item details are unavailable. Your existing target is preserved.</p><button type="button" disabled={isValidating || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button></div>}
+    {!isLoading && data && !Object.keys(data.data).length && <p role="status">No compatible item catalogue is available for this match.</p>}
+    {!!query && !options.length && <p role="status">No items match this search.</p>}
+    <p id={`${uid}-help`} className="player-help">Choose the item you want to observe in future games. Eligibility and purchase budget depend on the game.</p>
+  </div>;
 }
-export function RuneLabel({id,metadata}:{id:number;metadata?:ItemMetadata}) { const rune=metadata?.runes?.[id];return <span>{rune&&<img loading="lazy" width="24" height="24" alt="" src={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon.split('/').map(encodeURIComponent).join('/')}`}/>} {rune?.name??`Rune ${id}`} </span>; }
-export function ItemLabel({id,metadata}:{id:number;metadata?:ItemMetadata}) {
-  const item=metadata?.data[id];return <span>{metadata?.version&&item?.image?.full&&<img width="32" height="32" loading="lazy" src={`https://ddragon.leagueoflegends.com/cdn/${metadata.version}/img/item/${encodeURIComponent(item.image.full)}`} alt=""/>} {item?.name??`Item ${id}`}{item?.plaintext&&<small> — {item.plaintext}</small>}</span>;
+
+export function RuneLabel({ id, metadata }: { id: number; metadata?: ItemMetadata }) {
+  const rune = metadata?.runes?.[id];
+  return <span className="rune-label">
+    {rune && <img loading="lazy" width="24" height="24" alt="" src={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon.split('/').map(encodeURIComponent).join('/')}`} />}
+    <span>{rune?.name ?? `Rune ${id}`}</span>
+  </span>;
+}
+
+export function ItemLabel({ id, metadata, compact = false }: { id: number; metadata?: ItemMetadata; compact?: boolean }) {
+  const item = metadata?.data[id];
+  return <span className="item-label">
+    {metadata?.version && item?.image?.full && <img width="32" height="32" loading="lazy" src={`https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(metadata.version)}/img/item/${encodeURIComponent(item.image.full)}`} alt="" />}
+    <span>{item?.name ?? `Item ${id}`}{!compact && item?.plaintext && <small> — {item.plaintext}</small>}</span>
+  </span>;
 }
