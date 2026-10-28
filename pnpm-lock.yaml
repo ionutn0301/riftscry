@@ -19,7 +19,7 @@ importers:
         version: 3.7.3
       '@astrojs/vercel':
         specifier: ^11.0.16
-        version: 11.0.16(astro@7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1))(react@19.2.8)(ws@8.21.3)
+        version: 11.0.16(astro@7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@upstash/redis@1.40.0)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1))(react@19.2.8)(ws@8.21.3)
       '@nanostores/persistent':
         specifier: ^1.3.5
         version: 1.3.5(nanostores@1.5.2)
@@ -32,12 +32,18 @@ importers:
       '@react-three/fiber':
         specifier: ^9.8.2
         version: 9.8.2(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.1)
+      '@upstash/ratelimit':
+        specifier: ^2.2.0
+        version: 2.2.0(@upstash/redis@1.40.0)
+      '@upstash/redis':
+        specifier: ^1.40.0
+        version: 1.40.0
       ai:
         specifier: ^7.0.155
         version: 7.0.155(zod@4.4.3)
       astro:
         specifier: ^7.2.4
-        version: 7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1)
+        version: 7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@upstash/redis@1.40.0)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1)
       cmdk:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -1364,6 +1370,18 @@ packages:
 
   '@ungap/structured-clone@1.3.3':
     resolution: {integrity: sha512-60YRaenCQcVjYEKOcG824+DRGGIQ3VKErcBoAEDJZz5bKIs2ZG+X/H9Nk+Q6EVkwJk5QNApxbrc5QtBSwtrXAg==}
+
+  '@upstash/core-analytics@0.0.10':
+    resolution: {integrity: sha512-7qJHGxpQgQr9/vmeS1PktEwvNAF7TI4iJDi8Pu2CFZ9YUGHZH4fOP5TfYlZ4aVxfopnELiE4BS4FBjyK7V1/xQ==}
+    engines: {node: '>=16.0.0'}
+
+  '@upstash/ratelimit@2.2.0':
+    resolution: {integrity: sha512-gSydXspG6TJKTh71/gGGv4IGDjD9rXglQfm2jAue2kh4bcfWtEAsG1NW4OqzZd/hubJPojsbOU6AMdS6Xqh0tQ==}
+    peerDependencies:
+      '@upstash/redis': ^1.38.2
+
+  '@upstash/redis@1.40.0':
+    resolution: {integrity: sha512-F6+V7Kof2McJtGWclusZLt7hBRmIMZg+albS32/5TuNRg/92FM2nkyKPY9wWEieMj9hjyUi4iURsN1djsHNbwA==}
 
   '@use-gesture/core@10.3.1':
     resolution: {integrity: sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw==}
@@ -3411,14 +3429,14 @@ snapshots:
       is-docker: 4.0.0
       package-manager-detector: 1.8.0
 
-  '@astrojs/vercel@11.0.16(astro@7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1))(react@19.2.8)(ws@8.21.3)':
+  '@astrojs/vercel@11.0.16(astro@7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@upstash/redis@1.40.0)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1))(react@19.2.8)(ws@8.21.3)':
     dependencies:
       '@astrojs/internal-helpers': 0.13.0
       '@vercel/analytics': 2.0.1(react@19.2.8)
       '@vercel/functions': 3.10.4(ws@8.21.3)
       '@vercel/nft': 1.11.0
       '@vercel/routing-utils': 6.6.0
-      astro: 7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1)
+      astro: 7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@upstash/redis@1.40.0)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1)
       rolldown: 1.2.15
       tinyglobby: 0.2.17
     transitivePeerDependencies:
@@ -4379,6 +4397,19 @@ snapshots:
 
   '@ungap/structured-clone@1.3.3': {}
 
+  '@upstash/core-analytics@0.0.10':
+    dependencies:
+      '@upstash/redis': 1.40.0
+
+  '@upstash/ratelimit@2.2.0(@upstash/redis@1.40.0)':
+    dependencies:
+      '@upstash/core-analytics': 0.0.10
+      '@upstash/redis': 1.40.0
+
+  '@upstash/redis@1.40.0':
+    dependencies:
+      uncrypto: 0.1.3
+
   '@use-gesture/core@10.3.1': {}
 
   '@use-gesture/react@10.3.1(react@19.2.8)':
@@ -4613,7 +4644,7 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  astro@7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1):
+  astro@7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(@upstash/redis@1.40.0)(@vercel/functions@3.10.4(ws@8.21.3))(tsx@4.23.12)(yaml@2.9.1):
     dependencies:
       '@astrojs/compiler-rs': 0.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
       '@astrojs/internal-helpers': 0.10.4
@@ -4662,7 +4693,7 @@ snapshots:
       tinyglobby: 0.2.17
       ultrahtml: 1.7.0
       unifont: 0.7.5
-      unstorage: 1.17.5(@vercel/functions@3.10.4(ws@8.21.3))
+      unstorage: 1.17.5(@upstash/redis@1.40.0)(@vercel/functions@3.10.4(ws@8.21.3))
       vite: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(tsx@4.23.12)(yaml@2.9.1)
       vitefu: 1.1.3(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(tsx@4.23.12)(yaml@2.9.1))
       xxhash-wasm: 1.1.0
@@ -5861,7 +5892,7 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  unstorage@1.17.5(@vercel/functions@3.10.4(ws@8.21.3)):
+  unstorage@1.17.5(@upstash/redis@1.40.0)(@vercel/functions@3.10.4(ws@8.21.3)):
     dependencies:
       anymatch: 3.1.3
       chokidar: 5.0.0
@@ -5872,6 +5903,7 @@ snapshots:
       ofetch: 1.5.1
       ufo: 1.6.4
     optionalDependencies:
+      '@upstash/redis': 1.40.0
       '@vercel/functions': 3.10.4(ws@8.21.3)
 
   update-browserslist-db@1.3.1(browserslist@4.28.8):
