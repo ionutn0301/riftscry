@@ -4,7 +4,7 @@
   "assetVersion": "16.8.1",
   "releaseDate": "2026-04-14",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-8-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.283Z",
+  "ingestedAt": "2026-10-28T08:23:15.713Z",
   "champions": [
     {
       "championId": "DrMundo",
@@ -41,7 +41,7 @@
     },
     {
       "championId": "Hwei",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Hwei has remained on the weaker side since the nerfs to his waveclear last year, and we are fixing a bug that we expect to be a further minor nerf.",
       "abilities": [
         {
@@ -53,7 +53,7 @@
               "label": "Base Damage",
               "before": "35 - 230 (Levels 1 - 18)",
               "after": "40 - 285 (Levels 1 - 18)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -111,7 +111,7 @@
     },
     {
       "championId": "Lillia",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Our favorite bouncing deer has been a bit less than enthusiastic to prance from camp to camp as of late, it’s a scary jungle out there.",
       "abilities": [
         {
@@ -123,7 +123,7 @@
               "label": "Monster Damage Cap",
               "before": "65",
               "after": "70-180 (based on level)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -158,7 +158,7 @@
     },
     {
       "championId": "Mel",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Since our recent adjustments to Mel, she’s been hitting too hard with her initial Q missile whether ahead or behind, even as opponents dodge the rest of the spell, so we’re looking to take her damage down a notch.",
       "abilities": [
         {
@@ -183,14 +183,14 @@
               "label": "Cooldown",
               "before": "35 / 32 / 29 / 26 / 23",
               "after": "38 / 35 / 32 / 29 / 26 seconds",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Bonus Movement Speed Duration",
               "before": "1.5",
               "after": "0.75 seconds",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -198,7 +198,7 @@
     },
     {
       "championId": "TahmKench",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "As a champ in both Top and Support, Tahm Kench requires periodic maintenance as the meta shifts to ensure both roles of his roles are equally supported.",
       "abilities": [
         {
@@ -210,7 +210,7 @@
               "label": "Damage",
               "before": "6 - 48 (Levels 1 - 11) (+1.5% AP per 100 Bonus HP) (+4.5% Bonus HP)",
               "after": "5 - 60 (Levels 1 - 12) (+1.25% AP per 100 Bonus HP) (+4% Bonus HP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }

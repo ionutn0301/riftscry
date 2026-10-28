@@ -4,11 +4,11 @@
   "assetVersion": "16.13.1",
   "releaseDate": "2026-06-23",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-13-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.348Z",
+  "ingestedAt": "2026-10-28T08:23:58.264Z",
   "champions": [
     {
       "championId": "Aphelios",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Since his nerfs earlier this year, Aphelios has fallen in priority and win rate.",
       "abilities": [
         {
@@ -33,7 +33,7 @@
               "label": "Q - Onslaught Damage",
               "before": "19 / 24.25 / 29.5 / 34.75 / 40% Total AD Dmg per attack",
               "after": "20 / 25.25 / 30.5 / 35.75 / 41% Total AD Dmg per attack",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -67,7 +67,7 @@
     },
     {
       "championId": "Bard",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Bard has been a tanky roaming meta staple for much of the season, so we're trimming his damage so tank Bard doesn't get to hit nearly as hard without investing in AP.",
       "abilities": [
         {
@@ -79,7 +79,7 @@
               "label": "Damage Per Meep",
               "before": "35 (+10 per 5 Chimes) (+40% AP)",
               "after": "30 (+6 per 5 Chimes) (+40% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -87,7 +87,7 @@
     },
     {
       "championId": "Brand",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "Brand continues to dominate bot lane for most players, so we're nerfing his early passive detonation damage while offsetting some of that hit for more skilled players and supports through mana tuning.",
       "abilities": [
         {
@@ -112,7 +112,7 @@
               "label": "Detonation Damage",
               "before": "8 - 12% (Levels 1 - 17) (+2% per 100 AP)",
               "after": "6 - 12% (Levels 1 - 18, scaling above 18) (+2% per 100 AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -125,7 +125,7 @@
               "label": "Mana Cost",
               "before": "70 / 75 / 80 / 85 / 90",
               "after": "90",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -178,7 +178,7 @@
               "label": "Damage Reduction on Enemy Hit",
               "before": "-8% multiplicatively, down to 40% (at 11 hits)",
               "after": "-5%, down to a minimum of 50% (at 14 hits)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -211,7 +211,7 @@
               "label": "Shield",
               "before": "70 / 90 / 110 (+90 / 135 / 180% AD) (+120% AP)",
               "after": "100 / 150 / 200 (+90 / 135 / 180% AD) (+120% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -239,7 +239,7 @@
     },
     {
       "championId": "Leblanc",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "We want to better reward LeBlanc players for landing some of her less guaranteed damage, rather than giving her more gank or lane support—both of which she does really well already.",
       "abilities": [
         {
@@ -251,21 +251,21 @@
               "label": "RQ1 / RE1 Damage",
               "before": "70 / 140 / 210",
               "after": "70 / 150 / 230",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "numeric",
               "label": "Mark / Root Damage",
               "before": "140 / 280 / 420",
               "after": "140 / 300 / 460",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "numeric",
               "label": "RW Damage",
               "before": "150 / 300 / 450",
               "after": "150 / 315 / 480",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -273,7 +273,7 @@
     },
     {
       "championId": "Olaf",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "Olaf used to be a staple in the jungle but has been out of favor for a while now, despite our earlier attempts this season to help him out.",
       "abilities": [
         {
@@ -285,7 +285,7 @@
               "label": "Monster Bonus Physical Damage",
               "before": "20 / 35 / 50 / 65 / 80",
               "after": "20 / 45 / 70 / 95 / 120",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -345,7 +345,7 @@
               "label": "Physical Damage",
               "before": "80 / 108 / 136 / 164 / 192 (64% bonus AD)",
               "after": "70 / 95 / 120 / 145 / 170 (60% bonus AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -360,7 +360,7 @@
     },
     {
       "championId": "Rumble",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Rumble has been an extremely reliable blind-pick top laner for a long time, so we're lowering some of his early staying power and base damage while keeping his scaling pattern intact.",
       "abilities": [
         {
@@ -372,7 +372,7 @@
               "label": "Damage",
               "before": "60 / 85 / 110 / 135 / 160 (100% AP)",
               "after": "50 / 75 / 100 / 125 / 150 (105% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -380,7 +380,7 @@
     },
     {
       "championId": "Senna",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Senna players have moved over to a much stronger Bot lane farming pattern, so we're softening her farming and Shiv synergy while also tuning her DPS around having access to more souls.",
       "abilities": [
         {
@@ -406,7 +406,7 @@
               "label": "Crit Damage",
               "before": "-10% (180% / 27% with IE)",
               "after": "-15% (170% / 25.5% with IE)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },

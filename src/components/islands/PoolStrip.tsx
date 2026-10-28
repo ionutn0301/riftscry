@@ -29,8 +29,10 @@ const GLYPH: Record<string, { glyph: string; label: string; cls: string }> = {
 export default function PoolStrip({ patchId, assetVersion, names, changed }: PoolStripProps) {
   const pool = useStore($pool);
   const [pinned, setPinned] = useState<string[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const param = new URLSearchParams(window.location.search).get("champions");
     if (!param) return;
     const byLower = new Map(Object.keys(names).map((id) => [id.toLowerCase(), id]));
@@ -43,7 +45,7 @@ export default function PoolStrip({ patchId, assetVersion, names, changed }: Poo
   }, [names]);
 
   const members = [...pool, ...pinned.filter((p) => !pool.includes(p))];
-  if (members.length === 0) return null;
+  if (!mounted || members.length === 0) return null;
 
   return (
     <section className="pool-strip" aria-label={`Your pool in patch ${patchId}`}>
@@ -51,7 +53,7 @@ export default function PoolStrip({ patchId, assetVersion, names, changed }: Poo
         <h2>
           Your pool <span className="dash">—</span> <span className="num">patch {patchId}</span>
         </h2>
-        <a href="/pool" className="edit">
+        <a href="/pool#edit-pool" className="edit">
           Edit pool
         </a>
       </header>
@@ -79,7 +81,7 @@ export default function PoolStrip({ patchId, assetVersion, names, changed }: Poo
                       {c.changes === 1 ? "change" : "changes"}
                     </span>
                   ) : (
-                    <span className="state unchanged">Unchanged</span>
+                    <span className="state unchanged">No direct changes recorded</span>
                   )}
                 </span>
               </a>

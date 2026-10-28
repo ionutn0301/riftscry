@@ -1,0 +1,314 @@
+{
+  "id": "26.20",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-20-notes/",
+  "checkedAt": "2026-10-28T08:24:00.063Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ambessa"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ashe"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Cassiopeia"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Diana"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kennen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kindred"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "K'Sante"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lillia"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lucian"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mordekaiser"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Neeko"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Smolder"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Swain"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tahm Kench"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vayne"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yunara"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Experimental Hexplate",
+        "Hextech Rocketbelt",
+        "Runaan's Hurricane"
+      ],
+      "sourceLines": 19,
+      "parsedLines": 19
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Ambessa",
+        "records": 1
+      },
+      {
+        "name": "Ashe",
+        "records": 1
+      },
+      {
+        "name": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "name": "Diana",
+        "records": 1
+      },
+      {
+        "name": "Kennen",
+        "records": 1
+      },
+      {
+        "name": "Kindred",
+        "records": 3
+      },
+      {
+        "name": "K'Sante",
+        "records": 2
+      },
+      {
+        "name": "Lillia",
+        "records": 1
+      },
+      {
+        "name": "Lucian",
+        "records": 1
+      },
+      {
+        "name": "Mordekaiser",
+        "records": 2
+      },
+      {
+        "name": "Neeko",
+        "records": 2
+      },
+      {
+        "name": "Smolder",
+        "records": 3
+      },
+      {
+        "name": "Swain",
+        "records": 4
+      },
+      {
+        "name": "Tahm Kench",
+        "records": 1
+      },
+      {
+        "name": "Vayne",
+        "records": 2
+      },
+      {
+        "name": "Yunara",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Experimental Hexplate",
+        "records": 1
+      },
+      {
+        "name": "Hextech Rocketbelt",
+        "records": 2
+      },
+      {
+        "name": "Runaan's Hurricane",
+        "records": 16
+      }
+    ],
+    "systems": []
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Ambessa",
+        "records": 1
+      },
+      {
+        "id": "Ashe",
+        "records": 1
+      },
+      {
+        "id": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "id": "Diana",
+        "records": 1
+      },
+      {
+        "id": "Kennen",
+        "records": 1
+      },
+      {
+        "id": "Kindred",
+        "records": 3
+      },
+      {
+        "id": "KSante",
+        "records": 2
+      },
+      {
+        "id": "Lillia",
+        "records": 1
+      },
+      {
+        "id": "Lucian",
+        "records": 1
+      },
+      {
+        "id": "Mordekaiser",
+        "records": 2
+      },
+      {
+        "id": "Neeko",
+        "records": 2
+      },
+      {
+        "id": "Smolder",
+        "records": 3
+      },
+      {
+        "id": "Swain",
+        "records": 4
+      },
+      {
+        "id": "TahmKench",
+        "records": 1
+      },
+      {
+        "id": "Vayne",
+        "records": 2
+      },
+      {
+        "id": "Yunara",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Experimental Hexplate",
+        "records": 1
+      },
+      {
+        "name": "Hextech Rocketbelt",
+        "records": 2
+      },
+      {
+        "name": "Runaan's Hurricane",
+        "records": 16
+      }
+    ],
+    "systems": []
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

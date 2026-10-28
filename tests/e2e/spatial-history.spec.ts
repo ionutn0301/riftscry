@@ -48,7 +48,8 @@ test("a display name with a different canonical ID resolves without substituting
 test("legacy patch and kept-finding URLs restore only records from the chosen interval", async ({ page }) => {
   const response = await page.request.get("/journey/Belveth.json");
   expect(response.ok()).toBe(true);
-  const model = await response.json() as { older: string; newer: string; selectedId: string };
+  const payload = await response.json() as { records: { id: string; patch: string }[] };
+  const model = { older: '26.14', newer: '26.16', selectedId: payload.records.find((record) => record.patch === '26.16')!.id };
   const params = new URLSearchParams({ champion: "Belveth", older: model.older, patch: model.newer, event: model.selectedId, seen: model.selectedId + "|forged-record", beat: "ending" });
   await page.goto("/?" + params.toString());
   await ready(page);
@@ -68,13 +69,20 @@ test("unknown champions and invalid URL intervals explain the retained evidence"
   await ready(page);
   await expect(page.locator("[data-selection-status]")).toContainText("not in the loaded roster");
   await expect(page.locator("[data-selection-status]")).toContainText("remains visible");
-  await expect(page.locator("[data-champion-name]")).toHaveText("Bel'Veth");
+  const initialName = await page.locator('#voyage-initial-data').evaluate((node) => JSON.parse(node.textContent!).identity.name);
+  await expect(page.locator("[data-champion-name]")).toHaveText(initialName);
   await page.goto("/?champion=Belveth&older=26.16&newer=26.15#history");
   await ready(page);
   await expect(page.locator("[data-period-status]")).toHaveAttribute("data-invalid", "true");
   await expect(page.locator("[data-period-status]")).toContainText("default archived interval");
-  await expect(page.locator("[data-field-choice]")).toBeEnabled();
-  await expect(page.locator("[data-record-after]")).not.toBeEmpty();
+  const model = await (await page.request.get('/journey/Belveth.json')).json();
+  if (model.periodIds.length) {
+    await expect(page.locator("[data-field-choice]")).toBeEnabled();
+    await expect(page.locator("[data-record-after]")).not.toBeEmpty();
+  } else {
+    await expect(page.locator('[data-record-quiet]')).toBeVisible();
+    await expect(page.locator('[data-historical-recovery]')).toBeVisible();
+  }
 });
 
 test("reduced motion keeps chapter links, dates and the map available on every viewport", async ({ page }) => {

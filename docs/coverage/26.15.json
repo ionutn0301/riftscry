@@ -1,0 +1,266 @@
+{
+  "id": "26.15",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-15-notes/",
+  "checkedAt": "2026-10-28T08:23:58.738Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Alistar"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Bel'Veth"
+      ],
+      "sourceLines": 43,
+      "parsedLines": 43
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kai'Sa"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Locke"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Maokai"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mordekaiser"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Naafiri"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Riven"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Sylas"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Volibear"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zac"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Bastionbreaker"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Terminus"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Yun Tal Wildarrows"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Jack of All Trades"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Alistar",
+        "records": 1
+      },
+      {
+        "name": "Bel'Veth",
+        "records": 43
+      },
+      {
+        "name": "Kai'Sa",
+        "records": 1
+      },
+      {
+        "name": "Locke",
+        "records": 5
+      },
+      {
+        "name": "Maokai",
+        "records": 2
+      },
+      {
+        "name": "Mordekaiser",
+        "records": 3
+      },
+      {
+        "name": "Naafiri",
+        "records": 2
+      },
+      {
+        "name": "Riven",
+        "records": 2
+      },
+      {
+        "name": "Sylas",
+        "records": 1
+      },
+      {
+        "name": "Volibear",
+        "records": 1
+      },
+      {
+        "name": "Zac",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Bastionbreaker",
+        "records": 2
+      },
+      {
+        "name": "Terminus",
+        "records": 1
+      },
+      {
+        "name": "Yun Tal Wildarrows",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Jack of All Trades",
+        "records": 1
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Alistar",
+        "records": 1
+      },
+      {
+        "id": "Belveth",
+        "records": 43
+      },
+      {
+        "id": "Kaisa",
+        "records": 1
+      },
+      {
+        "id": "Locke",
+        "records": 5
+      },
+      {
+        "id": "Maokai",
+        "records": 2
+      },
+      {
+        "id": "Mordekaiser",
+        "records": 3
+      },
+      {
+        "id": "Naafiri",
+        "records": 2
+      },
+      {
+        "id": "Riven",
+        "records": 2
+      },
+      {
+        "id": "Sylas",
+        "records": 1
+      },
+      {
+        "id": "Volibear",
+        "records": 1
+      },
+      {
+        "id": "Zac",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Bastionbreaker",
+        "records": 2
+      },
+      {
+        "name": "Terminus",
+        "records": 1
+      },
+      {
+        "name": "Yun Tal Wildarrows",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Jack of All Trades",
+        "records": 1
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

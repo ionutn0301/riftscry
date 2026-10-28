@@ -4,7 +4,7 @@
   "assetVersion": "16.3.1",
   "releaseDate": "2026-02-03",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-3-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.213Z",
+  "ingestedAt": "2026-10-28T08:22:32.479Z",
   "champions": [
     {
       "championId": "Ahri",
@@ -126,7 +126,7 @@
               "label": "Health Cost",
               "before": "6% current health",
               "after": "5% current health",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -139,7 +139,7 @@
               "label": "Health Cost",
               "before": "6% current health",
               "after": "5% current health",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -152,7 +152,7 @@
               "label": "Health Cost",
               "before": "6% current health",
               "after": "5% current health",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -165,7 +165,7 @@
               "label": "Health Cost",
               "before": "6% current health",
               "after": "5% current health",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -325,7 +325,7 @@
               "label": "Initial hit damage",
               "before": "40 / 65 / 90 / 115 / 140 (+ 55% AP)",
               "after": "50 / 75 / 100 / 125 / 150 (+ 55% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "prose",
@@ -508,14 +508,14 @@
               "label": "Total Damage",
               "before": "78 / 109 / 144 / 185 / 230 (+51-85% AP)",
               "after": "85 / 126 / 169 / 214 / 261 (+ 85-105% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Mana Cost",
               "before": "70 / 80 / 90 / 100 / 110",
               "after": "70 / 75 / 80 / 85 / 90",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "numeric",
@@ -600,7 +600,7 @@
               "label": "Decaying Move Speed",
               "before": "30% over 0.75s",
               "after": "40% over 1.5s",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -655,21 +655,21 @@
               "label": "Root Duration",
               "before": "1.1 / 1.2 / 1.3 / 1.4 / 1.5",
               "after": "1.5",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Damage",
               "before": "60 / 100 / 140 / 180 / 220",
               "after": "60 / 105 / 150 / 195 / 240",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "numeric",
               "label": "Damage per Second",
               "before": "16 / 26 / 36 / 46 / 56",
               "after": "16 / 28 / 40 / 52 / 64",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "prose",
@@ -695,7 +695,7 @@
     },
     {
       "championId": "Naafiri",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Naafiri's doing pretty well in the mid lane at the moment but her jungling hasn't kept up so we're giving our favorite pack of dogs more of a fighting chance with her current slow clear.",
       "abilities": [
         {
@@ -707,7 +707,7 @@
               "label": "Packmate Monster Damage",
               "before": "1.35x",
               "after": "1.55x",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -974,7 +974,7 @@
               "label": "Non-champion damage cap",
               "before": "190 / 305 / 420 / 535 / 650 (+ 70% AP)",
               "after": "150 / 265 / 380 / 495 / 610 (+ 70% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -982,7 +982,7 @@
     },
     {
       "championId": "XinZhao",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "Xin Zhao just can't catch a break.",
       "abilities": [
         {
@@ -1007,7 +1007,7 @@
               "label": "Bonus Attack Speed",
               "before": "40 / 45 / 50 / 55 / 60%",
               "after": "40 / 50 / 60 / 70 / 80%",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -1080,7 +1080,7 @@
               "label": "Damage to monsters",
               "before": "1.2x",
               "after": "0.5x",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -1117,14 +1117,14 @@
     },
     {
       "name": "Dusk and Dawn",
-      "classification": "adjustment",
+      "classification": "buff",
       "changes": [
         {
           "kind": "numeric",
           "label": "Spellblade Damage",
           "before": "100% Base AD + 10% AP",
           "after": "75% Base AD +10% AP",
-          "direction": "nerf"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
@@ -1191,27 +1191,27 @@
     },
     {
       "name": "Armored Advance",
-      "classification": "buff",
+      "classification": "adjustment",
       "changes": [
         {
           "kind": "numeric",
           "label": "Noxian Endurance Shield",
           "before": "10-120 (based on level 1-18) (+ 7% max HP)",
           "after": "100-200 (based on level, scaling begins at level 9) (+ 8% Bonus HP)",
-          "direction": "buff"
+          "direction": "neutral"
         }
       ]
     },
     {
       "name": "Chainlaced Crushers",
-      "classification": "buff",
+      "classification": "adjustment",
       "changes": [
         {
           "kind": "numeric",
           "label": "Noxian Endurance Shield",
           "before": "10-120 (based on level 1-18) (+ 7% max HP)",
           "after": "100-200 (based on level, scaling begins at level 9) (+ 8% Bonus HP)",
-          "direction": "buff"
+          "direction": "neutral"
         }
       ]
     }
@@ -1239,7 +1239,7 @@
           "label": "Ranged Effectiveness",
           "before": "75% (18.75 - 37.5% Movement Speed)",
           "after": "50% (12.5% - 25% Movement Speed)",
-          "direction": "nerf"
+          "direction": "neutral"
         }
       ]
     },

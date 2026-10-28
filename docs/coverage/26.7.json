@@ -1,0 +1,226 @@
+{
+  "id": "26.7",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-7-notes/",
+  "checkedAt": "2026-10-28T08:23:15.357Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Cassiopeia"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Graves"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kalista"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Karma"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nami"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ornn"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rell"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Shyvana"
+      ],
+      "sourceLines": 0,
+      "parsedLines": 0
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Singed"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Veigar"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-systems",
+      "headings": [],
+      "sourceLines": 0,
+      "parsedLines": 0
+    },
+    {
+      "section": "patch-systems",
+      "headings": [],
+      "sourceLines": 0,
+      "parsedLines": 0
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "name": "Graves",
+        "records": 1
+      },
+      {
+        "name": "Kalista",
+        "records": 1
+      },
+      {
+        "name": "Karma",
+        "records": 1
+      },
+      {
+        "name": "Nami",
+        "records": 1
+      },
+      {
+        "name": "Ornn",
+        "records": 1
+      },
+      {
+        "name": "Rell",
+        "records": 2
+      },
+      {
+        "name": "Shyvana",
+        "records": 0
+      },
+      {
+        "name": "Singed",
+        "records": 1
+      },
+      {
+        "name": "Veigar",
+        "records": 1
+      }
+    ],
+    "items": [],
+    "systems": [
+      {
+        "name": "Farming as Supports",
+        "records": 0
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "id": "Graves",
+        "records": 1
+      },
+      {
+        "id": "Kalista",
+        "records": 1
+      },
+      {
+        "id": "Karma",
+        "records": 1
+      },
+      {
+        "id": "Nami",
+        "records": 1
+      },
+      {
+        "id": "Ornn",
+        "records": 1
+      },
+      {
+        "id": "Rell",
+        "records": 2
+      },
+      {
+        "id": "Shyvana",
+        "records": 1
+      },
+      {
+        "id": "Singed",
+        "records": 1
+      },
+      {
+        "id": "Veigar",
+        "records": 1
+      }
+    ],
+    "items": [],
+    "systems": [
+      {
+        "name": "Farming as Supports",
+        "records": 0
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": {
+    "replaceChampions": [
+      {
+        "championId": "Shyvana",
+        "classification": "adjustment",
+        "abilities": [
+          {
+            "ability": "other",
+            "name": "Ultimate haste",
+            "changes": [
+              {
+                "kind": "prose",
+                "label": "Fury generation",
+                "text": "Ultimate haste no longer provides passive 0.015 passive fury generation per second but instead amplifies all fury generation by 1% per 1 ultimate haste."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "unparsed": [
+    "patch-champions: Shyvana has no structured records; review prose-only source"
+  ]
+}

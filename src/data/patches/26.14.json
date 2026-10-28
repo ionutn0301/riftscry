@@ -4,7 +4,7 @@
   "assetVersion": "16.14.1",
   "releaseDate": "2026-07-14",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-14-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.359Z",
+  "ingestedAt": "2026-10-28T08:23:58.558Z",
   "champions": [
     {
       "championId": "Azir",
@@ -80,7 +80,7 @@
     },
     {
       "championId": "Garen",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Garen is dishing out too much justice across all skill brackets right now.",
       "abilities": [
         {
@@ -92,7 +92,7 @@
               "label": "True Damage",
               "before": "150 / 250 / 350 (+ 25 / 30 / 35% of target's missing health)",
               "after": "125 / 200 / 275 (+ 25 / 30 / 35% of target's missing health)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -152,7 +152,7 @@
               "label": "Nail Damage",
               "before": "50 / 60 / 70 / 80 / 90",
               "after": "50 / 58 / 66 / 74 / 82",
-              "direction": "neutral"
+              "direction": "nerf"
             },
             {
               "kind": "numeric",
@@ -172,7 +172,7 @@
               "label": "Damage Taken Grey Health Cap",
               "before": "40 / 80 / 120 / 160 / 200",
               "after": "40 / 70 / 100 / 130 / 160",
-              "direction": "neutral"
+              "direction": "nerf"
             }
           ]
         }
@@ -213,7 +213,7 @@
     },
     {
       "championId": "Nami",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "Nami has been feeling a bit like a fish out of water since the Mandate changes, especially when combined with her nerf in 26.7.",
       "abilities": [
         {
@@ -225,7 +225,7 @@
               "label": "Damage per Hit",
               "before": "20 / 30 / 40 / 50 / 60",
               "after": "20 / 35 / 50 / 65 / 80",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -258,14 +258,14 @@
               "label": "Ability Power Slow Ratio",
               "before": "10% per 100 Ability Power",
               "after": "7% per 100 Ability Power",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Ability Power Healing Ratio",
               "before": "50% Ability Power",
               "after": "35% Ability Power",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -273,7 +273,7 @@
     },
     {
       "championId": "Seraphine",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Seraphine's vocal lessons have paid off and she's hitting those High Notes more consistently.",
       "abilities": [
         {
@@ -285,7 +285,7 @@
               "label": "Ability Power Ratio",
               "before": "50% Ability Power",
               "after": "40% Ability Power",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -349,14 +349,14 @@
           "label": "Bonus Health",
           "before": "200 - 300",
           "after": "100 - 300",
-          "direction": "nerf"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
           "label": "Healing",
           "before": "200 - 400",
           "after": "100 - 400",
-          "direction": "nerf"
+          "direction": "neutral"
         }
       ]
     },

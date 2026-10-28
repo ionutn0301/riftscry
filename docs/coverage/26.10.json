@@ -1,0 +1,330 @@
+{
+  "id": "26.10",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-10-notes/",
+  "checkedAt": "2026-10-28T08:23:57.191Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ambessa"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Anivia"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ashe"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Galio"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lee Sin"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Naafiri"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Quinn"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Shyvana"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Smolder"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Wukong"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zed"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zeri"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Doran's Bow"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Doran's Helm"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Gluttonous Greaves / Immortal Path"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Lich Bane"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Voltaic Cyclosword"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Deathfire Touch"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Stormraider's Surge"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Ambessa",
+        "records": 4
+      },
+      {
+        "name": "Anivia",
+        "records": 2
+      },
+      {
+        "name": "Ashe",
+        "records": 1
+      },
+      {
+        "name": "Galio",
+        "records": 3
+      },
+      {
+        "name": "Lee Sin",
+        "records": 5
+      },
+      {
+        "name": "Naafiri",
+        "records": 3
+      },
+      {
+        "name": "Quinn",
+        "records": 3
+      },
+      {
+        "name": "Shyvana",
+        "records": 3
+      },
+      {
+        "name": "Smolder",
+        "records": 5
+      },
+      {
+        "name": "Wukong",
+        "records": 3
+      },
+      {
+        "name": "Zed",
+        "records": 2
+      },
+      {
+        "name": "Zeri",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Doran's Bow",
+        "records": 1
+      },
+      {
+        "name": "Doran's Helm",
+        "records": 1
+      },
+      {
+        "name": "Gluttonous Greaves / Immortal Path",
+        "records": 2
+      },
+      {
+        "name": "Lich Bane",
+        "records": 2
+      },
+      {
+        "name": "Voltaic Cyclosword",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Deathfire Touch",
+        "records": 1
+      },
+      {
+        "name": "Stormraider's Surge",
+        "records": 1
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Ambessa",
+        "records": 4
+      },
+      {
+        "id": "Anivia",
+        "records": 2
+      },
+      {
+        "id": "Ashe",
+        "records": 1
+      },
+      {
+        "id": "Galio",
+        "records": 3
+      },
+      {
+        "id": "LeeSin",
+        "records": 5
+      },
+      {
+        "id": "Naafiri",
+        "records": 3
+      },
+      {
+        "id": "Quinn",
+        "records": 3
+      },
+      {
+        "id": "Shyvana",
+        "records": 3
+      },
+      {
+        "id": "Smolder",
+        "records": 5
+      },
+      {
+        "id": "MonkeyKing",
+        "records": 3
+      },
+      {
+        "id": "Zed",
+        "records": 2
+      },
+      {
+        "id": "Zeri",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Doran's Bow",
+        "records": 1
+      },
+      {
+        "name": "Doran's Helm",
+        "records": 1
+      },
+      {
+        "name": "Gluttonous Greaves / Immortal Path",
+        "records": 2
+      },
+      {
+        "name": "Lich Bane",
+        "records": 2
+      },
+      {
+        "name": "Voltaic Cyclosword",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Deathfire Touch",
+        "records": 1
+      },
+      {
+        "name": "Stormraider's Surge",
+        "records": 1
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

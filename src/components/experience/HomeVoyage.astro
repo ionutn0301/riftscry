@@ -5,11 +5,12 @@ import { getLatestPatch, getAllPatches } from '../../lib/data';
 import ReturnBriefing from './ReturnBriefing.astro';
 import '../../styles/voyage.css';
 
-const model = buildJourneyModel('Belveth')!;
-const roster = journeyRoster();
 const latest = getLatestPatch();
+const exampleId = latest.champions.find((champion) => champion.abilities.some((ability) => ability.changes.length))?.championId ?? 'Belveth';
+const model = buildJourneyModel(exampleId)!;
+const roster = journeyRoster();
 const archive = getAllPatches();
-const featured = ['Belveth', 'Azir', 'Ahri'].map((id) => roster.find((champion) => champion.id === id)!);
+const featured = [...new Set([exampleId, 'Belveth', 'Azir', 'Ahri'])].map((id) => roster.find((champion) => champion.id === id)!);
 const initial = model.records.find((record) => record.id === model.selectedId);
 const initialTrail = model.records.filter((record) => record.field === initial?.field && model.periodIds.includes(record.id));
 const initialFields = [...new Map(model.records.filter((record) => model.periodIds.includes(record.id)).map((record) => [record.field, record])).values()];
@@ -41,7 +42,7 @@ const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
     <div class="chapter-composition arrival-composition">
       <p class="world-eyebrow">LEAGUE OF LEGENDS / THE CHANGING GAME</p>
       <h1>THE RIFT,<br /><em>REVEALED.</em></h1>
-      <div class="arrival-bottom"><p>Know before you queue.<br />A journey through what changed for your champions.</p><div class="voyage-actions"><a class="voyage-action" href="#perspective">Enter the journey <span aria-hidden="true">↘</span></a><a class="voyage-text-link" href="/pool">Open my briefing <span aria-hidden="true">↗</span></a></div></div>
+      <div class="arrival-bottom"><p>Know before you queue.<br />A journey through what changed for your champions.</p><div class="voyage-actions"><a class="voyage-action" href="#perspective">Enter the journey <span aria-hidden="true">↘</span></a><a class="voyage-text-link" href="/pool#briefing">Open my briefing <span aria-hidden="true">↗</span></a></div></div>
       <div class="arrival-archive"><span class="world-eyebrow">LATEST IN THIS ARCHIVE</span><a href={'/patch/' + latest.id}>{latest.id}<span>{latest.releaseDate} ↗</span></a></div>
       <a class="chapter-invitation" href="#perspective"><span class="invitation-line" aria-hidden="true"></span><span>Scroll into a different perspective</span><span aria-hidden="true">↓</span></a>
     </div>
@@ -75,9 +76,9 @@ const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
         <p class="record-rule" data-record-prose hidden={initial?.change.kind !== 'prose'}>{initial?.change.kind === 'prose' ? initial.change.text : ''}</p>
         <p class="record-unit" data-record-unit>{initial?.change.kind === 'numeric' ? initial.change.unit : ''}</p>
         <p class="record-reading" data-record-reading>{initial?.reading}</p>
-        <div class="record-quiet" data-record-quiet hidden><h3>A quieter chapter.</h3><p>No direct record for this champion in the selected interval. Items, systems, and other champions can still affect the game.</p></div>
+        <div class="record-quiet" data-record-quiet hidden><h3>A quieter chapter.</h3><p>No direct record for this champion in the selected interval. Items, systems, and other champions can still affect the game.</p><a class="voyage-text-link" data-historical-recovery hidden></a><a class="voyage-text-link" href="/patches">Explore the covered archive ↗</a></div>
         <div class="voyage-actions"><button type="button" class="voyage-action voyage-action--outline" data-focus-record aria-pressed="false">Keep this finding <span aria-hidden="true">+</span></button><a class="voyage-text-link" data-record-source href={initial?.source ?? latest.sourceUrl} target="_blank" rel="noreferrer">Riot's original notes ↗</a></div>
-        <p class="finding-explanation">Keep the records that matter. They travel with you to the end of this journey.</p><span class="visually-hidden" role="status" data-findings-status></span>
+        <p class="finding-explanation">Keep up to 50 findings on this device, across champions and dates. Remove or restore them in your briefing.</p><p class="finding-explanation" role="status" data-findings-status></p><a class="voyage-text-link" href="/pool#briefing">Open kept findings in your briefing ↗</a>
       </article>
       <a class="chapter-invitation" href="#history"><span class="invitation-line" aria-hidden="true"></span><span>One change belongs to a larger history</span><span aria-hidden="true">↓</span></a>
     </div>

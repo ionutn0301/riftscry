@@ -1,0 +1,264 @@
+{
+  "id": "26.12",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-12-notes/",
+  "checkedAt": "2026-10-28T08:23:58.055Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aatrox"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Gwen"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Hwei"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jax"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lee Sin"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nocturne"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Orianna"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ryze"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Sylas"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Syndra"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tristana"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Varus"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xin Zhao"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yuumi"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-systems",
+      "headings": [
+        "Teleport"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Aatrox",
+        "records": 1
+      },
+      {
+        "name": "Gwen",
+        "records": 2
+      },
+      {
+        "name": "Hwei",
+        "records": 4
+      },
+      {
+        "name": "Jax",
+        "records": 2
+      },
+      {
+        "name": "Lee Sin",
+        "records": 3
+      },
+      {
+        "name": "Nocturne",
+        "records": 1
+      },
+      {
+        "name": "Orianna",
+        "records": 3
+      },
+      {
+        "name": "Ryze",
+        "records": 2
+      },
+      {
+        "name": "Sylas",
+        "records": 2
+      },
+      {
+        "name": "Syndra",
+        "records": 2
+      },
+      {
+        "name": "Tristana",
+        "records": 2
+      },
+      {
+        "name": "Varus",
+        "records": 5
+      },
+      {
+        "name": "Xin Zhao",
+        "records": 3
+      },
+      {
+        "name": "Yuumi",
+        "records": 2
+      }
+    ],
+    "items": [],
+    "systems": [
+      {
+        "name": "Teleport",
+        "records": 1
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Aatrox",
+        "records": 1
+      },
+      {
+        "id": "Gwen",
+        "records": 2
+      },
+      {
+        "id": "Hwei",
+        "records": 4
+      },
+      {
+        "id": "Jax",
+        "records": 2
+      },
+      {
+        "id": "LeeSin",
+        "records": 3
+      },
+      {
+        "id": "Nocturne",
+        "records": 1
+      },
+      {
+        "id": "Orianna",
+        "records": 3
+      },
+      {
+        "id": "Ryze",
+        "records": 2
+      },
+      {
+        "id": "Sylas",
+        "records": 2
+      },
+      {
+        "id": "Syndra",
+        "records": 2
+      },
+      {
+        "id": "Tristana",
+        "records": 2
+      },
+      {
+        "id": "Varus",
+        "records": 5
+      },
+      {
+        "id": "XinZhao",
+        "records": 3
+      },
+      {
+        "id": "Yuumi",
+        "records": 2
+      }
+    ],
+    "items": [],
+    "systems": [
+      {
+        "name": "Teleport",
+        "records": 1
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

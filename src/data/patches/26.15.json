@@ -4,7 +4,7 @@
   "assetVersion": "16.15.1",
   "releaseDate": "2026-07-28",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-15-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.375Z",
+  "ingestedAt": "2026-10-28T08:23:58.738Z",
   "champions": [
     {
       "championId": "Alistar",
@@ -128,7 +128,7 @@
               "label": "Attack Speed per Stack",
               "before": "0.28% minimum / 1.1% maximum",
               "after": "0.1% minimum / 2% maximum",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -155,7 +155,7 @@
               "label": "Monster Damage Modifier",
               "before": "55 / 65 / 75 / 85 / 95",
               "after": "70",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -169,7 +169,7 @@
               "label": "Damage",
               "before": "0 / 5 / 10 / 15 / 20 (+100% Attack Damage)",
               "after": "12 / 14 / 16 / 18 / 20 (+105% Attack Damage)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -189,21 +189,21 @@
               "label": "Damage",
               "before": "70 / 110 / 150 / 190 / 230 (+100% Bonus Attack Damage) (+125% Ability Power)",
               "after": "80 / 140 / 200 / 260 / 320 (+150% Ability Power)",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Slow Duration",
               "before": "1.25 / 1.5 / 1.75 / 2 / 2.25 seconds at 50% slow",
               "after": "2 seconds at 30% slow",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Knockup Duration",
               "before": "0.75 seconds",
               "after": "0.6 / 0.7 / 0.8 / 0.9 / 1 second",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -216,7 +216,7 @@
               "label": "Damage per Strike",
               "before": "6 / 7 / 8 / 9 / 10 (+8% Attack Damage) (+8% On-Hit effects), increased up to 300% based on missing Health",
               "after": "10 / 12 / 14 / 16 / 18 (+12% Attack Damage) (+12% On-Hit effects), increased up to 100% based on missing Health",
-              "direction": "buff"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -230,7 +230,7 @@
               "label": "Damage Reduction",
               "before": "35 / 40 / 45 / 50 / 55%",
               "after": "20 / 30 / 40 / 50 / 60%",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -251,7 +251,7 @@
               "label": "Cooldown",
               "before": "20 / 19 / 18 / 17 / 16",
               "after": "24 / 21 / 18 / 15 / 12",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -278,7 +278,7 @@
               "label": "Passive True Damage",
               "before": "6 / 10 / 14 (+12% Bonus Attack Damage)",
               "after": "2 / 4 / 6 (+3% Bonus Attack Damage)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -320,14 +320,14 @@
               "label": "Basic Attack Range Bonus",
               "before": "75",
               "after": "25 / 75 / 125",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Total Attack Speed",
               "before": "10 / 15 / 20%",
               "after": "5 / 15 / 25%",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -341,14 +341,14 @@
               "label": "Unempowered Buff Duration",
               "before": "60",
               "after": "45 / 90 / infinite at 0 / 40 / 80 stacks",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Empowered Buff Duration",
               "before": "180",
               "after": "45 / 90 / infinite at 0 / 40 / 80 stacks",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -413,14 +413,14 @@
               "label": "Base Damage - Nail",
               "before": "50 / 58 / 66 / 74 / 82 (+20% Ability Power)",
               "after": "40 / 48 / 56 / 64 / 72 (+20% Ability Power)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Three Nails Damage",
               "before": "150 / 174 / 198 / 222 / 246 (+60% Ability Power)",
               "after": "120 / 144 / 168 / 192 / 216 (+60% Ability Power)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         },
@@ -513,7 +513,7 @@
     },
     {
       "championId": "Naafiri",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Naafiri remains a hot topic in the meta, both for solo queue and pro play.",
       "abilities": [
         {
@@ -525,14 +525,14 @@
               "label": "Damage",
               "before": "150 / 225 / 300 (+120% Attack Damage)",
               "after": "125 / 200 / 275 (+100% Bonus Attack Damage)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Damage per Packmate",
               "before": "15 / 22.5 / 30 (+12% Attack Damage)",
               "after": "12.5 / 20 / 27.5 (+10% Bonus Attack Damage)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -565,7 +565,7 @@
               "label": "Bonus Attack Damage Ratio",
               "before": "60% minimum / 180% maximum",
               "after": "55% minimum / 165% maximum",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -648,14 +648,14 @@
   "items": [
     {
       "name": "Bastionbreaker",
-      "classification": "buff",
+      "classification": "adjustment",
       "changes": [
         {
           "kind": "numeric",
           "label": "Cost",
           "before": "3200g",
           "after": "3000g",
-          "direction": "buff"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",
@@ -688,7 +688,7 @@
           "label": "Cost",
           "before": "850g",
           "after": "750g",
-          "direction": "buff"
+          "direction": "neutral"
         },
         {
           "kind": "numeric",

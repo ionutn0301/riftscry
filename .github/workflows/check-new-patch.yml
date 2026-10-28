@@ -32,25 +32,30 @@ jobs:
         id: detect
         run: pnpm exec tsx scripts/check-new-patch.ts
 
-      - name: Ingest new patches
+      - name: Refresh archive including mid-patch corrections
         id: ingest
-        if: steps.detect.outputs.has_new == 'true'
-        # Riot's site may block CI runners; keep going so the PR still opens
-        # with instructions to run ingestion locally.
-        continue-on-error: true
-        run: pnpm ingest ${{ steps.detect.outputs.new_patches }}
+        run: pnpm ingest --all
+
+      - name: Retain coverage and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-coverage
+          path: docs/coverage
+
+      - name: Report ingestion failure
+        if: failure()
+        run: echo '::error::Archive refresh failed. Review source-coverage and ingestion logs; no update PR is published.'
 
       - name: Validate ingested data
-        if: steps.detect.outputs.has_new == 'true' && steps.ingest.outcome == 'success'
         run: pnpm test
 
       - name: Open or update pull request
-        if: steps.detect.outputs.has_new == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           branch: data/new-patch
-          title: "data: ingest patch ${{ steps.detect.outputs.new_patches }}"
-          commit-message: "data: ingest patch ${{ steps.detect.outputs.new_patches }}"
+          title: "data: refresh archived notes and coverage"
+          commit-message: "data: refresh archived notes and coverage"
           body: |
             Automated patch detection found: **${{ steps.detect.outputs.new_patches }}**
 

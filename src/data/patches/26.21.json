@@ -1,0 +1,894 @@
+{
+  "schemaVersion": 1,
+  "id": "26.21",
+  "assetVersion": "16.21.1",
+  "releaseDate": "2026-10-20",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-21-notes/",
+  "ingestedAt": "2026-10-28T08:24:00.218Z",
+  "champions": [
+    {
+      "championId": "Azir",
+      "classification": "adjustment",
+      "summary": "We've kept the Emperor of the Sands’ mana pool pretty dry to make sure he needs to use soldier attacks properly for lane control early instead of just spamming [Q] Conquering Sands, but this is…",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Growth",
+              "before": "40/Level",
+              "after": "50/Level",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Caitlyn",
+      "classification": "buff",
+      "summary": "Caitlyn’s been at a very high pick and ban rate for most players for months now despite adjustments to other marksmen and the bot meta, so it's time to nerf her.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Headshot",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 - 100% AD (+1% AD per 1% per Crit Chance) (+1% AD per 1% Bonus Crit Damage)",
+              "after": "60 - 80% AD (+0.8% AD per 1% per Crit Chance) (+0.8% AD per 1% Bonus Crit Damage)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Piltover Peacemaker",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "50 / 90 / 130 / 170 / 210",
+              "after": "50 / 95 / 140 / 185 / 230",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Darius",
+      "classification": "buff",
+      "summary": "Darius has moved a bit too far away from being a persistently durable damage threat that needs to be kited to more of a one shot combo playstyle.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Decimate",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "9 / 8 / 7 / 6 / 5s",
+              "after": "9 / 8 / 7 / 6 / 4s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Jinx",
+      "classification": "adjustment",
+      "summary": "Like her best friend Caitlyn, Jinx has been similarly dominant in the meta, even with the Hurricane nerf last patch.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage",
+              "before": "59 + 3.25/Level",
+              "after": "59 + 3/Level",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Health",
+              "before": "630 + 105/Level",
+              "after": "610 + 105/Level",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "LeeSin",
+      "classification": "nerf",
+      "summary": "Lee Sin has continued to be extremely popular since his adjustments to how his [W] Safeguard cooldown works with allies.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Safeguard",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "7s",
+              "after": "8s",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Tempest",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Bugfix",
+              "text": "No longer reveals invisible enemies if they stealth after being hit by Tempest."
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Dragon's Rage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Kick Damage",
+              "before": "175 / 400 / 625 (+200% bonus AD)",
+              "after": "150 / 350 / 550 (+200% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Collision Damage",
+              "before": "175 / 400 / 625 (+200% bonus AD) (+12 / 15 / 18% Kicked Champion's Health)",
+              "after": "150 / 350 / 550 (+200% bonus AD) (+12 / 15 / 18% Kicked Champion's Health)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Locke",
+      "classification": "nerf",
+      "summary": "Locke’s been out for long enough now that we have a better picture of where he’s overly excelling and where he’s falling a bit short.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Ritual Nails",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Unused Charge Refund",
+              "before": "20 - 35% mana and cooldown refund",
+              "after": "10 - 40% mana and cooldown refund",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Growth",
+              "before": "70",
+              "after": "60",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Soul Ignition",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "50 / 55 / 60 / 65 / 70",
+              "after": "60 / 65 / 70 / 75 / 80",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Grey Health Store Based on Current Health",
+              "before": "40 - 200 (both level based)",
+              "after": "20 - 200",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Current Health Store",
+              "before": "150 - 450 (both level based)",
+              "after": "100 - 500 (+60% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Ashen Pursuit",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Blink Damage",
+              "before": "40 / 50 / 60 / 70 / 80 (+40% AP)",
+              "after": "40 / 55 / 70 / 85 / 100 (+50% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "MissFortune",
+      "classification": "adjustment",
+      "summary": "Miss Fortune has been in a relatively decent place throughout the year, but with the Hubris nerf this patch, we’re looking to compensate with a couple buffs to her damage output.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Make It Rain",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "70 / 100 / 130 / 160 / 190 (+120% AP)",
+              "after": "90 / 120 / 150 / 180 / 210 (+120% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Bullet Time",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Critical Strike Damage",
+              "before": "130% (+0.3% per 1% Bonus Crit Damage)",
+              "after": "145% (+0.45% per 1% Bonus Crit Damage)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nidalee",
+      "classification": "nerf",
+      "summary": "Our favorite huntress has been sitting at an extremely high winrate in high skill brackets, toeing the line into overpowered territory for some time now, even if she's not currently meta.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Pounce",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "55 / 88.75 / 122.5 / 156.25 / 190 (+50% bonus AD) (+30% AP)",
+              "after": "50 / 80 / 110 / 140 / 170 (+50% bonus AD) (+30% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Primal Surge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed",
+              "before": "30 / 40 / 50 / 60 / 70%",
+              "after": "20 / 30 / 40 / 50 / 60%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Nunu",
+      "classification": "adjustment",
+      "summary": "The boy and his yeti lost some power when we nerfed Hextech Rocketbelt earlier this year so that ranged mages weren't just buying it for a dash to safety, so we’re restoring some of that damage elsewhere.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Absolute Zero",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Maximum Damage",
+              "before": "625 / 925 / 1275 (+300% AP)",
+              "after": "750 / 1100 / 1450 (+300% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Orianna",
+      "classification": "adjustment",
+      "summary": "We’re tapping up Orianna’s scalings to help her chunk a bit harder with her bread-and-butter combo in the late game without giving too much additional power to her laning phase.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Command: Attack",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 90 / 120 / 150 / 180 (+55% AP)",
+              "after": "60 / 90 / 120 / 150 / 180 (+60% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Command: Dissonance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "70 / 110 / 150 / 190 / 230 (+80% AP)",
+              "after": "70 / 110 / 150 / 190 / 230 (+85% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Qiyana",
+      "classification": "adjustment",
+      "summary": "Damage on Qiyana's Q turned out to be a lot more impactful than we anticipated, so we’re partially reverting the buff we gave her back in 26.17.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Elemental Wrath / Edge of Ixtal",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80 / 110 / 140 / 170 / 200 (+90% bonus AD)",
+              "after": "70 / 100 / 130 / 160 / 190 (+90% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Rammus",
+      "classification": "adjustment",
+      "summary": "While Nidalee's winrate has been borderline overpowered in the high skill levels, Rammus has been rolling over pretty much everyone else, so he’s getting a light nerf too, ok?",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Defensive Ball Curl",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Armor",
+              "before": "27 / 32 / 37 / 42 / 47 (+30 - 60% Armor)",
+              "after": "25 / 30 / 35 / 40 / 45 (+30 - 50% Armor)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Bonus Magic Resistance",
+              "before": "20 / 25 / 30 / 35 / 40 (+30 - 60% Magic Resistance)",
+              "after": "20 / 25 / 30 / 35 / 40 (+30 - 50% Magic Resistance)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ryze",
+      "classification": "adjustment",
+      "summary": "After the significantly early game nerfs to Ryze in 26.19, he hasn't been rewarded enough for succeeding when he does scale, so we’re buffing that.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Overload",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Flux Bonus Damage",
+              "before": "15% / 40% / 65% / 90% increased damage",
+              "after": "10% / 40% / 70% / 100% increased damage",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Bonus Move Speed",
+              "before": "28% / 32% / 36% / 40% / 44%",
+              "after": "30% / 35% / 40% / 45% / 50%",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Rune Prison",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 90 / 120 / 150 / 180 (+60% AP) (+3% bonus mana)",
+              "after": "60 / 90 / 120 / 150 / 180 (+70% AP) (+3% bonus mana)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Sion",
+      "classification": "adjustment",
+      "summary": "Our favorite unstoppable juggernaut is looking rather stoppable in recent patches.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health",
+              "before": "655 + 87/Level",
+              "after": "655 + 95/Level",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Unstoppable Onslaught",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage Increase over the First 3s of Channeling",
+              "before": "+0 - 166.67% Base Damage, 0 - 100% Ratio Damage",
+              "after": "+0 - 200%",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Bugfix",
+              "text": "Tooltip now displays the correct minimum and maximum bonus AD ratios (40-120%). It displayed an incorrect Bonus AD Scaling (60%-120%). It was never actually changed in patch 25.16 beyond the tooltip."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Taliyah",
+      "classification": "adjustment",
+      "summary": "Taliyah is one of a handful of mage junglers, and we think she can be better supported for meta diversity.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Unraveled Earth",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "60 / 105 / 150 / 195 / 240 (+60% AP)",
+              "after": "70 / 115 / 160 / 205 / 250 (+70% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Detonation Damage",
+              "before": "25 / 40 / 55 / 70 / 85 (+30% AP)",
+              "after": "30 / 45 / 60 / 75 / 90 (+30% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "Monster Damage",
+              "text": "Deals 225% damage to monsters."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Taric",
+      "classification": "adjustment",
+      "summary": "We're smoothing out some of the rough edges in Taric’s kit to allow him to shine a bit more.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Starlight’s Touch",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Cast Behavior",
+              "text": "Q casts when allies are untargetable will now successfully fire."
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Dazzle",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Cast Behavior",
+              "text": "E casts when allies are untargetable will now successfully fire."
+            },
+            {
+              "kind": "prose",
+              "label": "Tooltip",
+              "text": "Updated to include “Dazzle will not cast from Vanished allies”."
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Cosmic Radiance",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Cast Behavior",
+              "text": "R casts when allies are untargetable will now successfully fire."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Tristana",
+      "classification": "nerf",
+      "summary": "Tristana’s early laning has devolved a bit into \"Level 1 press [Q] and just auto attack to take complete control of the lane\", which is a pretty low gameplay and off flavor way for her to succeed.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Rapid Fire",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed",
+              "before": "60 / 75 / 90 / 105 / 120%",
+              "after": "40 / 60 / 80 / 100 / 120%",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "TwistedFate",
+      "classification": "adjustment",
+      "summary": "Alongside the Taric QoL changes, we’re giving Twisted Fate’s R the same treatment so he can reveal champs even if they’re untargetable at the time of activation.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Destiny",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Reveal",
+              "text": "Now reveals untargetable units."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Varus",
+      "classification": "adjustment",
+      "summary": "In this set of changes, we’re mainly looking to snipe top lane Varus, where he tends to max W, unlike the more common Q max in bot.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Piercing Arrow",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage Calculation",
+              "before": "Max Damage scaling, 53.33 - 240 (+80% bonus AD) to 80 - 360 (+120% bonus AD)",
+              "after": "Min Damage scaling, 50 - 230 (+80% bonus AD) to 85 - 391 (+136% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Damage Increase over Channel Time",
+              "before": "Up to 50%",
+              "after": "Up to 70%",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Blighted Quiver",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On-Hit Damage",
+              "before": "4 / 13 / 22 / 31 / 40 (+15% bonus AD) (+25% AP)",
+              "after": "4 / 10 / 16 / 22 / 28 (+20% bonus AD) (+30% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Per Stack Damage",
+              "before": "3 - 5% (+1.3% per 100 AP) Target Maximum Health",
+              "after": "2.5 - 4.5% (+1.4% per 100 AP) Target Maximum Health",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Active Missing Health Damage",
+              "before": "6 - 14%, increased by up to 50% based on Q Channel",
+              "after": "6 - 10%, increased by up to 70% based on Q Channel",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Basic Ability Cooldown Refund",
+              "before": "13% per stack, increased by up to 50% based on Q Channel",
+              "after": "11%, increased by up to 70% based on Q Channel",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Velkoz",
+      "classification": "adjustment",
+      "summary": "Vel’Koz has been a fairly quiet pick this year, having little presence or meta impact in mid and support.",
+      "abilities": [
+        {
+          "ability": "passive",
+          "name": "Organic Deconstruction",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "35 - 180 (+60% AP)",
+              "after": "35 - 205 (+65% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Viktor",
+      "classification": "nerf",
+      "summary": "It’s time for the Glorious…Devolution.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Move Speed",
+              "before": "335",
+              "after": "330",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Siphon Power",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Shield",
+              "before": "40 - 140 (based on level) (+25% AP)",
+              "after": "30 - 130 (+20% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "MonkeyKing",
+      "classification": "adjustment",
+      "summary": "Like Lee and Qiyana, Wukong has been a meta staple whirlwind of a force in the jungle for a while now.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Regeneration",
+              "before": "3.5 + 0.65/Level",
+              "after": "5.5 + 0.65/Level",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Stone Skin",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Armor per Stack",
+              "before": "6 - 10 (based on Champion Level)",
+              "after": "4.5 - 10 (based on Champion Level)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "XinZhao",
+      "classification": "adjustment",
+      "summary": "Following Sundered Sky's nerfs, we feel like Xin Zhao has room for buffs to both his AD Bruiser and AS focused builds, so we’re helping out his scalings.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Three Talon Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage per Strike",
+              "before": "15 / 30 / 45 / 60 / 75 (+40% bonus AD)",
+              "after": "15 / 30 / 45 / 60 / 75 (+45% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Audacious Charge",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Speed Scaling",
+              "before": "1% per 5% bonus Attack Speed from permanent sources",
+              "after": "1% per 4% bonus Attack Speed from permanent sources",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yone",
+      "classification": "adjustment",
+      "summary": "The last changes to Yone successfully got him to start considering crit in his first item purchases, but also put him at a somewhat unsustainable power level.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Mortal Steel",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "25 / 50 / 75 / 100 / 125 (+110% AD)",
+              "after": "25 / 50 / 75 / 100 / 125 (+105% AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zyra",
+      "classification": "buff",
+      "summary": "Like Vel'koz, Zyra has had relatively little impact in the meta as tanks and enchanter supports have reigned supreme.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Rampant Growth",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Seed Ammo Cooldown",
+              "before": "18 / 16 / 14 / 12 / 10s",
+              "after": "16 / 14.5 / 13 / 11.5 / 10s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Bastion Breaker",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Lethality",
+          "before": "22",
+          "after": "18",
+          "direction": "nerf"
+        },
+        {
+          "kind": "numeric",
+          "label": "Shaped Charge Damage",
+          "before": "50 Melee + 1.5/Lethality / 25 Ranged + 0.75/Lethality",
+          "after": "40 Melee + 1.5/Lethality / 20 Ranged + 0.75/Lethality",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Sabotage Duration",
+          "before": "90s",
+          "after": "Infinite",
+          "direction": "neutral"
+        },
+        {
+          "kind": "prose",
+          "label": "Sabotage Duration Context",
+          "text": "This is how long you have to use the bonus damage against objectives."
+        }
+      ]
+    },
+    {
+      "name": "Dawncore",
+      "classification": "buff",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Ability Power per 100% Base Mana Regeneration",
+          "before": "10",
+          "after": "15",
+          "direction": "buff"
+        }
+      ]
+    },
+    {
+      "name": "Gluttonous Greaves",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Total Cost",
+          "before": "1000g",
+          "after": "1100g",
+          "direction": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Hubris",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Base Bonus Attack Damage",
+          "before": "12",
+          "after": "15 Melee / 10 Ranged",
+          "direction": "neutral"
+        },
+        {
+          "kind": "numeric",
+          "label": "Bonus Attack Damage per Stack",
+          "before": "3",
+          "after": "3 Melee / 2 Ranged",
+          "direction": "neutral"
+        }
+      ]
+    }
+  ],
+  "systems": []
+}

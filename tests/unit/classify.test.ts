@@ -59,6 +59,11 @@ it("MS per stack up = buff", () =>
 it("execute threshold up = buff", () =>
   expect(classifyChange("Execute threshold", "5%", "7%").direction).toBe("buff"));
 
+it("mixed ranks cannot be classified as a buff", () =>
+  expect(classifyChange("Attack Speed", "5 / 15 / 25%", "6 / 13 / 20%").direction).toBe("neutral"));
+it("recipe numbers are not a cost comparison", () =>
+  expect(classifyChange("Recipe Cost", "500 + Pickaxe", "900 + Long Sword").direction).toBe("neutral"));
+
 // edge cases
 it("unknown label = neutral, unknown", () =>
   expect(classifyChange("Sweetness Factor", "1", "2")).toEqual({

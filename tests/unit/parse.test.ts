@@ -4,6 +4,13 @@ import { parsePatchHtml } from "../../scripts/patch-ingestion/parse";
 
 const html = readFileSync("tests/fixtures/notes-fragment.html", "utf8");
 
+it("keeps all four 26.21 items separate despite shared wrappers and duplicate heading IDs", () => {
+  const { raw, report } = parsePatchHtml(readFileSync("tests/fixtures/26.21-items.html", "utf8"));
+  expect(raw.items.map((item) => item.name)).toEqual(["Bastion Breaker", "Dawncore", "Gluttonous Greaves", "Hubris"]);
+  expect(raw.items.map((item) => item.blocks.flatMap((block) => block.lines).length)).toEqual([4, 1, 1, 2]);
+  expect(report.unparsedBlocks).toEqual([]);
+});
+
 it("finds champion sections by name", () => {
   const { raw } = parsePatchHtml(html);
   expect(raw.champions.map((c) => c.name)).toEqual(["Azir", "Bel'Veth"]);

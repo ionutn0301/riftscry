@@ -1,4 +1,4 @@
-import { parseValueSeries } from "../../src/lib/deltas";
+import { comparableSeries } from "../../src/lib/deltas";
 import type { Classification, Direction } from "../../src/lib/schema";
 
 /**
@@ -29,11 +29,14 @@ export function classifyChange(label: string, before: string, after: string): Di
   const rule = STAT_SEMANTICS.find((r) => r.pattern.test(label));
   if (!rule) return { direction: "neutral", known: false };
 
-  const b = parseValueSeries(before)[0];
-  const a = parseValueSeries(after)[0];
-  if (b === undefined || a === undefined || a === b) return { direction: "neutral", known: true };
+  const pair = comparableSeries(before, after);
+  if (!pair) return { direction: "neutral", known: true };
+  const differences = pair.after.values.map((value, index) => value - pair.before.values[index]!);
+  const positive = differences.some((value) => value > 0);
+  const negative = differences.some((value) => value < 0);
+  if (positive === negative) return { direction: "neutral", known: true };
 
-  const increased = a > b;
+  const increased = positive;
   const good = increased === rule.increaseIsGood;
   return { direction: good ? "buff" : "nerf", known: true };
 }

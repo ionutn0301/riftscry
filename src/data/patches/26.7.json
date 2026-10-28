@@ -4,7 +4,7 @@
   "assetVersion": "16.7.1",
   "releaseDate": "2026-03-31",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-7-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.274Z",
+  "ingestedAt": "2026-10-28T08:23:15.357Z",
   "champions": [
     {
       "championId": "Cassiopeia",
@@ -33,7 +33,7 @@
               "label": "Bonus Magic Damage",
               "before": "20 / 43 / 66 / 89 / 112",
               "after": "20 / 45 / 70 / 95 / 120",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -81,7 +81,7 @@
     },
     {
       "championId": "Karma",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Karma has been a force to be reckoned with in high-skill support play for some time now.",
       "abilities": [
         {
@@ -93,7 +93,7 @@
               "label": "Empowered E - Defiance Bonus Primary / Secondary Target Shield",
               "before": "50 / 100 / 150 / 200 (+45% AP)",
               "after": "45 / 85 / 125 / 165 (+45% AP)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -121,7 +121,7 @@
     },
     {
       "championId": "Ornn",
-      "classification": "nerf",
+      "classification": "adjustment",
       "summary": "Ornn has been a standout among top lane tanks across all player skill levels, helped by the new top lane role quest accelerating his access to Masterworks.",
       "abilities": [
         {
@@ -133,7 +133,7 @@
               "label": "Brittle Proc Damage",
               "before": "10-18% (Levels 1-18)",
               "after": "9-17% (Levels 1-18)",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -141,7 +141,7 @@
     },
     {
       "championId": "Rell",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "In addition to our nerfs to Karma and Nami,, we're buffing one of our tank supports.",
       "abilities": [
         {
@@ -153,7 +153,7 @@
               "label": "Move Speed",
               "before": "3s of 10%, increased to 25% when facing the empowered ally or a visible enemy champion",
               "after": "15%, increased to 30%",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -166,7 +166,7 @@
               "label": "Damage",
               "before": "120 / 200 / 280 (+110% AP)",
               "after": "150 / 200 / 350 (+110% AP)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -175,12 +175,23 @@
     {
       "championId": "Shyvana",
       "classification": "adjustment",
-      "summary": "Ultimate haste no longer provides passive 0.015 passive fury generation per second but instead amplifies all fury generation by 1% per 1 ultimate haste.",
-      "abilities": []
+      "abilities": [
+        {
+          "ability": "other",
+          "name": "Ultimate haste",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Fury generation",
+              "text": "Ultimate haste no longer provides passive 0.015 passive fury generation per second but instead amplifies all fury generation by 1% per 1 ultimate haste."
+            }
+          ]
+        }
+      ]
     },
     {
       "championId": "Singed",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Singed has been a big winner this season with free teleport, experience, Protoplasm, homeguards, weaker grubs…the list is almost as long as the number of ingredients in his Insanity Potion!",
       "abilities": [
         {
@@ -192,7 +203,7 @@
               "label": "Bonus Stats",
               "before": "25 / 60 / 95",
               "after": "25 / 55 / 85",
-              "direction": "neutral"
+              "direction": "nerf"
             }
           ]
         }

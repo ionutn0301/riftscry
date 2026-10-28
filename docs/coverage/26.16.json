@@ -1,0 +1,330 @@
+{
+  "id": "26.16",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/",
+  "checkedAt": "2026-10-28T08:23:59.127Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Azir"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Bel'Veth"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Camille"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Gwen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kennen"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nasus"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Poppy"
+      ],
+      "sourceLines": 7,
+      "parsedLines": 7
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Berserker's Greaves"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Black Cleaver"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Eclipse"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Runaan's Hurricane"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Sterak's Gage"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Sundered Sky"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Sunfire Cape"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Chainlaced Crushers"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Spellslinger's Shoes"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Tiamat"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Fleet Footwork"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Hail of Blades"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Azir",
+        "records": 1
+      },
+      {
+        "name": "Bel'Veth",
+        "records": 3
+      },
+      {
+        "name": "Camille",
+        "records": 5
+      },
+      {
+        "name": "Gwen",
+        "records": 1
+      },
+      {
+        "name": "Kennen",
+        "records": 3
+      },
+      {
+        "name": "Nasus",
+        "records": 1
+      },
+      {
+        "name": "Poppy",
+        "records": 7
+      }
+    ],
+    "items": [
+      {
+        "name": "Berserker's Greaves",
+        "records": 2
+      },
+      {
+        "name": "Black Cleaver",
+        "records": 2
+      },
+      {
+        "name": "Eclipse",
+        "records": 2
+      },
+      {
+        "name": "Runaan's Hurricane",
+        "records": 2
+      },
+      {
+        "name": "Sterak's Gage",
+        "records": 1
+      },
+      {
+        "name": "Sundered Sky",
+        "records": 3
+      },
+      {
+        "name": "Sunfire Cape",
+        "records": 3
+      },
+      {
+        "name": "Chainlaced Crushers",
+        "records": 1
+      },
+      {
+        "name": "Spellslinger's Shoes",
+        "records": 1
+      },
+      {
+        "name": "Tiamat",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Fleet Footwork",
+        "records": 1
+      },
+      {
+        "name": "Hail of Blades",
+        "records": 2
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Azir",
+        "records": 1
+      },
+      {
+        "id": "Belveth",
+        "records": 3
+      },
+      {
+        "id": "Camille",
+        "records": 5
+      },
+      {
+        "id": "Gwen",
+        "records": 1
+      },
+      {
+        "id": "Kennen",
+        "records": 3
+      },
+      {
+        "id": "Nasus",
+        "records": 1
+      },
+      {
+        "id": "Poppy",
+        "records": 7
+      }
+    ],
+    "items": [
+      {
+        "name": "Berserker's Greaves",
+        "records": 2
+      },
+      {
+        "name": "Black Cleaver",
+        "records": 2
+      },
+      {
+        "name": "Eclipse",
+        "records": 2
+      },
+      {
+        "name": "Runaan's Hurricane",
+        "records": 2
+      },
+      {
+        "name": "Sterak's Gage",
+        "records": 1
+      },
+      {
+        "name": "Sundered Sky",
+        "records": 3
+      },
+      {
+        "name": "Sunfire Cape",
+        "records": 3
+      },
+      {
+        "name": "Chainlaced Crushers",
+        "records": 1
+      },
+      {
+        "name": "Spellslinger's Shoes",
+        "records": 1
+      },
+      {
+        "name": "Tiamat",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Fleet Footwork",
+        "records": 1
+      },
+      {
+        "name": "Hail of Blades",
+        "records": 2
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

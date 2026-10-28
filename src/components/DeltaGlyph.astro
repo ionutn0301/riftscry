@@ -23,7 +23,7 @@ const GLYPHS: Record<string, { glyph: string; label: string; cls: string }> = {
 const g = GLYPHS[kind] ?? GLYPHS.neutral!;
 ---
 
-<span class={`delta-glyph ${g.cls}`}>
+<span class={`delta-glyph ${g.cls}`} title="RiftScry interpretation (computed or curated), not Riot’s stated classification">
   <span aria-hidden="true" class="glyph">{g.glyph}</span>{showLabel && <span>{g.label}</span>}
 </span>
 

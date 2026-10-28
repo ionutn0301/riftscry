@@ -1,0 +1,522 @@
+{
+  "id": "26.9",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-9-notes/",
+  "checkedAt": "2026-10-28T08:23:56.969Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ambessa"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Briar"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ezreal"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Gragas"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kennen"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Shyvana"
+      ],
+      "sourceLines": 16,
+      "parsedLines": 16
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tahm Kench"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Taliyah"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Teemo"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Udyr"
+      ],
+      "sourceLines": 9,
+      "parsedLines": 9
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Warwick"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xin Zhao"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zeri"
+      ],
+      "sourceLines": 13,
+      "parsedLines": 13
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zoe"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Axiom Arc"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "[NEW] Doran's Bow"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "[NEW] Doran's Helm"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Dusk And Dawn"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Endless Hunger"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "[NEW] Gluttonous Greaves"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Hubris"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "[REMOVED] Opportunity"
+      ],
+      "sourceLines": 0,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Staff of Flowing Water"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "[REWORKED] Statikk Shiv"
+      ],
+      "sourceLines": 7,
+      "parsedLines": 7
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "[REMOVED] Trailblazer"
+      ],
+      "sourceLines": 0,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "[REWORKED] Voltaic Cyclosword"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "[NEW] Deathfire Touch"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "[REMOVED] Phase Rush"
+      ],
+      "sourceLines": 0,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "[NEW] Stormraider's Surge"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Arcane Comet"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Hail Of Blades"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Ambessa",
+        "records": 1
+      },
+      {
+        "name": "Briar",
+        "records": 1
+      },
+      {
+        "name": "Ezreal",
+        "records": 4
+      },
+      {
+        "name": "Gragas",
+        "records": 1
+      },
+      {
+        "name": "Kennen",
+        "records": 3
+      },
+      {
+        "name": "Shyvana",
+        "records": 16
+      },
+      {
+        "name": "Tahm Kench",
+        "records": 2
+      },
+      {
+        "name": "Taliyah",
+        "records": 2
+      },
+      {
+        "name": "Teemo",
+        "records": 2
+      },
+      {
+        "name": "Udyr",
+        "records": 9
+      },
+      {
+        "name": "Warwick",
+        "records": 1
+      },
+      {
+        "name": "Xin Zhao",
+        "records": 4
+      },
+      {
+        "name": "Zeri",
+        "records": 13
+      },
+      {
+        "name": "Zoe",
+        "records": 4
+      }
+    ],
+    "items": [
+      {
+        "name": "Axiom Arc",
+        "records": 1
+      },
+      {
+        "name": "[NEW] Doran's Bow",
+        "records": 3
+      },
+      {
+        "name": "[NEW] Doran's Helm",
+        "records": 4
+      },
+      {
+        "name": "Dusk And Dawn",
+        "records": 4
+      },
+      {
+        "name": "Endless Hunger",
+        "records": 1
+      },
+      {
+        "name": "[NEW] Gluttonous Greaves",
+        "records": 5
+      },
+      {
+        "name": "Hubris",
+        "records": 3
+      },
+      {
+        "name": "[REMOVED] Opportunity",
+        "records": 1
+      },
+      {
+        "name": "Staff of Flowing Water",
+        "records": 2
+      },
+      {
+        "name": "[REWORKED] Statikk Shiv",
+        "records": 7
+      },
+      {
+        "name": "[REMOVED] Trailblazer",
+        "records": 1
+      },
+      {
+        "name": "[REWORKED] Voltaic Cyclosword",
+        "records": 4
+      }
+    ],
+    "systems": [
+      {
+        "name": "[NEW] Deathfire Touch",
+        "records": 1
+      },
+      {
+        "name": "[REMOVED] Phase Rush",
+        "records": 1
+      },
+      {
+        "name": "[NEW] Stormraider's Surge",
+        "records": 3
+      },
+      {
+        "name": "Arcane Comet",
+        "records": 3
+      },
+      {
+        "name": "Hail Of Blades",
+        "records": 3
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Ambessa",
+        "records": 1
+      },
+      {
+        "id": "Briar",
+        "records": 1
+      },
+      {
+        "id": "Ezreal",
+        "records": 4
+      },
+      {
+        "id": "Gragas",
+        "records": 1
+      },
+      {
+        "id": "Kennen",
+        "records": 3
+      },
+      {
+        "id": "Shyvana",
+        "records": 16
+      },
+      {
+        "id": "TahmKench",
+        "records": 2
+      },
+      {
+        "id": "Taliyah",
+        "records": 2
+      },
+      {
+        "id": "Teemo",
+        "records": 2
+      },
+      {
+        "id": "Udyr",
+        "records": 9
+      },
+      {
+        "id": "Warwick",
+        "records": 1
+      },
+      {
+        "id": "XinZhao",
+        "records": 4
+      },
+      {
+        "id": "Zeri",
+        "records": 13
+      },
+      {
+        "id": "Zoe",
+        "records": 4
+      }
+    ],
+    "items": [
+      {
+        "name": "Axiom Arc",
+        "records": 1
+      },
+      {
+        "name": "[NEW] Doran's Bow",
+        "records": 3
+      },
+      {
+        "name": "[NEW] Doran's Helm",
+        "records": 4
+      },
+      {
+        "name": "Dusk And Dawn",
+        "records": 4
+      },
+      {
+        "name": "Endless Hunger",
+        "records": 1
+      },
+      {
+        "name": "[NEW] Gluttonous Greaves",
+        "records": 5
+      },
+      {
+        "name": "Hubris",
+        "records": 3
+      },
+      {
+        "name": "[REMOVED] Opportunity",
+        "records": 1
+      },
+      {
+        "name": "Staff of Flowing Water",
+        "records": 2
+      },
+      {
+        "name": "[REWORKED] Statikk Shiv",
+        "records": 7
+      },
+      {
+        "name": "[REMOVED] Trailblazer",
+        "records": 1
+      },
+      {
+        "name": "[REWORKED] Voltaic Cyclosword",
+        "records": 4
+      }
+    ],
+    "systems": [
+      {
+        "name": "[NEW] Deathfire Touch",
+        "records": 1
+      },
+      {
+        "name": "[REMOVED] Phase Rush",
+        "records": 1
+      },
+      {
+        "name": "[NEW] Stormraider's Surge",
+        "records": 3
+      },
+      {
+        "name": "Arcane Comet",
+        "records": 3
+      },
+      {
+        "name": "Hail Of Blades",
+        "records": 3
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

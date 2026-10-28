@@ -1,0 +1,734 @@
+{
+  "id": "26.1",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/",
+  "checkedAt": "2026-10-28T08:22:30.528Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-role-quests",
+      "headings": [],
+      "sourceLines": 75,
+      "parsedLines": 75
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Cassiopeia"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Samira"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aphelios"
+      ],
+      "sourceLines": 8,
+      "parsedLines": 8
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Caitlyn"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tristana"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nilah"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jinx"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jhin"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Sivir"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zeri"
+      ],
+      "sourceLines": 7,
+      "parsedLines": 7
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lucian"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xayah"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Draven"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yunara"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Akshan"
+      ],
+      "sourceLines": 7,
+      "parsedLines": 7
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Gangplank"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yone"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yasuo"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Miss Fortune"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tryndamere"
+      ],
+      "sourceLines": 8,
+      "parsedLines": 8
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Twitch"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ashe"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Smolder"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kindred"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Corki"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Shaco"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Graves"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Quinn"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Senna"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Garen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rengar"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Viego"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Elise"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jax"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-omnivamp",
+      "headings": [],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-sr-ranked-and-matchmaking",
+      "headings": [],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-sr-ranked-and-matchmaking",
+      "headings": [],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-sr-ranked-and-matchmaking",
+      "headings": [],
+      "sourceLines": 7,
+      "parsedLines": 7
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "name": "Samira",
+        "records": 4
+      },
+      {
+        "name": "Aphelios",
+        "records": 8
+      },
+      {
+        "name": "Caitlyn",
+        "records": 2
+      },
+      {
+        "name": "Tristana",
+        "records": 2
+      },
+      {
+        "name": "Nilah",
+        "records": 5
+      },
+      {
+        "name": "Jinx",
+        "records": 2
+      },
+      {
+        "name": "Jhin",
+        "records": 1
+      },
+      {
+        "name": "Sivir",
+        "records": 2
+      },
+      {
+        "name": "Zeri",
+        "records": 7
+      },
+      {
+        "name": "Lucian",
+        "records": 5
+      },
+      {
+        "name": "Xayah",
+        "records": 2
+      },
+      {
+        "name": "Draven",
+        "records": 2
+      },
+      {
+        "name": "Yunara",
+        "records": 2
+      },
+      {
+        "name": "Akshan",
+        "records": 7
+      },
+      {
+        "name": "Gangplank",
+        "records": 4
+      },
+      {
+        "name": "Yone",
+        "records": 1
+      },
+      {
+        "name": "Yasuo",
+        "records": 1
+      },
+      {
+        "name": "Miss Fortune",
+        "records": 3
+      },
+      {
+        "name": "Tryndamere",
+        "records": 8
+      },
+      {
+        "name": "Twitch",
+        "records": 3
+      },
+      {
+        "name": "Ashe",
+        "records": 4
+      },
+      {
+        "name": "Smolder",
+        "records": 1
+      },
+      {
+        "name": "Kindred",
+        "records": 3
+      },
+      {
+        "name": "Corki",
+        "records": 1
+      },
+      {
+        "name": "Shaco",
+        "records": 4
+      },
+      {
+        "name": "Graves",
+        "records": 2
+      },
+      {
+        "name": "Quinn",
+        "records": 1
+      },
+      {
+        "name": "Senna",
+        "records": 1
+      },
+      {
+        "name": "Garen",
+        "records": 1
+      },
+      {
+        "name": "Rengar",
+        "records": 5
+      },
+      {
+        "name": "Viego",
+        "records": 4
+      },
+      {
+        "name": "Elise",
+        "records": 2
+      },
+      {
+        "name": "Jax",
+        "records": 1
+      }
+    ],
+    "items": [],
+    "systems": [
+      {
+        "name": "Queuing Up",
+        "records": 2
+      },
+      {
+        "name": "Completing Your Quest",
+        "records": 0
+      },
+      {
+        "name": "Top Lane",
+        "records": 13
+      },
+      {
+        "name": "Jungle",
+        "records": 5
+      },
+      {
+        "name": "Mid Lane",
+        "records": 13
+      },
+      {
+        "name": "Crimson Lucidity",
+        "records": 5
+      },
+      {
+        "name": "Swiftmarch",
+        "records": 4
+      },
+      {
+        "name": "Spellslinger's Shoes",
+        "records": 4
+      },
+      {
+        "name": "Gunmetal Greaves",
+        "records": 4
+      },
+      {
+        "name": "Chainlaced Crushers",
+        "records": 4
+      },
+      {
+        "name": "Armored Advance",
+        "records": 5
+      },
+      {
+        "name": "Bot Lane",
+        "records": 12
+      },
+      {
+        "name": "Support",
+        "records": 4
+      },
+      {
+        "name": "Doran's Blade",
+        "records": 2
+      },
+      {
+        "name": "End of Season Year 2025 Ranked Rewards",
+        "records": 4
+      },
+      {
+        "name": "Aegis of Valor",
+        "records": 3
+      },
+      {
+        "name": "Apex Duo Restriction Update for Solo/Duo Queue",
+        "records": 7
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Cassiopeia",
+        "records": 2
+      },
+      {
+        "id": "Samira",
+        "records": 4
+      },
+      {
+        "id": "Aphelios",
+        "records": 8
+      },
+      {
+        "id": "Caitlyn",
+        "records": 2
+      },
+      {
+        "id": "Tristana",
+        "records": 2
+      },
+      {
+        "id": "Nilah",
+        "records": 5
+      },
+      {
+        "id": "Jinx",
+        "records": 2
+      },
+      {
+        "id": "Jhin",
+        "records": 1
+      },
+      {
+        "id": "Sivir",
+        "records": 2
+      },
+      {
+        "id": "Zeri",
+        "records": 7
+      },
+      {
+        "id": "Lucian",
+        "records": 5
+      },
+      {
+        "id": "Xayah",
+        "records": 2
+      },
+      {
+        "id": "Draven",
+        "records": 2
+      },
+      {
+        "id": "Yunara",
+        "records": 2
+      },
+      {
+        "id": "Akshan",
+        "records": 7
+      },
+      {
+        "id": "Gangplank",
+        "records": 4
+      },
+      {
+        "id": "Yone",
+        "records": 1
+      },
+      {
+        "id": "Yasuo",
+        "records": 1
+      },
+      {
+        "id": "MissFortune",
+        "records": 3
+      },
+      {
+        "id": "Tryndamere",
+        "records": 8
+      },
+      {
+        "id": "Twitch",
+        "records": 3
+      },
+      {
+        "id": "Ashe",
+        "records": 4
+      },
+      {
+        "id": "Smolder",
+        "records": 1
+      },
+      {
+        "id": "Kindred",
+        "records": 3
+      },
+      {
+        "id": "Corki",
+        "records": 1
+      },
+      {
+        "id": "Shaco",
+        "records": 4
+      },
+      {
+        "id": "Graves",
+        "records": 2
+      },
+      {
+        "id": "Quinn",
+        "records": 1
+      },
+      {
+        "id": "Senna",
+        "records": 1
+      },
+      {
+        "id": "Garen",
+        "records": 1
+      },
+      {
+        "id": "Rengar",
+        "records": 5
+      },
+      {
+        "id": "Viego",
+        "records": 4
+      },
+      {
+        "id": "Elise",
+        "records": 2
+      },
+      {
+        "id": "Jax",
+        "records": 1
+      }
+    ],
+    "items": [],
+    "systems": [
+      {
+        "name": "Queuing Up",
+        "records": 2
+      },
+      {
+        "name": "Completing Your Quest",
+        "records": 0
+      },
+      {
+        "name": "Top Lane",
+        "records": 13
+      },
+      {
+        "name": "Jungle",
+        "records": 5
+      },
+      {
+        "name": "Mid Lane",
+        "records": 13
+      },
+      {
+        "name": "Crimson Lucidity",
+        "records": 5
+      },
+      {
+        "name": "Swiftmarch",
+        "records": 4
+      },
+      {
+        "name": "Spellslinger's Shoes",
+        "records": 4
+      },
+      {
+        "name": "Gunmetal Greaves",
+        "records": 4
+      },
+      {
+        "name": "Chainlaced Crushers",
+        "records": 4
+      },
+      {
+        "name": "Armored Advance",
+        "records": 5
+      },
+      {
+        "name": "Bot Lane",
+        "records": 12
+      },
+      {
+        "name": "Support",
+        "records": 4
+      },
+      {
+        "name": "Doran's Blade",
+        "records": 2
+      },
+      {
+        "name": "End of Season Year 2025 Ranked Rewards",
+        "records": 4
+      },
+      {
+        "name": "Aegis of Valor",
+        "records": 3
+      },
+      {
+        "name": "Apex Duo Restriction Update for Solo/Duo Queue",
+        "records": 7
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

@@ -9,10 +9,12 @@ import {
   visitUrl,
   numericReading,
 } from "../../src/lib/investigation";
+const historicalVisit = { ...defaultVisit, older: "26.14", newer: "26.16" };
+
 describe("universal investigation", () => {
   it("retains other visited abilities beside a same-field return", () => {
     const records = derivePlan({
-      ...defaultVisit,
+      ...historicalVisit,
       champion: "Belveth",
     }).records;
     const visited = records.filter(
@@ -22,7 +24,7 @@ describe("universal investigation", () => {
           r.change.label === "True Form Total Attack Speed"),
     );
     const p = derivePlan({
-      ...defaultVisit,
+      ...historicalVisit,
       champion: "Belveth",
       focus: "R",
       beat: "ending",
@@ -36,7 +38,7 @@ describe("universal investigation", () => {
   it("resolves every canonical identity without featured substitution", () => {
     expect(artworkManifest).toHaveLength(Object.keys(roster).length);
     for (const id of Object.keys(roster)) {
-      const v = { ...defaultVisit, champion: id };
+      const v = { ...historicalVisit, champion: id };
       expect(parseVisit(visitUrl(v).split("?")[1]!).champion).toBe(id);
       const p = derivePlan(v);
       expect(p.known).toBe(true);
@@ -51,7 +53,7 @@ describe("universal investigation", () => {
   });
   it("proves Belveth same-field return without champion conditional", () => {
     const p = derivePlan({
-      ...defaultVisit,
+      ...historicalVisit,
       champion: "Belveth",
       older: "26.14",
       newer: "26.16",
@@ -63,8 +65,8 @@ describe("universal investigation", () => {
     expect(p.unexplored).toBeGreaterThan(0);
   });
   it("changes evidence and ending with selected ability", () => {
-    const a = derivePlan({ ...defaultVisit, champion: "Belveth" }),
-      b = derivePlan({ ...defaultVisit, champion: "Belveth", focus: "R" });
+    const a = derivePlan({ ...historicalVisit, champion: "Belveth" }),
+      b = derivePlan({ ...historicalVisit, champion: "Belveth", focus: "R" });
     expect(a.findings).not.toEqual(b.findings);
     expect(b.sequence.every((r) => r.ability === "R")).toBe(true);
   });
@@ -78,21 +80,21 @@ describe("universal investigation", () => {
   });
   it("handles simple, prose, empty and unknown branches", () => {
     expect(
-      derivePlan({ ...defaultVisit, champion: "Azir", older: "26.15" })
+      derivePlan({ ...historicalVisit, champion: "Azir", older: "26.15" })
         .treatment,
     ).toBe("single");
     expect(
-      derivePlan({ ...defaultVisit, champion: "Belveth", focus: "R" })
+      derivePlan({ ...historicalVisit, champion: "Belveth", focus: "R" })
         .treatment,
     ).toBe("rule");
     expect(
       Object.keys(roster).some(
         (id) =>
-          derivePlan({ ...defaultVisit, champion: id, older: "26.15" })
+          derivePlan({ ...historicalVisit, champion: id, older: "26.15" })
             .coverage === "no-records",
       ),
     ).toBe(true);
-    expect(derivePlan({ ...defaultVisit, champion: "invalid" }).coverage).toBe(
+    expect(derivePlan({ ...historicalVisit, champion: "invalid" }).coverage).toBe(
       "unknown",
     );
   });
@@ -104,7 +106,7 @@ describe("universal investigation", () => {
   });
   it("round trips direct ending and resets incompatible records", () => {
     const v = {
-      ...defaultVisit,
+      ...historicalVisit,
       champion: "Belveth",
       focus: "R",
       beat: "ending" as const,

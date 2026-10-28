@@ -1,0 +1,26 @@
+---
+interface Props { id: string; name: string }
+const { id, name } = Astro.props;
+---
+<div class="reader-next-actions">
+  <button type="button" class="route-action route-action--quiet" data-direct-save={id} data-save-name={name} aria-pressed="false">Save {name} to My Pool</button>
+  <a class="route-text-link" href="/pool#briefing">Your briefing ↗</a>
+  <span role="status" data-direct-save-status></span>
+</div>
+<script>
+  import { $pool, togglePool } from '../../lib/pool';
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-direct-save]')) {
+    const id = button.dataset.directSave!;
+    const name = button.dataset.saveName!;
+    $pool.subscribe((pool) => {
+      const saved = pool.includes(id);
+      button.setAttribute('aria-pressed', String(saved));
+      button.textContent = saved ? `${name} saved — remove from My Pool` : `Save ${name} to My Pool`;
+    });
+    button.addEventListener('click', () => {
+      const status = button.parentElement?.querySelector('[data-direct-save-status]');
+      try { togglePool(id); if (status) status.textContent = $pool.get().includes(id) ? `${name} saved on this device.` : `${name} removed from My Pool.`; }
+      catch { if (status) status.textContent = 'Storage is unavailable. You can still read and share this history.'; }
+    });
+  }
+</script>

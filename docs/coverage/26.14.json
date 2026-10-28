@@ -1,0 +1,248 @@
+{
+  "id": "26.14",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-14-notes/",
+  "checkedAt": "2026-10-28T08:23:58.558Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Azir"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Corki"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Garen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jayce"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Locke"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mordekaiser"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nami"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Senna"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Seraphine"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yunara"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Immortal Path"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Protoplasm Harness"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Hextech Rocketbelt"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-systems",
+      "headings": [],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Azir",
+        "records": 4
+      },
+      {
+        "name": "Corki",
+        "records": 2
+      },
+      {
+        "name": "Garen",
+        "records": 1
+      },
+      {
+        "name": "Jayce",
+        "records": 2
+      },
+      {
+        "name": "Locke",
+        "records": 4
+      },
+      {
+        "name": "Mordekaiser",
+        "records": 2
+      },
+      {
+        "name": "Nami",
+        "records": 1
+      },
+      {
+        "name": "Senna",
+        "records": 3
+      },
+      {
+        "name": "Seraphine",
+        "records": 1
+      },
+      {
+        "name": "Yunara",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Immortal Path",
+        "records": 2
+      },
+      {
+        "name": "Protoplasm Harness",
+        "records": 3
+      },
+      {
+        "name": "Hextech Rocketbelt",
+        "records": 4
+      }
+    ],
+    "systems": [
+      {
+        "name": "Blue Buff",
+        "records": 1
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Azir",
+        "records": 4
+      },
+      {
+        "id": "Corki",
+        "records": 2
+      },
+      {
+        "id": "Garen",
+        "records": 1
+      },
+      {
+        "id": "Jayce",
+        "records": 2
+      },
+      {
+        "id": "Locke",
+        "records": 4
+      },
+      {
+        "id": "Mordekaiser",
+        "records": 2
+      },
+      {
+        "id": "Nami",
+        "records": 1
+      },
+      {
+        "id": "Senna",
+        "records": 3
+      },
+      {
+        "id": "Seraphine",
+        "records": 1
+      },
+      {
+        "id": "Yunara",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Immortal Path",
+        "records": 2
+      },
+      {
+        "name": "Protoplasm Harness",
+        "records": 3
+      },
+      {
+        "name": "Hextech Rocketbelt",
+        "records": 4
+      }
+    ],
+    "systems": [
+      {
+        "name": "Blue Buff",
+        "records": 1
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}

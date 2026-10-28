@@ -4,7 +4,7 @@
   "assetVersion": "16.4.1",
   "releaseDate": "2026-02-18",
   "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-4-notes/",
-  "ingestedAt": "2026-08-21T21:18:48.234Z",
+  "ingestedAt": "2026-10-28T08:22:32.783Z",
   "champions": [
     {
       "championId": "Ambessa",
@@ -40,7 +40,7 @@
               "label": "Base Damage",
               "before": "80 / 120 / 160 / 200 / 240",
               "after": "80 / 125 / 170 / 215 / 260",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         },
@@ -53,7 +53,7 @@
               "label": "Cooldown",
               "before": "12 / 11.5 / 11 / 10.5 / 10 seconds",
               "after": "10 seconds",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -120,14 +120,14 @@
               "label": "Base Damage",
               "before": "150 / 300 / 450",
               "after": "150 / 250 / 350",
-              "direction": "neutral"
+              "direction": "nerf"
             },
             {
               "kind": "numeric",
               "label": "Cooldown",
               "before": "120 / 100 / 80",
               "after": "130 / 115 / 100 seconds",
-              "direction": "nerf"
+              "direction": "neutral"
             }
           ]
         }
@@ -153,7 +153,7 @@
     },
     {
       "championId": "Darius",
-      "classification": "buff",
+      "classification": "adjustment",
       "summary": "Last year Darius was tearing up the jungle so we nerfed his monster mod to keep him from taking over.",
       "abilities": [
         {
@@ -165,7 +165,7 @@
               "label": "Monster Damage",
               "before": "2x",
               "after": "2.5x",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -220,7 +220,7 @@
     },
     {
       "championId": "Gwen",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "With all the extra experience and/or gold scaling in Gwen's primary roles, she's become a total monster in the new season.",
       "abilities": [
         {
@@ -232,14 +232,14 @@
               "label": "Base Damage per Snip",
               "before": "10 / 15 / 20 / 25 / 30",
               "after": "10 / 13.5 / 17 / 20.5 / 24",
-              "direction": "neutral"
+              "direction": "nerf"
             },
             {
               "kind": "numeric",
               "label": "Minion Damage Modifier",
               "before": "0.75x",
               "after": "0.8x",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -272,7 +272,7 @@
               "label": "Maximum Shield Value",
               "before": "100 / 125 / 150 / 175 / 200",
               "after": "100 / 140 / 180 / 220 / 260",
-              "direction": "neutral"
+              "direction": "buff"
             },
             {
               "kind": "numeric",
@@ -365,7 +365,7 @@
               "label": "Slow",
               "before": "50 / 60 / 70 / 80 / 90%",
               "after": "50 / 55 / 60 / 65 / 70%",
-              "direction": "neutral"
+              "direction": "nerf"
             }
           ]
         }
@@ -373,7 +373,7 @@
     },
     {
       "championId": "Kayle",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Just about everyone had Kayle on their “winners of the new season” Bingo card due to her reliably reaching level 16 more often.",
       "abilities": [
         {
@@ -385,7 +385,7 @@
               "label": "Base Damage",
               "before": "60 / 100 / 140 / 180 / 220",
               "after": "60 / 90 / 120 / 150 / 180",
-              "direction": "neutral"
+              "direction": "nerf"
             }
           ]
         }
@@ -465,7 +465,7 @@
               "label": "Cooldown",
               "before": "11 / 10.5 / 10 / 9.5 / 9",
               "after": "10",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -506,7 +506,7 @@
     },
     {
       "championId": "Naafiri",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Naafiri is pretty evenly split between mid and jungle now, but is too powerful in mid lane at the moment.",
       "abilities": [
         {
@@ -538,7 +538,7 @@
               "label": "Mana Cost",
               "before": "55 / 60 / 65 / 70 / 75",
               "after": "50 / 60 / 70 / 80 / 90",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -591,14 +591,14 @@
               "label": "Damage",
               "before": "30 / 60 / 90 / 120 / 150 (+ 100 / 103.75 / 107.5 / 111.25 / 115% total AD)",
               "after": "20 / 55 / 90 / 125 / 160 (+ 105% total AD)",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Ferocity Damage",
               "before": "30 - 235 (based on level) (+130% total AD)",
               "after": "35 - 240 (based on level) (+120% total AD)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         }
@@ -748,14 +748,14 @@
               "label": "Damage per Second Scaling",
               "before": "5% AP",
               "after": "4% AP",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
               "label": "Demonflare Damage Scaling",
               "before": "50% AP",
               "after": "40% AP",
-              "direction": "nerf"
+              "direction": "neutral"
             },
             {
               "kind": "numeric",
@@ -782,7 +782,7 @@
               "label": "Base Damage",
               "before": "70 / 105 / 140 / 175 / 210",
               "after": "70 / 100 / 130 / 160 / 190",
-              "direction": "neutral"
+              "direction": "nerf"
             }
           ]
         },
@@ -850,7 +850,7 @@
     },
     {
       "championId": "Udyr",
-      "classification": "adjustment",
+      "classification": "buff",
       "summary": "We want both Q-max and R-max Udyr to be viable builds, but right now they're quite far apart in power.",
       "abilities": [
         {
@@ -862,7 +862,7 @@
               "label": "Base Bonus Damage On-Hit",
               "before": "5 / 11 / 17 / 23 / 29 / 35",
               "after": "5 / 13 / 21 /29 / 37 / 45",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         },
@@ -875,7 +875,7 @@
               "label": "Base Shield Strength",
               "before": "45 / 60 / 75 / 90 / 105 / 120",
               "after": "45 / 65 / 85 / 105 / 125 / 145",
-              "direction": "neutral"
+              "direction": "buff"
             }
           ]
         }
@@ -908,7 +908,7 @@
               "label": "Cooldown",
               "before": "20 / 19 / 18 / 17 / 16",
               "after": "18 / 17 / 16 / 15 / 14 seconds",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -929,7 +929,7 @@
     },
     {
       "championId": "Zac",
-      "classification": "adjustment",
+      "classification": "nerf",
       "summary": "Zac has been truly explosive in the new season, and while his ability to tank and engage are meant to be core strengths, he's also too lethal for a tank with deep backline target access.",
       "abilities": [
         {
@@ -941,7 +941,7 @@
               "label": "Damage per Hit",
               "before": "40 / 55 / 70 / 85 / 100 (+ 30% AP) (+ 3% of Zac's maximum health)",
               "after": "60 / 90 / 120 / 150 / 180 (+ 30% AP) (+ 3% of Zac's bonus health)",
-              "direction": "buff"
+              "direction": "neutral"
             }
           ]
         },
@@ -971,7 +971,7 @@
   "items": [
     {
       "name": "Hexoptics C44",
-      "classification": "adjustment",
+      "classification": "nerf",
       "changes": [
         {
           "kind": "numeric",
@@ -985,7 +985,7 @@
           "label": "Bonus Range on Takedown Duration",
           "before": "6",
           "after": "8 seconds",
-          "direction": "buff"
+          "direction": "neutral"
         }
       ]
     }

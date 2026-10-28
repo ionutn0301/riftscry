@@ -1,0 +1,585 @@
+{
+  "id": "26.4",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-4-notes/",
+  "checkedAt": "2026-10-28T08:22:32.783Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ambessa"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Annie"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aphelios"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Brand"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Braum"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Camille"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Darius"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Fizz"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Graves"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Gwen"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Hwei"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Illaoi"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jinx"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kassadin"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kayle"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kennen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lee Sin"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Lux"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Maokai"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Naafiri"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Qiyana"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rengar"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rumble"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ryze"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Samira"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Senna"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Swain"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Syndra"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Teemo"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Twitch"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Udyr"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xayah"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zac"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-summoner-spells",
+      "headings": [],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Ambessa",
+        "records": 1
+      },
+      {
+        "name": "Annie",
+        "records": 2
+      },
+      {
+        "name": "Aphelios",
+        "records": 1
+      },
+      {
+        "name": "Brand",
+        "records": 2
+      },
+      {
+        "name": "Braum",
+        "records": 2
+      },
+      {
+        "name": "Camille",
+        "records": 1
+      },
+      {
+        "name": "Darius",
+        "records": 1
+      },
+      {
+        "name": "Fizz",
+        "records": 1
+      },
+      {
+        "name": "Graves",
+        "records": 2
+      },
+      {
+        "name": "Gwen",
+        "records": 3
+      },
+      {
+        "name": "Hwei",
+        "records": 3
+      },
+      {
+        "name": "Illaoi",
+        "records": 1
+      },
+      {
+        "name": "Jinx",
+        "records": 1
+      },
+      {
+        "name": "Kassadin",
+        "records": 2
+      },
+      {
+        "name": "Kayle",
+        "records": 1
+      },
+      {
+        "name": "Kennen",
+        "records": 1
+      },
+      {
+        "name": "Lee Sin",
+        "records": 1
+      },
+      {
+        "name": "Lux",
+        "records": 4
+      },
+      {
+        "name": "Maokai",
+        "records": 1
+      },
+      {
+        "name": "Naafiri",
+        "records": 4
+      },
+      {
+        "name": "Qiyana",
+        "records": 1
+      },
+      {
+        "name": "Rengar",
+        "records": 2
+      },
+      {
+        "name": "Rumble",
+        "records": 2
+      },
+      {
+        "name": "Ryze",
+        "records": 1
+      },
+      {
+        "name": "Samira",
+        "records": 2
+      },
+      {
+        "name": "Senna",
+        "records": 2
+      },
+      {
+        "name": "Swain",
+        "records": 4
+      },
+      {
+        "name": "Syndra",
+        "records": 2
+      },
+      {
+        "name": "Teemo",
+        "records": 1
+      },
+      {
+        "name": "Twitch",
+        "records": 2
+      },
+      {
+        "name": "Udyr",
+        "records": 2
+      },
+      {
+        "name": "Xayah",
+        "records": 3
+      },
+      {
+        "name": "Zac",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Hexoptics C44",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Omnivamp on Summoner Spells (Smite/Ignite)",
+        "records": 1
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Ambessa",
+        "records": 1
+      },
+      {
+        "id": "Annie",
+        "records": 2
+      },
+      {
+        "id": "Aphelios",
+        "records": 1
+      },
+      {
+        "id": "Brand",
+        "records": 2
+      },
+      {
+        "id": "Braum",
+        "records": 2
+      },
+      {
+        "id": "Camille",
+        "records": 1
+      },
+      {
+        "id": "Darius",
+        "records": 1
+      },
+      {
+        "id": "Fizz",
+        "records": 1
+      },
+      {
+        "id": "Graves",
+        "records": 2
+      },
+      {
+        "id": "Gwen",
+        "records": 3
+      },
+      {
+        "id": "Hwei",
+        "records": 3
+      },
+      {
+        "id": "Illaoi",
+        "records": 1
+      },
+      {
+        "id": "Jinx",
+        "records": 1
+      },
+      {
+        "id": "Kassadin",
+        "records": 2
+      },
+      {
+        "id": "Kayle",
+        "records": 1
+      },
+      {
+        "id": "Kennen",
+        "records": 1
+      },
+      {
+        "id": "LeeSin",
+        "records": 1
+      },
+      {
+        "id": "Lux",
+        "records": 4
+      },
+      {
+        "id": "Maokai",
+        "records": 1
+      },
+      {
+        "id": "Naafiri",
+        "records": 4
+      },
+      {
+        "id": "Qiyana",
+        "records": 1
+      },
+      {
+        "id": "Rengar",
+        "records": 2
+      },
+      {
+        "id": "Rumble",
+        "records": 2
+      },
+      {
+        "id": "Ryze",
+        "records": 1
+      },
+      {
+        "id": "Samira",
+        "records": 2
+      },
+      {
+        "id": "Senna",
+        "records": 2
+      },
+      {
+        "id": "Swain",
+        "records": 4
+      },
+      {
+        "id": "Syndra",
+        "records": 2
+      },
+      {
+        "id": "Teemo",
+        "records": 1
+      },
+      {
+        "id": "Twitch",
+        "records": 2
+      },
+      {
+        "id": "Udyr",
+        "records": 2
+      },
+      {
+        "id": "Xayah",
+        "records": 3
+      },
+      {
+        "id": "Zac",
+        "records": 3
+      }
+    ],
+    "items": [
+      {
+        "name": "Hexoptics C44",
+        "records": 2
+      }
+    ],
+    "systems": [
+      {
+        "name": "Omnivamp on Summoner Spells (Smite/Ignite)",
+        "records": 1
+      }
+    ]
+  },
+  "exclusions": {
+    "patch-aram-mayhem": 1,
+    "patch-aram": 1
+  },
+  "overrides": null,
+  "unparsed": []
+}

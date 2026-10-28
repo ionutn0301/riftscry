@@ -1,0 +1,656 @@
+{
+  "id": "26.3",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-3-notes/",
+  "checkedAt": "2026-10-28T08:22:32.479Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ahri"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Bel'Veth"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Braum"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Briar"
+      ],
+      "sourceLines": 6,
+      "parsedLines": 6
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Diana"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Draven"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ekko"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ezreal"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Hecarim"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Heimerdinger"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Jayce"
+      ],
+      "sourceLines": 5,
+      "parsedLines": 5
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kayn"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Maokai"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mel"
+      ],
+      "sourceLines": 34,
+      "parsedLines": 34
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Naafiri"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nilah"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Nunu and Willump"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Riven"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ryze"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Trundle"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Tryndamere"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Varus"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vi"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Volibear"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Xin Zhao"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yone"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zaahen"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zed"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Actualizer"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Dusk and Dawn"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Endless Hunger"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Protoplasm Harness"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Armored Advance"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Chainlaced Crushers"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Cash Back"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Phase Rush"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-runes",
+      "headings": [
+        "Triple Tonic"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-sr-ranked-system-updates",
+      "headings": [],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Ahri",
+        "records": 1
+      },
+      {
+        "name": "Bel'Veth",
+        "records": 2
+      },
+      {
+        "name": "Braum",
+        "records": 2
+      },
+      {
+        "name": "Briar",
+        "records": 6
+      },
+      {
+        "name": "Diana",
+        "records": 1
+      },
+      {
+        "name": "Draven",
+        "records": 1
+      },
+      {
+        "name": "Ekko",
+        "records": 2
+      },
+      {
+        "name": "Ezreal",
+        "records": 2
+      },
+      {
+        "name": "Hecarim",
+        "records": 2
+      },
+      {
+        "name": "Heimerdinger",
+        "records": 3
+      },
+      {
+        "name": "Jayce",
+        "records": 5
+      },
+      {
+        "name": "Kayn",
+        "records": 1
+      },
+      {
+        "name": "Maokai",
+        "records": 1
+      },
+      {
+        "name": "Mel",
+        "records": 34
+      },
+      {
+        "name": "Naafiri",
+        "records": 1
+      },
+      {
+        "name": "Nilah",
+        "records": 2
+      },
+      {
+        "name": "Nunu and Willump",
+        "records": 2
+      },
+      {
+        "name": "Riven",
+        "records": 2
+      },
+      {
+        "name": "Ryze",
+        "records": 1
+      },
+      {
+        "name": "Trundle",
+        "records": 2
+      },
+      {
+        "name": "Tryndamere",
+        "records": 1
+      },
+      {
+        "name": "Varus",
+        "records": 3
+      },
+      {
+        "name": "Vi",
+        "records": 2
+      },
+      {
+        "name": "Volibear",
+        "records": 3
+      },
+      {
+        "name": "Xin Zhao",
+        "records": 2
+      },
+      {
+        "name": "Yone",
+        "records": 1
+      },
+      {
+        "name": "Zaahen",
+        "records": 2
+      },
+      {
+        "name": "Zed",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Actualizer",
+        "records": 2
+      },
+      {
+        "name": "Dusk and Dawn",
+        "records": 2
+      },
+      {
+        "name": "Endless Hunger",
+        "records": 3
+      },
+      {
+        "name": "Protoplasm Harness",
+        "records": 3
+      },
+      {
+        "name": "Armored Advance",
+        "records": 1
+      },
+      {
+        "name": "Chainlaced Crushers",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Cash Back",
+        "records": 1
+      },
+      {
+        "name": "Phase Rush",
+        "records": 1
+      },
+      {
+        "name": "Triple Tonic",
+        "records": 1
+      },
+      {
+        "name": "APEX NEGATIVE LP GAINS",
+        "records": 0
+      },
+      {
+        "name": "AEGIS OF VALOR ELIGIBILITY",
+        "records": 1
+      },
+      {
+        "name": "DUO AT THE TOP OF CHALLENGER",
+        "records": 0
+      },
+      {
+        "name": "CLIMB INDICATOR",
+        "records": 0
+      }
+    ]
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Ahri",
+        "records": 1
+      },
+      {
+        "id": "Belveth",
+        "records": 2
+      },
+      {
+        "id": "Braum",
+        "records": 2
+      },
+      {
+        "id": "Briar",
+        "records": 6
+      },
+      {
+        "id": "Diana",
+        "records": 1
+      },
+      {
+        "id": "Draven",
+        "records": 1
+      },
+      {
+        "id": "Ekko",
+        "records": 2
+      },
+      {
+        "id": "Ezreal",
+        "records": 2
+      },
+      {
+        "id": "Hecarim",
+        "records": 2
+      },
+      {
+        "id": "Heimerdinger",
+        "records": 3
+      },
+      {
+        "id": "Jayce",
+        "records": 5
+      },
+      {
+        "id": "Kayn",
+        "records": 1
+      },
+      {
+        "id": "Maokai",
+        "records": 1
+      },
+      {
+        "id": "Mel",
+        "records": 34
+      },
+      {
+        "id": "Naafiri",
+        "records": 1
+      },
+      {
+        "id": "Nilah",
+        "records": 2
+      },
+      {
+        "id": "Nunu",
+        "records": 2
+      },
+      {
+        "id": "Riven",
+        "records": 2
+      },
+      {
+        "id": "Ryze",
+        "records": 1
+      },
+      {
+        "id": "Trundle",
+        "records": 2
+      },
+      {
+        "id": "Tryndamere",
+        "records": 1
+      },
+      {
+        "id": "Varus",
+        "records": 3
+      },
+      {
+        "id": "Vi",
+        "records": 2
+      },
+      {
+        "id": "Volibear",
+        "records": 3
+      },
+      {
+        "id": "XinZhao",
+        "records": 2
+      },
+      {
+        "id": "Yone",
+        "records": 1
+      },
+      {
+        "id": "Zaahen",
+        "records": 2
+      },
+      {
+        "id": "Zed",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Actualizer",
+        "records": 2
+      },
+      {
+        "name": "Dusk and Dawn",
+        "records": 2
+      },
+      {
+        "name": "Endless Hunger",
+        "records": 3
+      },
+      {
+        "name": "Protoplasm Harness",
+        "records": 3
+      },
+      {
+        "name": "Armored Advance",
+        "records": 1
+      },
+      {
+        "name": "Chainlaced Crushers",
+        "records": 1
+      }
+    ],
+    "systems": [
+      {
+        "name": "Cash Back",
+        "records": 1
+      },
+      {
+        "name": "Phase Rush",
+        "records": 1
+      },
+      {
+        "name": "Triple Tonic",
+        "records": 1
+      },
+      {
+        "name": "APEX NEGATIVE LP GAINS",
+        "records": 0
+      },
+      {
+        "name": "AEGIS OF VALOR ELIGIBILITY",
+        "records": 1
+      },
+      {
+        "name": "DUO AT THE TOP OF CHALLENGER",
+        "records": 0
+      },
+      {
+        "name": "CLIMB INDICATOR",
+        "records": 0
+      }
+    ]
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}
