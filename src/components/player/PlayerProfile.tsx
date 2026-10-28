@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
 import { participant, type SummonerProfile } from '../../lib/player/contracts';
-import { historyOptions } from '../../lib/player/modes';
+import { historyAvailabilityForQueue, historyOptions } from '../../lib/player/modes';
 import { api, fetcher, playerLink, type PlayerInitial, type PlayerView } from './client';
 import { usePlayerHistory } from './usePlayerHistory';
 import { itemMetadataKey } from './useItemMetadata';
@@ -37,6 +37,9 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   const { data: ranks, error: rankError, mutate: retryRanks } = useSWR<PlayerRank[]>(api('rank', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
   const { data: summoner, error: summonerError, mutate: retrySummoner } = useSWR<SummonerProfile>(api('summoner', query), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const history = usePlayerHistory(platform, puuid, filters.queue);
+  // Availability depends on the imported sample, before champion/result filters.
+  const historyAvailability = !history.loading && history.matches.length === 0
+    ? historyAvailabilityForQueue(filters.queue) : undefined;
   const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
   const profile = { ...initial, ...filters, name };
   const back = playerLink(platform, puuid, { ...filters, name });
@@ -146,11 +149,12 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
         {filters.result && <button type="button" aria-label={`Remove ${filters.result === 'win' ? 'Wins' : 'Losses'} filter`} onClick={() => change({ result: '' })}>{filters.result === 'win' ? 'Wins' : 'Losses'}<PlayerIcon name="close" size={13} /></button>}
       </div>}
       {filters.view === 'memory' && <p className="player-help">Mode filters your follow-up games.</p>}
-      <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} retrySeconds={history.retrySeconds} showBreakdown={filters.view === 'history'} />
+      <PlayerSample matches={matches} puuid={puuid} imported={history.matches.length} available={history.available} loading={history.loading} failed={history.failed} error={history.error} retrySeconds={history.retrySeconds} showBreakdown={filters.view === 'history'} availability={historyAvailability} onChangeQueue={queue => change({ queue, champion: '', result: '' })} />
       <div className="player-view" id="player-view" key={filters.view}>
-        {filters.view === 'history' ? <PlayerHistory matches={matches} platform={platform} puuid={puuid} back={back} loading={history.loading} onLeave={leave} /> :
-          filters.view === 'builds' ? <PersonalBuilds matches={matches} platform={platform} puuid={puuid} back={back} onLeave={leave} /> :
-            <BuildMemory player={`${platform}:${puuid}`} platform={platform} puuid={puuid} matches={history.matches} matchesLoading={history.loading} back={back} onLeave={leave} />}
+        {filters.view === 'memory' ? <BuildMemory player={`${platform}:${puuid}`} platform={platform} puuid={puuid} matches={history.matches} matchesLoading={history.loading} back={back} onLeave={leave} /> :
+          historyAvailability ? null : filters.view === 'history'
+            ? <PlayerHistory matches={matches} platform={platform} puuid={puuid} back={back} loading={history.loading} onLeave={leave} />
+            : <PersonalBuilds matches={matches} platform={platform} puuid={puuid} back={back} onLeave={leave} />}
       </div>
     </div>
   </div>;

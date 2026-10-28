@@ -45,6 +45,26 @@ export const historyOptions = [
   { value: 'all', label: 'All recent games' },
   ...queueCatalog.map(queue => ({ value: String(queue.id), label: queue.label })),
 ];
+
+export type HistoryAvailability = Readonly<{
+  status: 'private';
+  label: string;
+  sourceUrl: string;
+}>;
+
+// A published queue ID describes the mode, not whether Riot exposes its history.
+// Riot marked Mayhem records private on 2025-12-18 (checked 2026-10-28).
+// This metadata explains empty imports; it never blocks requests or real records.
+const mayhemHistoryAvailability: HistoryAvailability = {
+  status: 'private',
+  label: 'ARAM: Mayhem',
+  sourceUrl: 'https://github.com/RiotGames/developer-relations/issues/1109#issuecomment-3671793822',
+};
+
+export function historyAvailabilityForQueue(queue: string): HistoryAvailability | undefined {
+  return queue === '2400' ? mayhemHistoryAvailability : undefined;
+}
+
 export function isSupportedQueue(queueId: number): boolean {
   return Number.isInteger(queueId) && Object.hasOwn(queues, queueId);
 }

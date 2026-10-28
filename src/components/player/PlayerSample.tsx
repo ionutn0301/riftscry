@@ -1,4 +1,5 @@
 import type { Match } from '../../lib/player/contracts';
+import type { HistoryAvailability } from '../../lib/player/modes';
 import { summarizeByQueue, type QueueStats } from '../../lib/player/stats';
 import ChampionPortrait from './ChampionPortrait';
 import PlayerIcon from './PlayerIcon';
@@ -28,9 +29,29 @@ function QueueSummary({ stats }: { stats: QueueStats }) {
   </article>;
 }
 
-export default function PlayerSample({ matches, puuid, imported, available, loading, failed, error, retrySeconds = 0, showBreakdown = true }: {
+export default function PlayerSample({ matches, puuid, imported, available, loading, failed, error, retrySeconds = 0, showBreakdown = true, availability, onChangeQueue }: {
   matches: Match[]; puuid: string; imported: number; available?: number; loading: boolean; failed: number; error?: Error; retrySeconds?: number; showBreakdown?: boolean;
+  availability?: HistoryAvailability; onChangeQueue: (queue: string) => void;
 }) {
+  if (availability) return <section className="player-sample" aria-label="Recent match sample">
+    <section className="history-availability" aria-label={`${availability.label} availability`} data-history-availability={availability.status}>
+      <header className="history-availability-heading"><PlayerIcon name="info" size={24} /><h2>Mayhem history is private</h2></header>
+      <p role="status">Riot keeps ARAM: Mayhem match history private. Check your Mayhem results in the League client.</p>
+      <p>Saved Build Memory notes remain available on this browser.</p>
+      <a className="player-text-link" href={availability.sourceUrl} target="_blank" rel="noreferrer">Riot’s availability notice<PlayerIcon name="arrow-right" size={16} /></a>
+      <div className="player-actions">
+        <button type="button" onClick={() => onChangeQueue('450')}>Show regular ARAM</button>
+        <button type="button" className="player-button-secondary" onClick={() => onChangeQueue('all')}>Show all games</button>
+      </div>
+    </section>
+    {(failed > 0 || !!error || retrySeconds > 0) && <div className="sample-status" role="status" aria-live="polite">
+      <span className="player-signal" aria-hidden="true" />
+      <p>{failed > 0 ? `${failed} requested match ${failed === 1 ? 'record is' : 'records are'} unavailable or excluded.` : error ? 'The latest history request failed.' : 'Requests are paused.'}
+        {retrySeconds > 0 ? ` Retry in ${retrySeconds} seconds.` : ''}</p>
+    </div>}
+    {error && <p role="alert">{error.message}</p>}
+  </section>;
+
   const summaries = showBreakdown ? summarizeByQueue(matches, puuid) : [];
   const incomplete = loading || failed > 0 || !!error || retrySeconds > 0;
   return <section className="player-sample" aria-label="Recent match sample" aria-busy={loading}>
