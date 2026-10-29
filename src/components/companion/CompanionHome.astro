@@ -1,68 +1,119 @@
 ---
-import { getLatestPatch } from '../../lib/data';
+import { getAllPatches, getChampionMeta, getLatestPatch } from '../../lib/data';
+import { buildHomeSignals } from '../../lib/home-signals';
+import { assetFor } from '../../lib/investigation';
 import HomeReturn from './HomeReturn';
 import HomeSignals from './HomeSignals.astro';
 import HomeImpact from './HomeImpact.astro';
 import '../../styles/companion-home.css';
+import '../../styles/observatory-home.css';
+
 const latest = getLatestPatch();
 const patchDate = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${latest.releaseDate}T00:00:00Z`));
+const signals = buildHomeSignals(getAllPatches(), getChampionMeta());
+const localArt: Record<string, string> = { LeeSin: '/images/observatory/LeeSin.jpg', Darius: '/images/observatory/Darius.jpg', Azir: '/images/story/Azir.jpg' };
+const firstSignal = signals[0];
 ---
-<div class="companion-home">
+<div class="companion-home rift-cinema" data-rift-cinema data-cinema-chapter="threshold" data-signal-index="0">
   <div class="home-arrival-stage">
-    <div class="home-landscape" aria-hidden="true">
-      <picture><source media="(max-width: 700px)" srcset="/images/voyage/rift-overlook-mobile.webp" /><img src="/images/voyage/rift-overlook.webp" width="1672" height="941" alt="" fetchpriority="high" decoding="async" /></picture>
+    <div class="rift-field" data-rift-field aria-hidden="true">
+      <picture class="rift-horizon">
+        <source media="(max-width: 700px)" srcset="/images/observatory/rift-horizon-mobile.webp" />
+        <img src="/images/observatory/rift-horizon.webp" width="1920" height="1081" alt="" fetchpriority="high" decoding="async" />
+      </picture>
+      <div class="rift-horizon-shade"></div>
+      <canvas data-rift-canvas></canvas>
+      <div class="rift-frame"><i></i><i></i><i></i><i></i></div>
     </div>
-    <div class="home-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
-    <section class="home-arrival" aria-labelledby="companion-heading">
+    <section class="home-arrival" id="home-threshold" aria-labelledby="companion-heading" data-observatory-chapter="threshold">
       <div class="home-intro">
         <div class="home-intro-copy">
-          <p class="home-eyebrow"><span class="home-scry-mark" aria-hidden="true"></span>YOUR COMPANION BETWEEN GAMES</p>
-          <h1 id="companion-heading"><span>The Rift changes.</span> <em>You’re ready.</em></h1>
-          <p class="home-description">An automatic League of Legends briefing, with personal patch impact for the champions and builds you actually play.</p>
+          <p class="home-eyebrow"><span class="home-scry-mark" aria-hidden="true"></span> A LEAGUE OF LEGENDS OBSERVATORY</p>
+          <h1 id="companion-heading"><span>The Rift</span> <em>is shifting.</em></h1>
+          <p class="home-description">Every patch leaves a signal.<br />See what changed for the champions<br class="home-desktop-break" /> and builds you actually play.</p>
         </div>
         <HomeReturn client:load />
-        <p class="home-modes"><span>Ranked focus.</span><span>ARAM chaos.</span><span>Your kind of League.</span></p>
       </div>
-      <div class="home-arrival-footer"><p>YOU PLAY. <span>WE CONNECT THE DOTS.</span></p><a href="#home-routine">Find your rhythm <span aria-hidden="true">↓</span></a></div>
+      <a class="rift-entry" href="#home-signal" aria-label="Enter the observatory">
+        <span class="rift-entry-cross" aria-hidden="true">+</span>
+        <span class="rift-entry-label">ENTER THE<br /><strong>OBSERVATORY</strong></span>
+        <span class="rift-entry-arrow" aria-hidden="true">↓</span>
+      </a>
+      <div class="rift-archive-label"><span>TRANSMISSION / ARCHIVED PATCH</span><a href={`/patch/${latest.id}`}>{latest.id}<span aria-hidden="true">↗</span></a><time datetime={latest.releaseDate}>{patchDate}</time></div>
+      <div class="home-arrival-footer">
+        <p><span class="cinema-status-light" aria-hidden="true"></span>THE GAME MOVES. <span>SEE THE CHANGE.</span></p>
+        <a href="#home-signal">Follow the signal <span aria-hidden="true">↓</span></a>
+        <button class="cinema-sound" type="button" data-cinema-audio aria-pressed="false" aria-label="Sound off — enable ambient sound" hidden><span class="sound-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-audio-label>Sound off</span></button>
+      </div>
     </section>
-    <div class="home-proof">
-      <div class="home-proof-coordinate" aria-hidden="true"><span>RIFTSCRY / A CLOSER LOOK</span><span>01 — 03</span></div>
-      <HomeSignals />
-    </div>
   </div>
 
-  <HomeImpact />
+  <div class="cinema-chapter-bar">
+    <span class="chapter-bar-brand" aria-hidden="true">R / S</span>
+    <nav aria-label="Observatory chapters">
+      <a href="#home-signal" data-cinema-link="signal"><span>01</span> The signal</a>
+      <a href="#home-impact" data-cinema-link="impact"><span>02</span> Your impact</a>
+      <a href="#home-routine" data-cinema-link="next"><span>03</span> Next move</a>
+    </nav>
+    <button class="cinema-sound" type="button" data-cinema-audio aria-pressed="false" aria-label="Sound off — enable ambient sound" hidden><span class="sound-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-audio-label>Sound off</span></button>
+    <span class="chapter-progress" aria-hidden="true"></span>
+  </div>
 
-  <section class="home-routine" id="home-routine" aria-labelledby="routine-heading">
-    <header class="home-section-heading"><div><p class="home-eyebrow">LESS CATCHING UP. MORE PLAYING.</p><h2 id="routine-heading">Every kind of<br /><em>“one more game.”</em></h2></div><p>A fresh start, a familiar champion, a build worth another look. Pick up right where your games left off.</p></header>
+  <section class="cinema-signal" id="home-signal" aria-labelledby="signal-heading" data-observatory-chapter="signal">
+    <header class="cinema-section-heading">
+      <p class="home-eyebrow"><span>01 / THE SIGNAL</span><i aria-hidden="true"></i> CHANGE YOUR PERSPECTIVE</p>
+      <h2 id="signal-heading">One Rift.<br /><em>A different reality.</em></h2>
+      <p>Choose a champion. Watch the evidence change.<br />A small number can tell a different story.</p>
+    </header>
+    <div class="cinema-signal-grid">
+      <div class="signal-aperture" data-signal-aperture>
+        <div class="signal-aperture-orbit" aria-hidden="true"><i></i><i></i><span>RIFTSCRY · OBSERVATION LENS</span></div>
+        {signals.map((signal, index) => <figure class="signal-art" data-signal-art={signal.championId} hidden={index !== 0}>
+          <div class="signal-art-image"><img src={localArt[signal.championId] ?? assetFor(signal.championId).splash} alt={`${signal.championName} — official Riot Games artwork`} width="1215" height="717" loading="lazy" decoding="async" /><span class="signal-art-fallback" aria-hidden="true">{signal.championName}</span></div>
+          <figcaption><span>OBSERVING / {String(index + 1).padStart(2, '0')}</span><strong>{signal.championName}</strong><span>RIOT GAMES ARTWORK</span></figcaption>
+        </figure>)}
+        {firstSignal && <a class="signal-follow" data-signal-follow href={`/explore?champion=${firstSignal.championId}#change`}>Follow <span data-signal-name>{firstSignal.championName}</span> through the archive <span aria-hidden="true">↗</span></a>}
+      </div>
+      <div class="home-proof">
+        <div class="home-proof-coordinate"><span>THE RECORD / IN FOCUS</span><span>EXACT VALUES. ORIGINAL SOURCES.</span></div>
+        <HomeSignals />
+      </div>
+    </div>
+    <a class="cinema-next-chapter" href="#home-impact"><span>THE SIGNAL IS ONLY THE BEGINNING</span><strong>What does it change for you?</strong><span aria-hidden="true">↓</span></a>
+  </section>
+
+  <div id="home-impact" class="cinema-impact" data-observatory-chapter="impact">
+    <div class="cinema-act-heading"><span>02 / YOUR IMPACT</span><span>FROM THE PATCH. INTO YOUR GAME.</span></div>
+    <HomeImpact />
+  </div>
+
+  <section class="home-routine cinema-next" id="home-routine" aria-labelledby="routine-heading" data-observatory-chapter="next">
+    <header class="home-section-heading"><div><p class="home-eyebrow">03 / YOUR NEXT MOVE</p><h2 id="routine-heading">The next chapter<br /><em>is yours.</em></h2></div><p>Follow the detail that matters.<br />Then get back to the game.</p></header>
     <div class="home-routine-grid">
       <a class="home-routine-card" href="/next-game#changes">
-        <div class="home-routine-top"><span>01 / BACK AFTER A BREAK</span><span aria-hidden="true">↗</span></div>
-        <svg class="home-routine-art" viewBox="0 0 280 112" fill="none" aria-hidden="true"><path class="home-art-line" d="M12 78h55l27-42h54l22 27h97M12 93h255"/><path class="home-art-accent" d="m76 77 25-41h47l22 27h76"/><circle cx="101" cy="36" r="7"/><circle cx="170" cy="63" r="7"/><path d="m228 55 8 8-8 8"/><path class="home-art-faint" d="M101 44v49m69-22v22M12 21h255"/></svg>
-        <h3>“What did I miss?”</h3>
-        <p>Changes since your last recorded game on each champion. Your match history sets the starting point.</p>
-        <span class="home-routine-action">Catch up on changes <span aria-hidden="true">→</span></span>
+        <div class="home-routine-top"><span>01 / RETURN TO THE RIFT</span><span aria-hidden="true">↗</span></div>
+        <div class="cinema-path-mark" aria-hidden="true"><svg viewBox="0 0 180 100" fill="none"><path d="M8 68h41l30-38h31l24 38h38M8 82h164M79 30V8m55 60v23"/><circle cx="79" cy="30" r="7"/><circle cx="134" cy="68" r="5"/></svg></div>
+        <h3>“What did I miss?”</h3><p>Pick up after a break. See changes since your last recorded game on each champion.</p><span class="home-routine-action">Catch up on changes <span aria-hidden="true">→</span></span>
       </a>
       <a class="home-routine-card" href="/players?view=builds">
-        <div class="home-routine-top"><span>02 / FIND THAT LOADOUT</span><span aria-hidden="true">↗</span></div>
-        <svg class="home-routine-art" viewBox="0 0 280 112" fill="none" aria-hidden="true"><path class="home-art-faint" d="M12 21h255M12 93h255"/><rect x="28" y="34" width="43" height="43" rx="4"/><rect x="88" y="34" width="43" height="43" rx="4"/><rect x="148" y="34" width="43" height="43" rx="4"/><path class="home-art-accent" d="m49 42 10 14-10 14-10-14 10-14Zm60 0 10 14-10 14-10-14 10-14Z"/><path d="m163 55 5 5 10-12m30 7h37m-8-8 8 8-8 8"/></svg>
-        <h3>“That build felt good.”</h3>
-        <p>Find the items and runes you actually used, with the champion, mode, and source match together.</p>
-        <span class="home-routine-action">Find a recorded build <span aria-hidden="true">→</span></span>
+        <div class="home-routine-top"><span>02 / RETRACE A GOOD GAME</span><span aria-hidden="true">↗</span></div>
+        <div class="cinema-path-mark" aria-hidden="true"><svg viewBox="0 0 180 100" fill="none"><path d="m44 20 26 30-26 30-26-30 26-30Zm46 0 26 30-26 30-26-30 26-30Zm46 0 26 30-26 30-26-30 26-30Z"/><path d="M10 50h160"/></svg></div>
+        <h3>“That build felt good.”</h3><p>Rediscover the items and runes you used. The champion, the mode, the source match.</p><span class="home-routine-action">Find a recorded build <span aria-hidden="true">→</span></span>
       </a>
       <a class="home-routine-card" href="/next-game">
         <div class="home-routine-top"><span>03 / BEFORE YOU QUEUE</span><span aria-hidden="true">↗</span></div>
-        <svg class="home-routine-art" viewBox="0 0 280 112" fill="none" aria-hidden="true"><path class="home-art-faint" d="M12 21h255M12 93h255M140 10v91"/><circle cx="140" cy="56" r="35"/><circle class="home-art-accent" cx="140" cy="56" r="22"/><path d="m140 42 10 14-10 14-10-14 10-14ZM45 56h48m94 0h48m-10-8 10 8-10 8"/></svg>
-        <h3>“Okay. One more.”</h3>
-        <p>Your latest session and one useful focus, assembled from available games with the evidence attached.</p>
-        <span class="home-routine-action">Open the next-game briefing <span aria-hidden="true">→</span></span>
+        <div class="cinema-path-mark" aria-hidden="true"><svg viewBox="0 0 180 100" fill="none"><circle cx="90" cy="50" r="32"/><circle cx="90" cy="50" r="19"/><path d="M90 5v20m0 50v20M40 50H12m128 0h28m-84-8 12 8-12 8"/></svg></div>
+        <h3>“Okay. One more.”</h3><p>Your latest session. One useful focus. An automatic briefing built from your available games.</p><span class="home-routine-action">Open the next-game briefing <span aria-hidden="true">→</span></span>
       </a>
     </div>
-    <p class="home-routine-footnote"><span aria-hidden="true">✦</span> Ready from your records. No notes to write. No cards to create.</p>
   </section>
 
-  <section class="companion-explore" aria-labelledby="home-explore-heading">
-    <div class="home-explore-art" aria-hidden="true"><img src="/images/voyage/history-strata.webp" alt="" width="1672" height="941" loading="lazy" decoding="async" /><svg viewBox="0 0 360 360" fill="none"><circle cx="180" cy="180" r="120"/><circle cx="180" cy="180" r="138"/><path d="m180 72 78 108-78 108-78-108 78-108Zm0-48v48m0 216v48M24 180h78m156 0h78"/><circle cx="180" cy="180" r="8"/></svg><span>THERE’S MORE TO THE RIFT.</span></div>
-    <div class="home-explore-copy"><p class="home-eyebrow">FOR THE CURIOUS BETWEEN QUEUES</p><h2 id="home-explore-heading">Follow a champion.<br /><em>Find a story.</em></h2><p>Every buff, nerf, and unexpected turn has a history. Wander through the archive and see how the Rift got here.</p><div class="companion-explore-actions"><a class="companion-action companion-action--quiet" href="/explore">Explore the Rift <span aria-hidden="true">↗</span></a><a class="companion-text-link" href="/champions">Browse champions <span aria-hidden="true">↗</span></a></div><a class="home-archive-stamp" href={`/patch/${latest.id}`}><span>Latest archived patch <strong>{latest.id}</strong></span><span>{patchDate}<span aria-hidden="true">↗</span></span></a></div>
+  <section class="companion-explore cinema-epilogue" aria-labelledby="home-explore-heading">
+    <div class="cinema-epilogue-art" aria-hidden="true"><img src="/images/observatory/rift-horizon.webp" alt="" width="1920" height="1081" loading="lazy" decoding="async" /></div>
+    <div class="home-explore-copy"><p class="home-eyebrow">THE ARCHIVE IS A WORLD OF ITS OWN</p><h2 id="home-explore-heading">There’s always<br /><em>another perspective.</em></h2><p>Choose a champion. Follow their history.<br />See the Rift through a different lens.</p><div class="companion-explore-actions"><a class="companion-action" href="/explore">Explore the Rift <span aria-hidden="true">↗</span></a><a class="companion-text-link" href="/champions">Browse champions <span aria-hidden="true">↗</span></a></div><a class="home-archive-stamp" href={`/patch/${latest.id}`}><span>Latest archived patch <strong>{latest.id}</strong></span><span>{patchDate}<span aria-hidden="true">↗</span></span></a></div>
+    <span class="epilogue-wordmark" aria-hidden="true">RIFTSCRY</span>
   </section>
 </div>
+<script>
+  import '../../scripts/observatory-home';
+</script>

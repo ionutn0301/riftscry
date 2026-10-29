@@ -18,7 +18,7 @@ function isBriefingTarget(url: URL, queue: string, champion = 'Ahri') {
 test('homepage Find my games completes lookup and remembers the player automatically', async ({ page }) => {
   const requests = await installFixtures(page, { matches: [recentAramWin] });
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift changes. You’re ready.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
   await page.locator('[data-home-launcher]').getByRole('link', { name: 'Find my games', exact: true }).click();
   await expect(page).toHaveURL(url => url.pathname === '/players');
   await expect(page.locator('[data-player-gateway]')).toBeVisible();

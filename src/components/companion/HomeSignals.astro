@@ -81,6 +81,11 @@ const initials = (name: string) => name.split(/\s+/).map(word => word[0]).join('
           }
         });
         if (moveFocus) tabs[index]?.focus({ preventScroll: true });
+        const selectedPanel = panels[index];
+        if (selectedPanel) root.dispatchEvent(new CustomEvent('riftscry:signal-change', {
+          bubbles: true,
+          detail: { championId: selectedPanel.dataset.champion, name: selectedPanel.querySelector('h3')?.textContent ?? '', index },
+        }));
       };
       tabs.forEach((tab, index) => {
         tab.disabled = false;
