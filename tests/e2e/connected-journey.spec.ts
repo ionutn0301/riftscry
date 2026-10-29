@@ -28,13 +28,34 @@ for (const pool of [[], ['Alistar']]) test(`patch hydration with ${pool.length ?
 });
 
 test('champion history saves directly and reaches the briefing', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/champion/ahri');
   const save = page.locator('[data-direct-save="Ahri"]');
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
   await page.locator('.reader-next-actions a[href="/pool#briefing"]').first().click();
   await expect(page).toHaveURL(/\/pool#briefing$/);
+  const picker = page.locator('astro-island:has(.pool-picker)');
+  const ahri = page.getByRole('option', { name: 'Ahri', exact: true });
+  const count = page.locator('.pool-bar .count');
+  await expect(picker).not.toHaveAttribute('ssr', '');
+  await expect(ahri).toHaveAttribute('aria-selected', 'true');
+  await expect(count).toHaveText('1 champion in your pool');
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('riftscry:pool') ?? '[]'))).toContain('Ahri');
+
+  await ahri.click();
+  await expect(ahri).toHaveAttribute('aria-selected', 'false');
+  await expect(count).toHaveText('0 champions in your pool');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('riftscry:pool') ?? '[]'))).not.toContain('Ahri');
+
+  await ahri.click();
+  await expect(count).toHaveText('1 champion in your pool');
+  await page.reload();
+  await expect(picker).not.toHaveAttribute('ssr', '');
+  await expect(ahri).toHaveAttribute('aria-selected', 'true');
+  await expect(count).toHaveText('1 champion in your pool');
+  expect(errors).toEqual([]);
 });
 
 test('quiet historical branch preserves original interval', async ({ page }) => {

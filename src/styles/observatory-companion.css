@@ -333,12 +333,13 @@ body.observatory-shell .purchase-evidence h2 { font-size: 27px; }
 }
 
 @media (max-height: 700px) and (max-width: 760px) {
-  body.observatory-shell .player-gateway { padding-top: calc(var(--world-header-height, 72px) + 14px + env(safe-area-inset-top)); }
+  body.observatory-shell .player-gateway { padding-top: calc(var(--world-header-height, 72px) + 8px + env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); }
   body.observatory-shell .gateway-composition { padding-bottom: 14px; }
   body.observatory-shell .gateway-heading h1 { font-size: 39px; margin-block: 10px; }
   body.observatory-shell .gateway-heading > p:last-child { font-size: 12px; line-height: 1.6; }
-  body.observatory-shell .lookup-form { margin-top: 17px; padding-block: 16px; gap: 11px; }
-  body.observatory-shell .lookup-form :is(input, select, button) { min-height: 46px; }
+  body.observatory-shell .lookup-form { margin-top: 17px; padding-block: 12px; gap: 10px; }
+  body.observatory-shell .lookup-form :is(input, select) { min-height: 44px; line-height: 1.5; padding-block: 9px; }
+  body.observatory-shell .lookup-form > button { min-height: 44px; padding-block: 10px; }
   body.observatory-shell .gateway-destinations { margin-top: 12px; }
   body.observatory-shell .gateway-footnote { padding-top: 5px; }
   body.observatory-shell .gateway-footnote > span { display: none; }
@@ -356,19 +357,24 @@ body.observatory-shell .purchase-evidence h2 { font-size: 27px; }
   body.observatory-shell .gateway-composition { padding-bottom: 24px; }
 }
 
-@media (min-width: 600px) and (max-height: 500px) {
-  body.observatory-shell .player-gateway { padding-top: calc(var(--world-header-height, 72px) + 12px); padding-inline: 24px; }
-  body.observatory-shell .gateway-composition { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; row-gap: 10px; padding-bottom: 14px; }
+/* Landscape phones use the same 540px breakpoint as the base player layout.
+   Keep both tasks beside each other; smaller spacing preserves 44px controls. */
+@media (min-width: 540px) and (max-height: 540px) {
+  body.observatory-shell .player-gateway { padding-top: calc(var(--world-header-height, 72px) + 8px + env(safe-area-inset-top)); padding-inline: max(24px, env(safe-area-inset-left)) max(24px, env(safe-area-inset-right)); padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  body.observatory-shell .gateway-composition { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 20px; row-gap: 4px; padding-bottom: 0; }
   body.observatory-shell .gateway-heading { grid-column: 1; grid-row: 1; }
-  body.observatory-shell .gateway-heading h1 { font-size: 38px; margin-block: 10px; }
-  body.observatory-shell .gateway-heading > p:last-child { font-size: 12px; }
-  body.observatory-shell .lookup-form { grid-column: 2; grid-row: 1 / span 3; grid-template-columns: minmax(0, 1fr) auto; align-self: start; margin: 0; gap: 10px; padding-block: 13px; }
+  body.observatory-shell .gateway-heading h1 { font-size: clamp(28px, 4.4vw, 38px); margin-block: 6px; }
+  body.observatory-shell .gateway-heading > p:last-child { font-size: 12px; line-height: 1.5; }
+  body.observatory-shell .lookup-form { grid-column: 2; grid-row: 1 / span 3; grid-template-columns: minmax(0, 1fr) auto; align-self: start; margin: 0; gap: 8px; padding-block: 8px; }
+  body.observatory-shell .lookup-form .player-field { gap: 6px; }
   body.observatory-shell .lookup-identity { grid-column: 1 / -1; }
-  body.observatory-shell .lookup-form :is(input, select, button) { min-height: 44px; }
+  body.observatory-shell .lookup-form :is(input, select) { min-height: 44px; line-height: 1.5; padding-block: 9px; }
+  body.observatory-shell .lookup-form > button { min-height: 44px; padding: 10px 12px; }
   body.observatory-shell .gateway-destinations { grid-column: 1; grid-row: 2; margin-top: 0; gap: 0; }
   body.observatory-shell .gateway-destination-label { flex-basis: 100%; }
-  body.observatory-shell .gateway-intents { gap: 17px; }
-  body.observatory-shell .remembered-player { grid-column: 1; grid-row: 3; margin-top: 0; }
+  body.observatory-shell .gateway-intents { gap: 12px; }
+  body.observatory-shell .remembered-player { grid-column: 1; grid-row: 3; margin-top: 0; padding: 6px 10px; gap: 4px 8px; }
+  body.observatory-shell .remembered-player .player-kicker { display: none; }
   body.observatory-shell .gateway-footnote { padding-top: 0; }
   body.observatory-shell .gateway-footnote > span { display: none; }
 }
