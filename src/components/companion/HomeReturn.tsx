@@ -41,6 +41,7 @@ export default function HomeReturn() {
       <a className="companion-text-link" href={playerLink(player.platform, player.puuid, { name: player.name, view: 'history' })}>My matches</a>
       <a className="companion-text-link" href={playerLink(player.platform, player.puuid, { name: player.name, view: 'builds' })}>My builds</a>
       <a className="companion-text-link" href={`${briefing}#changes`}>Catch up</a>
+      <a className="companion-text-link" href={`${briefing}#impact`}>My patch impact</a>
       <a className="companion-text-link home-launcher-change" href="/next-game?change=1">Change player</a>
     </nav>}
     <p className="home-launcher-note">{player ? 'Your briefing catches up when you open it.' : 'Riot ID + server once. Remembered in this browser.'}</p>

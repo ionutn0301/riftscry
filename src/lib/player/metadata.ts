@@ -42,3 +42,19 @@ export async function getItemMetadata(match: Match): Promise<ItemMetadata> {
     };
   });
 }
+
+/** Exact archive endpoints for calculations. A newer correction is not substituted. */
+export async function getItemMetadataForVersion(version: string): Promise<ItemMetadata> {
+  if (!/^\d+\.\d+\.\d+$/.test(version)) {
+    return { version: null, data: {}, notice: 'A valid archived item-reference version is required.' };
+  }
+  return cached(`impact-items-v1:${version}`, 86400, async () => {
+    const response = await fetch(`${referenceRoot}/cdn/${version}/data/en_US/item.json`, { signal: AbortSignal.timeout(8000) });
+    if (!response.ok) throw new ServiceError('The archived item reference is temporarily unavailable.');
+    const body = await response.json() as { data?: Record<string, ItemRecord> };
+    if (!body.data || typeof body.data !== 'object' || Array.isArray(body.data)) {
+      throw new ServiceError('The archived item reference is temporarily unavailable.');
+    }
+    return { version, data: body.data, notice: `Exact archived item reference ${version}. Mid-patch changes can differ.` };
+  });
+}

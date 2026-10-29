@@ -18,6 +18,11 @@ what changed since you played, how your latest session went, and one thing to re
 - **Personal patch catch-up:** compare each recent champion's latest imported game
   against newer archived champion and verified item changes, with before/after
   records and source links. Unknown patch baselines remain unknown.
+- **Personal patch impact:** `/next-game#impact` recalculates supported differences
+  for the final items in that imported game using exact historical item references.
+  Compare listed stats, total shop prices, reviewed damage components and cooldown
+  scenarios, with formulas and sources. No build entry is needed. Standard
+  Summoner's Rift calculations are distinct from other modes' archived changes.
 - **Recent games and builds:** exact-mode history, automatically grouped observed
   loadouts, match facts, and optional timeline or AI-assisted review. The sample is
   bounded; it is not a complete season history or a global build recommendation.
@@ -73,6 +78,7 @@ client or commit deployment environment files.
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
 - [Homepage refresh](docs/homepage-refresh/README.md) — newcomer and returning-player paths, archive examples and responsive audit
 - [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
+- [Personal patch impact](docs/personal-patch-impact/README.md) — calculations, coverage, sources and verification
 - [Data & methodology](docs/DATA.md) — schema, classification and provenance
 - [Contributing](CONTRIBUTING.md) — checks and contribution workflow
 

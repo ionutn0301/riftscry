@@ -7,6 +7,7 @@ import { riotAccessAllowed } from '../../../lib/player/access';
 import { getItemMetadata } from '../../../lib/player/metadata';
 import { buildSuggestions } from '../../../lib/player/advice';
 import { review } from '../../../lib/player/review';
+import { getPersonalPatchImpact } from '../../../lib/player/impact-service';
 export const prerender = false;
 const platformSchema = z.enum(Object.keys(platforms) as [Platform, ...Platform[]]);
 const puuidSchema = z.string().regex(/^[A-Za-z0-9_-]{30,120}$/);
@@ -15,7 +16,7 @@ const json = (body: unknown, status = 200, retry = 0, scope?: 'player' | 'review
 export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => {
   try {
     const action = params.action;
-    if (!action || !['lookup', 'account', 'summoner', 'history', 'rank', 'match', 'timeline', 'review', 'items'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
+    if (!action || !['lookup', 'account', 'summoner', 'history', 'rank', 'match', 'timeline', 'review', 'items', 'impact'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
     if (request.method !== (action === 'review' ? 'POST' : 'GET')) return json({ error: 'Method not allowed' }, 405);
     if (request.method === 'POST' && request.headers.get('origin') !== url.origin) return json({ error: 'Origin not allowed' }, 403);
     const platform = platformSchema.parse(url.searchParams.get('platform'));
@@ -46,6 +47,7 @@ export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => 
     const match = await getMatch(platform, id, beforeFetch);
     if (!participant(match, puuid)) throw new ServiceError('Player is not in this match.', 404);
     if (action === 'match') return json(match);
+    if (action === 'impact') return json(await getPersonalPatchImpact(match, puuid));
     if (action === 'timeline') return json(await getTimeline(platform, id, beforeFetch));
     if (action === 'review') {
       const [timelineResult, metadataResult] = await Promise.allSettled([

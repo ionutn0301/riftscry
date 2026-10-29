@@ -2,6 +2,7 @@
 import { getLatestPatch } from '../../lib/data';
 import HomeReturn from './HomeReturn';
 import HomeSignals from './HomeSignals.astro';
+import HomeImpact from './HomeImpact.astro';
 import '../../styles/companion-home.css';
 const latest = getLatestPatch();
 const patchDate = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${latest.releaseDate}T00:00:00Z`));
@@ -16,7 +17,7 @@ const patchDate = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short'
       <div class="home-intro">
         <p class="home-eyebrow"><span class="home-scry-mark" aria-hidden="true"></span>YOUR COMPANION BETWEEN GAMES</p>
         <h1 id="companion-heading"><span>The Rift changes.</span> <em>You’re ready.</em></h1>
-        <p class="home-description">An automatic League of Legends briefing. Your recent games, the changes you missed, and a useful next focus.</p>
+        <p class="home-description">An automatic League of Legends briefing, with personal patch impact for the champions and builds you actually play.</p>
         <HomeReturn client:load />
         <p class="home-modes"><span>Ranked focus.</span><span>ARAM chaos.</span><span>Your kind of League.</span></p>
       </div>
@@ -27,6 +28,8 @@ const patchDate = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short'
     </div>
     <div class="home-arrival-footer"><p>YOU PLAY. <span>WE CONNECT THE DOTS.</span></p><a href="#home-routine">Find your rhythm <span aria-hidden="true">↓</span></a></div>
   </section>
+
+  <HomeImpact />
 
   <section class="home-routine" id="home-routine" aria-labelledby="routine-heading">
     <header class="home-section-heading"><div><p class="home-eyebrow">LESS CATCHING UP. MORE PLAYING.</p><h2 id="routine-heading">Every kind of<br /><em>“one more game.”</em></h2></div><p>A fresh start, a familiar champion, a build worth another look. Pick up right where your games left off.</p></header>
