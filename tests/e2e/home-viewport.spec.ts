@@ -33,10 +33,21 @@ for (const [width, height] of sizes) {
 
       for (const link of await hero.getByRole('link').all()) {
         const label = await link.getAttribute('aria-label');
-        if (label) expect(label.toLowerCase()).toContain((await link.innerText()).trim().toLowerCase());
+        if (label) {
+          const visibleLabel = await link.evaluate(element => {
+            const text: string[] = [];
+            const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+              const parent = walker.currentNode.parentElement;
+              if (parent && !parent.closest('[aria-hidden="true"]') && parent.getClientRects().length) text.push(walker.currentNode.textContent ?? '');
+            }
+            return text.join(' ').replace(/\s+/g, ' ').trim().toLowerCase();
+          });
+          expect(label.replace(/\s+/g, ' ').toLowerCase()).toContain(visibleLabel);
+        }
         const target = (await link.boundingBox())!;
         expect(target.height, `${await link.getAttribute('aria-label') ?? await link.innerText()} is too short`).toBeGreaterThanOrEqual(44);
-        expect(target.width).toBeGreaterThanOrEqual(44);
+        expect(target.width, `${await link.getAttribute('aria-label') ?? await link.innerText()} is too narrow`).toBeGreaterThanOrEqual(44);
         expect(target.y + target.height).toBeLessThanOrEqual(height + 1);
         expect(target.x).toBeGreaterThanOrEqual(0);
         expect(target.x + target.width).toBeLessThanOrEqual(width + 1);
@@ -47,8 +58,9 @@ for (const [width, height] of sizes) {
       }
 
       const proof = (await page.locator('.home-proof').boundingBox())!;
-      if (width <= 1100 || height <= 879) expect(proof.y).toBeGreaterThanOrEqual(height - 1);
-      else expect(proof.y + proof.height).toBeLessThanOrEqual(height + 1);
+      // The first screen establishes the environment; the source-backed
+      // archive example now belongs to the following chapter on every size.
+      expect(proof.y).toBeGreaterThanOrEqual(height - 1);
       expect(await hero.evaluate(element => [element, ...element.querySelectorAll('*')].some(node =>
         /^(auto|scroll)$/.test(getComputedStyle(node).overflowY) && node.scrollHeight > node.clientHeight + 1))).toBe(false);
     }

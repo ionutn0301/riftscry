@@ -53,13 +53,19 @@ test('homepage champion examples change without moving the page, tabs or followi
   await page.evaluate(() => document.fonts.ready);
   const tabs = signals.getByRole('tab');
   await expect(tabs).toHaveCount(3);
-  // Put the controls fully below the fixed header. A test runner's automatic
-  // scroll into view must not obscure an actual tab-selection jump.
-  await tabs.first().evaluate(element => {
-    const headerBottom = document.querySelector('.world-controls')!.getBoundingClientRect().bottom;
-    window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - headerBottom - 32, behavior: 'instant' });
-  });
-  await settleLayout(page);
+  // Enter the chapter, then clear the latest visible chrome. The chapter rail
+  // becomes sticky after the initial scroll; positioning twice accounts for
+  // that change without masking a selection-triggered jump.
+  for (let pass = 0; pass < 2; pass++) {
+    await tabs.first().evaluate(element => {
+      const chromeBottom = Math.max(0, ...Array.from(document.querySelectorAll('.world-controls, .cinema-chapter-bar'))
+        .map(node => node.getBoundingClientRect())
+        .filter(rect => rect.top < innerHeight && rect.bottom > 0)
+        .map(rect => rect.bottom));
+      window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - chromeBottom - 32, behavior: 'instant' });
+    });
+    await settleLayout(page);
+  }
   const position = () => signals.evaluate(element => ({
     scroll: window.scrollY,
     height: element.getBoundingClientRect().height,

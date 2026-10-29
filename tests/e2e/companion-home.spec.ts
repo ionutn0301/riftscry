@@ -7,7 +7,7 @@ const rememberedKey = 'riftscry:remembered-player:v1';
 const destinations = ['/players', '/next-game', '/pool', '/champions', '/patches', '/compare', '/explore'];
 
 async function homeReady(page: Page) {
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift changes. You’re ready.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
   await expect(page.locator('astro-island[component-url*="HomeReturn"]')).not.toHaveAttribute('ssr', '');
   await expect(page.locator('[data-home-launcher]')).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
@@ -28,7 +28,7 @@ async function expectTapTarget(link: Locator, width: number, height: number) {
   const bounds = await link.boundingBox();
   expect(bounds).not.toBeNull();
   expect(bounds!.height).toBeGreaterThanOrEqual(44);
-  expect(bounds!.width).toBeGreaterThanOrEqual(44);
+  expect(bounds!.width, `${await link.getAttribute('aria-label') ?? await link.innerText()} is too narrow`).toBeGreaterThanOrEqual(44);
   expect(bounds!.x).toBeGreaterThanOrEqual(0);
   expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1);
   expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(height + 1);
@@ -286,7 +286,7 @@ test.describe('static first visit', () => {
   test('the purpose, primary entry and archive example remain usable without JavaScript', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift changes. You’re ready.');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
     const launcher = page.locator('[data-home-launcher]');
     await expect(launcher).toHaveAttribute('data-player-state', 'new');
     await expect(launcher.getByRole('link', { name: 'Get my briefing', exact: true })).toHaveAttribute('href', '/next-game');

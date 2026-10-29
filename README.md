@@ -2,12 +2,17 @@
   <img src="src/assets/brand/logo-desktop-dark.png" alt="RiftScry" width="420" />
 </p>
 
-<h3 align="center">The Rift changes. You’re ready.</h3>
+<h3 align="center">The Rift is shifting.</h3>
 
 RiftScry is a League of Legends companion that turns available match history into
 an automatic briefing. Enter a Riot ID once, then return for the useful details:
 what changed since you played, how your latest session went, and one thing to review.
 
+- **A cinematic observatory:** an original fractured horizon, restrained atmospheric
+  motion, and three connected chapters take you from a champion's signal to its
+  impact and your next move. Champion artwork, exact evidence, and the archive link
+  respond together. Sound is opt-in; reduced motion and static fallbacks keep the
+  experience usable. The same visual world continues through `/explore`.
 - **A useful first visit and a faster return:** the homepage shows real, source-linked
   archive examples before a player lookup. Returning visitors get their selected
   player's briefing, matches, builds and catch-up links together, without a homepage
@@ -38,7 +43,7 @@ cross-device account sync or ownership verification. Automatic results require e
 match history; Riot currently keeps ARAM: Mayhem history private, so the site explains
 that gap instead of inventing a report or substituting ordinary ARAM.
 
-![RiftScry homepage](docs/homepage-refresh/after/home-1440.webp)
+![RiftScry cinematic observatory](docs/cinematic-observatory/screenshots/home-desktop.webp)
 
 ## Run it
 
@@ -76,6 +81,7 @@ Riot access mode, server-side credentials and Redis cache/budget state; see
 client or commit deployment environment files.
 
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
+- [Cinematic observatory](docs/cinematic-observatory/README.md) — research, visual direction, interaction design and release verification
 - [Homepage refresh](docs/homepage-refresh/README.md) — newcomer and returning-player paths, archive examples and responsive audit
 - [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
 - [Personal patch impact](docs/personal-patch-impact/README.md) — calculations, coverage, sources and verification
