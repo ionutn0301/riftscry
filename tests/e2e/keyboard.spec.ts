@@ -32,7 +32,7 @@ test.describe("keyboard-only exploration", () => {
     await page.keyboard.press("Enter");
     await ready(page);
     await expect(page.locator("#voyage-roster")).not.toBeVisible();
-    await expect(page.locator("#perspective h2")).toBeFocused();
+    await expect(opener).toBeFocused();
     await expect(page.locator("[data-champion-name]")).toHaveText("Azir");
 
     await page.locator('[aria-label="Journey chapters"] a[href="#change"]').focus();

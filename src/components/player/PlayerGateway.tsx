@@ -98,7 +98,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
             {Object.keys(platforms).map(value => <option key={value} value={value}>{platformNames[value] ?? value.toUpperCase()}</option>)}
           </select>
         </div>
-        <button type="submit" disabled={!ready || busy || retrySeconds > 0}><PlayerIcon name={retrySeconds ? 'clock' : 'search'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Looking up…' : !ready ? 'Preparing lookup…' : 'Find player'}</button>
+        <button type="submit" disabled={!ready || busy || retrySeconds > 0}><PlayerIcon name={retrySeconds ? 'clock' : 'search'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Looking up…' : !ready ? 'Preparing…' : 'Find player'}</button>
       </form>
       <p id={`${id}-lookup-status`} className="lookup-status" role={message ? 'alert' : 'status'} aria-live="polite">{message || (busy ? 'Finding player…' : '')}</p>
 

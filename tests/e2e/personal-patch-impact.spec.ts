@@ -162,6 +162,55 @@ test('a delayed response from a previous selection cannot replace the selected c
   } finally { release(); }
 });
 
+test('switching champions keeps the viewport and context controls still through loading and different result sizes', async ({ page }) => {
+  let release = () => {};
+  const held = new Promise<void>(resolve => { release = resolve; });
+  await fixtures(page, [first, second], async request => {
+    const isSecond = new URL(request.url).searchParams.get('id') === second.metadata.matchId;
+    if (isSecond) await held;
+    return { report: impactFor(isSecond ? second : first, isSecond ? {
+      status: 'current', metrics: [], inventory: [], assumptions: [], sources: [],
+      notice: 'Fixture short result: already played on the current archived patch.',
+    } : {}) };
+  });
+  try {
+    const impact = await open(page);
+    await settled(impact);
+    await page.evaluate(() => document.fonts.ready);
+    const choices = impact.locator('.patch-impact-contexts');
+    const secondChoice = impact.getByRole('button', { name: /Ahri/ });
+    await choices.evaluate(element => {
+      const header = document.querySelector('.world-controls')!.getBoundingClientRect().bottom;
+      window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - header - 40, behavior: 'instant' });
+    });
+    const position = async () => {
+      await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+      return choices.evaluate(element => ({
+        scroll: window.scrollY, top: element.getBoundingClientRect().top,
+        height: element.getBoundingClientRect().height,
+        widths: Array.from(element.querySelectorAll('button')).map(button => button.getBoundingClientRect().width),
+      }));
+    };
+    const before = await position();
+    const expectStationary = async () => {
+      const after = await position();
+      for (const key of ['scroll', 'top', 'height'] as const) {
+        expect(Math.abs(after[key] - before[key]), `${key} changed while choosing a champion`).toBeLessThanOrEqual(1);
+      }
+      after.widths.forEach((width, index) => expect(Math.abs(width - before.widths[index]!)).toBeLessThanOrEqual(1));
+    };
+    await secondChoice.click();
+    await expect(impact.locator('.patch-impact-result')).toHaveAttribute('data-impact-status', 'loading');
+    await expectStationary();
+    release();
+    await expect(impact.locator('.patch-impact-result')).toHaveAttribute('data-impact-status', 'current');
+    await expectStationary();
+    await impact.getByRole('button', { name: /Azir/ }).click();
+    await settled(impact);
+    await expectStationary();
+  } finally { release(); }
+});
+
 test('a calculation from a different source game is rejected rather than labelled as this player context', async ({ page }) => {
   await fixtures(page, [first], () => ({ report: impactFor(second) }));
   const impact = await open(page);

@@ -110,7 +110,7 @@ body:is([data-surface="players"], [data-surface="player"], [data-surface="match"
 .gateway-intents button[aria-pressed="true"], .gateway-intents button:hover:not(:disabled) { color: var(--player-text); background: transparent; border-color: var(--player-accent); }
 .gateway-intents button[aria-pressed="true"] .intent-arrow { opacity: 1; }
 .gateway-anticipation { min-height: 39px; max-width: 67ch !important; margin-top: 13px; font-size: 12px; line-height: 1.6; }
-.remembered-player { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 18px; margin-top: 18px; font-size: 12px; text-decoration: none; }
+.remembered-player { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 18px; min-height: 44px; margin-top: 18px; font-size: 12px; text-decoration: none; }
 .remembered-player strong { color: var(--player-text); font-weight: 500; }
 .remembered-player .player-kicker { font-size: 9px !important; }
 .gateway-footnote { position: relative; display: flex; align-items: end; justify-content: space-between; gap: 30px; width: 100%; margin-top: auto; padding-top: 18px; }
@@ -287,7 +287,9 @@ body:is([data-surface="players"], [data-surface="player"], [data-surface="match"
 .suggestion-tradeoff { border-left: 1px solid var(--player-brass); padding: 10px 0 10px 16px; }
 .purchase-evidence { border-top: 1px solid var(--player-line); padding-top: 28px; margin-top: 44px; }
 .purchase-evidence > .player-actions { justify-content: space-between; }
-.purchase-timeline { padding: 0; margin: 0; list-style: none; max-height: 560px; overflow-y: auto; overscroll-behavior: contain; }
+/* This evidence is already behind a disclosure; opening it extends the page
+   instead of introducing a second scroll surface for mouse or touch. */
+.purchase-timeline { padding: 0; margin: 0; list-style: none; }
 .purchase-timeline li { display: grid; grid-template-columns: 54px 92px 1fr; gap: 12px; align-items: center; padding: 13px 10px; border-bottom: 1px solid var(--player-line); }
 .purchase-timeline time { color: var(--player-accent); font-variant-numeric: tabular-nums; font-size: 12px; }
 .purchase-event-type { text-transform: capitalize; color: var(--player-muted); font-size: 12px; }
@@ -491,7 +493,7 @@ body:is([data-surface="players"], [data-surface="player"], [data-surface="match"
   .lookup-form { grid-template-columns: minmax(0, 1fr) 130px; gap: 12px 16px; }
   .lookup-form label { font-size: 10px; }
   .lookup-form select, .lookup-form input { font-size: 16px; }
-  .lookup-form > button { font-size: 12px; padding-inline: 10px; }
+  .lookup-form > button { font-size: 12px; padding-inline: 10px; gap: 8px; }
   .gateway-destinations { margin-top: 18px; }
   .gateway-intents { gap: 14px; }
   .gateway-intents button { align-items: flex-start; flex-direction: column; gap: 8px; padding: 12px; }
@@ -581,13 +583,15 @@ body:is([data-surface="players"], [data-surface="player"], [data-surface="match"
   .gateway-footnote { padding-top: 12px; }
 }
 @media (max-height: 700px) and (max-width: 760px) {
-  .player-gateway { padding-top: calc(86px + env(safe-area-inset-top)); padding-bottom: 16px; }
+  .player-gateway { padding-top: calc(var(--world-header-height) + 8px + env(safe-area-inset-top)); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
   .gateway-composition { padding-top: 0; padding-bottom: 12px; }
   .gateway-heading h1 { font-size: clamp(37px, 9.5vw, 50px); margin-block: 12px 14px; }
   .gateway-heading > p:last-child { font-size: 12px; line-height: 1.5; }
   .lookup-form { margin-top: 18px; padding-block: 13px; gap: 10px 16px; }
   .lookup-form input, .lookup-form select, .lookup-form > button { min-height: 44px; }
   .gateway-destinations { margin-top: 12px; }
+  .gateway-intents { gap: 12px; }
+  .gateway-intents button { flex-direction: row; align-items: center; gap: 7px; padding: 8px 0; }
   .gateway-anticipation { display: none; }
   .gateway-footnote p { display: none; }
   .remembered-player { margin-top: 12px; }
@@ -599,12 +603,38 @@ body:is([data-surface="players"], [data-surface="player"], [data-surface="match"
   .gateway-composition { padding-bottom: 20px; }
   .profile-arrival { min-height: auto; }
 }
+@media (max-height: 640px) and (max-width: 760px) {
+  .player-gateway:has(.remembered-player) .gateway-heading > p:last-child { display: none; }
+  .player-gateway:has(.remembered-player) .gateway-heading h1 { margin-bottom: 0; }
+  .player-gateway:has(.remembered-player) .gateway-composition { padding-bottom: 0; }
+  .remembered-player { margin-top: 8px; }
+  .remembered-player .player-kicker { display: none; }
+}
+/* Landscape phones have width to spare, not height. Keep the heading and
+   destination choice beside the form, with every field at its normal size. */
+@media (max-height: 540px) and (min-width: 540px) {
+  .player-gateway { padding: calc(var(--world-header-height) + 8px + env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+  .gateway-composition { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(24px, 4vw, 48px); row-gap: 4px; padding: 0; }
+  .gateway-heading { grid-column: 1; grid-row: 1; }
+  .gateway-heading h1 { font-size: clamp(28px, 4.4vw, 48px); margin-block: 8px; }
+  .gateway-heading > p:last-child { font-size: 13px; line-height: 1.5; }
+  .lookup-form { grid-column: 2; grid-row: 1 / span 3; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; margin: 0; padding: 10px 0; align-self: start; }
+  .lookup-identity { grid-column: 1 / -1; }
+  .lookup-form input, .lookup-form select, .lookup-form > button { min-height: 44px; }
+  .lookup-form > button { padding-inline: 12px; gap: 8px; }
+  .lookup-status { grid-column: 2; margin: 0; }
+  .gateway-destinations { grid-column: 1; grid-row: 2; margin: 0; }
+  .gateway-intents { gap: 12px; }
+  .gateway-intents button { flex-direction: row; align-items: center; gap: 7px; padding: 8px 0; min-height: 44px; }
+  .gateway-intents button strong { font-size: 12px; }
+  .gateway-intents button .intent-arrow { display: none; }
+  .remembered-player { grid-column: 1; grid-row: 3; margin: 0; }
+  .remembered-player .player-kicker { flex-basis: auto; }
+  .gateway-footnote { padding-top: 0; }
+}
 @media (max-width: 900px), (pointer: coarse) {
   /* Keep native editing controls readable without iOS focus zoom. */
   .player-workspace input, .player-workspace select, .player-workspace textarea { font-size: 16px; }
-  /* The disclosure already controls the length of the evidence. Swipes inside
-     an expanded timeline should continue moving the page on touch screens. */
-  .purchase-timeline { max-height: none; overflow: visible; overscroll-behavior: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .player-workspace *, .player-workspace *::before, .player-workspace *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

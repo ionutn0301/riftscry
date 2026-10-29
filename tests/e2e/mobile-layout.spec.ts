@@ -156,11 +156,13 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     expect(scrollPositions).toEqual([0]);
     await search.fill("Azir");
     await expect(roster.locator("[data-choose-champion]")).toHaveCount(1);
+    const scrollBeforeSelection = await page.evaluate(() => scrollY);
     await roster.locator('[data-choose-champion="Azir"]').click();
     await expect(roster).not.toBeVisible();
     await readyJourney(page);
     await expect(page.locator("[data-champion-name]")).toHaveText(champions.Azir!.name);
-    await expect(page.locator("#perspective h2")).toBeFocused();
+    await expect(opener).toBeFocused();
+    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBeforeSelection)).toBeLessThanOrEqual(1);
     await expect(page).toHaveURL((url) => url.searchParams.get("champion") === "Azir");
   });
 }

@@ -8,26 +8,28 @@ const latest = getLatestPatch();
 const patchDate = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${latest.releaseDate}T00:00:00Z`));
 ---
 <div class="companion-home">
-  <section class="home-arrival" aria-labelledby="companion-heading">
+  <div class="home-arrival-stage">
     <div class="home-landscape" aria-hidden="true">
       <picture><source media="(max-width: 700px)" srcset="/images/voyage/rift-overlook-mobile.webp" /><img src="/images/voyage/rift-overlook.webp" width="1672" height="941" alt="" fetchpriority="high" decoding="async" /></picture>
     </div>
     <div class="home-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="home-arrival-grid">
+    <section class="home-arrival" aria-labelledby="companion-heading">
       <div class="home-intro">
-        <p class="home-eyebrow"><span class="home-scry-mark" aria-hidden="true"></span>YOUR COMPANION BETWEEN GAMES</p>
-        <h1 id="companion-heading"><span>The Rift changes.</span> <em>You’re ready.</em></h1>
-        <p class="home-description">An automatic League of Legends briefing, with personal patch impact for the champions and builds you actually play.</p>
+        <div class="home-intro-copy">
+          <p class="home-eyebrow"><span class="home-scry-mark" aria-hidden="true"></span>YOUR COMPANION BETWEEN GAMES</p>
+          <h1 id="companion-heading"><span>The Rift changes.</span> <em>You’re ready.</em></h1>
+          <p class="home-description">An automatic League of Legends briefing, with personal patch impact for the champions and builds you actually play.</p>
+        </div>
         <HomeReturn client:load />
         <p class="home-modes"><span>Ranked focus.</span><span>ARAM chaos.</span><span>Your kind of League.</span></p>
       </div>
-      <div class="home-proof">
-        <div class="home-proof-coordinate" aria-hidden="true"><span>RIFTSCRY / A CLOSER LOOK</span><span>01 — 03</span></div>
-        <HomeSignals />
-      </div>
+      <div class="home-arrival-footer"><p>YOU PLAY. <span>WE CONNECT THE DOTS.</span></p><a href="#home-routine">Find your rhythm <span aria-hidden="true">↓</span></a></div>
+    </section>
+    <div class="home-proof">
+      <div class="home-proof-coordinate" aria-hidden="true"><span>RIFTSCRY / A CLOSER LOOK</span><span>01 — 03</span></div>
+      <HomeSignals />
     </div>
-    <div class="home-arrival-footer"><p>YOU PLAY. <span>WE CONNECT THE DOTS.</span></p><a href="#home-routine">Find your rhythm <span aria-hidden="true">↓</span></a></div>
-  </section>
+  </div>
 
   <HomeImpact />
 

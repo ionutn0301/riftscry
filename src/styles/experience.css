@@ -145,7 +145,7 @@ html[data-motion="reduced"]::view-transition-old(root),html[data-motion="reduced
 
 /* A single destination region scrolls only when it needs to. Keep Close and
    Search visible while the spatial desktop map becomes a readable small-screen list. */
-@media (max-width: 1050px), (max-height: 760px), (pointer: coarse) {
+@media (max-width: 1050px), (max-height: 860px), (pointer: coarse) {
   .map-dialog-inner { padding: max(22px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left)); }
   .map-dialog-heading { gap: 16px; align-items: center; }
   .map-dialog-heading .world-eyebrow { font-size: 11px; letter-spacing: .09em; }
