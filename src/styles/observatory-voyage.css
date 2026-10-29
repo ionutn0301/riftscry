@@ -177,6 +177,8 @@
 .rift-voyage--observatory .quick-perspectives button[aria-pressed="true"] img { border-color: var(--voyage-cyan); filter: none; }
 .rift-voyage--observatory .perspective-status { color: #9dabbe; }
 .rift-voyage--observatory .perspective-identity picture {
+  /* Keep tall mobile portraits inside the frame in WebKit. */
+  display: block;
   position: relative;
   background: linear-gradient(90deg,#b4e9ee80 26px,transparent 26px) left top / 27px 1px no-repeat,
     linear-gradient(#b4e9ee80 26px,transparent 26px) left top / 1px 27px no-repeat,
