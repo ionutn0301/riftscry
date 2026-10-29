@@ -327,6 +327,13 @@
   .home-arrival-footer { margin-top: 6px; padding-block: 0 max(2px,env(safe-area-inset-bottom)); }
   .home-arrival-footer p > span { display: inline; margin-left: 7px; }
 }
+@media (min-width: 480px) and (max-width: 600px) and (max-height: 500px) {
+  /* Leave enough headline width for font-rendering differences; an extra line
+     must not push the opening below a short landscape viewport. */
+  .home-intro { grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); column-gap: 16px; }
+  .home-launcher[data-player-state="new"] .home-launcher-actions { display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .home-launcher-shortcuts { grid-template-columns: repeat(3,minmax(44px,1fr)); }
+}
 @media (prefers-reduced-motion: reduce) {
   /* Override the global .01ms duration too: child labels and icons should not
      acquire their own color transitions when a reduced-motion tab changes. */
