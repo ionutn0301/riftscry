@@ -74,7 +74,6 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
   }
 
   return <div className="automatic-workspace" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
-    <div className="automatic-landscape" aria-hidden="true"><img src="/images/observatory/rift-horizon.webp" alt="" width="1920" height="1081" decoding="async" /></div>
     <div className="automatic-wrap">
       <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your next game.</h1><p>One useful focus, drawn from your recent games.</p></header>
       {!ready ? <p className="automatic-loading" role="status">Opening your briefing…</p> : selection.player ?

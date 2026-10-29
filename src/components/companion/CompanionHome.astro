@@ -16,15 +16,6 @@ const firstSignal = signals[0];
 ---
 <div class="companion-home rift-cinema" data-rift-cinema data-cinema-chapter="threshold" data-signal-index="0">
   <div class="home-arrival-stage">
-    <div class="rift-field" data-rift-field aria-hidden="true">
-      <picture class="rift-horizon">
-        <source media="(max-width: 700px)" srcset="/images/observatory/rift-horizon-mobile.webp" />
-        <img src="/images/observatory/rift-horizon.webp" width="1920" height="1081" alt="" fetchpriority="high" decoding="async" />
-      </picture>
-      <div class="rift-horizon-shade"></div>
-      <canvas data-rift-canvas></canvas>
-      <div class="rift-frame"><i></i><i></i><i></i><i></i></div>
-    </div>
     <section class="home-arrival" id="home-threshold" aria-labelledby="companion-heading" data-observatory-chapter="threshold">
       <div class="home-intro">
         <div class="home-intro-copy">
@@ -35,10 +26,11 @@ const firstSignal = signals[0];
         <HomeReturn client:load />
       </div>
       <a class="rift-entry" href="#home-signal" aria-label="Enter the observatory">
-        <span class="rift-entry-cross" aria-hidden="true">+</span>
+        <span class="rift-entry-cross" aria-hidden="true">↘</span>
         <span class="rift-entry-label">ENTER THE<br /><strong>OBSERVATORY</strong></span>
         <span class="rift-entry-arrow" aria-hidden="true">↓</span>
       </a>
+      <div class="rift-perspective-hint" aria-hidden="true"><span></span>Move to change your perspective</div>
       <div class="rift-archive-label"><span>TRANSMISSION / ARCHIVED PATCH</span><a href={`/patch/${latest.id}`}>{latest.id}<span aria-hidden="true">↗</span></a><time datetime={latest.releaseDate}>{patchDate}</time></div>
       <div class="home-arrival-footer">
         <p><span class="cinema-status-light" aria-hidden="true"></span>THE GAME MOVES. <span>SEE THE CHANGE.</span></p>

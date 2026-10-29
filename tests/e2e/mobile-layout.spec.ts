@@ -40,8 +40,25 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
+async function readyJourneyMap(page: Page, width: number, height: number) {
+  await page.setViewportSize({ width, height });
+  // Start at the same scrolled chapter where the journey-control story ends.
+  await page.goto("/explore#change", { waitUntil: "domcontentloaded" });
+  await readyJourney(page);
+  // Astro islands use display:contents; attachment and the hydration attribute
+  // establish readiness without waiting for the island itself to be visible.
+  const paletteIsland = page.locator('astro-island[component-url*="CommandPalette"]');
+  await paletteIsland.waitFor({ state: "attached" });
+  await expect(paletteIsland).not.toHaveAttribute("ssr", "");
+  const opener = page.locator("[data-map-open]");
+  await opener.focus();
+  const scrollBefore = await page.evaluate(() => scrollY);
+  expect(scrollBefore, "Restoration must preserve a scrolled reading position").toBeGreaterThan(0);
+  return { opener, scrollBefore };
+}
+
 for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], [844, 390], [1024, 768]] as const) {
-  test(`journey controls and all eight Rift map destinations fit ${width}×${height}`, async ({ page }) => {
+  test(`journey controls and chapter navigation fit ${width}×${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/explore", { waitUntil: "domcontentloaded" });
     await readyJourney(page);
@@ -78,15 +95,11 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
       fields.map((field) => Number.parseFloat(getComputedStyle(field).fontSize)));
     expect(fieldSizes).toHaveLength(3);
     for (const size of fieldSizes) expect(size, "Mobile field controls must not trigger iOS text zoom").toBeGreaterThanOrEqual(16);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+  });
 
-    // Astro islands use display:contents; attachment and the hydration attribute
-    // establish readiness without waiting for the island itself to be visible.
-    const paletteIsland = page.locator('astro-island[component-url*="CommandPalette"]');
-    await paletteIsland.waitFor({ state: "attached" });
-    await expect(paletteIsland).not.toHaveAttribute("ssr", "");
-    const opener = page.locator("[data-map-open]");
-    await opener.focus();
-    const scrollBefore = await page.evaluate(() => scrollY);
+  test(`all eight Rift map destinations fit and close restores the journey at ${width}×${height}`, async ({ page }) => {
+    const { opener, scrollBefore } = await readyJourneyMap(page, width, height);
     await opener.click();
     const map = page.locator("#rift-map-dialog");
     await expect(map).toBeVisible();
@@ -107,8 +120,22 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await expect(map).not.toBeVisible();
     await expect(opener).toBeFocused();
     expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+  });
 
+  test(`Rift map reopens into search and restores focus and scroll at ${width}×${height}`, async ({ page }) => {
+    const { opener, scrollBefore } = await readyJourneyMap(page, width, height);
+    const map = page.locator("#rift-map-dialog");
+    const searchMap = map.locator("[data-palette-trigger]");
     await opener.click();
+    await expect(map).toBeVisible();
+    // Keep the original close → reopen → search lifecycle in one story.
+    await map.getByRole("button", { name: "Close the Rift map" }).click();
+    await expect(map).not.toBeVisible();
+    await expect(opener).toBeFocused();
+    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    await opener.click();
+    await expect(map).toBeVisible();
     await searchMap.click();
     await expect(map).not.toBeVisible();
     await expect(page.locator("[cmdk-input]")).toBeFocused();

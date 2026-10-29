@@ -1,0 +1,139 @@
+/* A physical object in a distant environment. All interface content lives
+   outside this decorative layer and remains in normal document flow. */
+.rift-scene {
+  --rift-scene-opacity: 1;
+  --rift-scene-strength: 1;
+  --rift-scene-scroll: 0;
+  --rift-scene-pointer-x: 0px;
+  --rift-scene-pointer-y: 0px;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+  contain: layout paint style;
+  background: #060a13;
+  opacity: var(--rift-scene-opacity);
+}
+
+.rift-scene__landscape {
+  display: block;
+  position: absolute;
+  inset: -18px;
+  transform: translate3d(calc(var(--rift-scene-pointer-x) * -.38), calc(var(--rift-scene-pointer-y) * -.38), 0);
+  opacity: .82;
+}
+
+.rift-scene__landscape img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% 50%;
+  filter: saturate(.52) brightness(.76);
+}
+
+.rift-scene__distance {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #050910de 0%, #080d1896 38%, #080d1840 62%, #070b13cc 100%),
+    linear-gradient(90deg, #070b13d9 7%, #070b1326 75%);
+}
+
+.rift-scene__aurora {
+  position: absolute;
+  inset: 0;
+  opacity: calc(.72 * var(--rift-scene-strength));
+  background: radial-gradient(ellipse at var(--rift-object-x) var(--rift-object-y), color-mix(in srgb, var(--rift-scene-accent) 10%, transparent) 0%, transparent 49%),
+    radial-gradient(ellipse at 92% 9%, color-mix(in srgb, var(--rift-scene-secondary) 8%, transparent), transparent 47%);
+}
+
+.rift-scene__object {
+  position: absolute;
+  left: var(--rift-object-x);
+  top: var(--rift-object-y);
+  width: min(calc(70vw * var(--rift-object-size)), calc(110svh * var(--rift-object-size)));
+  aspect-ratio: 1;
+  transform: translate3d(-50%, calc(-50% - var(--rift-scene-scroll) * 28px), 0);
+  opacity: calc((1 - var(--rift-scene-scroll) * .85) * var(--rift-scene-strength));
+}
+
+.rift-scene__still,
+.rift-scene__object canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.rift-scene__object canvas[hidden] { display: none; }
+.rift-scene[data-rift-renderer="webgl"] .rift-scene__still { opacity: 0; }
+.rift-scene[data-rift-renderer="static"] .rift-scene__still { opacity: 1; }
+
+.rift-scene[data-rift-preview] .rift-scene__object {
+  left: 27%;
+  top: 50%;
+  width: min(57vw, 108svh);
+  opacity: var(--rift-scene-strength);
+  filter: brightness(1.65) saturate(1.06);
+}
+.rift-scene[data-rift-preview] .rift-scene__aurora {
+  opacity: 1;
+  background: radial-gradient(ellipse at 27% 43%, color-mix(in srgb, var(--rift-scene-accent) 17%, transparent), transparent 47%);
+}
+.rift-scene[data-rift-preview] .rift-scene__vignette { opacity: .25; }
+.rift-scene[data-rift-preview] .rift-scene__reading-light {
+  background: linear-gradient(90deg, #070b1300 20%, #070b1359 49%, #070b13b8 100%);
+}
+
+.rift-scene__reading-light {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #070b13db 0%, #070b13b0 29%, #070b1361 44%, #070b1300 62%),
+    linear-gradient(0deg, #070b13 0%, #070b13a3 13%, transparent 35%);
+}
+
+.rift-scene__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 67% 38%, transparent 27%, #02050b66 100%);
+  opacity: .68;
+}
+
+@media (min-width: 1800px) {
+  .rift-scene__object { width: min(calc(66vw * var(--rift-object-size)), calc(112svh * var(--rift-object-size))); }
+}
+
+@media (max-width: 700px) {
+  .rift-scene__landscape { inset: 0; transform: none; opacity: .58; }
+  .rift-scene__landscape img { object-position: 60% 30%; }
+  .rift-scene__object {
+    left: var(--rift-object-mobile-x);
+    top: var(--rift-object-mobile-y);
+    width: min(calc(128vw * var(--rift-object-mobile-size)), calc(72svh * var(--rift-object-mobile-size)));
+  }
+  .rift-scene__distance { background: linear-gradient(180deg, #070b1399, #070b13b8 38%, #070b13 80%); }
+  .rift-scene__reading-light {
+    background: linear-gradient(90deg, #070b13e8 0%, #070b1396 35%, transparent 92%),
+      linear-gradient(0deg, #070b13 20%, #070b13d6 46%, #070b1326 82%);
+  }
+  .rift-scene__vignette { opacity: .4; }
+  .rift-scene[data-rift-preview] .rift-scene__object { left: 86%; top: 23%; width: min(128vw, 72svh); opacity: .20; }
+  .rift-scene[data-rift-preview] .rift-scene__reading-light { background: #070b138f; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .rift-scene__object { left: 86%; top: 48%; width: calc(103svh * var(--rift-object-size)); }
+  .rift-scene__reading-light { background: linear-gradient(90deg, #070b13ed, #070b139c 48%, transparent 90%), linear-gradient(0deg, #070b13, transparent 42%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rift-scene__landscape { transform: none; }
+  .rift-scene__object { transform: translate(-50%, -50%); }
+}
+
+html[data-motion="reduced"] .rift-scene__landscape { transform: none; }
+html[data-motion="reduced"] .rift-scene__object { transform: translate(-50%, -50%); }

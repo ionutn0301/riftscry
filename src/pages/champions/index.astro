@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import RouteArrival from "../../components/experience/RouteArrival.astro";
 import { getAssetVersion, getChampionHistory, getChampionMeta, getLatestPatch, getRoles, ROLES } from "../../lib/data";
+import { assetFor } from "../../lib/investigation";
 
 const meta = getChampionMeta();
 const roles = getRoles();
@@ -11,7 +12,11 @@ const champions = Object.entries(meta).map(([id, m]) => {
   const history = getChampionHistory(id);
   return { id, ...m, changes: history.length, latest: history[0]?.patchId, roles: roles[id] ?? [] };
 }).sort((a,b) => a.name.localeCompare(b.name));
-const featured = latest.champions.slice(0,3).map((c) => champions.find((item) => item.id === c.championId)).filter(Boolean);
+const featured = latest.champions.slice(0,3).flatMap((c) => {
+  const champion = champions.find((item) => item.id === c.championId);
+  return champion ? [champion] : [];
+});
+const spotlight = featured[0] ?? champions[0]!;
 const normalize = (value: string) => value.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",adc:"ADC",support:"Support" };
 ---
@@ -32,11 +37,22 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
         <noscript><a class="route-action" href="#roster">Browse all champions <span aria-hidden="true">↓</span></a></noscript>
         <a class="route-text-link" href="/pool">My Pool <span aria-hidden="true">↗</span></a>
       </div>
-      <div slot="figure" class="roster-arrival-figures" aria-label={"Champions with records in patch " + latest.id}>
-        {featured.map((c) => c && <a href={"/champion/" + c.id.toLowerCase()}>
-          <img src={"https://ddragon.leagueoflegends.com/cdn/img/champion/loading/" + c.id + "_0.jpg"} alt={c.name + ", official Riot Games portrait"} width="308" height="560" loading="eager" decoding="async" />
-          <strong>{c.name}</strong><small>RECORDED IN {latest.id}</small>
-        </a>)}
+      <div slot="figure" class="roster-lens" data-reader-champion-lens="arrival" data-reader-key={spotlight.id}>
+        <div class="reader-lens-overline"><span>IN FOCUS</span><span>RIOT GAMES ARTWORK</span></div>
+        <figure>
+          <div class="roster-lens-media" data-reader-lens-media>
+            <img data-reader-champion-art src={assetFor(spotlight.id).splash} alt={spotlight.name + " — official Riot Games artwork"} width="1215" height="717" loading="eager" decoding="async" />
+            <p class="roster-lens-fallback" data-reader-art-fallback hidden>Artwork unavailable. The champion’s history remains available below.</p>
+          </div>
+          <figcaption>
+            <div><strong data-reader-champion-name>{spotlight.name}</strong><span data-reader-champion-title>{spotlight.title}</span></div>
+            <a class="reader-lens-open" data-reader-champion-link href={"/champion/" + spotlight.id.toLowerCase()}>Open history <span aria-hidden="true">↗</span></a>
+          </figcaption>
+        </figure>
+        <p class="reader-lens-record" data-reader-champion-record>{spotlight.changes ? "Latest " + spotlight.latest + " · " + spotlight.changes + " archived " + (spotlight.changes === 1 ? "patch" : "patches") : "No direct records yet"}</p>
+        <nav class="roster-arrival-figures" aria-label={"Champions with records in patch " + latest.id}>
+          {featured.map((c) => <a href={"/champion/" + c.id.toLowerCase()} data-reader-preview-champion={c.id} data-reader-active={c.id === spotlight.id ? "true" : undefined}><span>{c.name}</span><span aria-hidden="true">↗</span></a>)}
+        </nav>
       </div>
     </RouteArrival>
 
@@ -52,15 +68,31 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
           </header>
           <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions in view</p><button type="button" class="route-text-link" data-roster-reset hidden>Clear filters ↗</button></div>
           <p class="reader-section-note" data-roster-empty hidden>No matches. Try another name or clear the filters.</p>
-          <ul class="roster-wall">
-            {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")}>
-              <a href={"/champion/" + c.id.toLowerCase()}>
-                <img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="64" height="64" loading="lazy" decoding="async" />
-                <span><span class="name">{c.name}</span><span class="title">{c.title}</span><span class="changes">{c.changes ? "Latest " + c.latest + " · " + c.changes + " archived " + (c.changes === 1 ? "patch" : "patches") : "No direct records yet"}</span></span>
-                <span class="roster-arrow" aria-hidden="true">↗</span>
-              </a>
-            </li>)}
-          </ul>
+          <div class="roster-gallery">
+            <ul class="roster-wall">
+              {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-key={c.id} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
+                <a href={"/champion/" + c.id.toLowerCase()}>
+                  <span class="roster-portrait"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="64" height="64" loading="lazy" decoding="async" /></span>
+                  <span class="roster-entry-copy"><span class="name">{c.name}</span><span class="title">{c.title}</span><span class="roster-entry-roles">{c.roles.map(role => roleLabels[role]).join(" / ")}</span><span class="changes">{c.changes ? "Latest " + c.latest + " · " + c.changes + " archived " + (c.changes === 1 ? "patch" : "patches") : "No direct records yet"}</span></span>
+                  <span class="roster-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>)}
+            </ul>
+            <aside class="roster-lens roster-lens--sticky" data-reader-champion-lens="roster" data-reader-key={spotlight.id} aria-label="Champion preview">
+              <div aria-hidden="true">
+                <div class="reader-lens-overline"><span>IN FOCUS</span><span>RIOT GAMES ARTWORK</span></div>
+                <figure>
+                  <div class="roster-lens-media" data-reader-lens-media>
+                    <img data-reader-champion-art src={assetFor(spotlight.id).splash} alt="" width="1215" height="717" loading="lazy" decoding="async" />
+                    <p class="roster-lens-fallback" data-reader-art-fallback hidden>Artwork unavailable. The champion’s history remains available below.</p>
+                  </div>
+                  <figcaption><div><strong data-reader-champion-name>{spotlight.name}</strong><span data-reader-champion-title>{spotlight.title}</span></div></figcaption>
+                </figure>
+                <p class="reader-lens-record" data-reader-champion-record>{spotlight.changes ? "Latest " + spotlight.latest + " · " + spotlight.changes + " archived " + (spotlight.changes === 1 ? "patch" : "patches") : "No direct records yet"}</p>
+              </div>
+              <a class="reader-lens-open" data-reader-champion-link href={"/champion/" + spotlight.id.toLowerCase()}><span>Open <span data-reader-link-name>{spotlight.name}</span>’s history</span><span aria-hidden="true">↗</span></a>
+            </aside>
+          </div>
         </section>
         <section class="reader-next" data-reveal>
           <div><h2>Read the latest patch.</h2><p>See champion, item, and system changes together in patch {latest.id}.</p></div>
@@ -72,6 +104,8 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
 </Layout>
 
 <script>
+  import '../../scripts/reader-lens';
+
   function initRoster() {
     const root = document.querySelector<HTMLElement>("[data-roster-directory]");
     if (!root || root.dataset.rosterReady) return;
@@ -103,6 +137,7 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
         if (role) url.searchParams.set("role",role); else url.searchParams.delete("role");
         history.replaceState(null,"",url.pathname + url.search + url.hash);
       }
+      root?.dispatchEvent(new Event("riftscry:roster-filtered"));
     }
     function restore() {
       const params = new URLSearchParams(location.search);

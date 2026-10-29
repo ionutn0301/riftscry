@@ -4,7 +4,10 @@ import "../styles/experience.css";
 import "../styles/connected.css";
 import "../styles/observatory-pages.css";
 import "../styles/observatory-companion.css";
+import "../styles/living-rift.css";
+import "../styles/living-readers.css";
 import Wayfinder from "../components/experience/Wayfinder.astro";
+import RiftScene from "../components/experience/RiftScene.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import CommandPalette from "../components/islands/CommandPalette";
 import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
@@ -37,6 +40,7 @@ const surface = requestedSurface ?? inferredSurface;
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" as="font" type="font/woff2" href={generalUrl} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={displayUrl} crossorigin />
+    <link rel="expect" href="#main" blocking="render" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -48,11 +52,26 @@ const surface = requestedSurface ?? inferredSurface;
       try {
         document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches || localStorage.getItem('riftscry:motion') === 'reduced' ? 'reduced' : 'full';
       } catch { document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'; }
+      // A saved preference also applies to the browser's document transition.
+      const quietCrossing = (event) => {
+        const transition = event.viewTransition;
+        if (!transition) return;
+        // The outgoing document can be hidden before its snapshot is ready.
+        // A skipped native transition is an expected visual cancellation.
+        void transition.ready.catch((error) => {
+          if (error?.name === 'AbortError') return;
+          throw error;
+        });
+        if (document.documentElement.dataset.motion === 'reduced') transition.skipTransition();
+      };
+      addEventListener('pageswap', quietCrossing);
+      addEventListener('pagereveal', quietCrossing);
     </script>
   </head>
-  <body class:list={["observatory-shell", (isHome || surface === 'explore') ? "is-home" : "observatory-route"]} data-surface={surface}>
+  <body class:list={["observatory-shell", "living-rift", (isHome || surface === 'explore') ? "is-home" : "observatory-route"]} data-surface={surface}>
     <a class="skip-link" href="#main">Skip to content</a>
-    <div>
+    <RiftScene surface={surface} />
+    <div class="rift-site-shell">
       <Wayfinder surface={surface} />
       <main id="main"><slot /></main>
       <SiteFooter />
@@ -60,6 +79,7 @@ const surface = requestedSurface ?? inferredSurface;
     <CommandPalette client:load />
     <script>
       import '../scripts/experience';
+      import '../scripts/living-rift';
     </script>
   </body>
 </html>

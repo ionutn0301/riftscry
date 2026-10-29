@@ -80,10 +80,11 @@ for (const preference of ['device', 'saved'] as const) {
     await page.goto('/');
     await ready(page);
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
-    const field = page.locator('[data-rift-field]');
-    await expect(field).toHaveAttribute('data-rift-renderer', /^(webgl|fallback)$/);
-    if (await field.getAttribute('data-rift-renderer') === 'webgl') await expect(field).toHaveAttribute('data-rift-motion', 'still');
-    else await expect(page.locator('[data-rift-canvas]')).toBeHidden();
+    const field = page.locator('[data-rift-scene]');
+    await expect(field).toHaveAttribute('data-rift-renderer', 'static');
+    await expect(field).toHaveAttribute('data-rift-motion', 'still');
+    await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
+    await expect(page.locator('[data-rift-scene-static]')).toBeVisible();
 
     const tabs = page.locator('[data-home-signals]').getByRole('tab');
     await clearPageChrome(page, tabs.first());
@@ -113,9 +114,11 @@ test('without WebGL the real environment and both product entry actions remain u
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await ready(page);
-  await expect(page.locator('[data-rift-field]')).toHaveAttribute('data-rift-renderer', 'fallback');
-  await expect(page.locator('[data-rift-canvas]')).toBeHidden();
-  const environment = page.locator('.rift-horizon img');
+  await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-renderer', 'static');
+  await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
+  await expect(page.locator('[data-rift-scene-static]')).toBeVisible();
+  await expect(page.locator('.rift-perspective-hint')).toBeHidden();
+  const environment = page.locator('.rift-scene__landscape img');
   await expect(environment).toBeVisible();
   await expect.poll(() => environment.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   for (const [name, href] of [['Get my briefing', '/next-game'], ['Find my games', '/players']] as const) {
@@ -138,7 +141,8 @@ test.describe('the observatory before JavaScript', () => {
   test('static artwork, product actions and the first record are usable immediately', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
-    const environment = page.locator('.rift-horizon img');
+    await expect(page.locator('[data-rift-scene-static]')).toBeVisible();
+    const environment = page.locator('.rift-scene__landscape img');
     await expect(environment).toBeVisible();
     await expect.poll(() => environment.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     await expect(page.locator('[data-home-launcher]').getByRole('link', { name: 'Get my briefing', exact: true })).toHaveAttribute('href', '/next-game');

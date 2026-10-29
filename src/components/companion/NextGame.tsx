@@ -128,7 +128,6 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
   const pinNote = (noteId: string) => commit(current => ({ ...current, notes: current.notes.map(note => note.id === noteId ? { ...note, pinned: !note.pinned } : note) }), 'Note updated.');
 
   return <div className="recall-workspace" data-rift-recall>
-    <div className="recall-landscape" aria-hidden="true"><img src="/images/observatory/rift-horizon.webp" alt="" width="1920" height="1081" decoding="async" /></div>
     <div className="recall-wrap">
       <header className="recall-header">
         <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR FIELD NOTES</p><h1>Saved notebook.</h1><p className="recall-tagline">Keep one idea. Take it into your next game.</p></div>
