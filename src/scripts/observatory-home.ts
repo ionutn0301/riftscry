@@ -1,10 +1,7 @@
-import { initializeRiftField } from './rift-field';
-
 const root = document.querySelector<HTMLElement>('[data-rift-cinema]');
 
 if (root && root.dataset.cinemaReady !== 'true') {
   root.dataset.cinemaReady = 'true';
-  initializeRiftField(root);
 
   const abort = new AbortController();
   const options = { signal: abort.signal };

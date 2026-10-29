@@ -22,10 +22,7 @@ const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
 ---
 <div class="rift-voyage rift-voyage--observatory" data-voyage data-chapter="0">
   <div class="voyage-world" aria-hidden="true">
-    <picture class="world-shot world-shot--arrival is-ready" data-world-shot="0">
-      <source media="(max-width: 700px)" srcset="/images/observatory/rift-horizon-mobile.webp" />
-      <img src="/images/observatory/rift-horizon.webp" alt="" width="1920" height="1081" fetchpriority="high" decoding="async" />
-    </picture>
+    <div class="world-shot world-shot--arrival is-ready" data-world-shot="0"></div>
     <div class="world-shot world-shot--identity" data-world-shot="1"><div class="identity-light"></div><div class="voyage-iris"><span></span><span></span></div></div>
     <div class="world-shot world-shot--evidence" data-world-shot="2"><div class="evidence-horizon"></div><div class="evidence-seam"></div></div>
     <div class="world-shot world-shot--history" data-world-shot="3"><img data-scene-src="/images/voyage/history-strata.webp" alt="" width="1672" height="941" decoding="async" /></div>

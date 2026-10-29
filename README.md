@@ -8,6 +8,9 @@ RiftScry is a League of Legends companion that turns available match history int
 an automatic briefing. Enter a Riot ID once, then return for the useful details:
 what changed since you played, how your latest session went, and one thing to review.
 
+**Current visual direction:** [The living Rift](docs/living-rift/README.md) — shared
+3D environment, distinct working pages, interactive archive previews, and fallbacks.
+
 - **A cinematic observatory:** an original fractured horizon, restrained atmospheric
   motion, and three connected chapters take you from a champion's signal to its
   impact and your next move. Champion artwork, exact evidence, and the archive link

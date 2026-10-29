@@ -76,9 +76,6 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
   }
 
   return <section className="player-gateway" data-player-gateway aria-labelledby="player-gateway-heading" data-loading={busy}>
-    <div className="player-environment gateway-environment" aria-hidden="true">
-      <picture><source media="(max-width: 700px)" srcSet="/images/observatory/rift-horizon-mobile.webp" /><img src="/images/observatory/rift-horizon.webp" width="1920" height="1081" alt="" fetchPriority="high" decoding="async" /></picture>
-    </div>
     <div className="gateway-composition">
       <header className="gateway-heading">
         <p className="player-kicker"><span className="observatory-section-mark" aria-hidden="true" /> YOUR GAMES</p>

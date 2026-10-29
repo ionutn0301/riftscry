@@ -1,0 +1,72 @@
+---
+import { getRiftPreset, projectRift } from '../../lib/rift-geometry';
+import '../../styles/rift-scene.css';
+
+interface Props { surface?: string; }
+const scene = getRiftPreset(Astro.props.surface);
+const faces = projectRift(scene);
+const luminousFaces = faces.filter(face => face.luminous);
+const style = [
+  `--rift-scene-accent:${scene.accent}`,
+  `--rift-scene-secondary:${scene.secondary}`,
+  `--rift-object-x:${scene.x}%`,
+  `--rift-object-y:${scene.y}%`,
+  `--rift-object-size:${scene.size}`,
+  `--rift-object-mobile-x:${scene.mobileX}%`,
+  `--rift-object-mobile-y:${scene.mobileY}%`,
+  `--rift-object-mobile-size:${scene.mobileSize}`,
+].join(';');
+---
+
+<div
+  class="rift-scene"
+  data-rift-scene
+  data-rift-surface={scene.surface}
+  data-rift-renderer="static"
+  data-rift-motion="still"
+  data-rift-paused="true"
+  aria-hidden="true"
+  style={style}
+>
+  <picture class="rift-scene__landscape">
+    <source media="(max-width: 700px)" srcset="/images/voyage/rift-overlook-mobile.webp" />
+    <img src="/images/voyage/rift-overlook.webp" alt="" width="1672" height="941" decoding="async" fetchpriority={scene.surface === 'home' ? 'high' : 'auto'} />
+  </picture>
+  <div class="rift-scene__distance"></div>
+  <div class="rift-scene__aurora"></div>
+  <div class="rift-scene__object" data-rift-scene-object>
+    <svg class="rift-scene__still" data-rift-scene-static viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+      <defs>
+        <radialGradient id="rift-object-haze">
+          <stop offset="0" stop-color={scene.accent} stop-opacity=".24" />
+          <stop offset=".48" stop-color={scene.secondary} stop-opacity=".11" />
+          <stop offset="1" stop-color={scene.secondary} stop-opacity="0" />
+        </radialGradient>
+        <filter id="rift-fracture-bloom" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="4.2" />
+        </filter>
+      </defs>
+      <defs data-rift-scene-gradients>
+        {faces.filter(face => !face.luminous).map(face => <linearGradient id={`rift-facet-${face.index}`} x1="0%" y1="0%" x2="40%" y2="100%">
+          {face.gradient.map((color, index) => <stop offset={[0, .28, .50, .72, 1][index]} stop-color={color} />)}
+        </linearGradient>)}
+      </defs>
+      <ellipse cx="500" cy="500" rx="340" ry="400" fill="url(#rift-object-haze)" />
+      <g data-rift-scene-bloom filter="url(#rift-fracture-bloom)" opacity=".86">
+        {luminousFaces.map(face => <polygon points={face.points} fill={face.fill} />)}
+      </g>
+      <g data-rift-scene-facets>
+        {faces.map(face => <polygon points={face.points} fill={face.luminous ? face.fill : `url(#rift-facet-${face.index})`} stroke={face.fill} stroke-width=".42" stroke-linejoin="round" />)}
+      </g>
+    </svg>
+    <canvas data-rift-scene-canvas hidden></canvas>
+  </div>
+  <div class="rift-scene__reading-light"></div>
+  <div class="rift-scene__vignette"></div>
+</div>
+
+<script>
+  import { initializeRiftScene } from '../../scripts/rift-scene';
+  const scene = document.querySelector<HTMLElement>('[data-rift-scene]');
+  if (scene) initializeRiftScene(scene);
+</script>

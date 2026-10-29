@@ -16,7 +16,6 @@ export default function PlayerArrival({ initial, summoner, ranks, rankFailed, lo
   const name = separator > 0 ? initial.name.slice(0, separator) : initial.name || 'Player profile';
   const tag = separator > 0 ? initial.name.slice(separator) : '';
   return <header className="player-identity-header" aria-labelledby="profile-identity">
-    <div className="player-environment identity-environment" aria-hidden="true"><img src="/images/observatory/rift-horizon.webp" width="1920" height="1081" alt="" decoding="async" /></div>
     <div className="player-identity-wrap">
       <div className="identity-topline"><a className="player-text-link identity-back" href="/players"><PlayerIcon name="arrow-left" size={16} />Find a player</a><span className="player-kicker">PLAYER RECORD</span></div>
       <div className="player-identity-row">

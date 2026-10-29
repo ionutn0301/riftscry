@@ -22,12 +22,9 @@ const {
 } = Astro.props;
 ---
 <section id="route-arrival" class:list={["route-arrival", "route-arrival--" + variant]} data-scene="arrival">
-  <div class="route-landscape" aria-hidden="true">
-    <picture>
-      {image === "/images/observatory/rift-horizon.webp" && <source media="(max-width: 700px)" srcset="/images/observatory/rift-horizon-mobile.webp" />}
-      <img src={image} alt="" width="1920" height="1081" loading="eager" decoding="async" />
-    </picture>
-  </div>
+  {image !== '/images/observatory/rift-horizon.webp' && <div class="route-landscape" aria-hidden="true">
+    <img src={image} alt="" width="1920" height="1081" loading="eager" decoding="async" />
+  </div>}
   <div class="route-arrival-grid">
     <header class="route-arrival-copy" data-reveal>
       <p class="route-kicker"><span class="route-signal" aria-hidden="true"></span>{eyebrow}</p>

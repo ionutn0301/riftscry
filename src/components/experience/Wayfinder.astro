@@ -18,6 +18,8 @@ const destinations = [
 ];
 const isPlayerArea = ['players', 'player', 'match'].includes(surface);
 const active = isPlayerArea ? 'players' : surface === 'champion' ? 'champions' : surface === 'patch' ? 'patches' : surface;
+const selectedDestination = destinations.find(destination => destination.id === active) ?? destinations[6]!;
+const selectedIndex = destinations.indexOf(selectedDestination);
 ---
 <header class:list={['world-controls', 'world-controls--tasks', { 'world-controls--player': isPlayerArea }]} aria-label="RiftScry controls">
   <a class="world-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={48} densities={[1, 2]} loading="eager" /></a>
@@ -35,11 +37,16 @@ const active = isPlayerArea ? 'players' : surface === 'champion' ? 'champions' :
   </div>
 </header>
 
-<dialog id="rift-map-dialog" class="world-map-dialog" aria-labelledby="rift-map-title">
+<dialog id="rift-map-dialog" class="world-map-dialog" aria-labelledby="rift-map-title" data-map-preview-surface={selectedDestination.id}>
   <div class="map-dialog-inner">
     <header class="map-dialog-heading"><div><p class="world-eyebrow">RIFTSCRY / OBSERVATORY</p><h2 id="rift-map-title">Where next?</h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
+    <div class="map-preview" data-map-preview aria-hidden="true">
+      <div class="map-preview-track"><span>YOUR NEXT PERSPECTIVE</span><span data-map-preview-number>{String(selectedIndex + 1).padStart(2, '0')} / 08</span></div>
+      <div class="map-preview-reticle"><span></span><i></i></div>
+      <div class="map-preview-copy"><span class="map-preview-coordinate">THE OBSERVATORY</span><strong data-map-preview-title>{selectedDestination.label}</strong><p data-map-preview-description>{selectedDestination.description}</p></div>
+    </div>
     <nav class="navigation-landscape" aria-label="RiftScry destinations">
-      {destinations.map((destination, index) => <a class="map-destination" href={destination.href} aria-current={active === destination.id ? 'page' : undefined}>
+      {destinations.map((destination, index) => <a class="map-destination" href={destination.href} data-rift-destination={destination.id} data-map-description={destination.description} aria-current={active === destination.id ? 'page' : undefined}>
         <span class="destination-coordinate">0{index + 1}<i aria-hidden="true"></i></span><strong>{destination.label}</strong><span>{destination.id === 'pool' ? <><span data-world-pool-count>0</span> champions saved on this device.</> : destination.description}</span><b aria-hidden="true">↗</b>
       </a>)}
     </nav>
