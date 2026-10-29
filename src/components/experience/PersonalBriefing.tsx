@@ -14,6 +14,7 @@ type Props = {
   insights: BriefingInsight[];
   initialInsightId?: string;
   heading: string;
+  compact?: boolean;
 };
 
 function dateLabel(value: string) {
@@ -21,7 +22,7 @@ function dateLabel(value: string) {
   return Number.isFinite(date.getTime()) ? date.toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : value;
 }
 
-export default function PersonalBriefing({ archive, champions, insights, initialInsightId, heading }: Props) {
+export default function PersonalBriefing({ archive, champions, insights, initialInsightId, heading, compact = false }: Props) {
   const id = useId();
   const storedPool = useStore($pool);
   const [device, setDevice] = useState<ReturnState>({ reviewedPatch: null, resume: null, storageAvailable: true });
@@ -56,12 +57,12 @@ export default function PersonalBriefing({ archive, champions, insights, initial
     : briefing.mode === 'empty-archive' ? 'The archive is waiting.'
     : 'Make the changes personal.';
 
-  return <section className="return-briefing" aria-labelledby={`${id}-heading`}>
-    <header className="return-briefing__intro">
+  return <section className={`return-briefing${compact ? ' return-briefing--compact' : ''}`} aria-labelledby={`${id}-heading`}>
+    {compact ? <h2 className="visually-hidden" id={`${id}-heading`}>{heading}</h2> : <header className="return-briefing__intro">
       <p className="return-briefing__eyebrow">YOUR RIFT / A REASON TO RETURN</p>
       <h2 id={`${id}-heading`}>{heading}</h2>
       <p>Keep your champions close. Pick up where you left off.</p>
-    </header>
+    </header>}
     <div className="return-briefing__columns">
       <section className="return-briefing__personal" aria-labelledby={`${id}-personal`}>
         <div className="return-briefing__section-label"><span>YOUR BRIEFING</span><span>{pool.length} {pool.length === 1 ? 'CHAMPION' : 'CHAMPIONS'} SAVED</span></div>
@@ -103,7 +104,8 @@ export default function PersonalBriefing({ archive, champions, insights, initial
         </a>}
       </section>
 
-      <section className="return-briefing__archive" aria-labelledby={`${id}-archive`}>
+      <details className="return-briefing__archive" open={!compact}>
+        <summary className="return-briefing__archive-toggle">A record to revisit <span>From the archive</span></summary>
         <div className="return-briefing__section-label"><h3 id={`${id}-archive`}>FROM THE ARCHIVE</h3><span>A DAILY SELECTION</span></div>
         {insight ? <article>
           <p className="return-briefing__archive-meta">{insight.championName} / {insight.ability}</p>
@@ -119,7 +121,7 @@ export default function PersonalBriefing({ archive, champions, insights, initial
             <a className="return-briefing__text-link" href={insight.source} target="_blank" rel="noreferrer">Riot’s original notes ↗</a>
           </div>
         </article> : <p>Source records will appear here as the archive grows.</p>}
-      </section>
+      </details>
     </div>
     <KeptFindings />
     <footer className="return-briefing__footer">

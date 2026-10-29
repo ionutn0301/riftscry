@@ -17,15 +17,21 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
 ---
 <Layout surface="champions" title="Champions — RiftScry" description="Find your champion and follow their recorded League of Legends patch history, with exact changes and original sources.">
   <div class="reader-experience" data-roster-directory>
-    <RouteArrival eyebrow="THE CHAMPION ARCHIVE" title={"Every champion.\nA different history."}
-      description="A familiar face is the beginning. Find the changes that shaped your champion, then follow them through the archive."
-      image="/images/voyage/rift-overlook.webp" variant="roster"
-      note={"Archive through " + latest.releaseDate + ". Records describe direct changes in the loaded patch history."}
-      chapters={[
-        { href:"#roster",label:"Find your champion",detail:champions.length + " identities in the archive" },
-        { href:"/pool",label:"Keep your mains",detail:"Your next visit starts here" },
-      ]}>
-      <div slot="actions"><a class="route-action" href="#roster">Enter the roster <span aria-hidden="true">↓</span></a></div>
+    <RouteArrival eyebrow="CHAMPION ARCHIVE" title="Find your champion."
+      description="Search by name or role. Open a champion’s history to see exactly what changed and when."
+      variant="roster"
+      note={champions.length + " champions · Archive through " + latest.releaseDate + ". Direct changes only."}>
+      <div slot="actions" class="roster-arrival-actions">
+        <form class="roster-tools" data-roster-tools hidden>
+          <div class="roster-search"><label for="roster-search">Find a champion</label><input id="roster-search" data-roster-search type="search" placeholder="Champion name…" autocomplete="off" spellcheck="false" /></div>
+          <div class="roster-role-options" role="group" aria-label="Champion role">
+            <button type="button" data-roster-role="" aria-pressed="true">All roles</button>
+            {ROLES.map((role) => <button type="button" data-roster-role={role} aria-pressed="false">{roleLabels[role]}</button>)}
+          </div>
+        </form>
+        <noscript><a class="route-action" href="#roster">Browse all champions <span aria-hidden="true">↓</span></a></noscript>
+        <a class="route-text-link" href="/pool">My Pool <span aria-hidden="true">↗</span></a>
+      </div>
       <div slot="figure" class="roster-arrival-figures" aria-label={"Champions with records in patch " + latest.id}>
         {featured.map((c) => c && <a href={"/champion/" + c.id.toLowerCase()}>
           <img src={"https://ddragon.leagueoflegends.com/cdn/img/champion/loading/" + c.id + "_0.jpg"} alt={c.name + ", official Riot Games portrait"} width="308" height="560" loading="eager" decoding="async" />
@@ -35,39 +41,30 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
     </RouteArrival>
 
     <div class="reader-body">
-      <aside class="chapter-rail">
-        <p>Choose a perspective</p>
-        <ol><li><a href="#roster">The full roster</a></li><li><a href="/pool">Your champion pool ↗</a></li><li><a href={"/patch/" + latest.id}>Latest archived patch ↗</a></li></ol>
-        <a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a>
-      </aside>
+      <nav class="chapter-rail" aria-label="On this page">
+        <ol><li><a href="#roster">Champion roster</a></li></ol>
+      </nav>
       <div class="reader-chapters">
         <section id="roster" class="reading-chapter" data-scene="roster">
           <header class="chapter-heading" data-reveal>
             <span class="chapter-index">01</span>
-            <div><h2>Who are you here for?</h2><p>Search a name or choose a role. Every champion has a place here, including those without direct records in the archive.</p></div>
+            <div><h2>Champion roster.</h2></div>
           </header>
-          <form class="roster-tools" data-roster-tools hidden>
-            <div class="roster-search"><label for="roster-search">Find a champion</label><input id="roster-search" data-roster-search type="search" placeholder="Name your champion…" autocomplete="off" spellcheck="false" /></div>
-            <div class="roster-role-options" role="group" aria-label="Champion role">
-              <button type="button" data-roster-role="" aria-pressed="true">All roles</button>
-              {ROLES.map((role) => <button type="button" data-roster-role={role} aria-pressed="false">{roleLabels[role]}</button>)}
-            </div>
-          </form>
           <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions in view</p><button type="button" class="route-text-link" data-roster-reset hidden>Clear filters ↗</button></div>
-          <p class="reader-section-note" data-roster-empty hidden>No champions match this combination. Try another name or clear the role filter.</p>
+          <p class="reader-section-note" data-roster-empty hidden>No matches. Try another name or clear the filters.</p>
           <ul class="roster-wall">
             {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")}>
               <a href={"/champion/" + c.id.toLowerCase()}>
                 <img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="64" height="64" loading="lazy" decoding="async" />
-                <span><span class="name">{c.name}</span><span class="title">{c.title}</span><span class="changes">{c.changes ? c.changes + " archived " + (c.changes === 1 ? "patch" : "patches") : "No direct records yet"}</span></span>
+                <span><span class="name">{c.name}</span><span class="title">{c.title}</span><span class="changes">{c.changes ? "Latest " + c.latest + " · " + c.changes + " archived " + (c.changes === 1 ? "patch" : "patches") : "No direct records yet"}</span></span>
                 <span class="roster-arrow" aria-hidden="true">↗</span>
               </a>
             </li>)}
           </ul>
         </section>
         <section class="reader-next" data-reveal>
-          <div><h2>Your mains, kept close.</h2><p>Save the champions you play. Your pool follows you into every patch and makes the next visit personal.</p></div>
-          <a href="/pool" class="route-action">Build your pool <span aria-hidden="true">↗</span></a>
+          <div><h2>Read the latest patch.</h2><p>See champion, item, and system changes together in patch {latest.id}.</p></div>
+          <a href={"/patch/" + latest.id} class="route-action route-action--quiet">Open patch {latest.id} <span aria-hidden="true">↗</span></a>
         </section>
       </div>
     </div>

@@ -30,7 +30,7 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
   classification:c.classification,changes:c.abilities.reduce((n,a) => n + a.changes.length,0),
 }]));
 const chapters = [
-  {href:"#your-perspective",label:"Your perspective",detail:"Start with the champions you play"},
+  {href:"#your-perspective",label:"Your champions",detail:"Saved or shared champions"},
   {href:"#champions",label:"Champions",detail:patch.champions.length + " direct records"},
   ...(patch.items.length ? [{href:"#items",label:"Items",detail:patch.items.length + " item records"}] : []),
   ...(patch.systems.length ? [{href:"#systems",label:"Systems",detail:patch.systems.length + " system records"}] : []),
@@ -38,45 +38,45 @@ const chapters = [
 ---
 <Layout surface="patch" title={"League Patch " + patch.id + " Changes — RiftScry"} description={"Explore the champion, item, and system changes in archived League of Legends patch " + patch.id + ", with complete before/after values."}>
   <div class="reader-experience">
-    <RouteArrival eyebrow={(isLatest ? "NEWEST ARCHIVED PATCH" : "A MOMENT IN THE ARCHIVE") + " / " + releaseDate}
-      title={"The Rift after\n" + patch.id}
-      description="One patch. Different consequences for every player. Find your champions, inspect the exact changes, and follow each record back to its source."
-      image="/images/voyage/history-strata.webp" variant="patch" chapters={chapters}
+    <RouteArrival eyebrow={(isLatest ? "NEWEST ARCHIVED PATCH" : "ARCHIVED PATCH") + " / " + releaseDate}
+      title={"Patch " + patch.id}
+      description="Champion, item, and system changes. Read the exact values and follow every record to Riot’s original notes."
+      variant="patch"
       note={"Source record: " + patch.releaseDate + ". Newest loaded archive: " + latest.id + " / " + latest.releaseDate + "."}>
-      <div slot="actions" class="reader-next-actions"><a class="route-action" href="#champions">Enter the changes <span aria-hidden="true">↓</span></a><a class="route-text-link" href={patch.sourceUrl} target="_blank" rel="noreferrer">Riot's original notes ↗</a></div>
+      <div slot="actions" class="reader-next-actions"><a class="route-action" href="#champions">Read the changes <span aria-hidden="true">↓</span></a><a class="route-text-link" href={patch.sourceUrl} target="_blank" rel="noreferrer">Riot's original notes ↗</a></div>
       <div slot="figure" class="arrival-stat-group" aria-label="Patch overview">
         <div class="arrival-stat arrival-stat--signal"><strong>{patch.champions.length}</strong><span>champions with direct records</span></div>
         <div class="arrival-stat arrival-stat--brass"><strong>{patch.items.length + patch.systems.length}</strong><span>items and systems with records</span></div>
       </div>
     </RouteArrival>
     <div class="reader-body">
-      <aside class="chapter-rail"><p>Inside patch {patch.id}</p><ol>{chapters.map((chapter) => <li><a href={chapter.href}>{chapter.label}</a></li>)}{hotfixes.length > 0 && <li><a href="#hotfixes">Hotfixes</a></li>}</ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <nav class="chapter-rail" aria-label="On this page"><ol>{chapters.map((chapter) => <li><a href={chapter.href}>{chapter.label}</a></li>)}{hotfixes.length > 0 && <li><a href="#hotfixes">Hotfixes</a></li>}</ol></nav>
       <div class="reader-chapters">
-        <section id="your-perspective" class="reading-chapter" data-scene="patch-perspective">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Start with your side of the Rift.</h2><p>Your saved champions appear here, alongside any champions included in a shared link. Keep the full patch within reach as you focus your view.</p></div></header>
+        <section id="your-perspective" class="reading-chapter reading-chapter--compact" data-scene="patch-perspective">
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Your champions.</h2><p>Your saved pool, or the champions in a shared link, with their status in this patch.</p></div></header>
           <PoolStrip client:load patchId={patch.id} assetVersion={patch.assetVersion} names={names} changed={changed}/>
-          <a class="route-text-link" href="/pool">Choose or edit your champion pool ↗</a>
+          <a class="route-text-link" href="/pool#edit-pool">Edit My Pool ↗</a>
         </section>
         <section id="champions" class="reading-chapter" aria-labelledby="champions-h" data-scene="patch-champions">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2 id="champions-h">Champions</h2><p>Filter by a name, a role, or the source classification. Every result keeps its full ability changes.</p><div class="counts archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{patch.champions.length}</strong> champion records</span></div></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2 id="champions-h">Champions</h2><p>Filter by name, role, or classification. Exact ability changes stay with each champion.</p><div class="counts archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{patch.champions.length}</strong> champion records</span></div></div></header>
           <PatchFilterBar client:load entries={entries}/>
           <p class="record-count"><span data-filter-count>{patch.champions.length}</span> champion records in view</p>
-          <p class="reader-section-note" data-filter-empty hidden>No changes match these filters. Loosen one and try again.</p>
+          <p class="reader-section-note" data-filter-empty hidden>No matching champions. Change a filter or select Clear filters.</p>
           <div class="cards">{patch.champions.map((c) => <ChangeCard change={c} meta={meta[c.championId]} roles={roles[c.championId] ?? []} assetVersion={patch.assetVersion}/>)}</div>
         </section>
         {patch.items.length > 0 && <section id="items" class="reading-chapter" aria-labelledby="items-h" data-scene="patch-items">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">03</span><div><h2 id="items-h">The tools change too.</h2><p>Item changes form another part of this patch. Read the complete values and conditions before connecting them to your champion.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">03</span><div><h2 id="items-h">Item changes.</h2><p>Complete values and conditions from this patch.</p></div></header>
           {patch.items.map((item) => <article class="flat-card reader-flat-record"><header><h3>{item.name}</h3><ClassificationBadge classification={item.classification}/></header>{item.changes.map((c) => <DeltaRow change={c}/>)}</article>)}
         </section>}
         {patch.systems.length > 0 && <section id="systems" class="reading-chapter" aria-labelledby="systems-h" data-scene="patch-systems">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">{patch.items.length ? "04" : "03"}</span><div><h2 id="systems-h">The rules around the fight.</h2><p>System changes can affect the wider game. Their original wording remains intact here.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">{patch.items.length ? "04" : "03"}</span><div><h2 id="systems-h">System changes.</h2><p>Changes to game rules, with the original wording preserved.</p></div></header>
           {patch.systems.map((system) => <article class="flat-card reader-flat-record"><header><h3>{system.name}</h3><ClassificationBadge classification={system.classification}/></header>{system.changes.map((c) => <DeltaRow change={c}/>)}</article>)}
         </section>}
         {hotfixes.length > 0 && <section id="hotfixes" class="reading-chapter" aria-labelledby="hotfixes-h" data-scene="patch-hotfixes">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">↳</span><div><h2 id="hotfixes-h">After the patch landed.</h2><p>Dated hotfix notes included in this archive.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">↳</span><div><h2 id="hotfixes-h">Hotfixes.</h2><p>Dated follow-up notes included in this archive.</p></div></header>
           {hotfixes.map((hotfix) => <article class="hotfix-record"><time datetime={hotfix.date}>{hotfix.date}</time><p>{hotfix.description}</p></article>)}
         </section>}
-        <section class="reader-next" data-reveal><div><h2>One moment in a longer story.</h2><p>Compare this patch with another point in the archive, or follow a champion's complete recorded history.</p></div><div class="reader-next-actions"><a class="route-action" href={"/compare/" + patch.id}>Compare this patch <span aria-hidden="true">↗</span></a><a class="route-text-link" href="/champions">Find a champion ↗</a></div></section>
+        <section class="reader-next" data-reveal><div><h2>See what changed over time.</h2><p>Compare {patch.id} with another archived patch.</p></div><div class="reader-next-actions"><a class="route-action route-action--quiet" href={"/compare/" + patch.id}>Compare this patch <span aria-hidden="true">↗</span></a><a class="route-text-link" href="/champions">Champion histories ↗</a></div></section>
       </div>
     </div>
   </div>

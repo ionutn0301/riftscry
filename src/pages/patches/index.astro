@@ -10,21 +10,20 @@ function fmt(date: string) { return new Date(date + "T00:00:00Z").toLocaleDateSt
 ---
 <Layout surface="patches" title="All League Patches — RiftScry" description="Move through RiftScry's archived League of Legends patches and follow the champion, item, and system changes inside each one.">
   <div class="reader-experience">
-    <RouteArrival eyebrow="THE SEASON / IN RECORDED MOMENTS" title={"The game moves.\nThe record remains."}
-      description="Choose a point in the archive. Open the changes it holds, or compare the distance between two patches."
-      image="/images/voyage/history-strata.webp" variant="patches"
-      note={"Archive coverage: " + earliest.releaseDate + " through " + latest.releaseDate + "."}
-      chapters={[{href:"#archive",label:"Enter the archive",detail:patches.length + " recorded patches"},{href:"/compare",label:"Cross two moments",detail:"Compare an interval"}]}>
-      <div slot="actions"><a class="route-action" href={"/patch/" + latest.id}>Open {latest.id} <span aria-hidden="true">↗</span></a></div>
+    <RouteArrival eyebrow="PATCH ARCHIVE" title="Every patch. On record."
+      description="Open a patch for exact champion, item, and system changes. Start with the newest record or choose a date below."
+      variant="patches"
+      note={patches.length + " archived patches · " + earliest.releaseDate + " through " + latest.releaseDate + "."}>
+      <div slot="actions"><a class="route-action" href={"/patch/" + latest.id}>Open latest: {latest.id} <span aria-hidden="true">↗</span></a><a class="route-text-link" href="#archive">Browse all patches <span aria-hidden="true">↓</span></a></div>
       <div slot="figure" class="arrival-period" aria-label={"Archive from patch " + earliest.id + " through " + latest.id}>
         <span class="arrival-period-number">{earliest.id}</span><span class="arrival-period-line" aria-hidden="true"></span><span class="arrival-period-number">{latest.id}</span>
       </div>
     </RouteArrival>
     <div class="reader-body">
-      <aside class="chapter-rail"><p>Recorded moments</p><ol><li><a href="#archive">Every archived patch</a></li><li><a href="/compare">Compare an interval ↗</a></li><li><a href="/pool">Your pool's perspective ↗</a></li></ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <nav class="chapter-rail" aria-label="On this page"><ol><li><a href="#archive">All patches</a></li></ol></nav>
       <div class="reader-chapters">
         <section id="archive" class="reading-chapter" data-scene="patch-archive">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Choose your moment.</h2><p>Newest archived patch first. Counts describe direct champion classifications in each source record.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>All archived patches.</h2><p>Newest first. Buff and nerf counts use each patch’s champion classifications.</p></div></header>
           <ol class="patch-list patch-chronology" reversed>
             {patches.map((patch,index) => {
               const buffs = patch.champions.filter((c) => c.classification === "buff").length;
@@ -37,7 +36,7 @@ function fmt(date: string) { return new Date(date + "T00:00:00Z").toLocaleDateSt
             })}
           </ol>
         </section>
-        <section class="reader-next" data-reveal><div><h2>How far did the game move?</h2><p>Choose the last patch you remember and the point you want to reach. Follow every recorded change in between.</p></div><a href="/compare" class="route-action">Compare patches <span aria-hidden="true">↗</span></a></section>
+        <section class="reader-next" data-reveal><div><h2>Missed a few patches?</h2><p>Choose two patches to see the changes between them.</p></div><a href="/compare" class="route-action route-action--quiet">Compare patches <span aria-hidden="true">↗</span></a></section>
       </div>
     </div>
   </div>

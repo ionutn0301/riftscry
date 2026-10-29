@@ -14,6 +14,10 @@ const ROLE_OPTIONS: { value: Role; label: string }[] = [
   { value: "support", label: "Support" },
 ];
 
+// Hydration must match the server's empty pool before reading this device's
+// saved champions. The store subscription then restores the persisted selection.
+const emptyServerPool: string[] = [];
+
 export default function PoolPicker({
   champions,
   assetVersion,
@@ -23,7 +27,7 @@ export default function PoolPicker({
   assetVersion: string;
   latestPatchId: string;
 }) {
-  const pool = useStore($pool);
+  const pool = useStore($pool, { ssr: () => emptyServerPool });
   const [q, setQ] = useState("");
   const [role, setRole] = useState<Role | null>(null);
 

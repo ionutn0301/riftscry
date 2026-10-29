@@ -2,6 +2,8 @@
 import "../styles/global.css";
 import "../styles/experience.css";
 import "../styles/connected.css";
+import "../styles/observatory-pages.css";
+import "../styles/observatory-companion.css";
 import Wayfinder from "../components/experience/Wayfinder.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import CommandPalette from "../components/islands/CommandPalette";
@@ -12,7 +14,7 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
-  surface?: "home" | "explore" | "next-game" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "players" | "player" | "match" | "missing";
+  surface?: "home" | "explore" | "next-game" | "notebook" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "players" | "player" | "match" | "missing";
 }
 
 const { title, description, ogImage = "/og-default.png", surface: requestedSurface } = Astro.props;
@@ -26,7 +28,7 @@ const surface = requestedSurface ?? inferredSurface;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#081319" />
+    <meta name="theme-color" content="#070b13" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -48,7 +50,7 @@ const surface = requestedSurface ?? inferredSurface;
       } catch { document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'; }
     </script>
   </head>
-  <body class:list={[(isHome || surface === 'explore') && "is-home"]} data-surface={surface}>
+  <body class:list={["observatory-shell", (isHome || surface === 'explore') ? "is-home" : "observatory-route"]} data-surface={surface}>
     <a class="skip-link" href="#main">Skip to content</a>
     <div>
       <Wayfinder surface={surface} />

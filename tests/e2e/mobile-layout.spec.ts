@@ -41,7 +41,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], [844, 390], [1024, 768]] as const) {
-  test(`journey controls and all seven Rift map destinations fit ${width}×${height}`, async ({ page }) => {
+  test(`journey controls and all eight Rift map destinations fit ${width}×${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/explore", { waitUntil: "domcontentloaded" });
     await readyJourney(page);
@@ -91,7 +91,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     const map = page.locator("#rift-map-dialog");
     await expect(map).toBeVisible();
     const destinations = map.getByRole("navigation", { name: "RiftScry destinations" }).getByRole("link");
-    await expect(destinations).toHaveCount(7);
+    await expect(destinations).toHaveCount(8);
     for (const destination of await destinations.all()) {
       await expect(destination).toBeInViewport({ ratio: 0.99 });
     }

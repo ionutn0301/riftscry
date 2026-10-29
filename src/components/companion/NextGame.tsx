@@ -128,11 +128,11 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
   const pinNote = (noteId: string) => commit(current => ({ ...current, notes: current.notes.map(note => note.id === noteId ? { ...note, pinned: !note.pinned } : note) }), 'Note updated.');
 
   return <div className="recall-workspace" data-rift-recall>
-    <div className="recall-landscape" aria-hidden="true"><img src="/images/voyage/return-basin.webp" alt="" width="1672" height="941" /></div>
+    <div className="recall-landscape" aria-hidden="true"><img src="/images/observatory/rift-horizon.webp" alt="" width="1920" height="1081" decoding="async" /></div>
     <div className="recall-wrap">
       <header className="recall-header">
-        <div><p className="recall-eyebrow"><PlayerIcon name="bookmark" size={15} /> SAVED NOTEBOOK</p><h1>Saved notebook.</h1><p className="recall-tagline">Your previously saved reminders, loadouts, and game cards.</p></div>
-        <div className="recall-header-note"><PlayerIcon name="user" size={18} /><p>Made by you.<br /><span>Saved in this browser.</span></p></div>
+        <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR FIELD NOTES</p><h1>Saved notebook.</h1><p className="recall-tagline">Keep one idea. Take it into your next game.</p></div>
+        <div className="recall-header-note"><PlayerIcon name="bookmark" size={16} /><p>Saved in this browser.</p></div>
       </header>
 
       {!ready && <p className="recall-loading" role="status">Opening your preparation…</p>}
@@ -145,7 +145,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
         if (commit(current => ({ ...current, runs: current.runs.filter(run => run.id !== active.id) }), 'Unused card discarded. Your notes and saved loadouts are unchanged.')) setRemoved({ kind: 'run', entry: active });
       }} /> : <>
         <section className="recall-context recall-panel" aria-label="Choose your game">
-          <div className="recall-context-intro"><span className="recall-step">01</span><div><h2>Choose your game</h2><p>You choose the situation. Nothing is inferred from a live game.</p></div></div>
+          <div className="recall-context-intro"><span className="recall-step">01</span><div><h2>Choose your game</h2><p>Set the champion, mode, and situation you want to prepare for.</p></div></div>
           <div className="recall-context-fields">
             <div className="recall-field"><label htmlFor={`${id}-champion`}>Champion<span className="recall-sr-only"> for next game</span></label><select id={`${id}-champion`} value={state.context.champion} disabled={!ready} onChange={event => chooseContext({ champion: event.target.value })}><option value="">Choose a champion</option>{champions.map(champion => <option key={champion.id} value={champion.id}>{champion.name}</option>)}</select></div>
             <div className="recall-field"><label htmlFor={`${id}-queue`}>Game mode<span className="recall-sr-only"> for next game</span></label><select id={`${id}-queue`} value={state.context.queue} disabled={!ready} onChange={event => chooseContext({ queue: event.target.value })}><option value="all">Choose a game mode</option>{queueCatalog.map(queue => <option key={queue.id} value={queue.id}>{queue.label}</option>)}</select></div>
@@ -155,7 +155,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
 
         <div className="recall-planning-grid">
           <section className="recall-focus-picker" aria-labelledby={`${id}-focus-heading`}>
-            <header className="recall-section-heading"><div><p className="recall-eyebrow">02 / ONE THING TO REMEMBER</p><h2 id={`${id}-focus-heading`}>Choose one focus</h2></div><button type="button" className="recall-button recall-button--quiet" disabled={!ready} onClick={event => openEditor('new', event.currentTarget)}><PlayerIcon name="plus" size={16} />Add a quick note</button></header>
+            <header className="recall-section-heading"><div><p className="recall-eyebrow">02 / ONE THING TO REMEMBER</p><h2 id={`${id}-focus-heading`}>Choose one focus</h2></div><button type="button" className={`recall-button${notes.length ? ' recall-button--quiet' : ''}`} disabled={!ready} onClick={event => openEditor('new', event.currentTarget)}><PlayerIcon name="plus" size={16} />Add a quick note</button></header>
             {notes.length > 0 ? <>
               <p className="recall-fineprint">{notes.length} {notes.length === 1 ? 'note matches' : 'notes match'} this context. Pinned notes appear first.</p>
               <div className="recall-note-options" role="radiogroup" aria-label="Your focus for this game">
@@ -165,7 +165,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
                 </article>)}
               </div>
               <div className="recall-inline-actions">{notes.length > 3 && <button type="button" className="recall-text-button" onClick={() => setShowAllNotes(value => !value)}>{showAllNotes ? 'Show fewer notes' : `Show all ${notes.length} matching notes`}</button>}{selectedNote && <button type="button" className="recall-text-button" onClick={() => setNoteId(null)}>Clear focus</button>}</div>
-            </> : <div className="recall-empty-focus"><span className="recall-empty-symbol"><PlayerIcon name="target" size={26} /></span><h3>{state.notes.length ? 'A fresh context.' : 'Leave yourself one useful reminder.'}</h3><p>{state.notes.length ? 'No saved notes match these choices yet. Add one for this game, or change the context.' : 'A small observation from your last game can become the focus for your next one.'}</p><p className="recall-fineprint">Works with every listed mode, including manual Mayhem preparation. No match import needed.</p></div>}
+            </> : <div className="recall-empty-focus"><span className="recall-empty-symbol"><PlayerIcon name="target" size={26} /></span><h3>{state.notes.length ? 'A fresh context.' : 'Leave yourself one useful reminder.'}</h3><p>{state.notes.length ? 'No saved notes match these choices yet. Add one for this game, or change the context.' : 'Add a quick note above. A single observation is enough.'}</p><p className="recall-fineprint">Prepare for any listed mode, including Mayhem. No match import needed.</p></div>}
 
             <details className="recall-loadout-picker">
               <summary><span><PlayerIcon name="build" size={18} />Add a saved loadout <small>optional</small></span><span>{builds.length}</span></summary>

@@ -17,8 +17,8 @@ export default function ComparePicker({
   return (
     <div className="compare-picker">
       <label>
-        <span>Newer</span>
-        <select value={newer} onChange={(e) => go(e.target.value, older)} className="num">
+        <span>Older</span>
+        <select value={older} onChange={(e) => go(newer, e.target.value)} className="num">
           {ids.map((id) => (
             <option key={id} value={id}>
               {id}
@@ -27,11 +27,11 @@ export default function ComparePicker({
         </select>
       </label>
       <span className="delta-mark" aria-hidden="true">
-        Δ
+        →
       </span>
       <label>
-        <span>Older</span>
-        <select value={older} onChange={(e) => go(newer, e.target.value)} className="num">
+        <span>Newer</span>
+        <select value={newer} onChange={(e) => go(e.target.value, older)} className="num">
           {ids.map((id) => (
             <option key={id} value={id}>
               {id}

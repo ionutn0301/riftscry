@@ -16,9 +16,9 @@ export default function PlayerArrival({ initial, summoner, ranks, rankFailed, lo
   const name = separator > 0 ? initial.name.slice(0, separator) : initial.name || 'Player profile';
   const tag = separator > 0 ? initial.name.slice(separator) : '';
   return <header className="player-identity-header" aria-labelledby="profile-identity">
-    <div className="player-environment identity-environment" aria-hidden="true"><img src="/images/voyage/history-strata.webp" width="1672" height="941" alt="" decoding="async" /></div>
+    <div className="player-environment identity-environment" aria-hidden="true"><img src="/images/observatory/rift-horizon.webp" width="1920" height="1081" alt="" decoding="async" /></div>
     <div className="player-identity-wrap">
-      <a className="player-text-link identity-back" href="/players"><PlayerIcon name="arrow-left" size={16} />Find a player</a>
+      <div className="identity-topline"><a className="player-text-link identity-back" href="/players"><PlayerIcon name="arrow-left" size={16} />Find a player</a><span className="player-kicker">PLAYER RECORD</span></div>
       <div className="player-identity-row">
         <div className="player-identity-person">
           <PlayerAvatar name={initial.name} summoner={summoner} />
@@ -29,7 +29,7 @@ export default function PlayerArrival({ initial, summoner, ranks, rankFailed, lo
         <div className="player-identity-tools">
           <div className="player-actions identity-actions">
             <button className="player-button-secondary" type="button" aria-label="Save player on this browser" onClick={onRemember}><PlayerIcon name="bookmark" size={17} />Save player</button>
-            <button type="button" aria-label={!retrySeconds && !loading ? 'Refresh recent matches' : undefined} disabled={loading || retrySeconds > 0} onClick={onRefresh}><PlayerIcon name={retrySeconds ? 'clock' : 'refresh'} size={17} />{retrySeconds ? `Retry in ${retrySeconds}s` : loading ? 'Loading…' : 'Refresh'}</button>
+            <button className="player-button-secondary" type="button" aria-label={!retrySeconds && !loading ? 'Refresh recent matches' : undefined} disabled={loading || retrySeconds > 0} onClick={onRefresh}><PlayerIcon name={retrySeconds ? 'clock' : 'refresh'} size={17} />{retrySeconds ? `Retry in ${retrySeconds}s` : loading ? 'Loading…' : 'Refresh'}</button>
           </div>
           <p className="identity-save-status" role="status" aria-live="polite">{message}</p>
         </div>

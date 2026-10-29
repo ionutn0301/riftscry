@@ -5,8 +5,8 @@ import { dailyArchiveInsight } from '../../lib/return-briefing';
 import PersonalBriefing from './PersonalBriefing';
 import './briefing.css';
 
-interface Props { heading?: string }
-const { heading = 'Your next visit starts here.' } = Astro.props;
+interface Props { heading?: string; compact?: boolean }
+const { heading = 'Your next visit starts here.', compact = false } = Astro.props;
 const patches = getAllPatches();
 const meta = getChampionMeta();
 const version = getAssetVersion();
@@ -63,4 +63,4 @@ for (const patch of patches) {
   if (insights.length >= 16) break;
 }
 ---
-<PersonalBriefing archive={archive} champions={champions} insights={insights} initialInsightId={dailyArchiveInsight(insights)?.id} heading={heading} client:visible />
+<PersonalBriefing archive={archive} champions={champions} insights={insights} initialInsightId={dailyArchiveInsight(insights)?.id} heading={heading} compact={compact} client:visible />

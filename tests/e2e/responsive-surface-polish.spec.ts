@@ -57,7 +57,7 @@ for (const [width, height] of [[1366, 768], [1280, 800], [1920, 850], [1440, 900
     await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
     const dialog = page.locator('#rift-map-dialog');
     const destinations = dialog.locator('.map-destination');
-    await expect(destinations).toHaveCount(7);
+    await expect(destinations).toHaveCount(8);
     for (const destination of await destinations.all()) await expect(destination).toBeInViewport({ ratio: 0.99 });
     expect(await dialog.evaluate(element => [element, ...element.querySelectorAll('*')].filter(node =>
       /^(auto|scroll)$/.test(getComputedStyle(node).overflowY) && node.scrollHeight > node.clientHeight + 1).length)).toBe(0);

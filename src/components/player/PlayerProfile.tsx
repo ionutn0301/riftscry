@@ -132,7 +132,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
     <PlayerArrival initial={profile} summoner={summoner?.puuid === puuid ? summoner : undefined} ranks={ranks} rankFailed={!!rankError} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} />
     <div className="player-records" id="player-records">
       {accountError && <p className="player-help" role="status">Name unavailable. Your matches are still here.</p>}
-      <div className="player-view-navigation">
+      <div className="player-view-navigation observatory-record-navigation">
         <nav className="player-tabs" aria-label="Player views">
           {views.map(view => <button type="button" key={view.id} aria-pressed={filters.view === view.id} aria-controls="player-view" onClick={() => change({ view: view.id })}><PlayerIcon name={view.icon} />{view.label}</button>)}
         </nav>

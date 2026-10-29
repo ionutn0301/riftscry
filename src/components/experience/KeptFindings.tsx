@@ -21,7 +21,7 @@ export default function KeptFindings() {
         if (writeFindings(findings.filter((item) => item.id !== finding.id))) { setRemoved(finding); setStatus('Finding removed. You can restore it.'); }
         else setStatus('Storage unavailable; your collection was not changed.');
       }} aria-label={`Remove ${finding.name} ${finding.label}`}>Remove</button>
-    </li>)}</ul> : <p>No findings kept yet. <a href="/#perspective">Explore a champion’s records</a>.</p>}
+    </li>)}</ul> : <p>No findings kept yet. <a href="/explore#perspective">Explore a champion’s records</a>.</p>}
     {removed && <button type="button" onClick={() => {
       const current = readFindings();
       if (current.length >= 50) { setStatus('Remove a finding before restoring this one.'); return; }

@@ -24,30 +24,29 @@ const groups: {key:Classification;title:string}[] = [
 ];
 const grouped = groups.map((group) => ({...group,champions:result.champions.filter((champion) => champion.net === group.key)})).filter((group) => group.champions.length > 0);
 const chapters = [
-  {href:"#comparison",label:"Follow the interval",detail:result.span.length + " archived " + (result.span.length === 1 ? "patch" : "patches")},
-  ...(result.items.length ? [{href:"#items",label:"Items in the interval",detail:result.items.length + " recorded items"}] : []),
-  ...(result.systems.length ? [{href:"#systems",label:"Systems in the interval",detail:result.systems.length + " recorded systems"}] : []),
+  {href:"#comparison",label:"Champions"},
+  ...(result.items.length ? [{href:"#items",label:"Items"}] : []),
+  ...(result.systems.length ? [{href:"#systems",label:"Systems"}] : []),
 ];
 ---
 <Layout surface="compare" title={"League " + result.newer + " vs " + result.older + " — RiftScry"} description={"Follow every recorded champion, item, and system change after League patch " + result.older + " through " + result.newer + "."}>
   <div class="reader-experience">
-    <RouteArrival eyebrow="TWO MOMENTS / THE CHANGES BETWEEN" title={result.newer + "\nvs " + result.older}
-      description={"Follow what happened after " + result.older + ", through and including " + result.newer + ". Change either endpoint to see a different span of the archive."}
-      image="/images/voyage/history-strata.webp" variant="compare" chapters={chapters}
-      note="The starting patch is excluded. Groups summarize recorded classifications, not a calculated live-game strength score.">
-      <div slot="actions"><ComparePicker client:load ids={ids} newer={result.newer} older={result.older}/></div>
+    <RouteArrival eyebrow="PATCH COMPARISON" title={result.older + " → " + result.newer}
+      description={"Every archived change after " + result.older + ", through and including " + result.newer + ". Choose different endpoints below."}
+      variant="compare"
+      note="The starting patch is excluded. Groups summarize source classifications, not current champion strength.">
+      <div slot="actions"><ComparePicker client:load ids={ids} newer={result.newer} older={result.older}/><a class="route-action" href="#comparison">Read the comparison <span aria-hidden="true">↓</span></a></div>
       <div slot="figure" class="arrival-stat-group" aria-label="Selected interval">
         <div class="arrival-stat arrival-stat--signal"><strong>{result.span.length}</strong><span>archived {result.span.length === 1 ? "patch" : "patches"} in this interval</span></div>
         <div class="arrival-stat arrival-stat--brass"><strong>{result.champions.length}</strong><span>champions with direct records</span></div>
       </div>
     </RouteArrival>
     <div class="reader-body">
-      <aside class="chapter-rail"><p>Across the interval</p><ol>{chapters.map((chapter) => <li><a href={chapter.href}>{chapter.label}</a></li>)}</ol><a class="route-text-link" href="#route-arrival">Change the interval ↑</a></aside>
+      <nav class="chapter-rail" aria-label="On this page"><ol>{chapters.map((chapter) => <li><a href={chapter.href}>{chapter.label}</a></li>)}</ol><a class="route-text-link chapter-rail-return" href="#route-arrival">Change patches ↑</a></nav>
       <div class="reader-chapters">
         <section id="comparison" class="reading-chapter" data-scene="comparison-champions">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Every change has a place.</h2><p>Follow each champion's dated trail into the original patch record. Mixed classifications appear under Adjusted.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Champion changes.</h2><p>Open a patch in any row for its exact values. Champions with mixed classifications appear under Adjusted.</p></div></header>
           <p class="compare-range-note" data-compare-context hidden></p><button class="route-text-link" data-compare-all hidden>Show all champions in this interval</button>
-          <p class="compare-range-note">Interval: ({result.older}, {result.newer}]. These groups summarize recorded patch classifications; complete before/after values remain in the linked records.</p>
           {grouped.map((group) => <section class="compare-group" aria-labelledby={"h-" + group.key}>
             <h3 id={"h-" + group.key}><DeltaGlyph kind={group.key} showLabel={false}/>{group.title}<span class="count">{group.champions.length}</span></h3>
             <ul class="champ-rows">{group.champions.map((champion) => <li data-compare-champion={champion.championId}>
@@ -58,14 +57,14 @@ const chapters = [
           {!result.champions.length && <div class="reader-empty"><h3>No direct champion records.</h3><p>This interval has no direct champion changes in the loaded archive. Item and system records, when available, appear in their own chapters below.</p></div>}
         </section>
         {result.items.length > 0 && <section id="items" class="reading-chapter" aria-labelledby="h-items" data-scene="comparison-items">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2 id="h-items">Items across the interval.</h2><p>Every listed item links to the patches that recorded a change.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2 id="h-items">Item changes.</h2><p>Open a patch for the complete item record.</p></div></header>
           <ul class="flat-rows">{result.items.map((item) => <li><span class="name">{item.name}</span><span class="trail">{item.patches.map((id) => <a href={"/patch/" + id + "#items"} class="step">Patch {id} ↗</a>)}</span></li>)}</ul>
         </section>}
         {result.systems.length > 0 && <section id="systems" class="reading-chapter" aria-labelledby="h-systems" data-scene="comparison-systems">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">{result.items.length ? "03" : "02"}</span><div><h2 id="h-systems">Changes to the wider game.</h2><p>Trace system records through their original patches.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">{result.items.length ? "03" : "02"}</span><div><h2 id="h-systems">System changes.</h2><p>Open a patch for the complete system record.</p></div></header>
           <ul class="flat-rows">{result.systems.map((system) => <li><span class="name">{system.name}</span><span class="trail">{system.patches.map((id) => <a href={"/patch/" + id + "#systems"} class="step">Patch {id} ↗</a>)}</span></li>)}</ul>
         </section>}
-        <section class="reader-next" data-reveal><div><h2>Take one champion further.</h2><p>Open their history to inspect exact values, ability changes, and the patches that shaped this interval.</p></div><a href="/champions" class="route-action">Choose a champion <span aria-hidden="true">↗</span></a></section>
+        <section class="reader-next" data-reveal><div><h2>Follow one champion.</h2><p>Read their full history, including changes outside this interval.</p></div><a href="/champions" class="route-action route-action--quiet">Champion histories <span aria-hidden="true">↗</span></a></section>
       </div>
     </div>
   </div>
