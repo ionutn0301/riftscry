@@ -247,13 +247,23 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
   await expect(lenses).toHaveCount(2);
   for (const lens of await lenses.all()) await expect(lens).toHaveAttribute('data-reader-ready', 'true');
   const search = page.getByRole('searchbox', { name: 'Find a champion', exact: true });
-  await search.fill('nunu & willump');
-  await expect(page.locator('[data-roster-row]:not([hidden])')).toHaveCount(1);
-  for (const lens of await lenses.all()) {
-    await expect(lens).toHaveAttribute('data-reader-key', 'Nunu');
-    await expect(lens.locator('[data-reader-champion-name]')).toHaveText('Nunu & Willump');
-    await expect(lens.locator('[data-reader-champion-art]')).toHaveAttribute('src', /\/Nunu_0\.jpg$/);
-    await localDestination(lens.locator('[data-reader-champion-link]'), '/champion/nunu');
+  // Consecutive exact searches must update lenses after the roster reveals the
+  // new result, including a champion hidden by the previous search.
+  for (const [query, key, name] of [
+    ['nunu & willump', 'Nunu', 'Nunu & Willump'],
+    ['Ahri', 'Ahri', 'Ahri'],
+    ['Nunu', 'Nunu', 'Nunu & Willump'],
+  ] as const) {
+    await search.fill(query);
+    const result = page.locator('[data-roster-row]:not([hidden])');
+    await expect(result).toHaveCount(1);
+    await expect(result).toHaveAttribute('data-roster-key', key);
+    for (const lens of await lenses.all()) {
+      await expect(lens).toHaveAttribute('data-reader-key', key);
+      await expect(lens.locator('[data-reader-champion-name]')).toHaveText(name);
+      await expect(lens.locator('[data-reader-champion-art]')).toHaveAttribute('src', new RegExp(`/${key}_0\\.jpg$`));
+      await localDestination(lens.locator('[data-reader-champion-link]'), `/champion/${key.toLowerCase()}`);
+    }
   }
 
   await search.clear();

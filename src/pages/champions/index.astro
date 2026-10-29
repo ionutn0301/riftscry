@@ -137,6 +137,7 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
         if (role) url.searchParams.set("role",role); else url.searchParams.delete("role");
         history.replaceState(null,"",url.pathname + url.search + url.hash);
       }
+      root?.dispatchEvent(new Event("riftscry:roster-filtered"));
     }
     function restore() {
       const params = new URLSearchParams(location.search);

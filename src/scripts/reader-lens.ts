@@ -111,9 +111,9 @@ function initChampionLens(root: HTMLElement) {
       (normalize(row.dataset.rosterKey ?? '') === query || normalize(row.dataset.rosterName ?? '') === query));
     if (match?.dataset.rosterKey) select(match.dataset.rosterKey);
   }
-  // Existing roster filtering owns the query and URL. Read its settled result.
-  search?.addEventListener('input', () => queueMicrotask(selectExactSearch), options);
-  window.addEventListener('popstate', () => queueMicrotask(selectExactSearch), options);
+  // Filtering owns the query and URL. Its event runs after visibility settles,
+  // including when a pasted name was hidden by the previous exact search.
+  root.addEventListener('riftscry:roster-filtered', selectExactSearch, options);
   window.addEventListener('riftscry:motion-change', () => {
     if (document.documentElement.dataset.motion === 'reduced') panes.forEach(pane => pane?.getAnimations().forEach(animation => animation.cancel()));
   }, options);
