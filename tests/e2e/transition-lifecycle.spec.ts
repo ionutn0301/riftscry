@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 test('cancelling native document transitions preserves links and browser Back without page errors', async ({ page, browserName }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
+  const errors: { name: string; message: string; stack?: string }[] = [];
+  page.on('pageerror', error => errors.push({ name: error.name, message: error.message, stack: error.stack }));
 
   // Cancel real native objects without reading or handling their promises. The
   // incoming cancellation is queued from the actual pagereveal event. Outgoing
@@ -43,26 +43,31 @@ test('cancelling native document transitions preserves links and browser Back wi
     })();
   `);
 
-  await page.goto('/patches', { waitUntil: 'domcontentloaded' });
+  await page.goto('/champion/ahri', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'full');
-  await expect(page.locator('body')).toHaveAttribute('data-surface', 'patches');
+  await expect(page.locator('body')).toHaveAttribute('data-surface', 'champion');
   const capability = await page.evaluate(() => ({
     pageswap: 'onpageswap' in window,
     transitions: 'onpageswap' in window && 'onpagereveal' in window && 'ViewTransition' in window,
   }));
 
-  const patchLink = page.locator('.route-arrival-actions a.route-action').first();
-  const target = await patchLink.getAttribute('href');
-  expect(target).toMatch(/^\/patch\/\d+\.\d+$/);
-  await patchLink.click();
-  await expect(page).toHaveURL(url => url.pathname === target);
-  await expect(page.locator('body')).toHaveAttribute('data-surface', 'patch');
-  await expect(page.getByRole('link', { name: /Riot's original notes/ }).first()).toBeVisible();
+  const save = page.locator('[data-direct-save="Ahri"]');
+  await save.click();
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
+  const briefingLink = page.locator('.reader-next-actions a[href="/pool#briefing"]').first();
+  await briefingLink.click();
+  await expect(page).toHaveURL(url => url.pathname === '/pool' && url.hash === '#briefing');
+  await expect(page.locator('body')).toHaveAttribute('data-surface', 'pool');
+  await expect(page.locator('astro-island:has(.pool-picker)')).not.toHaveAttribute('ssr', '');
+  await expect(page.getByRole('option', { name: 'Ahri', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('.pool-bar .count')).toHaveText('1 champion in your pool');
 
   await page.goBack({ waitUntil: 'domcontentloaded' });
-  await expect(page).toHaveURL(url => url.pathname === '/patches');
-  await expect(page.locator('body')).toHaveAttribute('data-surface', 'patches');
-  await expect(patchLink).toBeVisible();
+  await expect(page).toHaveURL(url => url.pathname === '/champion/ahri');
+  await expect(page.locator('body')).toHaveAttribute('data-surface', 'champion');
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
+  await expect(briefingLink).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('riftscry:pool') ?? '[]'))).toContain('Ahri');
   // Let the restored document complete a rendering opportunity, including any
   // queued rejection from the outgoing document. No fixed delay is required.
   await page.evaluate(() => new Promise<void>(resolve => {

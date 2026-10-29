@@ -24,19 +24,22 @@ test('unavailable device storage leaves evidence readable', async ({page}) => {
 });
 
 for (const [width, height] of [[835,833],[1440,900],[1280,720],[390,844],[844,390]] as const) {
-  test(`chapter layout at ${width} by ${height}`, async ({ page }, testInfo) => {
-    await page.setViewportSize({width,height});
-    await page.goto('/explore');
-    await page.waitForSelector('[data-ready="true"]');
-    await page.evaluate(() => document.fonts.ready);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    // Export layout artifacts at CSS resolution while retaining the browser's
-    // actual device pixel ratio and full-motion behavior.
-    await page.screenshot({path:testInfo.outputPath(`voyage-${testInfo.project.name}-${width}.png`), scale:'css'});
-    for (const id of ['perspective','change','history','return']) {
-      await page.locator('#'+id).scrollIntoViewIfNeeded();
-      await expect(page.locator('#'+id)).toBeVisible();
-      await page.screenshot({path:testInfo.outputPath(`voyage-${testInfo.project.name}-${width}-${id}.png`), scale:'css'});
-    }
-  });
+  // Each chapter is an independent layout artifact. Its navigation, native
+  // scroll and capture keep their own test budget on slower device emulators.
+  for (const id of ['arrival','perspective','change','history','return'] as const) {
+    test(`chapter ${id} layout at ${width} by ${height}`, async ({ page }, testInfo) => {
+      await page.setViewportSize({width,height});
+      await page.goto('/explore');
+      await page.waitForSelector('[data-ready="true"]');
+      await page.evaluate(() => document.fonts.ready);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      const chapter = page.locator('#'+id);
+      if (id !== 'arrival') await chapter.scrollIntoViewIfNeeded();
+      await expect(chapter).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      // Export at CSS resolution without changing actual DPR or full motion.
+      const suffix = id === 'arrival' ? '' : `-${id}`;
+      await page.screenshot({path:testInfo.outputPath(`voyage-${testInfo.project.name}-${width}${suffix}.png`), scale:'css'});
+    });
+  }
 }
