@@ -282,9 +282,17 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
   await ready(page);
   const instrument = page.locator('[data-archive-instrument]');
   await expect(instrument).toHaveAttribute('data-reader-ready', 'true');
+  // A stationary pointer in the list column must not take over the preview
+  // when keyboard focus scrolls a different patch into view beneath it.
+  const list = (await page.locator('.patch-chronology').boundingBox())!;
+  await page.mouse.move(list.x + list.width / 2, page.viewportSize()!.height - 100);
   for (const patchId of ['26.16', '26.15']) {
     const patch = JSON.parse(readFileSync(new URL(`../../src/data/patches/${patchId}.json`, import.meta.url), 'utf8')) as Patch;
-    await page.locator(`[data-reader-patch-key="${patchId}"] > a`).focus();
+    const entry = page.locator(`[data-reader-patch-key="${patchId}"] > a`);
+    await entry.focus();
+    // Scroll-triggered boundary events arrive at the next rendering update.
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+    await expect(entry).toBeFocused();
     await expect(instrument).toHaveAttribute('data-reader-key', patch.id);
     await expect(instrument.locator('[data-archive-focus-id]')).toHaveText(patch.id);
     await expect(instrument.locator('[data-archive-focus-date]')).toHaveAttribute('datetime', patch.releaseDate);
@@ -292,6 +300,13 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
       await expect(instrument.locator(`[data-archive-count="${category}"]`)).toHaveText(String(patch[category].length));
     }
     await localDestination(instrument.locator('[data-archive-focus-link]'), `/patch/${patch.id}`);
+    if (patchId === '26.16') {
+      // Real pointer movement can intentionally change the preview even while
+      // keyboard focus remains on the prior entry.
+      await page.locator('[data-reader-patch-key="26.14"] > a').hover();
+      await expect(instrument).toHaveAttribute('data-reader-key', '26.14');
+      await expect(entry).toBeFocused();
+    }
   }
   await instrument.locator('[data-archive-focus-link]').click();
   await expect(page).toHaveURL(/\/patch\/26\.15\/?$/);

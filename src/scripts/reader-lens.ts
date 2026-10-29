@@ -15,6 +15,22 @@ function animatePane(pane: HTMLElement | null) {
   pane.animate([{ opacity: .55 }, { opacity: 1 }], { duration: 240, easing: 'ease-out' });
 }
 
+const pointerPositions = new WeakMap<HTMLElement, { x: number; y: number }>();
+
+function allowsPointerPreview(event: PointerEvent, root: HTMLElement) {
+  if (event.pointerType === 'touch') return false;
+  // Scrolling a focused row beneath a still cursor creates boundary events.
+  // Compare coordinates: WebKit can report zero movementX/Y for real motion.
+  const previous = pointerPositions.get(root);
+  const position = { x: event.clientX, y: event.clientY };
+  if (event.type === 'pointermove') {
+    pointerPositions.set(root, position);
+    return !previous || position.x !== previous.x || position.y !== previous.y;
+  }
+  if (!previous) pointerPositions.set(root, position);
+  return !root.contains(document.activeElement);
+}
+
 function initChampionLens(root: HTMLElement) {
   const lenses = [...root.querySelectorAll<HTMLElement>('[data-reader-champion-lens]')];
   if (!lenses.length || root.dataset.readerLensReady) return;
@@ -90,11 +106,13 @@ function initChampionLens(root: HTMLElement) {
     return item && root.contains(item) ? item.dataset.rosterKey ?? item.dataset.readerPreviewChampion ?? '' : '';
   }
 
-  root.addEventListener('pointerover', event => {
-    if (event.pointerType === 'touch') return;
+  const previewFromPointer = (event: PointerEvent) => {
+    if (!allowsPointerPreview(event, root)) return;
     const key = targetKey(event.target);
     if (key) select(key);
-  }, options);
+  };
+  root.addEventListener('pointerover', previewFromPointer, options);
+  root.addEventListener('pointermove', previewFromPointer, options);
   root.addEventListener('focusin', event => {
     const key = targetKey(event.target);
     if (key) select(key);
@@ -162,7 +180,11 @@ function initPatchInstrument(root: HTMLElement) {
     const row = target.closest<HTMLElement>('[data-reader-patch-key]');
     if (row && root.contains(row)) select(row);
   }
-  root.addEventListener('pointerover', event => { if (event.pointerType !== 'touch') selectFrom(event.target); }, options);
+  const previewFromPointer = (event: PointerEvent) => {
+    if (allowsPointerPreview(event, root)) selectFrom(event.target);
+  };
+  root.addEventListener('pointerover', previewFromPointer, options);
+  root.addEventListener('pointermove', previewFromPointer, options);
   root.addEventListener('focusin', event => selectFrom(event.target), options);
   root.addEventListener('click', event => selectFrom(event.target), options);
   window.addEventListener('pagehide', event => { if (!event.persisted) abort.abort(); }, options);
