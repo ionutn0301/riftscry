@@ -93,6 +93,10 @@ This visual iteration adds no backend, player-data dependency, or mandatory step
 
 Links, browser history, forms, and dialog keyboard behavior remain native. Supported
 browsers add document transitions; reduced-motion preferences skip those crossings.
+The lifecycle handler consumes an expected native `AbortError` while leaving other
+capture or setup failures observable. The outgoing and incoming transition objects
+have separate promises, as described in the
+[Chrome lifecycle guide](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
 Both device and saved preferences retain the static scene and avoid allocating
 WebGL on initial load. The movement hint appears only with an animated renderer.
 Existing sound remains opt-in; the shared scene introduces no autoplay audio.
@@ -133,11 +137,19 @@ verification uses committed synthetic fixtures, not a private player's account.
 
 Confirmed locally for this iteration:
 
-- `pnpm check`: 0 errors, 0 warnings, and 2 existing hints across 275 files.
+- `pnpm check`: 0 errors, 0 warnings, and 2 existing hints across 276 files.
 - Unit suite: 51 files and 510 tests passed.
 - Production build: completed successfully with the Vercel adapter.
-- Focused verification: 39 unique shared browser checks and 20 runtime scenarios
-  passed, including the final map focus-restoration fix.
+- Complete local journey: 40 checks passed, including 28 route/viewport checks,
+  six compact lookup states, saved state, synchronized readers, and actual
+  desktop/mobile WebGL drawing and motion pause/resume; zero page errors.
+- Focused route and chapter-layout verification: 36 checks passed across the
+  three browser projects, with zero retries.
+
+Reading destinations have independent test cases and retain their complete
+navigation assertions. Layout screenshots export at CSS resolution while the
+browser keeps its actual device pixel ratio and motion settings; this bounds
+artifact encoding cost without altering the experience under test.
 
 Targeted reader checks were reported passing in the desktop Chromium, mobile
 Chromium, and mobile WebKit projects: exact normalized search synchronizes both

@@ -242,98 +242,96 @@ test("Rift map has real destinations, restores focus and hands search out of its
   await expect(page.locator("#main h1")).toContainText("Camille");
 });
 
-test("each reading destination has a distinct arrival and the shared map", async ({ page }) => {
-  const routes = [
-    ["/champions", "champions", "/champions"],
-    ["/champion/belveth", "champion", "/champions"],
-    ["/patches", "patches", "/patches"],
-    ["/patch/26.16", "patch", "/patches"],
-    ["/compare/26.16/26.12", "compare", "/compare"],
-    ["/pool", "pool", "/pool"],
-    ["/404", "missing", null],
-  ] as const;
-  for (const [path, surface, current] of routes) {
-    await test.step(path, async () => {
-      await page.goto(path);
+const readingRoutes = [
+  ["/champions", "champions", "/champions"],
+  ["/champion/belveth", "champion", "/champions"],
+  ["/patches", "patches", "/patches"],
+  ["/patch/26.16", "patch", "/patches"],
+  ["/compare/26.16/26.12", "compare", "/compare"],
+  ["/pool", "pool", "/pool"],
+  ["/404", "missing", null],
+] as const;
+for (const [path, surface, current] of readingRoutes) {
+  test(`reading destination ${path} has a distinct arrival and the shared map`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("body")).toHaveAttribute("data-surface", surface);
+    await expect(page.locator("#main h1")).toHaveCount(1);
+    await expect(page.locator("#main h1")).toBeVisible();
+    await expect(page.locator("#route-arrival")).toBeVisible();
+    if (surface === "missing") {
+      const actions = page.locator("#route-arrival .route-arrival-actions");
+      const returnLink = actions.getByRole("link", { name: "Return home", exact: true });
+      await expect(returnLink).toBeVisible();
+      await expect(returnLink).toHaveAttribute("href", "/");
+      await expect(actions.getByRole("button", { name: "Search the archive ↗", exact: true })).toBeVisible();
+      await expect(page.getByRole("navigation", { name: "Other destinations", exact: true })).toBeVisible();
+      await returnLink.click();
+      await expect(page).toHaveURL((url) => url.pathname === "/" && url.hash === "");
+      await expect(page.locator("#companion-heading")).toBeVisible();
+      await page.goBack();
+      await expect(page).toHaveURL((url) => url.pathname === path);
       await expect(page.locator("body")).toHaveAttribute("data-surface", surface);
-      await expect(page.locator("#main h1")).toHaveCount(1);
-      await expect(page.locator("#main h1")).toBeVisible();
-      await expect(page.locator("#route-arrival")).toBeVisible();
-      if (surface === "missing") {
-        const actions = page.locator("#route-arrival .route-arrival-actions");
-        const returnLink = actions.getByRole("link", { name: "Return home", exact: true });
-        await expect(returnLink).toBeVisible();
-        await expect(returnLink).toHaveAttribute("href", "/");
-        await expect(actions.getByRole("button", { name: "Search the archive ↗", exact: true })).toBeVisible();
-        await expect(page.getByRole("navigation", { name: "Other destinations", exact: true })).toBeVisible();
-        await returnLink.click();
-        await expect(page).toHaveURL((url) => url.pathname === "/" && url.hash === "");
-        await expect(page.locator("#companion-heading")).toBeVisible();
-        await page.goBack();
-        await expect(page).toHaveURL((url) => url.pathname === path);
-        await expect(page.locator("body")).toHaveAttribute("data-surface", surface);
-      } else {
-        // Reading pages now have one concise section index at every viewport.
-        // Check each real destination, then follow a native anchor into its data.
-        if (surface === "champions") {
-          await expect(page.locator(".roster-arrival-figures")).toHaveAttribute("aria-label", /^Champions with records in patch \d+\.\d+$/);
-        } else if (surface === "pool") {
-          await expect(page.locator("#route-arrival .arrival-period-number")).toHaveText(/^\d+\.\d+$/);
-        }
-        const destinations: ReadonlyArray<readonly [string, string, string]> = ({
-          champions: [
-            ["Champion roster", "#roster", "Champion roster."],
-          ],
-          champion: [
-            ["Patch history", "#history", "Patch history."],
-            ["Coverage & sources", "#perspective", "Coverage & sources."],
-          ],
-          patches: [
-            ["All patches", "#archive", "All archived patches."],
-          ],
-          patch: [
-            ["Your champions", "#your-perspective", "Your champions."],
-            ["Champions", "#champions", "Champions"],
-            ["Items", "#items", "Item changes."],
-            ["Systems", "#systems", "System changes."],
-          ],
-          compare: [
-            ["Champions", "#comparison", "Champion changes."],
-            ["Items", "#items", "Item changes."],
-            ["Systems", "#systems", "System changes."],
-          ],
-          pool: [
-            ["Your briefing", "#briefing", "Your briefing."],
-            ["Edit pool", "#edit-pool", "Choose your champions."],
-          ],
-        } as const)[surface];
-        const rail = page.getByRole("navigation", { name: "On this page", exact: true });
-        await expect(rail).toHaveCount(1);
-        await expect(rail).toBeVisible();
-        await expect(rail.locator("ol a")).toHaveCount(destinations.length);
-        for (const [name, href, heading] of destinations) {
-          const link = rail.getByRole("link", { name, exact: true });
-          await expect(link).toBeVisible();
-          await expect(link).toHaveAttribute("href", href);
-          await expect(page.locator(`${href} > .chapter-heading h2`)).toHaveText(heading);
-        }
-        if (surface === "compare") {
-          await expect(rail.getByRole("link", { name: "Change patches ↑", exact: true })).toHaveAttribute("href", "#route-arrival");
-          await expect(rail.getByRole("link", { name: "Change patches ↑", exact: true })).toBeVisible();
-        }
-        const [name, href, heading] = destinations[0]!;
-        await rail.getByRole("link", { name, exact: true }).click();
-        await expect(page).toHaveURL((url) => url.pathname.replace(/\/$/, "") === path && url.hash === href);
-        const targetHeading = page.locator(`${href} > .chapter-heading h2`);
-        await targetHeading.scrollIntoViewIfNeeded();
-        await expect(targetHeading).toHaveText(heading);
-        await expect(targetHeading).toBeVisible();
+    } else {
+      // Reading pages now have one concise section index at every viewport.
+      // Check each real destination, then follow a native anchor into its data.
+      if (surface === "champions") {
+        await expect(page.locator(".roster-arrival-figures")).toHaveAttribute("aria-label", /^Champions with records in patch \d+\.\d+$/);
+      } else if (surface === "pool") {
+        await expect(page.locator("#route-arrival .arrival-period-number")).toHaveText(/^\d+\.\d+$/);
       }
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
-      await page.locator("[data-map-open]").click();
-      await expect(page.locator("#rift-map-dialog")).toBeVisible();
-      if (current) await expect(page.locator('#rift-map-dialog [aria-current="page"]')).toHaveAttribute("href", current);
-      await page.locator("[data-map-close]").click();
-    });
-  }
-});
+      const destinations: ReadonlyArray<readonly [string, string, string]> = ({
+        champions: [
+          ["Champion roster", "#roster", "Champion roster."],
+        ],
+        champion: [
+          ["Patch history", "#history", "Patch history."],
+          ["Coverage & sources", "#perspective", "Coverage & sources."],
+        ],
+        patches: [
+          ["All patches", "#archive", "All archived patches."],
+        ],
+        patch: [
+          ["Your champions", "#your-perspective", "Your champions."],
+          ["Champions", "#champions", "Champions"],
+          ["Items", "#items", "Item changes."],
+          ["Systems", "#systems", "System changes."],
+        ],
+        compare: [
+          ["Champions", "#comparison", "Champion changes."],
+          ["Items", "#items", "Item changes."],
+          ["Systems", "#systems", "System changes."],
+        ],
+        pool: [
+          ["Your briefing", "#briefing", "Your briefing."],
+          ["Edit pool", "#edit-pool", "Choose your champions."],
+        ],
+      } as const)[surface];
+      const rail = page.getByRole("navigation", { name: "On this page", exact: true });
+      await expect(rail).toHaveCount(1);
+      await expect(rail).toBeVisible();
+      await expect(rail.locator("ol a")).toHaveCount(destinations.length);
+      for (const [name, href, heading] of destinations) {
+        const link = rail.getByRole("link", { name, exact: true });
+        await expect(link).toBeVisible();
+        await expect(link).toHaveAttribute("href", href);
+        await expect(page.locator(`${href} > .chapter-heading h2`)).toHaveText(heading);
+      }
+      if (surface === "compare") {
+        await expect(rail.getByRole("link", { name: "Change patches ↑", exact: true })).toHaveAttribute("href", "#route-arrival");
+        await expect(rail.getByRole("link", { name: "Change patches ↑", exact: true })).toBeVisible();
+      }
+      const [name, href, heading] = destinations[0]!;
+      await rail.getByRole("link", { name, exact: true }).click();
+      await expect(page).toHaveURL((url) => url.pathname.replace(/\/$/, "") === path && url.hash === href);
+      const targetHeading = page.locator(`${href} > .chapter-heading h2`);
+      await targetHeading.scrollIntoViewIfNeeded();
+      await expect(targetHeading).toHaveText(heading);
+      await expect(targetHeading).toBeVisible();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+    await page.locator("[data-map-open]").click();
+    await expect(page.locator("#rift-map-dialog")).toBeVisible();
+    if (current) await expect(page.locator('#rift-map-dialog [aria-current="page"]')).toHaveAttribute("href", current);
+    await page.locator("[data-map-close]").click();
+  });
+}

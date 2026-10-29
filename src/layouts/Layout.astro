@@ -54,7 +54,15 @@ const surface = requestedSurface ?? inferredSurface;
       } catch { document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'; }
       // A saved preference also applies to the browser's document transition.
       const quietCrossing = (event) => {
-        if (document.documentElement.dataset.motion === 'reduced') event.viewTransition?.skipTransition();
+        const transition = event.viewTransition;
+        if (!transition) return;
+        // The outgoing document can be hidden before its snapshot is ready.
+        // A skipped native transition is an expected visual cancellation.
+        void transition.ready.catch((error) => {
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          throw error;
+        });
+        if (document.documentElement.dataset.motion === 'reduced') transition.skipTransition();
       };
       addEventListener('pageswap', quietCrossing);
       addEventListener('pagereveal', quietCrossing);

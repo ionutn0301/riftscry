@@ -30,11 +30,13 @@ for (const [width, height] of [[835,833],[1440,900],[1280,720],[390,844],[844,39
     await page.waitForSelector('[data-ready="true"]');
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    await page.screenshot({path:`/tmp/agent-browser/voyage-${testInfo.project.name}-${width}.png`});
+    // Export layout artifacts at CSS resolution while retaining the browser's
+    // actual device pixel ratio and full-motion behavior.
+    await page.screenshot({path:testInfo.outputPath(`voyage-${testInfo.project.name}-${width}.png`), scale:'css'});
     for (const id of ['perspective','change','history','return']) {
       await page.locator('#'+id).scrollIntoViewIfNeeded();
       await expect(page.locator('#'+id)).toBeVisible();
-      await page.screenshot({path:`/tmp/agent-browser/voyage-${testInfo.project.name}-${width}-${id}.png`});
+      await page.screenshot({path:testInfo.outputPath(`voyage-${testInfo.project.name}-${width}-${id}.png`), scale:'css'});
     }
   });
 }
