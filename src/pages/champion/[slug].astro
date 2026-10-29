@@ -22,41 +22,35 @@ const counts = {
   other:history.filter((h) => !["buff","nerf"].includes(h.change.classification)).length,
 };
 const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",adc:"ADC",support:"Support" };
-const journeyUrl = "/?champion=" + encodeURIComponent(championId) + "&beat=subject";
+const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#change";
 ---
 <Layout surface="champion" title={meta.name + " Patch History — RiftScry"} description={"Follow " + meta.name + "'s archived League of Legends changes, with complete before/after values and original patch sources."}>
   <div class="reader-experience">
-    <RouteArrival eyebrow="A CHAMPION / A HISTORY" title={meta.name} variant="champion" image="/images/voyage/history-strata.webp"
-      description={history.length ? "Follow the changes behind the champion you know. Every dated record keeps its exact values and its place in the story." : "A place in the archive, even when the record is quiet. Explore the available coverage and keep this champion in view."}
-      note={"Loaded archive: " + patches.at(-1)!.releaseDate + " through " + latest.releaseDate + "."}
-      chapters={[
-        {href:"#history",label:"Follow the history",detail:history.length + " archived patch records"},
-        {href:"#perspective",label:"Keep the context",detail:"Coverage and original sources"},
-        {href:"/pool",label:"Make it personal",detail:"Keep your champion in My Pool"},
-      ]}>
+    <RouteArrival eyebrow="CHAMPION HISTORY" title={meta.name} variant="champion"
+      description={history.length ? history.length + " archived " + (history.length === 1 ? "patch" : "patches") + ". Exact values, ability changes, and links to the original records." : "No direct changes in the loaded archive. Save this champion to your pool or explore the wider patch."}
+      note={"Archive coverage: " + patches.at(-1)!.releaseDate + " through " + latest.releaseDate + "."}>
       <div slot="identity"><p class="arrival-champion-title">{meta.title}</p><p class="champion-roles">{roles.map((role) => <span>{roleLabels[role]}</span>)}</p></div>
-      <div slot="actions"><a class="route-action" href="#history">Enter the history <span aria-hidden="true">↓</span></a><SaveChampion id={championId} name={meta.name} /></div>
+      <div slot="actions"><a class="route-action" href="#history">Read patch history <span aria-hidden="true">↓</span></a><SaveChampion id={championId} name={meta.name} /></div>
       <figure slot="figure" class="champion-arrival-art">
         <picture><source media="(max-width:700px)" srcset={artwork.portrait} /><img src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture>
         <figcaption>RIOT GAMES / COMPLETE ORIGINAL SOURCE ARTWORK</figcaption>
       </figure>
     </RouteArrival>
     <div class="reader-body">
-      <aside class="chapter-rail"><p>{meta.name}</p><ol><li><a href="#history">Recorded history</a></li><li><a href="#perspective">Coverage & sources</a></li><li><a href="/pool">My Pool ↗</a></li></ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <nav class="chapter-rail" aria-label="On this page"><ol><li><a href="#history">Patch history</a></li><li><a href="#perspective">Coverage & sources</a></li></ol></nav>
       <div class="reader-chapters">
         <section id="history" class="reading-chapter" data-scene="champion-history">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>The changes leave a trace.</h2><p>Open a patch to follow its abilities and exact recorded changes. The most recent available entry is open for you.</p><div class="archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{counts.other}</strong> other records</span></div></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Patch history.</h2><p>Newest first. Open a patch for exact ability changes and its original record.</p><div class="archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{counts.other}</strong> other records</span></div></div></header>
           {history.length ? <ol class="timeline record-timeline">
             {history.map((h,i) => <TimelineEntry patchId={h.patchId} releaseDate={h.releaseDate} change={h.change} open={i === 0} />)}
           </ol> : <div class="reader-empty"><h3>No direct records in this archive.</h3><p>{meta.name} has no recorded direct champion changes in these {patches.length} archived patches. Items, systems, and other champions can still affect how the game feels.</p><a href={"/patch/" + latest.id} class="route-text-link">Explore the latest archived patch ↗</a></div>}
         </section>
         <section id="perspective" class="reading-chapter" data-scene="champion-context">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>A record, with its context.</h2><p>Each entry leads back to the patch that introduced it. Classification counts describe archived notes; they do not calculate the champion's current strength.</p></div></header>
-          <p class="reader-section-note">This archive covers {patches.at(-1)!.releaseDate} through {latest.releaseDate}. It is a history of direct changes, not a reconstructed live stat sheet.</p>
-          <p class="reader-section-note">Role labels use a curated mapping. <a href="https://github.com/ionutn0301/riftscry/blob/main/CONTRIBUTING.md">Contribute a correction ↗</a></p>
-          <div class="reader-next-actions"><a href="/champions" class="route-action route-action--quiet">Another champion <span aria-hidden="true">↗</span></a><a href={journeyUrl} class="route-text-link">Explore a focused interval ↗</a></div>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>Coverage & sources.</h2><p>Every entry links to its patch and original notes. Buff, nerf, and other counts describe those records, not current champion strength.</p></div></header>
+          <p class="reader-section-note">Direct changes from {patches.at(-1)!.releaseDate} through {latest.releaseDate}. This archive does not reconstruct a live stat sheet.</p>
+          <p class="reader-section-note">Role labels are curated. <a href="https://github.com/ionutn0301/riftscry/blob/main/CONTRIBUTING.md">Suggest a correction ↗</a></p>
+          <div class="reader-next-actions"><a href={journeyUrl} class="route-action route-action--quiet">Explore this champion <span aria-hidden="true">↗</span></a><a href="/champions" class="route-text-link">All champions <span aria-hidden="true">↗</span></a></div>
         </section>
-        <section class="reader-next" data-reveal><div><h2>A familiar face on your next visit.</h2><p>Save {meta.name} to your device-local pool and find their changes alongside your other mains.</p></div><a href="/pool" class="route-action">Shape your pool <span aria-hidden="true">↗</span></a></section>
       </div>
     </div>
   </div>

@@ -4,7 +4,7 @@ import type { Patch } from '../../src/lib/schema';
 
 const savedPlayer = { platform: 'eun1', puuid: 'fixture-player-000000000000000000000000000000000', name: 'Fixture Player#TEST' };
 const rememberedKey = 'riftscry:remembered-player:v1';
-const destinations = ['/players', '/next-game', '/pool', '/champions', '/patches', '/compare', '/explore'];
+const destinations = ['/players', '/next-game', '/pool', '/champions', '/patches', '/compare', '/explore', '/notebook'];
 
 async function homeReady(page: Page) {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
@@ -91,7 +91,7 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) {
 }
 
 for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] as const) {
-  test(`homepage map fits seven destinations and restores focus at ${width}×${height}`, async ({ page }) => {
+  test(`homepage map fits eight destinations and restores focus at ${width}×${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto('/');
     await homeReady(page);
@@ -101,7 +101,7 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] 
     const map = page.locator('#rift-map-dialog');
     await expect(map).toBeVisible();
     const links = map.locator('.map-destination');
-    await expect(links).toHaveCount(7);
+    await expect(links).toHaveCount(8);
     expect(await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')))).toEqual(destinations);
     for (const link of await links.all()) await expectTapTarget(link, width, height);
     expect(await map.locator('.navigation-landscape').evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1);

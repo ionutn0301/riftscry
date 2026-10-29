@@ -77,15 +77,18 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
 
   return <section className="player-gateway" data-player-gateway aria-labelledby="player-gateway-heading" data-loading={busy}>
     <div className="player-environment gateway-environment" aria-hidden="true">
-      <picture><source media="(max-width: 700px)" srcSet="/images/voyage/rift-overlook-mobile.webp" /><img src="/images/voyage/return-basin.webp" width="1672" height="941" alt="" fetchPriority="high" decoding="async" /></picture>
-      <span className="player-horizon" /><span className="player-coordinate player-coordinate--one" /><span className="player-coordinate player-coordinate--two" />
+      <picture><source media="(max-width: 700px)" srcSet="/images/observatory/rift-horizon-mobile.webp" /><img src="/images/observatory/rift-horizon.webp" width="1920" height="1081" alt="" fetchPriority="high" decoding="async" /></picture>
     </div>
     <div className="gateway-composition">
       <header className="gateway-heading">
-        <p className="player-kicker">LEAGUE OF LEGENDS</p>
-        <h1 id="player-gateway-heading">Your games.<br /><em>Your next move.</em></h1>
-        <p>Matches, builds, and one thing to try next.</p>
+        <p className="player-kicker"><span className="observatory-section-mark" aria-hidden="true" /> YOUR GAMES</p>
+        <h1 id="player-gateway-heading">Find your <em>games.</em></h1>
+        <p>Your matches, your builds, your next move. Start with a Riot ID.</p>
       </header>
+
+      {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { ...filters, name: remembered.name, view })}>
+        <span className="player-kicker"><PlayerIcon name="bookmark" size={15} /> CONTINUE WITH</span><strong>{remembered.name || 'Your remembered player'}</strong><span>{destinationLabel} <PlayerIcon name="arrow-right" size={16} /></span>
+      </a>}
 
       <form onSubmit={lookup} className="lookup-form" aria-label="Find a League of Legends player" aria-busy={busy}>
         <div className="player-field lookup-identity">
@@ -103,6 +106,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
       <p id={`${id}-lookup-status`} className="lookup-status" role={message ? 'alert' : 'status'} aria-live="polite">{message || (busy ? 'Finding player…' : '')}</p>
 
       <div className="gateway-destinations">
+        <p className="gateway-destination-label">Open with</p>
         <div className="gateway-intents" role="group" aria-label="Start with">
           {destinations.map(destination => <button key={destination.id} type="button" aria-pressed={view === destination.id} onClick={() => setView(destination.id)}>
             <PlayerIcon name={destination.icon} /><strong>{destination.label}</strong><PlayerIcon className="intent-arrow" name="arrow-right" size={16} />
@@ -110,10 +114,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
         </div>
       </div>
 
-      {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { ...filters, name: remembered.name, view })}>
-        <span className="player-kicker"><PlayerIcon name="bookmark" size={16} /> SAVED PLAYER</span><strong>{remembered.name || 'Your remembered player'}</strong><span>{destinationLabel} <PlayerIcon name="arrow-right" size={16} /></span>
-      </a>}
     </div>
-    <footer className="gateway-footnote"><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />Private beta</summary><p>Your last player stays selected on this browser when storage is available. Looking up a player does not verify account ownership.</p></details></footer>
+    <footer className="gateway-footnote"><span>LEAGUE OF LEGENDS · PLAYER RECORDS</span><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />About this lookup</summary><p>Your last player stays selected on this browser when storage is available. Looking up a player does not verify account ownership.</p></details></footer>
   </section>;
 }

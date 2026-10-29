@@ -12,26 +12,25 @@ const champions: PoolChampion[] = Object.entries(meta).map(([id,m]) => ({id,name
 ---
 <Layout surface="pool" title="My Pool — RiftScry" description="Return to your saved League of Legends champions, review their archived changes, and shape a device-local pool without an account.">
   <div class="reader-experience">
-    <RouteArrival eyebrow="YOUR POINT OF RETURN" title={"Your Rift.\nReady when you are."}
-      description="Keep your champions close. Return to your briefing, pick up a history, and make the next patch easier to read."
-      image="/images/voyage/return-basin.webp" variant="pool"
-      note={"Saved on this device. Newest loaded archive: " + latest.id + " / " + latest.releaseDate + "."}
-      chapters={[{href:"#briefing",label:"Your briefing",detail:"Return to what matters"},{href:"#edit-pool",label:"Shape your pool",detail:"Choose the champions you play"}]}>
-      <div slot="actions"><a class="route-action" href="#briefing">Enter your briefing <span aria-hidden="true">↓</span></a></div>
+    <RouteArrival eyebrow="MY POOL" title="Your champion pool."
+      description="Choose your mains once. Review their archived changes and return to the findings you saved."
+      variant="pool"
+      note={"Saved on this device. No account required. Archive through " + latest.releaseDate + "."}>
+      <div slot="actions"><a class="route-action" href="#edit-pool">Choose my champions <span aria-hidden="true">↓</span></a><a class="route-text-link" href="#briefing">View my briefing <span aria-hidden="true">↓</span></a></div>
       <div slot="figure" class="arrival-period"><span class="arrival-period-caption">NEWEST LOADED ARCHIVE</span><span class="arrival-period-number">{latest.id}</span><time class="arrival-period-caption" datetime={latest.releaseDate}>{latest.releaseDate}</time></div>
     </RouteArrival>
     <div class="reader-body">
-      <aside class="chapter-rail"><p>Your perspective</p><ol><li><a href="#briefing">Your return briefing</a></li><li><a href="#edit-pool">Edit your champion pool</a></li><li><a href={"/patch/" + latest.id + "?pool=1"}>Open your patch ↗</a></li></ol><a class="route-text-link" href="#route-arrival">Back to the arrival ↑</a></aside>
+      <nav class="chapter-rail" aria-label="On this page"><ol><li><a href="#briefing">Your briefing</a></li><li><a href="#edit-pool">Edit pool</a></li></ol></nav>
       <div class="reader-chapters">
         <section id="briefing" class="reading-chapter" data-scene="pool-briefing">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>A place to pick things up.</h2><p>Your saved pool and the available archive give this visit its starting point.</p></div></header>
-          <ReturnBriefing />
+          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Your briefing.</h2><p>Review your pool’s changes, resume reading, or revisit a kept finding.</p></div></header>
+          <ReturnBriefing compact heading="Your saved champions" />
         </section>
         <section id="edit-pool" class="reading-chapter" data-scene="pool-selection">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>Who belongs in your pool?</h2><p>Choose the champions you play. Selections stay on this device and give every patch page a personal view.</p></div></header>
+          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>Choose your champions.</h2><p>Select a champion to save them. Select again to remove them. Your pool filters patch pages on this device.</p></div></header>
           <PoolPicker client:load champions={champions} assetVersion={assetVersion} latestPatchId={latest.id}/>
         </section>
-        <section class="reader-next" data-reveal><div><h2>The full Rift is still there.</h2><p>Your pool focuses the view. Champion histories, item changes, and system records remain one step away.</p></div><a class="route-action route-action--quiet" href={"/patch/" + latest.id}>Explore the full patch <span aria-hidden="true">↗</span></a></section>
+        <section class="reader-next" data-reveal><div><h2>Read beyond your pool.</h2><p>All champion, item, and system changes in patch {latest.id}.</p></div><a class="route-action route-action--quiet" href={"/patch/" + latest.id}>Open the full patch <span aria-hidden="true">↗</span></a></section>
       </div>
     </div>
   </div>

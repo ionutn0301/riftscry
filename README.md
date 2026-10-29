@@ -12,7 +12,8 @@ what changed since you played, how your latest session went, and one thing to re
   motion, and three connected chapters take you from a champion's signal to its
   impact and your next move. Champion artwork, exact evidence, and the archive link
   respond together. Sound is opt-in; reduced motion and static fallbacks keep the
-  experience usable. The same visual world continues through `/explore`.
+  experience usable. The same visual world continues through every destination,
+  with compact page openings, direct task controls, and one shared navigation.
 - **A useful first visit and a faster return:** the homepage shows real, source-linked
   archive examples before a player lookup. Returning visitors get their selected
   player's briefing, matches, builds and catch-up links together, without a homepage
@@ -82,6 +83,7 @@ client or commit deployment environment files.
 
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
 - [Cinematic observatory](docs/cinematic-observatory/README.md) — research, visual direction, interaction design and release verification
+- [Cinematic continuity](docs/cinematic-everywhere/README.md) — all-page simplification, route coverage, responsive captures and verification
 - [Homepage refresh](docs/homepage-refresh/README.md) — newcomer and returning-player paths, archive examples and responsive audit
 - [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
 - [Personal patch impact](docs/personal-patch-impact/README.md) — calculations, coverage, sources and verification

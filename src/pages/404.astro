@@ -6,10 +6,10 @@ const latest = getLatestPatch();
 ---
 <Layout surface="missing" title="Page not found — RiftScry" description="This destination is outside RiftScry. Return home, find your champion, or open the newest archived patch.">
   <div class="reader-experience">
-    <RouteArrival eyebrow="A PATH OUTSIDE THE ARCHIVE" title={"This trail\nends here."}
-      description="The address doesn't lead to a page in this archive. Choose a destination below, or open search to find a champion, patch, item, or system."
-      image="/images/voyage/rift-overlook.webp" variant="missing"
-      chapters={[{href:"/",label:"Return home",detail:"Review or prepare for a game"},{href:"/champions",label:"Find your champion",detail:"Explore the complete roster"},{href:"/patch/" + latest.id,label:"Open " + latest.id,detail:"Newest archived patch"}]}>
+    <RouteArrival eyebrow="404 / SIGNAL LOST" title={"A step\nbeyond the Rift."}
+      description="This page isn't here. Return home, or search for what you need."
+      variant="missing"
+      chapters={[{href:"/champions",label:"Champions"},{href:"/patch/" + latest.id,label:"Patch " + latest.id}]}>
       <div slot="actions"><a class="route-action" href="/">Return home <span aria-hidden="true">↗</span></a><button type="button" class="route-text-link" data-palette-trigger>Search the archive ↗</button></div>
       <span slot="figure" class="reader-missing-code" aria-label="Error 404">404</span>
     </RouteArrival>

@@ -73,13 +73,29 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
     window.history.replaceState(window.history.state, '', briefingLink(selection.player, { queue, champion }));
   }
 
-  return <div className="automatic-workspace" data-automatic-briefing>
-    <div className="automatic-landscape" aria-hidden="true"><img src="/images/voyage/return-basin.webp" alt="" width="1672" height="941" /></div>
+  return <div className="automatic-workspace" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
+    <div className="automatic-landscape" aria-hidden="true"><img src="/images/observatory/rift-horizon.webp" alt="" width="1920" height="1081" decoding="async" /></div>
     <div className="automatic-wrap">
-      <header className="automatic-header"><p className="automatic-eyebrow"><PlayerIcon name="sparkles" size={16} /> AUTOMATIC BRIEFING</p><h1>Your next game.</h1><p>Your games. Your build. What the patch changes for you.</p></header>
+      <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your next game.</h1><p>One useful focus, drawn from your recent games.</p></header>
       {!ready ? <p className="automatic-loading" role="status">Opening your briefing…</p> : selection.player ?
         <AutomaticReport key={`${selection.player.platform}:${selection.player.puuid}:${selection.queue}`} player={selection.player} queue={selection.queue} champion={selection.champion} archive={archive} onChangePlayer={changePlayer} onChangeScope={changeScope} /> :
-        <section className="automatic-entry automatic-panel" aria-labelledby="automatic-entry-heading"><div><p className="automatic-eyebrow">ONE LOOKUP. YOUR REVIEW IS READY.</p><h2 id="automatic-entry-heading" tabIndex={-1} ref={entryHeading}>Enter your Riot ID.<br />We’ll take it from here.</h2><p>RiftScry imports your recent games and prepares your patch catch-up, session recap, and a useful review focus.</p>{selection.problem && <p className="automatic-error" role="alert">{selection.problem}</p>}<PlayerEntry onChoose={choose} /></div><aside className="automatic-entry-preview" aria-label="What your briefing includes"><span className="automatic-preview-orbit"><PlayerIcon name="target" size={32} /></span><h3>Already prepared for you</h3><ul><li><PlayerIcon name="layers" />Changes for the champions and items you played</li><li><PlayerIcon name="history" />Your latest session, put together automatically</li><li><PlayerIcon name="target" />One focus, with the games behind it</li><li><PlayerIcon name="build" />Your last recorded loadout, ready to inspect</li></ul><p>No notebook to build. Just open your briefing.</p></aside></section>}
+        <section className="automatic-entry automatic-panel" aria-labelledby="automatic-entry-heading">
+          <div>
+            <h2 id="automatic-entry-heading" tabIndex={-1} ref={entryHeading}>Start with your Riot ID.</h2>
+            <p>We’ll find your recent matches and put your briefing together.</p>
+            {selection.problem && <p className="automatic-error" role="alert">{selection.problem}</p>}
+            <PlayerEntry onChoose={choose} />
+          </div>
+          <aside className="automatic-entry-preview" aria-label="What your briefing includes">
+            <p className="automatic-eyebrow">FROM YOUR GAMES TO YOUR NEXT MOVE</p>
+            <h3>A little perspective.</h3>
+            <ul>
+              <li><span className="automatic-preview-index" aria-hidden="true">01</span><div><strong>One thing to focus on</strong><span>A useful observation, with the games behind it.</span></div></li>
+              <li><span className="automatic-preview-index" aria-hidden="true">02</span><div><strong>Your patch, made personal</strong><span>Changes to the champions and items you played.</span></div></li>
+              <li><span className="automatic-preview-index" aria-hidden="true">03</span><div><strong>The whole session</strong><span>Your recent games and last recorded loadout.</span></div></li>
+            </ul>
+          </aside>
+        </section>}
       {storageNotice && <p className="automatic-storage-note" role="status">{storageNotice}</p>}
       <footer className="automatic-footnote"><p>Built from available match records. Looking up a player does not verify account ownership.</p>{hasNotebook && <a href="/notebook">Open saved notebook<PlayerIcon name="arrow-right" size={15} /></a>}</footer>
     </div>

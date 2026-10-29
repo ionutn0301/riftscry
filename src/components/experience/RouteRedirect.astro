@@ -1,0 +1,31 @@
+---
+import '../../styles/global.css';
+
+interface Props { title: string; target: string; label: string }
+const { title, target, label } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#070b13" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <title>{title}</title>
+    <link rel="canonical" href={new URL(target, Astro.site)} />
+  </head>
+  <body>
+    <main>
+      <p>RIFTSCRY / OBSERVATORY</p>
+      <h1>Opening your record.</h1>
+      <a href={target}>Continue to {label} <span aria-hidden="true">↗</span></a>
+    </main>
+  </body>
+</html>
+<style>
+  body { min-height: 100svh; display: grid; place-items: center; margin: 0; padding: 32px; color: #eef0f6; background: #070b13; }
+  main { width: min(640px, 100%); }
+  p { color: #c7b8ef; font-size: 11px; letter-spacing: .16em; }
+  h1 { font: 500 clamp(36px, 6vw, 64px)/1.05 'Clash Display', sans-serif; letter-spacing: -.045em; margin-block: 22px; }
+  a { display: inline-flex; align-items: center; gap: 24px; min-height: 48px; color: #b4e9ee; }
+  a:focus-visible { outline: 2px solid #b4e9ee; outline-offset: 5px; }
+</style>

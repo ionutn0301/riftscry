@@ -1,5 +1,6 @@
 ---
 import { getAllPatches } from "../../../lib/data";
+import RouteRedirect from "../../../components/experience/RouteRedirect.astro";
 
 export function getStaticPaths() {
   return getAllPatches().map((p) => ({ params: { a: p.id } }));
@@ -14,14 +15,4 @@ const other = patches[idx + 1] ?? patches[idx - 1];
 const target = other ? `/compare/${current.id}/${other.id}` : "/patches";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>RiftScry — compare {a}</title>
-    <meta http-equiv="refresh" content={`0;url=${target}`} />
-    <link rel="canonical" href={new URL(target, Astro.site)} />
-  </head>
-  <body>
-    <p>Redirecting to <a href={target}>comparison</a>…</p>
-  </body>
-</html>
+<RouteRedirect title={"RiftScry — compare " + a} target={target} label="the comparison" />

@@ -102,7 +102,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   }
 
   return <>
-    <a className="player-text-link" aria-label="← Back to player and filters" href={playerBackLink(back, platform, puuid)}><PlayerIcon name="arrow-left" /> Back to player</a>
+    <a className="player-text-link review-back" aria-label="← Back to player and filters" href={playerBackLink(back, platform, puuid)}><PlayerIcon name="arrow-left" /> Back to player</a>
     <header className="player-hero review-champion-heading">
       {p && <ChampionPortrait className="review-champion-portrait" champion={p.championName} size={88} />}
       <div><p className="player-kicker">MATCH REVIEW</p><h1>{p ? championDisplayName(p.championName) : 'Selected match'}</h1>
@@ -134,7 +134,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       </section>
       <details className="player-explainer"><summary><PlayerIcon name="info" /> Match details</summary><p>{new Date(match.info.gameCreation).toLocaleString()} · {comparisonRoleLabel(comparisonRole(match, puuid))} · {id}</p>{mode && <p>{mode.context}</p>}<p>{items?.notice} Final loadout shows the end of the game; open the timeline for purchase order. Damage is champion damage across the whole match.</p></details>
 
-      <section aria-labelledby="short-review-heading">
+      <section className="review-reading-section" aria-labelledby="short-review-heading">
         <div className="player-actions review-actions">
           <h2 id="short-review-heading">One thing to revisit</h2>
           <button disabled={busy || reviewRetrySeconds > 0} onClick={() => void generate()}><PlayerIcon name="sparkles" />{reviewRetrySeconds ? `Ready in ${reviewRetrySeconds}s` : busy ? 'Reviewing…' : 'Review with AI'}</button>
@@ -159,7 +159,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
 
       <section className="purchase-evidence" aria-labelledby="purchase-evidence-heading">
         <div className="player-actions"><h2 id="purchase-evidence-heading">Purchase evidence</h2>
-          <button onClick={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} disabled={timelineLoading || retrySeconds > 0 || (!!timeline && !timelineError)}><PlayerIcon name="clock" />{retrySeconds && !timeline ? `Retry in ${retrySeconds}s` : timelineLoading ? 'Loading…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Open timeline'}</button>
+          <button className="player-button-secondary" onClick={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} disabled={timelineLoading || retrySeconds > 0 || (!!timeline && !timelineError)}><PlayerIcon name="clock" />{retrySeconds && !timeline ? `Retry in ${retrySeconds}s` : timelineLoading ? 'Loading…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Open timeline'}</button>
         </div>
         {timelineLoading && <p role="status">Loading timeline…</p>}
         {timelineError && <p role="alert">Timeline unavailable. Purchase timing is unknown for this request.</p>}

@@ -72,11 +72,9 @@ test.describe("keyboard-only exploration", () => {
     await expect(page.locator('#rift-map-dialog [aria-current="page"]')).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(mapOpener).toBeFocused();
-    // A single letter stays available to assistive input; the labeled shortcut
+    // A single letter stays available to assistive input; the declared shortcut
     // opens the map without a pointer, including Option+M on macOS.
     await expect(mapOpener).toHaveAttribute("aria-keyshortcuts", "Alt+M");
-    await expect(mapOpener.locator("kbd")).toHaveText("Alt M");
-    await expect(mapOpener.locator("kbd")).toHaveAttribute("title", "Alt+M / Option+M");
     await page.keyboard.press("m");
     await expect(page.locator("#rift-map-dialog")).not.toBeVisible();
     await page.keyboard.press("Alt+KeyM");
