@@ -30,7 +30,7 @@ export default function HomeReturn() {
   return <div className="home-launcher" data-home-launcher data-player-state={player ? 'returning' : 'new'}>
     {player && <div className="home-launcher-identity">
       <span className="home-launcher-status" aria-hidden="true" />
-      <div><small>YOUR SELECTED PLAYER</small><strong><span className="home-launcher-name">{player.name || 'Your selected player'}</span></strong></div>
+      <div><small>YOUR SELECTED PLAYER</small><strong><span className="home-launcher-name" title={player.name || 'Your selected player'}>{player.name || 'Your selected player'}</span></strong></div>
       <span className="home-launcher-region">{serverLabels[player.platform] ?? player.platform.toUpperCase()}</span>
     </div>}
     <div className="home-launcher-actions">
@@ -38,11 +38,11 @@ export default function HomeReturn() {
       {!player && <a className="companion-action companion-action--quiet" href="/players">Find my games <span aria-hidden="true">↗</span></a>}
     </div>
     {player && <nav className="home-launcher-shortcuts" aria-label="Selected player shortcuts">
-      <a className="companion-text-link" href={playerLink(player.platform, player.puuid, { name: player.name, view: 'history' })}>My matches</a>
-      <a className="companion-text-link" href={playerLink(player.platform, player.puuid, { name: player.name, view: 'builds' })}>My builds</a>
-      <a className="companion-text-link" href={`${briefing}#changes`}>Catch up</a>
-      <a className="companion-text-link" href={`${briefing}#impact`}>My patch impact</a>
-      <a className="companion-text-link home-launcher-change" href="/next-game?change=1">Change player</a>
+      <a className="companion-text-link" aria-label="My matches" href={playerLink(player.platform, player.puuid, { name: player.name, view: 'history' })}><span className="home-shortcut-label">My matches</span><span className="home-shortcut-compact" aria-hidden="true">Matches</span></a>
+      <a className="companion-text-link" aria-label="My builds" href={playerLink(player.platform, player.puuid, { name: player.name, view: 'builds' })}><span className="home-shortcut-label">My builds</span><span className="home-shortcut-compact" aria-hidden="true">Builds</span></a>
+      <a className="companion-text-link" aria-label="Catch up" href={`${briefing}#changes`}><span className="home-shortcut-label">Catch up</span><span className="home-shortcut-compact" aria-hidden="true">Catch up</span></a>
+      <a className="companion-text-link" aria-label="My patch impact" href={`${briefing}#impact`}><span className="home-shortcut-label">My patch impact</span><span className="home-shortcut-compact" aria-hidden="true">Impact</span></a>
+      <a className="companion-text-link home-launcher-change" aria-label="Change player" href="/next-game?change=1"><span className="home-shortcut-label">Change player</span><span className="home-shortcut-compact" aria-hidden="true">Change</span></a>
     </nav>}
     <p className="home-launcher-note">{player ? 'Your briefing catches up when you open it.' : 'Riot ID + server once. Remembered in this browser.'}</p>
   </div>;

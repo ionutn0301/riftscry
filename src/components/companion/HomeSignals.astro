@@ -6,6 +6,7 @@ const latest = getLatestPatch();
 const signals = buildHomeSignals(getAllPatches(), getChampionMeta());
 const key = (championId: string, patchId: string) => `${championId.toLowerCase()}-${patchId.replace('.', '-')}`;
 const classificationLabel = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+const initials = (name: string) => name.split(/\s+/).map(word => word[0]).join('').slice(0, 2).toUpperCase();
 ---
 <section class="home-signals" data-home-signals aria-labelledby="home-signals-heading">
   <header class="home-signal-heading">
@@ -19,13 +20,13 @@ const classificationLabel = (value: string) => value.charAt(0).toUpperCase() + v
         id={`home-signal-tab-${key(signal.championId, signal.patchId)}`}
         aria-controls={`home-signal-panel-${key(signal.championId, signal.patchId)}`}
         aria-selected={index === 0} tabindex={index === 0 ? 0 : -1}>
-        <img src={signal.icon} alt="" width="40" height="40" decoding="async" />
+        <span class="home-signal-portrait" aria-hidden="true"><span>{initials(signal.championName)}</span><img src={signal.icon} alt="" width="40" height="40" decoding="async" /></span>
         <span>{signal.championName}</span>
       </button>)}
     </div>
     <div class="home-signal-records">
       {signals.map((signal, index) => <div
-        class="home-signal-panel" role="tabpanel" tabindex="0" hidden={index !== 0}
+        class="home-signal-panel" role="tabpanel" tabindex="0" hidden={index !== 0} inert={index !== 0} aria-hidden={index !== 0 ? 'true' : undefined}
         id={`home-signal-panel-${key(signal.championId, signal.patchId)}`}
         aria-labelledby={`home-signal-tab-${key(signal.championId, signal.patchId)}`}
         data-champion={signal.championId} data-patch={signal.patchId} data-direction={signal.direction}>
@@ -53,15 +54,33 @@ const classificationLabel = (value: string) => value.charAt(0).toUpperCase() + v
       const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
       const panels = Array.from(root.querySelectorAll<HTMLElement>('[role="tabpanel"]'));
       if (!tabs.length || tabs.length !== panels.length) return;
+      root.querySelectorAll<HTMLImageElement>('.home-signal-portrait img').forEach(image => {
+        const updatePortrait = () => {
+          const loaded = image.naturalWidth > 0;
+          image.hidden = !loaded;
+          image.dataset.loaded = String(loaded);
+        };
+        image.addEventListener('load', updatePortrait);
+        image.addEventListener('error', updatePortrait);
+        // Cached images can finish or fail before this module initializes.
+        if (image.complete) updatePortrait();
+      });
       const select = (index: number, moveFocus = false) => {
         tabs.forEach((tab, tabIndex) => {
           const active = index === tabIndex;
           tab.setAttribute('aria-selected', String(active));
           tab.tabIndex = active ? 0 : -1;
           const panel = panels[tabIndex];
-          if (panel) panel.hidden = !active;
+          if (panel) {
+            // Inactive panels still reserve their intrinsic grid height. Keep
+            // their links out of focus order and the accessibility tree.
+            panel.hidden = !active;
+            panel.inert = !active;
+            if (active) panel.removeAttribute('aria-hidden');
+            else panel.setAttribute('aria-hidden', 'true');
+          }
         });
-        if (moveFocus) tabs[index]?.focus();
+        if (moveFocus) tabs[index]?.focus({ preventScroll: true });
       };
       tabs.forEach((tab, index) => {
         tab.disabled = false;

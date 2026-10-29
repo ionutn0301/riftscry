@@ -68,9 +68,13 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     expect(playerRequests).toEqual([]);
     if (width === 390) {
+      // The full archive example follows the viewport-sized introduction on
+      // phones; it remains available through ordinary page scrolling.
       const example = page.locator('[data-home-signals]').getByRole('tabpanel');
+      await example.scrollIntoViewIfNeeded();
       await expect(example.locator('[data-signal-before]')).toBeInViewport({ ratio: 1 });
       await expect(example.locator('[data-signal-after]')).toBeInViewport({ ratio: 1 });
+      await page.evaluate(() => scrollTo(0, 0));
     }
 
     // The dynamic player entry is exercised end-to-end in companion-integration.

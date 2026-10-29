@@ -332,6 +332,32 @@
   .arrival-bottom { flex-wrap: wrap; }
   .arrival-bottom .voyage-actions { flex-wrap: wrap; }
 }
+/* Short screens keep the opening in one viewport. A landscape grid gives
+   the introduction its own column without clipping text or shrinking controls. */
+@media (max-height: 700px) and (max-width: 700px) {
+  .arrival-chapter { padding-top: calc(var(--world-header-height,72px) + 16px + env(safe-area-inset-top)); padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+  .arrival-composition { min-height: calc(100svh - var(--world-header-height,72px) - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+  .arrival-footer { padding-top: 16px; }
+}
+@media (max-height: 500px) and (min-width: 480px) {
+  .arrival-chapter { height: auto; min-height: 100svh; padding-top: calc(var(--world-header-height,78px) + 8px + env(safe-area-inset-top)); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .arrival-composition { height: auto; min-height: calc(100svh - var(--world-header-height,78px) - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); align-content: center; align-items: center; gap: 8px 20px; }
+  .world-shot--arrival::after { background: linear-gradient(90deg,#041014a6,#04101473 70%,#04101480),linear-gradient(0deg,#08131990,transparent 65%); }
+  .arrival-composition > .world-eyebrow { grid-column: 1 / -1; margin: 0; font-size: 11px; }
+  .arrival-composition h1 { grid-column: 1; grid-row: 2; font-size: clamp(32px,min(8vw,14svh),62px); }
+  .arrival-bottom { display: contents; }
+  .arrival-bottom > p { grid-column: 2; grid-row: 2; max-width: 38ch; font-size: 13px; line-height: 1.5; }
+  .arrival-bottom .voyage-actions { grid-column: 1 / -1; grid-row: 3; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; margin: 0; gap: 8px 20px; }
+  .arrival-bottom .voyage-action,.arrival-bottom .voyage-text-link { min-height: 44px; }
+  .arrival-footer { grid-column: 1 / -1; grid-row: 4; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0; padding-top: 0; }
+  .arrival-footer > .chapter-invitation { position: static; display: flex; min-width: 0; max-width: 190px; margin: 0; font-size: 11px; }
+  .arrival-footer .invitation-line { display: none; }
+  .arrival-archive { position: static; display: flex; flex-direction: row; align-items: center; gap: 10px; min-width: 0; }
+  .arrival-archive .world-eyebrow { max-width: 100px; font-size: 10px; line-height: 1.4; }
+  .arrival-archive a { flex-direction: row; align-items: center; gap: 8px; font-size: 25px; white-space: nowrap; min-height: 44px; }
+  .arrival-archive a > span { font-size: 11px; }
+}
+
 html[data-motion="reduced"] .voyage-fracture,html[data-motion="reduced"] .voyage-occlusion { display: none; }
 html[data-motion="reduced"] .world-shot,html[data-motion="reduced"] .perspective-identity { transform: none !important; }
 @media (prefers-reduced-motion: reduce) {

@@ -373,10 +373,9 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       }
       if (options.navigation !== false) {
         updateUrl('push', '#perspective');
-        const section = query('#perspective');
-        section.scrollIntoView({ behavior: motionReduced() ? 'auto' : 'smooth', block: 'start' });
-        const heading = section.querySelector<HTMLElement>('h2');
-        if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+        // Choosing a champion updates the current view. Keep the triggering
+        // control (or the roster opener) focused and leave scrolling to explicit
+        // chapter links, so a selection never snaps the page back to a heading.
         rememberPerspective();
       }
       if (changedChampion && !motionReduced()) query('[data-champion-identity]').animate([{ opacity: .25, transform: 'translate3d(22px,18px,0) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: 500, easing: 'cubic-bezier(.2,.75,.2,1)' });
