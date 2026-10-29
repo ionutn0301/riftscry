@@ -4,7 +4,7 @@ vi.mock('../../src/lib/player/server', () => ({
   ServiceError: class ServiceError extends Error { constructor(message: string, public status = 503) { super(message); } },
 }));
 import { cached } from '../../src/lib/player/server';
-import { getItemMetadata } from '../../src/lib/player/metadata';
+import { getItemMetadata, getItemMetadataForVersion } from '../../src/lib/player/metadata';
 import type { Match } from '../../src/lib/player/contracts';
 
 const match = (gameVersion: string) => ({ info: { gameVersion } }) as Match;
@@ -56,5 +56,43 @@ describe('patch-compatible item metadata', () => {
     expect(result.data).toEqual(items);
     expect(result.runes).toEqual({});
     expect(result.notice).toContain('Rune details are temporarily unavailable');
+  });
+});
+
+describe('exact archived references for personal patch impact', () => {
+  it('fetches only the pinned item version without a live-version lookup or rune request', async () => {
+    const url = 'https://ddragon.leagueoflegends.com/cdn/16.20.1/data/en_US/item.json';
+    fetchMock.mockImplementation(async input => {
+      if (String(input) !== url) throw new Error('An exact comparison must not fetch a substitute reference.');
+      return response({ data: items });
+    });
+    const result = await getItemMetadataForVersion('16.20.1');
+    expect(result).toMatchObject({ version: '16.20.1', data: items });
+    expect(result.runes).toBeUndefined();
+    expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([url]);
+    expect(cached).toHaveBeenCalledWith('impact-items-v1:16.20.1', 86400, expect.any(Function));
+  });
+
+  it('returns an unknown reference for malformed or non-exact versions before any fetch', async () => {
+    for (const version of ['16.20', 'latest', '16.20.1.999', '../16.20.1', '16.20.1?version=16.21.1']) {
+      expect(await getItemMetadataForVersion(version)).toMatchObject({ version: null, data: {} });
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(cached).not.toHaveBeenCalled();
+  });
+
+  it('rejects unavailable or malformed exact references without falling forward to live data', async () => {
+    const failures = [
+      response({ error: 'Missing historical reference' }, 404),
+      response({ error: 'Temporary outage' }, 503),
+      response({}), response({ data: null }), response({ data: [] }),
+      new Response('{invalid JSON', { status: 200 }),
+    ];
+    for (const failure of failures) {
+      fetchMock.mockResolvedValueOnce(failure);
+      await expect(getItemMetadataForVersion('16.20.1')).rejects.toThrow();
+    }
+    expect(fetchMock.mock.calls.map(([input]) => String(input)))
+      .toEqual(Array(failures.length).fill('https://ddragon.leagueoflegends.com/cdn/16.20.1/data/en_US/item.json'));
   });
 });

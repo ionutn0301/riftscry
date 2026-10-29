@@ -4,8 +4,9 @@ import AutomaticBriefing from '../components/companion/AutomaticBriefing';
 import { briefingArchive } from '../lib/briefing-archive';
 import '../styles/player.css';
 import '../styles/automatic-briefing.css';
+import '../styles/patch-impact.css';
 ---
-<Layout surface="next-game" title="Your automatic briefing · RiftScry" description="Enter your Riot ID once. RiftScry automatically prepares your personal patch catch-up, latest-session recap, recorded loadout, and one useful review focus.">
+<Layout surface="next-game" title="Your patch impact & automatic briefing · RiftScry" description="See what the patch changes for your recorded champions and builds. Automatic comparisons of supported item costs, stats, damage contributions and cooldowns, with every calculation explained.">
   <AutomaticBriefing archive={briefingArchive} client:load />
   <noscript><div class="automatic-wrap"><h2>Your briefing needs JavaScript.</h2><p>Enable JavaScript to import your recent match records. You can still <a href="/patches">browse the patch archive</a>.</p></div></noscript>
 </Layout>

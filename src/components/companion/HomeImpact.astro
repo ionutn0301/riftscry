@@ -1,0 +1,39 @@
+---
+import { homeImpactExample } from '../../lib/home-impact';
+import { getChampionMeta } from '../../lib/data';
+import '../../styles/home-impact.css';
+
+const { report, champion, beforePatch, afterPatch } = homeImpactExample;
+const metrics = report.metrics.filter(metric => metric.kind === 'damage').slice(0, 2);
+const primary = metrics[0];
+const championName = getChampionMeta()[champion]?.name ?? champion;
+const number = (value: number) => new Intl.NumberFormat('en', { maximumFractionDigits: 2 }).format(value);
+const delta = (value: number) => `${value > 0 ? '+' : value < 0 ? '−' : ''}${number(Math.abs(value))}`;
+const sources = [...report.sources, ...metrics.flatMap(metric => metric.sources)].filter((source, index, all) => all.findIndex(candidate => candidate.url === source.url) === index);
+---
+<section class="home-impact" aria-labelledby="home-impact-heading" data-home-impact>
+  <div class="home-impact-grid">
+    <div class="home-impact-copy">
+      <p class="home-eyebrow"><span class="home-impact-star" aria-hidden="true">✦</span> PERSONAL PATCH IMPACT</p>
+      <h2 id="home-impact-heading">Your build has<br /><em>a before and after.</em></h2>
+      <p>See how a new patch changes the champions and items you actually play, with supported damage, cooldown, and item-cost calculations.</p>
+      <div class="home-impact-flow" aria-label="How personal patch impact works"><span>Your recent game</span><span aria-hidden="true">→</span><span>The new patch</span><span aria-hidden="true">→</span><strong>Your numbers</strong></div>
+      <a class="companion-action home-impact-cta" href="/next-game#impact">See my patch impact <span aria-hidden="true">↗</span></a>
+      <p class="home-impact-automatic">Your match history supplies the build. Nothing to configure.</p>
+    </div>
+
+    <div class="home-impact-example">
+      <div class="home-impact-example-art" aria-hidden="true"><svg viewBox="0 0 480 480" fill="none"><circle cx="240" cy="240" r="162" /><circle cx="240" cy="240" r="187" /><path d="m240 66 126 174-126 174-126-174L240 66ZM240 23v43m0 348v43M23 240h91m252 0h91" /></svg><span /></div>
+      <div class="home-impact-example-header"><span>REFERENCE EXAMPLE</span><a href={`/patch/${afterPatch}#${champion.toLowerCase()}`}>PATCH {afterPatch}<span aria-hidden="true">↗</span></a></div>
+      <div class="home-impact-example-context"><div class="home-impact-example-champion"><img src={`/images/impact/${champion}.png`} alt="" width="43" height="43" loading="lazy" decoding="async" /><div><strong>{championName}</strong><span>Two-item reference setup</span></div></div><ul class="home-impact-example-items" aria-label="Items in this reference setup">{report.inventory.map(item => <li><img src={`/images/impact/${item.id}.png`} alt="" width="32" height="32" loading="lazy" decoding="async" /><span>{item.name}</span></li>)}</ul></div>
+      {primary ? <>
+        <h3>Damage from listed item AP</h3>
+        <div class="home-impact-example-highlight"><strong data-home-impact-delta>{delta(primary.delta)}</strong><div><span>damage contribution</span><p>{primary.label}</p></div></div>
+        <div class="home-impact-example-patches" aria-hidden="true"><span>PATCH {beforePatch}</span><span>PATCH {afterPatch}</span></div>
+        <dl class="home-impact-example-metrics">{metrics.map(metric => <div data-home-impact-metric={metric.id}><dt>{metric.label}</dt><dd><span class="home-impact-example-before" data-home-impact-before><span class="home-impact-sr-only">Patch {beforePatch}: </span>{number(metric.before)}</span><span class="home-impact-example-arrow" aria-hidden="true">→</span><strong data-home-impact-after><span class="home-impact-sr-only">Patch {afterPatch}: </span>{number(metric.after)}</strong></dd></div>)}</dl>
+        <p class="home-impact-example-limits">Excludes base damage, runes, passives and target resistance. This is a reference scenario, not a player match.</p>
+        <details class="home-impact-example-method"><summary>See the maths and sources<span aria-hidden="true">+</span></summary><div>{metrics.map(metric => <div class="home-impact-example-formula"><p>{metric.label}</p><code>{metric.formula}</code></div>)}<ul>{sources.map(source => <li><a href={source.url} target={source.url.startsWith('https://') ? '_blank' : undefined} rel={source.url.startsWith('https://') ? 'noreferrer' : undefined}>{source.label}<span aria-hidden="true">↗</span></a></li>)}</ul></div></details>
+      </> : <div class="home-impact-example-empty"><h3>Your game sets the scene.</h3><p>Open your briefing to find the supported changes behind your own recent champions and items.</p><a href="/next-game#impact">Open my patch impact <span aria-hidden="true">↗</span></a></div>}
+    </div>
+  </div>
+</section>

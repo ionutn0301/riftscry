@@ -1,0 +1,197 @@
+{
+  "checkedAt": "2026-10-29",
+  "label": "Reference scenario, not a player match",
+  "champion": "Orianna",
+  "beforePatch": "26.20",
+  "afterPatch": "26.21",
+  "itemIds": [
+    3152,
+    4628
+  ],
+  "before": {
+    "version": "16.20.1",
+    "data": {
+      "3152": {
+        "name": "Hextech Rocketbelt",
+        "description": "<mainText><stats><attention>60</attention> Ability Power<br><attention>350</attention> Health<br><attention>10</attention> Ability Haste</stats><br><br><active>Supersonic</active><br>Dash in target direction, unleashing missiles that deal <magicDamage>magic damage</magicDamage>.</mainText>",
+        "colloq": "rocket belt;",
+        "plaintext": "Activate to dash forward and unleash a fiery explosion",
+        "from": [
+          "3145",
+          "3067",
+          "1028"
+        ],
+        "image": {
+          "full": "3152.png",
+          "sprite": "item4.png",
+          "group": "item",
+          "x": 144,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "gold": {
+          "base": 350,
+          "purchasable": true,
+          "total": 2650,
+          "sell": 1855
+        },
+        "tags": [
+          "Health",
+          "SpellDamage",
+          "Active",
+          "CooldownReduction",
+          "NonbootsMovement",
+          "AbilityHaste"
+        ],
+        "maps": {
+          "11": true,
+          "12": true,
+          "22": false,
+          "30": false,
+          "453": true
+        },
+        "stats": {
+          "FlatHPPoolMod": 350,
+          "FlatMagicDamageMod": 60
+        },
+        "depth": 3
+      },
+      "4628": {
+        "name": "Horizon Focus",
+        "description": "<mainText><stats><attention>75</attention> Ability Power<br><attention>25</attention> Ability Haste</stats><br><br><passive>Hypershot</passive><br>Dealing Ability damage to champions at 600 range or greater <keywordStealth>Reveals</keywordStealth> them for 6 seconds. <br><br><passive>Focus</passive><br>When <passive>Hypershot</passive> is triggered, <keywordStealth>Reveal</keywordStealth> all other enemy champions within 1400 range of them for 3 seconds.</mainText>",
+        "colloq": "",
+        "plaintext": "Immobilizing a champion causes lightning to strike them",
+        "from": [
+          "3108",
+          "3108",
+          "1052"
+        ],
+        "image": {
+          "full": "4628.png",
+          "sprite": "item5.png",
+          "group": "item",
+          "x": 96,
+          "y": 288,
+          "w": 48,
+          "h": 48
+        },
+        "gold": {
+          "base": 600,
+          "purchasable": true,
+          "total": 2700,
+          "sell": 1890
+        },
+        "tags": [
+          "SpellDamage",
+          "AbilityHaste"
+        ],
+        "maps": {
+          "11": true,
+          "12": true,
+          "22": false,
+          "30": false,
+          "453": true
+        },
+        "stats": {
+          "FlatMagicDamageMod": 75
+        },
+        "depth": 3
+      }
+    },
+    "notice": "Frozen public reference example. Source: https://ddragon.leagueoflegends.com/cdn/16.20.1/data/en_US/item.json"
+  },
+  "after": {
+    "version": "16.21.1",
+    "data": {
+      "3152": {
+        "name": "Hextech Rocketbelt",
+        "description": "<mainText><stats><attention>60</attention> Ability Power<br><attention>350</attention> Health<br><attention>10</attention> Ability Haste</stats><br><br><active>Supersonic</active><br>Dash in target direction, unleashing missiles that deal <magicDamage>magic damage</magicDamage>.</mainText>",
+        "colloq": "rocket belt;",
+        "plaintext": "Activate to dash forward and unleash a fiery explosion",
+        "from": [
+          "3145",
+          "3067",
+          "1028"
+        ],
+        "image": {
+          "full": "3152.png",
+          "sprite": "item4.png",
+          "group": "item",
+          "x": 144,
+          "y": 0,
+          "w": 48,
+          "h": 48
+        },
+        "gold": {
+          "base": 350,
+          "purchasable": true,
+          "total": 2650,
+          "sell": 1855
+        },
+        "tags": [
+          "Health",
+          "SpellDamage",
+          "Active",
+          "CooldownReduction",
+          "NonbootsMovement",
+          "AbilityHaste"
+        ],
+        "maps": {
+          "11": true,
+          "12": true,
+          "22": false,
+          "30": false,
+          "453": true
+        },
+        "stats": {
+          "FlatHPPoolMod": 350,
+          "FlatMagicDamageMod": 60
+        },
+        "depth": 3
+      },
+      "4628": {
+        "name": "Horizon Focus",
+        "description": "<mainText><stats><attention>75</attention> Ability Power<br><attention>25</attention> Ability Haste</stats><br><br><passive>Hypershot</passive><br>Dealing Ability damage to champions at 600 range or greater <keywordStealth>Reveals</keywordStealth> them for 6 seconds. <br><br><passive>Focus</passive><br>When <passive>Hypershot</passive> is triggered, <keywordStealth>Reveal</keywordStealth> all other enemy champions within 1400 range of them for 3 seconds.</mainText>",
+        "colloq": "",
+        "plaintext": "Immobilizing a champion causes lightning to strike them",
+        "from": [
+          "3108",
+          "3108",
+          "1052"
+        ],
+        "image": {
+          "full": "4628.png",
+          "sprite": "item5.png",
+          "group": "item",
+          "x": 96,
+          "y": 288,
+          "w": 48,
+          "h": 48
+        },
+        "gold": {
+          "base": 600,
+          "purchasable": true,
+          "total": 2700,
+          "sell": 1890
+        },
+        "tags": [
+          "SpellDamage",
+          "AbilityHaste"
+        ],
+        "maps": {
+          "11": true,
+          "12": true,
+          "22": false,
+          "30": false,
+          "453": true
+        },
+        "stats": {
+          "FlatMagicDamageMod": 75
+        },
+        "depth": 3
+      }
+    },
+    "notice": "Frozen public reference example. Source: https://ddragon.leagueoflegends.com/cdn/16.21.1/data/en_US/item.json"
+  }
+}

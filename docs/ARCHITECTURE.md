@@ -149,6 +149,30 @@ sorts by recorded start time, and retains incomplete-sample information.
 No user-authored notebook record is used to generate this briefing. Its outputs are
 recomputed from imported data rather than saved as personal notes or reflections.
 
+### Personal patch impact
+
+`PatchImpact.tsx` reuses those champion/queue contexts and automatically requests
+`GET /api/player/impact` for the selected source match. The existing API validates
+access, platform, player membership and match identity before calculation. It
+reuses the cached match; no timeline or AI is requested. Responses remain private.
+
+`impact-service.ts` resolves the baseline from the committed archive and loads the
+two exact Data Dragon item versions through the shared server cache. Missing,
+current or unsupported contexts avoid those reference requests. A failed endpoint
+stays unavailable and produces retryable partial coverage, never a live substitute.
+
+`patch-impact.ts` is the pure calculation model. Same-inventory listed stats and
+shop prices come from versioned item snapshots. A reviewed catalogue of champion
+damage components and cooldowns uses structured archive records with contiguous
+patches, consistent chains and explicit blockers for reworks, prose and conflicting
+mechanics. Spell ranks are reference scenarios, not inferred match ranks. AP
+contributions use only listed item AP; passives, stacks, runes, defenses and combat
+outcomes are excluded. The UI presents those assumptions beside numerical evidence.
+
+The homepage's `home-impact.ts` runs the same model over two pinned public item
+snapshots and an explicitly labeled reference scenario. It makes no player request.
+See [the feature documentation](personal-patch-impact/README.md) for limits and tests.
+
 ## Existing notebook and Build Memory
 
 `/notebook` retains the existing validated `riftscry:companion:v1` document and its UI:
