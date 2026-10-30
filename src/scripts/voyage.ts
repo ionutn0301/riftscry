@@ -141,7 +141,9 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       setText('[data-record-before]', record.change.before);
       setText('[data-record-after]', record.change.after);
       setText('[data-record-unit]', record.change.unit ?? '');
-      query('[data-record-numeric]').dataset.long = String(record.change.before.length > 18 || record.change.after.length > 18);
+      // Compact units such as "40/Level" need reading-sized type as well as long rank arrays.
+      query('[data-record-numeric]').dataset.long = String(record.change.before.length > 18 || record.change.after.length > 18
+        || /[a-z]/i.test(record.change.before + record.change.after));
     } else setText('[data-record-prose]', record.change.text);
   }
 

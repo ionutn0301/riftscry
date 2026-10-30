@@ -74,6 +74,10 @@ replaced by the champion's identity and an explicit unavailable state. Successfu
 images retain their complete original framing. Exact records and navigation do
 not depend on artwork delivery.
 
+Explore also uses its compact evidence type for short values containing unit
+words, such as `40/Level`, so a short string cannot split an oversized word.
+The exact before/after strings and long rank-array presentation are preserved.
+
 ### Rendered views
 
 - [Desktop patch instrument](screenshots/kinetic-timeline-desktop.webp)

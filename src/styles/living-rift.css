@@ -78,7 +78,6 @@ body.living-rift[data-surface="explore"] .world-shot--identity { background: rad
 body.living-rift[data-surface="explore"] .world-shot--evidence { background: radial-gradient(ellipse at 70% 60%,#244c6255,transparent 70%),#070b13c9; }
 body.living-rift[data-surface="explore"] :is(.world-shot--history, .world-shot--return) { background: #070b13; }
 body.living-rift[data-surface="explore"] :is(.world-shot--history, .world-shot--return) img { display: block; opacity: .54; }
-body.living-rift[data-surface="explore"] .voyage-record { background: linear-gradient(130deg,#152b3ae8,#09131fe8); border-color: #bbd6e43d; }
 body.living-rift[data-surface="explore"] .history-stop[aria-pressed="true"] { background: #b4dbeb12; border-color: #b4dbeb7a; }
 
 /* Working rooms: a projected instrument, a reading desk, and a kept card. */
