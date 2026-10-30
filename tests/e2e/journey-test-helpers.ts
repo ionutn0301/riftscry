@@ -15,7 +15,12 @@ export async function readyJourney(page: Page) {
 
 export async function openScene(page: Page, id: string) {
   const panel = page.locator(`[data-journey-panel][id="${id}"]`);
-  if (!await panel.isVisible()) await page.locator(`[data-journey-tab="${id}"]`).click();
+  const tab = page.locator(`[data-journey-tab="${id}"]`);
+  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+  // React can paint a panel before the controller registers its scene tab.
+  await expect(tab).toHaveAttribute('aria-selected', /^(true|false)$/);
+  if (await tab.getAttribute('aria-selected') !== 'true') await tab.click();
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
   await expect(panel).toBeVisible();
   await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
   return panel;
