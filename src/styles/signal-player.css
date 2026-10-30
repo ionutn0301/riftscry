@@ -366,3 +366,37 @@
   .rift-shell[data-journey-ready] .player-gateway-shell { min-height: 0; overflow: hidden; }
   .rift-shell[data-journey-ready] .player-gateway { min-height: 0; max-height: 100%; overflow-y: auto; overscroll-behavior: contain; }
 }
+
+/* The interactive gateway must not be translated while viewport and focus
+   measurements are made. Motion stays on the surrounding cinematic world. */
+.rift-shell .gateway-composition { animation: none !important; transform: none !important; }
+@media (max-width: 380px) {
+  .rift-shell .match-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "identity identity" "status status" "score score" "record open";
+  }
+  .rift-shell .match-status { align-items: flex-start; text-align: left; }
+}
+@media (max-height: 480px) {
+  .rift-shell .gateway-composition { scroll-padding-block: 4px; }
+}
+/* Player hub's older five-column card rule must not override the journey
+   grid: mixed implicit tracks put the result on top of long champion names. */
+@media (max-width: 380px) {
+  .rift-shell .profile-hub .match-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "identity identity" "status status" "score score" "record open";
+  }
+  .rift-shell .profile-hub .match-status { grid-area: status; justify-self: start; }
+}
+.rift-shell .gateway-composition { scroll-padding-block: 8px; padding-bottom: max(16px, 1.2rem); }
+@media (max-height: 480px) {
+  .rift-shell .player-gateway:has(.remembered-player) .gateway-heading { display: none; }
+  .rift-shell .gateway-composition { padding-block: 6px 14px; gap: 0; }
+  .rift-shell .remembered-player { margin: 0; }
+  .rift-shell .gateway-footnote { margin: 0; padding: 0; }
+}
+/* Reveal every saved-player entry without requiring a first scroll on a
+   320px-tall landscape view. Remove old inter-block margins, not controls. */
+@media (max-height: 480px) {
+  .rift-shell .player-gateway:has(.remembered-player) :is(.gateway-lookup-scene,.gateway-destinations,.gateway-footnote) { ...[truncated]
