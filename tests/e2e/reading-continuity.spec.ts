@@ -1,6 +1,95 @@
 import { expect, test } from '@playwright/test';
 import { openScene, readyJourney, readyWorld, unobstructed } from './journey-test-helpers';
 
+test('a champion record stays on its patch when opened in the patch and returned to its history', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/champion/ahri#record-26-3');
+  await readyWorld(page);
+  const record = page.locator('[data-history-record]:visible');
+  await expect(record).toHaveAttribute('data-history-record', '26.3');
+  await expect(record).toContainText('10 / 9 / 8 / 7 / 6');
+  await expect(record).toContainText('9 / 8 / 7 / 6 / 5');
+  await record.getByRole('link', { name: /^Open in patch 26\.3/ }).click();
+  await expect(page).toHaveURL(/\/patch\/26\.3#ahri$/);
+  await readyWorld(page);
+  const patchRecord = page.locator('[data-champion-id]:visible');
+  await expect(patchRecord).toHaveAttribute('data-champion-id', 'ahri');
+  const history = patchRecord.getByRole('link', { name: 'Ahri', exact: true });
+  await expect(history).toHaveAttribute('href', '/champion/ahri#record-26-3');
+  await history.click();
+  await expect(page).toHaveURL(/\/champion\/ahri#record-26-3$/);
+  await readyWorld(page);
+  await expect(record).toHaveCount(1);
+  await expect(record).toHaveAttribute('data-history-record', '26.3');
+  await expect(record).toContainText('10 / 9 / 8 / 7 / 6');
+  await expect(record).toContainText('9 / 8 / 7 / 6 / 5');
+  expect(errors).toEqual([]);
+});
+
+test('a champion comparison reconciles its visible groups and restores the full interval', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/compare/26.16/26.15?champions=Azir');
+  await readyWorld(page);
+  const status = page.locator('[data-compare-context]');
+  const groups = page.locator('[data-compare-group]:visible');
+  const rows = page.locator('[data-compare-champion]:visible');
+  await expect(status).toContainText('1 champion with direct records');
+  await expect(groups).toHaveCount(1);
+  await expect(groups).toHaveAttribute('data-compare-group', 'adjustment');
+  await expect(groups.locator('[data-compare-count]')).toHaveText('1');
+  await expect(rows).toHaveCount(1);
+  await expect(rows).toHaveAttribute('data-compare-champion', 'Azir');
+
+  await page.getByRole('button', { name: 'Show all champions', exact: true }).click();
+  await expect(page).toHaveURL(url => url.search === '');
+  await expect(status).toHaveText('Showing all 7 champions in this interval.');
+  await expect(groups).toHaveCount(3);
+  await expect(rows).toHaveCount(7);
+  await expect(page.locator('[data-compare-group="buff"] [data-compare-count]')).toHaveText('2');
+  await expect(page.locator('[data-compare-group="nerf"] [data-compare-count]')).toHaveText('1');
+  await expect(page.locator('[data-compare-group="adjustment"] [data-compare-count]')).toHaveText('4');
+
+  // A perspective without records must not leave empty classification shells.
+  await page.goto('/compare/26.16/26.15?champions=Ahri');
+  await readyWorld(page);
+  await expect(status).toHaveText('No direct champion changes recorded for this perspective in this interval.');
+  await expect(groups).toHaveCount(0);
+  await expect(rows).toHaveCount(0);
+  await page.getByRole('button', { name: 'Show all champions', exact: true }).click();
+  await expect(groups).toHaveCount(3);
+  await expect(rows).toHaveCount(7);
+  expect(errors).toEqual([]);
+});
+
+test('changing a comparison interval retains its scene and falls back when that scene has no records', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/compare/26.16/26.15?champions=Azir#items');
+  await readyWorld(page);
+  await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'items');
+  await page.locator('.compare-picker select').first().selectOption('26.14');
+  await expect(page).toHaveURL(/\/compare\/26\.16\/26\.14\?champions=Azir#items$/);
+  await readyWorld(page);
+  await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'items');
+
+  await page.locator('.compare-picker select').first().selectOption('26.11');
+  await expect(page).toHaveURL(/\/compare\/26\.16\/26\.11\?champions=Azir#items$/);
+  await readyWorld(page);
+  await page.locator('.compare-picker select').last().selectOption('26.12');
+  await expect(page).toHaveURL(/\/compare\/26\.12\/26\.11\?champions=Azir#comparison$/);
+  await readyWorld(page);
+  await expect(page.locator('#items')).toHaveCount(0);
+  await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'comparison');
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/compare\/26\.16\/26\.11\?champions=Azir#items$/);
+  await readyWorld(page);
+  await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'items');
+  expect(errors).toEqual([]);
+});
+
 test('continue restores the selected champion record and exact query after another destination', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));

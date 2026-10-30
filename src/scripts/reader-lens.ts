@@ -1,3 +1,5 @@
+import { presentSelection, releaseSelectionMotion } from '../lib/selection-motion';
+
 type ReaderFocus = { kind: 'champion' | 'patch'; key: string };
 
 const normalize = (value: string) => value.normalize('NFKD')
@@ -5,14 +7,6 @@ const normalize = (value: string) => value.normalize('NFKD')
 
 function announceFocus(detail: ReaderFocus) {
   window.dispatchEvent(new CustomEvent<ReaderFocus>('riftscry:focus-change', { detail }));
-}
-
-function animatePane(pane: HTMLElement | null) {
-  if (!pane || document.documentElement.dataset.motion === 'reduced'
-    || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!pane.getClientRects().length) return;
-  pane.getAnimations().forEach(animation => animation.cancel());
-  pane.animate([{ opacity: .55 }, { opacity: 1 }], { duration: 240, easing: 'ease-out' });
 }
 
 const pointerPositions = new WeakMap<HTMLElement, { x: number; y: number }>();
@@ -96,7 +90,7 @@ function initChampionLens(root: HTMLElement) {
         fallback.hidden = false;
       }
     }
-    panes.forEach(animatePane);
+    panes.forEach(pane => presentSelection(pane, key));
     announceFocus({ kind: 'champion', key });
   }
 
@@ -132,11 +126,16 @@ function initChampionLens(root: HTMLElement) {
   // Filtering owns the query and URL. Its event runs after visibility settles,
   // including when a pasted name was hidden by the previous exact search.
   root.addEventListener('riftscry:roster-filtered', selectExactSearch, options);
-  window.addEventListener('riftscry:motion-change', () => {
-    if (document.documentElement.dataset.motion === 'reduced') panes.forEach(pane => pane?.getAnimations().forEach(animation => animation.cancel()));
+  window.addEventListener('pagehide', event => {
+    if (!event.persisted) {
+      abort.abort();
+      panes.forEach(releaseSelectionMotion);
+    }
   }, options);
-  window.addEventListener('pagehide', event => { if (!event.persisted) abort.abort(); }, options);
-  queueMicrotask(selectExactSearch);
+  queueMicrotask(() => {
+    selectExactSearch();
+    panes.forEach(pane => presentSelection(pane, selectedKey));
+  });
 }
 
 function initPatchInstrument(root: HTMLElement) {
@@ -151,6 +150,7 @@ function initPatchInstrument(root: HTMLElement) {
   const scrubber = instrument.querySelector<HTMLInputElement>('[data-archive-scrubber]');
   const chart = instrument.querySelector<SVGSVGElement>('[data-archive-timeline-chart]');
   const cursor = instrument.querySelector<SVGElement>('[data-archive-cursor]');
+  const readouts = [...instrument.querySelectorAll<HTMLElement>('.archive-instrument-current, .archive-instrument-counts')];
   const chronological = [...rows].reverse();
   // The native range steps through recorded patches for keyboard/assistive input.
   // Pointer coordinates use the chart's real dates, including irregular gaps.
@@ -161,6 +161,7 @@ function initPatchInstrument(root: HTMLElement) {
   });
   const abort = new AbortController();
   const options = { signal: abort.signal };
+  readouts.forEach(pane => presentSelection(pane, instrument.dataset.readerKey ?? ''));
 
   function select(row: HTMLElement) {
     const key = row.dataset.readerPatchKey;
@@ -190,6 +191,7 @@ function initPatchInstrument(root: HTMLElement) {
     }
     link.href = row.querySelector<HTMLAnchorElement>('a')!.href;
     link.querySelector('[data-archive-link-id]')!.textContent = key;
+    readouts.forEach(pane => presentSelection(pane, key));
     announceFocus({ kind: 'patch', key });
   }
 
@@ -245,7 +247,12 @@ function initPatchInstrument(root: HTMLElement) {
     scrubber.addEventListener('pointercancel', () => { pointer = null; }, options);
     scrubber.addEventListener('lostpointercapture', () => { pointer = null; }, options);
   }
-  window.addEventListener('pagehide', event => { if (!event.persisted) abort.abort(); }, options);
+  window.addEventListener('pagehide', event => {
+    if (!event.persisted) {
+      abort.abort();
+      readouts.forEach(releaseSelectionMotion);
+    }
+  }, options);
 }
 
 function initializeReaders() {

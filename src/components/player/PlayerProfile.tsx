@@ -4,6 +4,7 @@ import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
 import { participant, type SummonerProfile } from '../../lib/player/contracts';
 import { historyAvailabilityForQueue, historyOptions } from '../../lib/player/modes';
 import { briefingLink } from '../../lib/player/identity';
+import { announcePlayerContext } from '../../lib/player/navigation';
 import { api, fetcher, playerLink, type PlayerInitial, type PlayerView } from './client';
 import { usePlayerHistory } from './usePlayerHistory';
 import { itemMetadataKey } from './useItemMetadata';
@@ -94,6 +95,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
     const updated = { ...filters, ...next };
     setFilters(updated);
     window.history.replaceState(window.history.state, '', playerLink(platform, puuid, { ...updated, name }));
+    announcePlayerContext();
   }
 
   function remember() {

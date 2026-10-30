@@ -41,7 +41,7 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
       <p class="journey-empty" data-filter-empty hidden>No matching champions. Change a filter or select Clear filters.</p>
       <div class="journey-patch-browser" data-patch-browser>
         <nav class="journey-record-selector" aria-label="Choose a champion record">{patch.champions.map((champion, index) => <a href={"#" + champion.championId.toLowerCase()} data-patch-select={champion.championId.toLowerCase()} aria-current={index === 0 ? 'true' : undefined}><img src={"https://ddragon.leagueoflegends.com/cdn/" + patch.assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="40" height="40" loading="lazy" decoding="async"/><span>{meta[champion.championId]?.name ?? champion.championId}</span><span aria-hidden="true">→</span></a>)}</nav>
-        <div class="cards journey-record-canvas" aria-label="Selected champion record">{patch.champions.map((champion) => <ChangeCard change={champion} meta={meta[champion.championId]} roles={roles[champion.championId] ?? []} assetVersion={patch.assetVersion}/>)}</div>
+        <div class="cards journey-record-canvas" aria-label="Selected champion record">{patch.champions.map((champion) => <ChangeCard change={champion} meta={meta[champion.championId]} roles={roles[champion.championId] ?? []} assetVersion={patch.assetVersion} patchId={patch.id}/>)}</div>
       </div>
     </section>
     {patch.items.length > 0 && <section id="items" class="journey-panel journey-record-list" data-journey-panel data-journey-label="Items" data-journey-world="patch" aria-label={"Item records in patch " + patch.id}>
@@ -56,10 +56,15 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
   </div>
 </Layout>
 <script>
+  import { presentSelection, releaseSelectionMotion } from '../../lib/selection-motion';
+
   const browser = document.querySelector<HTMLElement>('[data-patch-browser]');
   if (browser) {
     const cards = [...browser.querySelectorAll<HTMLElement>('[data-champion-id]')];
     const links = [...browser.querySelectorAll<HTMLAnchorElement>('[data-patch-select]')];
+    const pane = browser.querySelector<HTMLElement>('.journey-record-canvas');
+    const abort = new AbortController();
+    const listen = { signal: abort.signal };
     let selected = '';
     const fromHash = () => { try { return decodeURIComponent(location.hash.slice(1)); } catch { return ''; } };
     function selectRecord(id = '') {
@@ -74,6 +79,7 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
         if (link.dataset.patchSelect === selected) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
       });
       browser!.dataset.recordBrowserReady = 'true';
+      presentSelection(pane, selected);
     }
     selectRecord(fromHash());
     const observer = new MutationObserver(() => selectRecord(fromHash()));
@@ -86,11 +92,16 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
       if (!link || link.origin !== location.origin || link.pathname !== location.pathname || link.search !== location.search || !link.hash) return;
       let id = ''; try { id = decodeURIComponent(link.hash.slice(1)); } catch { return; }
       if (cards.some(card => card.id === id)) selectRecord(id);
-    });
+    }, listen);
     const restore = () => selectRecord(fromHash());
-    window.addEventListener('hashchange', restore);
-    window.addEventListener('popstate', restore);
-    window.addEventListener('riftscry:journey-change', restore);
-    window.addEventListener('pagehide', event => { if (!event.persisted) observer.disconnect(); });
+    window.addEventListener('hashchange', restore, listen);
+    window.addEventListener('popstate', restore, listen);
+    window.addEventListener('riftscry:journey-change', restore, listen);
+    window.addEventListener('pagehide', event => {
+      if (event.persisted) return;
+      observer.disconnect();
+      abort.abort();
+      releaseSelectionMotion(pane);
+    }, listen);
   }
 </script>

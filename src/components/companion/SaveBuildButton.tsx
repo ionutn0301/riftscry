@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { makeSavedBuild } from '../../lib/companion';
 import type { ItemMetadata } from '../../lib/player/advice';
 import { participant, type Match } from '../../lib/player/contracts';
@@ -6,9 +6,9 @@ import { useItemMetadata } from '../player/useItemMetadata';
 import PlayerIcon from '../player/PlayerIcon';
 import { useCompanion } from './useCompanion';
 
-type Props = { match: Match; platform: string; puuid: string; metadata?: ItemMetadata };
+type Props = { match: Match; platform: string; puuid: string; metadata?: ItemMetadata; children?: ReactNode };
 
-export default function SaveBuildButton({ match, platform, puuid, metadata }: Props) {
+export default function SaveBuildButton({ match, platform, puuid, metadata, children }: Props) {
   const { state, ready, problem, update } = useCompanion();
   // The loadout and this action share the same per-patch SWR reference. A match
   // review can supply its already-loaded metadata directly.
@@ -17,7 +17,6 @@ export default function SaveBuildButton({ match, platform, puuid, metadata }: Pr
   const [failure, setFailure] = useState('');
   const player = participant(match, puuid);
   const saved = state.builds.some(build => build.platform === platform && build.puuid === puuid && build.source === match.metadata.matchId);
-  const nextGameHref = `/next-game?${new URLSearchParams({ champion: player?.championName ?? '', queue: String(match.info.queueId) })}`;
 
   function save() {
     if (!ready || saved) return;
@@ -35,10 +34,11 @@ export default function SaveBuildButton({ match, platform, puuid, metadata }: Pr
 
   return <div className="player-build-save">
     <div className="player-build-save-actions">
-      <button type="button" className="player-button-secondary" disabled={!ready || saved || !player} onClick={save}>
-        <PlayerIcon name={saved ? 'check' : 'bookmark'} />{saved ? 'Saved for next game' : 'Save for next game'}
-      </button>
-      {player && <a className="player-text-link" href={nextGameHref}>Next game<PlayerIcon name="arrow-right" size={16} /></a>}
+      {saved ? <a className="player-text-link" href="/notebook#loadouts"><PlayerIcon name="check" />View saved loadout<PlayerIcon name="arrow-right" size={16} /></a> :
+        <button type="button" className="player-button-secondary" disabled={!ready || !player} onClick={save}>
+          <PlayerIcon name="bookmark" />Save loadout
+        </button>}
+      {children}
     </div>
     {(failure || problem) ? <p className="player-help" role="alert">{failure || problem}</p> :
       <p className="player-help player-capture-status" role="status" aria-live="polite">{message}</p>}

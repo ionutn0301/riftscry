@@ -1,3 +1,5 @@
+import { playerReturnUrl } from '../../lib/player/navigation';
+
 export { playerRequest as fetcher, PlayerRequestError, getPlayerCooldown, subscribePlayerCooldown } from './requestCache';
 export const api = (action: string, values: Record<string, string | number>) => `/api/player/${action}?${new URLSearchParams(Object.entries(values).map(([k,v]) => [k,String(v)]))}`;
 export type PlayerView = 'history' | 'builds' | 'memory';
@@ -24,16 +26,10 @@ export function matchLink(id: string, platform: string, puuid: string, back?: st
   return `/matches/${encodeURIComponent(id)}?${new URLSearchParams({ platform, puuid, ...(back ? { back } : {}) })}`;
 }
 
-/** Only local player routes can be carried through a match-review return link. */
+/** Only the same player's local profile or briefing can be a return destination. */
 export function playerBackLink(back: string, platform: string, puuid: string) {
-  if (!back.startsWith('/') || back.startsWith('//')) return playerLink(platform, puuid);
-  try {
-    const url = new URL(back, 'https://riftscry.invalid');
-    if (url.origin !== 'https://riftscry.invalid') return playerLink(platform, puuid);
-    if (url.pathname === '/players' && url.searchParams.get('puuid') === puuid && url.searchParams.get('platform') === platform) {
-      return playerLink(platform, puuid, url.search);
-    }
-    if (url.pathname === playerLink(platform, puuid)) return `${url.pathname}${url.search}${url.hash}`;
-  } catch { /* A malformed return path falls back to the canonical profile. */ }
-  return playerLink(platform, puuid);
+  const url = playerReturnUrl(back, { platform, puuid });
+  if (!url) return playerLink(platform, puuid);
+  if (url.pathname === '/players') return playerLink(platform, puuid, url.search) + url.hash;
+  return `${url.pathname}${url.search}${url.hash}`;
 }

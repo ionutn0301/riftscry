@@ -27,8 +27,8 @@ function evidenceLabel(fact?: Fact) {
 
 // Keep the component identity stable while cooldowns update once per second,
 // so a keyboard user's focused evidence link is not replaced during a retry.
-function EvidenceLink({ factId, fact, onReveal }: { factId: string; fact?: Fact; onReveal: (id: string) => void }) {
-  return <a className="review-evidence-link" href={`#fact-${encodeURIComponent(factId)}`} onClick={event => { event.preventDefault(); onReveal(factId); }}>{evidenceLabel(fact)} ↗</a>;
+function EvidenceLink({ factId, fact }: { factId: string; fact?: Fact }) {
+  return <a className="review-evidence-link" href={`#fact-${encodeURIComponent(factId)}`}>{evidenceLabel(fact)} ↗</a>;
 }
 
 export default function MatchReview({ id, platform, puuid, back }: { id: string; platform: string; puuid: string; back: string }) {
@@ -59,19 +59,18 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   const shownSuggestions = shown.suggestions ?? [];
   const focusSection = shown.sections[1] ?? shown.sections[0];
   const purchaseFacts = (timeline ? facts : shown.facts).filter(fact => fact.kind === 'item' || fact.kind === 'death');
+  const backHref = playerBackLink(back, platform, puuid);
+  const backToBriefing = backHref.startsWith('/next-game?');
 
-  function revealEvidence(factId: string, updateHash = true) {
+  function revealEvidence(factId: string) {
     const target = document.getElementById(`fact-${factId}`);
     if (!target) return;
-    window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: target.id, focus: false } }));
+    if (target.closest<HTMLElement>('[data-journey-panel]')?.id !== document.body.dataset.journeyScene) {
+      window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: target.id, focus: false } }));
+    }
     if (evidenceDetails.current) evidenceDetails.current.open = true;
     target.focus({ preventScroll: true });
     target.scrollIntoView({ block: 'center', behavior: 'auto' });
-    if (updateHash) {
-      const url = new URL(window.location.href);
-      url.hash = `fact-${encodeURIComponent(factId)}`;
-      history.replaceState(history.state, '', url);
-    }
   }
 
   useEffect(() => {
@@ -81,12 +80,24 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
         const factId = decodeURIComponent(window.location.hash.slice(6));
         // Following a saved event link is an explicit request for that timeline.
         if (/^event-\d+$/.test(factId) && !shown.facts.some(fact => fact.id === factId)) setTimelineRequested(true);
-        revealEvidence(factId, false);
+        revealEvidence(factId);
       } catch { /* Invalid fragments do not block the review. */ }
+    };
+    // The shared controller owns native hash activation and focus. Open the
+    // disclosure synchronously when it commits that scene, without activating twice.
+    const followScene = (event: Event) => {
+      const target = (event as CustomEvent<{ target?: string }>).detail?.target;
+      if (target?.startsWith('fact-') && document.getElementById(target) && evidenceDetails.current) evidenceDetails.current.open = true;
     };
     followHash();
     window.addEventListener('hashchange', followHash);
-    return () => window.removeEventListener('hashchange', followHash);
+    window.addEventListener('popstate', followHash);
+    window.addEventListener('riftscry:journey-change', followScene);
+    return () => {
+      window.removeEventListener('hashchange', followHash);
+      window.removeEventListener('popstate', followHash);
+      window.removeEventListener('riftscry:journey-change', followScene);
+    };
   }, [shown.facts]);
 
   async function generate() {
@@ -106,7 +117,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   }
 
   return <div className="journey-match" data-journey-deck data-journey-hydrated={journeyReady} data-journey-default="match-overview">
-    <nav className="match-route-actions" aria-label="Continue from this match"><a className="player-text-link review-back" aria-label="← Back to player and filters" href={playerBackLink(back, platform, puuid)}><PlayerIcon name="arrow-left" /> Back to player</a>{match && p && <a className="player-text-link" href={briefingLink({ platform, puuid }, { champion: p.championName, queue: String(match.info.queueId) })}><PlayerIcon name="target" />Automatic briefing<PlayerIcon name="arrow-right" size={16} /></a>}</nav>
+    <nav className="match-route-actions" aria-label="Continue from this match"><a className="player-text-link review-back" aria-label={backToBriefing ? "← Back to briefing and filters" : "← Back to player and filters"} href={backHref}><PlayerIcon name="arrow-left" /> {backToBriefing ? "Back to briefing" : "Back to player"}</a>{match && p && <a className="player-text-link" href={briefingLink({ platform, puuid }, { champion: p.championName, queue: String(match.info.queueId) })}><PlayerIcon name="target" />Automatic briefing<PlayerIcon name="arrow-right" size={16} /></a>}</nav>
     <header className="player-hero review-champion-heading">
       {p && <ChampionPortrait className="review-champion-portrait" champion={p.championName} size={88} />}
       <div><p className="player-kicker">MATCH REVIEW</p><h1>{p ? championDisplayName(p.championName) : 'Selected match'}</h1>
@@ -147,8 +158,8 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
         </div>
         <p className="review-mode"><PlayerIcon name={shown.mode === 'ai' ? 'sparkles' : 'check'} />{shown.mode === 'ai' ? 'AI-assisted interpretation' : 'Recorded summary'}</p>
         <p role="status" aria-live="polite">{busy ? 'Reviewing your match…' : message}</p>
-        {focusSection && <article className="review-focus"><PlayerIcon name="target" size={24} /><div><p>{focusSection.text}</p><div className="review-evidence-links">{focusSection.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div></div></article>}
-        <details className="review-full player-explainer" open={reviewOpen} onToggle={event => setReviewOpen(event.currentTarget.open)}><summary>Full review</summary><div className="review-grid">{shown.sections.filter(section => section !== focusSection).map(section => <article key={section.heading}><h3 className="player-kicker">{section.heading}</h3><p>{section.text}</p><div className="review-evidence-links">{section.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div></article>)}</div>{shown.notice && <p className="player-help">{shown.notice}</p>}</details>
+        {focusSection && <article className="review-focus"><PlayerIcon name="target" size={24} /><div><p>{focusSection.text}</p><div className="review-evidence-links">{focusSection.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} />)}</div></div></article>}
+        <details className="review-full player-explainer" open={reviewOpen} onToggle={event => setReviewOpen(event.currentTarget.open)}><summary>Full review</summary><div className="review-grid">{shown.sections.filter(section => section !== focusSection).map(section => <article key={section.heading}><h3 className="player-kicker">{section.heading}</h3><p>{section.text}</p><div className="review-evidence-links">{section.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} />)}</div></article>)}</div>{shown.notice && <p className="player-help">{shown.notice}</p>}</details>
       </section>
 
       {!!shownSuggestions.length && <section className="build-suggestions" aria-labelledby="build-suggestions-heading">
@@ -157,7 +168,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <header><ItemLabel id={suggestion.targetItem} metadata={items} compact /><h3>{suggestion.alternative}</h3></header>
           <p className="suggestion-condition"><PlayerIcon name="target" /> When: {suggestion.condition}</p>
           <details className="player-explainer"><summary>Why this option?</summary><p><strong>Recorded:</strong> {suggestion.original}</p><p>{suggestion.reason}</p><p className="suggestion-tradeoff"><strong>Tradeoff:</strong> {suggestion.tradeoff}</p>
-          <div className="review-evidence-links">{suggestion.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div>
+          <div className="review-evidence-links">{suggestion.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} />)}</div>
           {suggestion.source && /^https:\/\//.test(suggestion.source.url) && <p><a href={suggestion.source.url} target="_blank" rel="noreferrer">{suggestion.source.label} ↗</a></p>}
           </details><button aria-controls="build-memory" onClick={() => { setDraft({ ...suggestion }); requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'build-memory' } }))); }}><PlayerIcon name="bookmark" /> Review draft</button>
         </article>)}
