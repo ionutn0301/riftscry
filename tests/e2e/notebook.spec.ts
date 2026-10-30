@@ -3,6 +3,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { COMPANION_KEY, emptyCompanion, makeSavedBuild, type CompanionState, type QuickNote } from '../../src/lib/companion';
 import latestPatch from '../../src/data/patches/26.21.json' with { type: 'json' };
 import { platform, puuid, sourceMatch } from '../player-e2e/fixtures';
+import { openScene, readyWorld } from './journey-test-helpers';
 
 const now = Date.parse('2026-10-28T12:00:00Z');
 const context = { champion: 'Azir', queue: '450', situation: 'any' as const };
@@ -23,10 +24,14 @@ async function open(page: Page, path = '/notebook') {
   const island = page.locator('astro-island:has([data-rift-recall])');
   await expect(island).not.toHaveAttribute('ssr', '');
   await expect(page.getByRole('status').filter({ hasText: 'Opening your preparation' })).toHaveCount(0);
+  await readyWorld(page);
 }
 async function library(page: Page, name: string) {
-  const summary = page.locator('.recall-library > details > summary').filter({ hasText: name });
-  const details = summary.locator('..');
+  const scenes: Record<string, string> = { 'Your quick notes': 'notes', 'Saved loadouts': 'loadouts', 'Past cards': 'notebook-history', 'Backup and restore': 'notebook-history' };
+  const scene = await openScene(page, scenes[name]!);
+  if (name !== 'Backup and restore') return scene;
+  const details = scene.locator('.recall-backup');
+  const summary = details.locator(':scope > summary');
   if (!(await details.evaluate(element => element.hasAttribute('open')))) await summary.click();
   return details;
 }
@@ -39,12 +44,14 @@ test('a manual reminder becomes an immutable card and a useful reflection withou
   const playerRequests: string[] = [];
   page.on('request', request => { if (request.url().includes('/api/player/')) playerRequests.push(request.url()); });
   await open(page);
+  await openScene(page, 'game-card');
   await page.getByLabel('Champion for next game', { exact: true }).selectOption('Azir');
   await page.getByLabel('Game mode for next game', { exact: true }).selectOption('450');
   await page.getByLabel('Situation for next game', { exact: true }).selectOption('vs-poke');
   await page.getByRole('button', { name: 'Add a quick note', exact: true }).click();
   const original = 'Keep an escape route before using my last dash.';
   await page.getByLabel('Note text', { exact: true }).fill(original);
+  await page.locator('.recall-note-context > summary').click();
   await expect(page.getByLabel('Applies to game mode', { exact: true })).toHaveValue('450');
   await page.getByRole('button', { name: 'Save note', exact: true }).click();
   await expect(page.getByRole('radio', { name: original, exact: true })).toBeChecked();
@@ -57,6 +64,7 @@ test('a manual reminder becomes an immutable card and a useful reflection withou
   const revised = 'Revised reminder for the next session.';
   await page.getByLabel('Note text', { exact: true }).fill(revised);
   await page.getByRole('button', { name: 'Save note', exact: true }).click();
+  await openScene(page, 'game-card');
   await expect(card.locator('blockquote')).toHaveText(original);
   await card.getByRole('button', { name: 'Helped', exact: true }).click();
   await card.getByLabel('Reflection (optional)', { exact: true }).fill('Having one clear reminder was useful.');
@@ -66,6 +74,8 @@ test('a manual reminder becomes an immutable card and a useful reflection withou
   await expect(history).toContainText('Having one clear reminder was useful.');
   expect((await saved(page))!.notes[0]!.text).toBe(revised);
   await page.reload();
+  await readyWorld(page);
+  await openScene(page, 'game-card');
   await expect(page.getByRole('radio', { name: revised, exact: true })).toBeVisible();
   expect((await saved(page))!.runs[0]!.note!.text).toBe(original);
   expect(playerRequests).toEqual([]);
@@ -94,7 +104,7 @@ test('exact modes and selected situations control recall and persist after a dee
 test('older notes show exact relevant archive changes and explicit review keeps their original patch', async ({ page }) => {
   await seed(page, makeState([makeNote({ patch: '16.20' })]));
   await open(page);
-  const note = page.locator('.recall-note-option');
+  const note = page.locator('[data-recall-note="my-reminder"]');
   await expect(note.locator('[data-patch-status]')).toHaveAttribute('data-patch-status', 'review');
   await note.getByText('Check patch changes', { exact: true }).click();
   const azir = latestPatch.champions.find(champion => champion.championId === 'Azir')!;
@@ -127,6 +137,7 @@ test('a selected focus recalls its previous reflection and an unused card can be
     outcome: 'retry', reflection: 'Remember to look before committing.', closedAt: now + 60000 }];
   await seed(page, state);
   await open(page);
+  await openScene(page, 'game-card');
   await page.getByRole('radio', { name: prior.text, exact: true }).check();
   await expect(page.getByRole('complementary', { name: 'Your previous reflection', exact: true })).toContainText('Remember to look before committing.');
   await page.getByRole('button', { name: 'Take this into my game', exact: true }).click();
@@ -174,11 +185,13 @@ test('a blocked write preserves the draft and never reports a successful save', 
     };
   }, COMPANION_KEY);
   await open(page);
-  await page.getByRole('button', { name: 'Add a quick note', exact: true }).click();
+  await page.getByRole('button', { name: 'New note', exact: true }).click();
   const draft = page.getByLabel('Note text', { exact: true });
   await draft.fill('Keep my unsaved draft visible.');
   await page.getByRole('button', { name: 'Save note', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('Nothing was saved.');
+  const error = page.getByRole('dialog').getByRole('alert');
+  await expect(error).toBeVisible();
+  await expect(error).toContainText('Nothing was saved.');
   await expect(draft).toHaveValue('Keep my unsaved draft visible.');
   expect(await saved(page)).toBeNull();
 });
@@ -199,16 +212,18 @@ test('corrupt stored data stays intact and cannot be exported as an empty substi
 test('another open tab receives new notes and the active card without duplicating a game', async ({ page, context: browserContext }) => {
   await seed(page, makeState());
   await open(page);
+  await openScene(page, 'game-card');
   const other = await browserContext.newPage();
   try {
     await open(other);
-    await other.getByRole('button', { name: 'Add a quick note', exact: true }).click();
+    await other.getByRole('button', { name: 'New note', exact: true }).click();
     await other.getByLabel('Note text', { exact: true }).fill('A reminder shared between my open tabs.');
     await other.getByRole('button', { name: 'Save note', exact: true }).click();
     const choice = page.getByRole('radio', { name: 'A reminder shared between my open tabs.', exact: true });
     await expect(choice).toBeVisible();
     await choice.check();
     await page.getByRole('button', { name: 'Take this into my game', exact: true }).click();
+    await openScene(other, 'game-card');
     await expect(other.getByRole('region', { name: 'Your game card', exact: true })).toBeVisible();
     expect((await saved(other))!.runs).toHaveLength(1);
   } finally { await other.close(); }
@@ -244,7 +259,9 @@ test('the preparation layout and touch controls remain usable at 320px', async (
   await page.setViewportSize({ width: 320, height: 568 });
   await seed(page, makeState([makeNote({ text: 'A long personal reminder with a longword'.repeat(7) })]));
   await open(page);
+  await openScene(page, 'game-card');
   await page.getByRole('button', { name: 'Add a quick note', exact: true }).click();
+  await page.locator('.recall-note-context > summary').click();
   for (const field of await page.locator('.recall-workspace select, .recall-workspace textarea').all()) {
     expect(await field.evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
   }

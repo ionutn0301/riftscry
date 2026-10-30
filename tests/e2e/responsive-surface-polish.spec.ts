@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 async function readyJourney(page: Page) {
+  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-ready', 'true');
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-loading', 'false');
   await page.evaluate(() => document.fonts.ready);
@@ -11,15 +12,20 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1366, 768], [1440, 900]] as const) {
-  test(`the journey opening fits ${width}×${height} with every action reachable`, async ({ page }) => {
+  test(`the evidence scene fits ${width}×${height} with every primary action reachable`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto('/explore', { waitUntil: 'domcontentloaded' });
     await readyJourney(page);
-    const hero = page.locator('.arrival-chapter');
-    const bounds = (await hero.boundingBox())!;
+    const scene = page.locator('[data-journey-panel]:not([hidden])');
+    await expect(scene).toHaveCount(1);
+    await expect(scene).toHaveAttribute('id', 'change');
+    const bounds = (await scene.boundingBox())!;
     expect(bounds.y + bounds.height).toBeLessThanOrEqual(height + 1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
-    for (const action of await hero.getByRole('link').all()) {
+    const actions = page.locator('[data-roster-open], #change [data-focus-record], #change [data-record-source], #change .voyage-station-continue');
+    await expect(actions).toHaveCount(4);
+    for (const action of await actions.all()) {
+      await action.scrollIntoViewIfNeeded();
       await expect(action).toBeInViewport({ ratio: 0.99 });
       expect(await action.evaluate(element => {
         const rect = element.getBoundingClientRect();
@@ -36,9 +42,10 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390]] as const) {
     await page.setViewportSize({ width, height });
     await page.goto('/champion/nunu', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => document.fonts.ready);
-    const column = (await page.locator('.route-arrival-figure').boundingBox())!;
-    const figure = (await page.locator('.champion-arrival-art').boundingBox())!;
-    for (const art of await page.locator('.champion-arrival-art, .champion-arrival-art picture, .champion-arrival-art img, .champion-arrival-art figcaption').all()) {
+    await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+    const column = (await page.locator('#history').boundingBox())!;
+    const figure = (await page.locator('.journey-champion-art').boundingBox())!;
+    for (const art of await page.locator('.journey-champion-art, .journey-champion-art picture, .journey-champion-art img, .journey-champion-art figcaption').all()) {
       const bounds = (await art.boundingBox())!;
       expect(bounds.x).toBeGreaterThanOrEqual(column.x - 1);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(column.x + column.width + 1);
@@ -56,8 +63,8 @@ for (const [width, height] of [[1366, 768], [1280, 800], [1920, 850], [1440, 900
     await readyJourney(page);
     await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
     const dialog = page.locator('#rift-map-dialog');
-    const destinations = dialog.locator('.map-destination');
-    await expect(destinations).toHaveCount(8);
+    const destinations = dialog.locator('[data-world-link]');
+    await expect(destinations).toHaveCount(5);
     for (const destination of await destinations.all()) await expect(destination).toBeInViewport({ ratio: 0.99 });
     expect(await dialog.evaluate(element => [element, ...element.querySelectorAll('*')].filter(node =>
       /^(auto|scroll)$/.test(getComputedStyle(node).overflowY) && node.scrollHeight > node.clientHeight + 1).length)).toBe(0);

@@ -97,3 +97,21 @@
 @media (max-width: 900px), (pointer: coarse) {
   .filter-bar input[type="search"] { font-size: 16px; }
 }
+
+/* The common task is a name lookup. Role, classification and saved-pool
+   controls remain one native disclosure away, with active scope always visible. */
+.patch-filter-options { position: relative; min-width: 0; }
+.patch-filter-options > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 8px 12px; list-style: none; cursor: pointer; color: var(--cream-dim); border: 1px solid var(--line-strong); font-size: 12px; }
+.patch-filter-options > summary::-webkit-details-marker { display: none; }
+.patch-filter-options > summary > span:last-child { margin-left: 8px; font-size: 18px; color: var(--gold-bright); }
+.patch-filter-options[open] > summary > span:last-child { transform: rotate(45deg); }
+.patch-filter-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; padding: 0 4px; border-radius: 50%; background: #b5e9ed18; color: #c7efdf; font-size: 10px; }
+.patch-filter-options-body { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
+.patch-filter-options[open] { flex: 1 0 100%; order: 4; }
+.patch-filter-status { flex: 1 0 100%; order: 3; color: var(--cream-faint); font-size: 11px; line-height: 1.5; }
+.patch-filter-console .patch-filter-clear { font-size: 10px; letter-spacing: 0; text-transform: none; }
+@media (max-width: 640px) {
+  .patch-filter-console input[type="search"] { flex: 1 1 100px; width: 0; }
+  .patch-filter-options > summary { padding-inline: 10px; }
+  .patch-filter-options-body .seg { flex: 1 1 100%; }
+}

@@ -2,114 +2,74 @@
 import { buildJourneyModel, journeyRoster } from '../../lib/voyage-data';
 import { voyageConnection } from '../../lib/voyage-state';
 import { getLatestPatch, getAllPatches } from '../../lib/data';
-import ReturnBriefing from './ReturnBriefing.astro';
 import '../../styles/voyage.css';
-import '../../styles/observatory-voyage.css';
-
+import '../../styles/journey-voyage.css';
 const latest = getLatestPatch();
-const exampleId = latest.champions.find((champion) => champion.abilities.some((ability) => ability.changes.length))?.championId ?? 'Belveth';
+const exampleId = latest.champions.find(champion => champion.abilities.some(ability => ability.changes.length))?.championId ?? 'Belveth';
 const model = buildJourneyModel(exampleId)!;
 const roster = journeyRoster();
 const archive = getAllPatches();
-const featured = [...new Set([exampleId, 'Belveth', 'Azir', 'Ahri'])].map((id) => roster.find((champion) => champion.id === id)!);
-const initial = model.records.find((record) => record.id === model.selectedId);
-const initialTrail = model.records.filter((record) => record.field === initial?.field && model.periodIds.includes(record.id));
-const initialFields = [...new Map(model.records.filter((record) => model.periodIds.includes(record.id)).map((record) => [record.field, record])).values()];
-const chapters = [
-  ['arrival', 'Enter the Rift'], ['perspective', 'Choose a champion'], ['change', 'Witness a change'], ['history', 'Follow the history'], ['return', 'Your next visit'],
-];
+const featured = [...new Set([exampleId, 'Belveth', 'Azir', 'Ahri'])].map(id => roster.find(champion => champion.id === id)!);
+const initial = model.records.find(record => record.id === model.selectedId);
+const initialTrail = model.records.filter(record => record.field === initial?.field && model.periodIds.includes(record.id));
+const initialFields = [...new Map(model.records.filter(record => model.periodIds.includes(record.id)).map(record => [record.field, record])).values()];
 const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
 ---
-<div class="rift-voyage rift-voyage--observatory" data-voyage data-chapter="0">
-  <div class="voyage-world" aria-hidden="true">
-    <div class="world-shot world-shot--arrival is-ready" data-world-shot="0"></div>
-    <div class="world-shot world-shot--identity" data-world-shot="1"><div class="identity-light"></div><div class="voyage-iris"><span></span><span></span></div></div>
-    <div class="world-shot world-shot--evidence" data-world-shot="2"><div class="evidence-horizon"></div><div class="evidence-seam"></div></div>
-    <div class="world-shot world-shot--history" data-world-shot="3"><img data-scene-src="/images/voyage/history-strata.webp" alt="" width="1672" height="941" decoding="async" /></div>
-    <div class="world-shot world-shot--return" data-world-shot="4"><img data-scene-src="/images/voyage/return-basin.webp" alt="" width="1672" height="941" decoding="async" /></div>
-    <div class="voyage-atmosphere"></div>
-    <div class="voyage-fracture"><span></span></div>
-    <div class="voyage-occlusion"></div>
-  </div>
-
-  <section id="arrival" class="voyage-chapter arrival-chapter" data-scene="arrival" data-journey-chapter="0">
-    <div class="chapter-composition arrival-composition">
-      <p class="world-eyebrow">LEAGUE OF LEGENDS / THE CHANGING GAME</p>
-      <h1>THE RIFT,<br /><em>REVEALED.</em></h1>
-      <div class="arrival-bottom"><p>Know before you queue.<br />A journey through what changed for your champions.</p><div class="voyage-actions"><a class="voyage-action" href="#perspective">Enter the journey <span aria-hidden="true">↘</span></a><a class="voyage-text-link" href="/pool#briefing">Open my briefing <span aria-hidden="true">↗</span></a></div></div>
-      <div class="arrival-footer">
-        <a class="chapter-invitation" href="#perspective"><span class="invitation-line" aria-hidden="true"></span><span>Scroll into a different perspective</span><span aria-hidden="true">↓</span></a>
-        <div class="arrival-archive"><span class="world-eyebrow">LATEST IN THIS ARCHIVE</span><a href={'/patch/' + latest.id}>{latest.id}<span>{latest.releaseDate} ↗</span></a></div>
-      </div>
+<div class="rift-voyage voyage-station" data-voyage data-chapter="2" data-journey-deck data-journey-default="change">
+  <header class="voyage-station-heading">
+    <div><p class="journey-eyebrow">THE ARCHIVE / UNDER THE LENS</p><h1>Trace a change.</h1></div>
+    <div class="voyage-perspective-controls">
+      <div class="quick-perspectives" role="group" aria-label="Featured champion perspectives">{featured.map(champion => <button type="button" data-choose-champion={champion.id} aria-pressed={champion.id === model.identity.id}><img src={champion.icon} alt="" width="40" height="40" loading="lazy" decoding="async" /><span>{champion.name}</span></button>)}</div>
+      <button type="button" class="voyage-action voyage-action--outline" data-roster-open>Find your champion <span aria-hidden="true">↗</span></button>
     </div>
-  </section>
+    <p class="perspective-status" role="status" data-selection-status>Following {model.identity.name}.</p>
+  </header>
 
-  <nav class="journey-coordinates" aria-label="Journey chapters">
-    {chapters.map(([id, label], index) => <a href={'#' + id} data-scene-link aria-label={label} aria-current={index === 0 ? 'location' : undefined}><span class="coordinate-mark" aria-hidden="true"></span><span class="coordinate-number">0{index + 1}</span><span class="coordinate-label">{label}</span></a>)}
-  </nav>
-
-  <section id="perspective" class="voyage-chapter perspective-chapter" data-scene="perspective" data-journey-chapter="1" data-observatory-chapter="01">
-    <div class="chapter-composition perspective-composition">
-      <div class="perspective-copy"><p class="world-eyebrow">01 / CHOOSE WHO MATTERS</p><h2>A perspective<br />of your own.</h2><p class="chapter-description">One changing game. {roster.length} perspectives.<br />Choose a champion. The journey changes with you.</p>
-        <div class="quick-perspectives" role="group" aria-label="Featured champion perspectives">{featured.map((champion) => <button type="button" data-choose-champion={champion.id} aria-pressed={champion.id === model.identity.id}><img src={champion.icon} alt="" width="48" height="48" loading="lazy" decoding="async" /><span>{champion.name}</span></button>)}</div>
-        <button type="button" class="voyage-action voyage-action--outline" data-roster-open>Find your champion <span aria-hidden="true">↗</span></button>
-        <p class="perspective-status" role="status" data-selection-status>Following {model.identity.name}.</p>
-        <a class="voyage-text-link" href="#change">See what changed <span aria-hidden="true">↓</span></a>
-      </div>
+  <section id="change" class="voyage-station-scene" data-journey-panel data-journey-label="The change" data-journey-world="explore" data-journey-chapter="2">
+    <span id="arrival" class="voyage-legacy-anchor" aria-hidden="true"></span><span id="perspective" class="voyage-legacy-anchor" aria-hidden="true"></span>
+    <div class="voyage-inspection">
       <figure class="perspective-identity" data-champion-identity>
-        <picture><source media="(max-width:700px)" srcset={model.identity.portrait} data-champion-portrait /><img src={model.identity.splash} alt={model.identity.name + ' — official Riot Games artwork'} width="1215" height="717" loading="lazy" decoding="async" data-champion-splash /></picture>
-        <div class="champion-art-fallback" data-art-fallback hidden>Artwork unavailable. Your champion's records remain available.</div>
-        <figcaption><div><p class="world-eyebrow">YOUR PERSPECTIVE / RIOT GAMES ARTWORK</p><h3 data-champion-name>{model.identity.name}</h3><p data-champion-title>{model.identity.title}</p></div><button type="button" class="champion-save" data-save-champion aria-pressed="false">Save to My Pool <span aria-hidden="true">+</span></button></figcaption>
+        <picture><source media="(max-width:700px)" srcset={model.identity.portrait} data-champion-portrait /><img src={model.identity.splash} alt={model.identity.name + ' — official Riot Games artwork'} width="1215" height="717" loading="eager" decoding="async" data-champion-splash /></picture>
+        <div class="champion-art-fallback" data-art-fallback hidden>Artwork unavailable. The records remain available.</div>
+        <figcaption><div><p class="journey-eyebrow">YOUR PERSPECTIVE</p><h2 data-champion-name>{model.identity.name}</h2><p data-champion-title>{model.identity.title}</p></div><button type="button" class="champion-save" data-save-champion aria-pressed="false">Save to My Pool <span aria-hidden="true">+</span></button></figcaption>
+        <small class="voyage-art-credit">RIOT GAMES ARTWORK</small>
       </figure>
+      <div class="voyage-evidence-desk">
+        <div class="change-choice"><label for="voyage-field">Recorded change</label><select id="voyage-field" data-field-choice>{initialFields.map(record => <option value={record.field} selected={record.field === initial?.field}>{record.ability === 'base' ? 'Base stats' : record.ability} / {record.change.label}</option>)}</select></div>
+        <article class="voyage-record" data-current-record>
+          <p class="record-context"><span data-record-champion>{model.identity.name}</span><span data-record-patch>PATCH {initial?.patch}</span><time data-record-date>{initial?.date}</time><span data-record-ability>{initial?.abilityName}</span></p>
+          <h3 data-record-label>{initial?.change.label}</h3>
+          <div class="record-values" data-record-numeric hidden={initial?.change.kind !== 'numeric'} data-long={initial?.change.kind === 'numeric' && (initial.change.before.length > 18 || initial.change.after.length > 18)}><div class="record-before"><span>Before</span><strong data-record-before>{initial?.change.kind === 'numeric' ? initial.change.before : ''}</strong></div><span class="record-crossing" aria-hidden="true">→</span><div class="record-after"><span>After</span><strong data-record-after>{initial?.change.kind === 'numeric' ? initial.change.after : ''}</strong></div></div>
+          <p class="record-rule" data-record-prose hidden={initial?.change.kind !== 'prose'}>{initial?.change.kind === 'prose' ? initial.change.text : ''}</p>
+          <p class="record-unit" data-record-unit>{initial?.change.kind === 'numeric' ? initial.change.unit : ''}</p>
+          <p class="record-reading" data-record-reading>{initial?.reading}</p>
+          <div class="record-quiet" data-record-quiet hidden><h3>No direct record.</h3><p>This champion has no direct record in the selected interval.</p><a class="voyage-text-link" data-historical-recovery hidden></a><a class="voyage-text-link" href="/patches">Open the archive ↗</a></div>
+          <div class="voyage-actions"><button type="button" class="voyage-action voyage-action--outline" data-focus-record aria-pressed="false">Keep this finding <span aria-hidden="true">+</span></button><a class="voyage-text-link" data-record-source href={initial?.source ?? latest.sourceUrl} target="_blank" rel="noreferrer">Original source ↗</a></div>
+          <p class="finding-explanation" role="status" data-findings-status></p>
+        </article>
+        <a class="voyage-station-continue" href="#history"><span>Follow this field through time</span><span aria-hidden="true">→</span></a>
+      </div>
     </div>
   </section>
 
-  <section id="change" class="voyage-chapter change-chapter" data-scene="change" data-journey-chapter="2" data-observatory-chapter="02">
-    <div class="chapter-composition change-composition">
-      <header class="change-heading"><div><p class="world-eyebrow">02 / A MOMENT THAT MATTERS</p><h2>See the change.<br /><em>Keep the detail.</em></h2></div><div class="change-choice"><label for="voyage-field">Choose a recorded field</label><select id="voyage-field" data-field-choice>{initialFields.map((record) => <option value={record.field} selected={record.field === initial?.field}>{record.ability === 'base' ? 'Base stats' : record.ability} / {record.change.label}</option>)}</select></div></header>
-      <article class="voyage-record" data-current-record>
-        <p class="record-context"><span data-record-champion>{model.identity.name}</span><span data-record-patch>PATCH {initial?.patch}</span><time data-record-date>{initial?.date}</time><span data-record-ability>{initial?.abilityName}</span></p>
-        <h3 data-record-label>{initial?.change.label}</h3>
-        <div class="record-values" data-record-numeric hidden={initial?.change.kind !== 'numeric'} data-long={initial?.change.kind === 'numeric' && (initial.change.before.length > 18 || initial.change.after.length > 18)}>
-          <div class="record-before"><span>Before</span><strong data-record-before>{initial?.change.kind === 'numeric' ? initial.change.before : ''}</strong></div><span class="record-crossing" aria-hidden="true">→</span><div class="record-after"><span>After</span><strong data-record-after>{initial?.change.kind === 'numeric' ? initial.change.after : ''}</strong></div>
-        </div>
-        <p class="record-rule" data-record-prose hidden={initial?.change.kind !== 'prose'}>{initial?.change.kind === 'prose' ? initial.change.text : ''}</p>
-        <p class="record-unit" data-record-unit>{initial?.change.kind === 'numeric' ? initial.change.unit : ''}</p>
-        <p class="record-reading" data-record-reading>{initial?.reading}</p>
-        <div class="record-quiet" data-record-quiet hidden><h3>A quieter chapter.</h3><p>No direct record for this champion in the selected interval. Items, systems, and other champions can still affect the game.</p><a class="voyage-text-link" data-historical-recovery hidden></a><a class="voyage-text-link" href="/patches">Explore the covered archive ↗</a></div>
-        <div class="voyage-actions"><button type="button" class="voyage-action voyage-action--outline" data-focus-record aria-pressed="false">Keep this finding <span aria-hidden="true">+</span></button><a class="voyage-text-link" data-record-source href={initial?.source ?? latest.sourceUrl} target="_blank" rel="noreferrer">Riot's original notes ↗</a></div>
-        <p class="finding-explanation">Keep up to 50 findings on this device, across champions and dates. Remove or restore them in your briefing.</p><p class="finding-explanation" role="status" data-findings-status></p><a class="voyage-text-link" href="/pool#briefing">Open kept findings in your briefing ↗</a>
-      </article>
-      <a class="chapter-invitation" href="#history"><span class="invitation-line" aria-hidden="true"></span><span>One change belongs to a larger history</span><span aria-hidden="true">↓</span></a>
-    </div>
-  </section>
-
-  <section id="history" class="voyage-chapter history-chapter" data-scene="history" data-journey-chapter="3" data-observatory-chapter="03">
-    <div class="chapter-composition history-composition">
-      <header class="history-heading"><p class="world-eyebrow">03 / FOLLOW THE CONSEQUENCES</p><h2>Nothing changes<br /><em>in isolation.</em></h2><p class="chapter-description">Follow this field through the records.<br />Choose your dates. Find the connections.</p></header>
-      <div class="history-controls"><label>After patch<select data-period-older aria-label="After patch">{archive.map((patch) => <option selected={patch.id === model.older}>{patch.id}</option>)}</select></label><span aria-hidden="true">→</span><label>Through patch<select data-period-newer aria-label="Through patch">{archive.map((patch) => <option selected={patch.id === model.newer}>{patch.id}</option>)}</select></label><a class="voyage-text-link" data-compare-link href={'/compare/' + model.newer + '/' + model.older}>Compare the whole interval ↗</a></div>
+  <section id="history" class="voyage-station-scene" data-journey-panel data-journey-label="Through time" data-journey-world="patches" data-journey-chapter="3">
+    <div class="voyage-time-desk">
+      <header><p class="journey-eyebrow">THE SAME FIELD / THROUGH TIME</p><h2>Every change<br /><em>leaves a trace.</em></h2></header>
+      <div class="history-controls"><label>After patch<select data-period-older aria-label="After patch">{archive.map(patch => <option selected={patch.id === model.older}>{patch.id}</option>)}</select></label><span aria-hidden="true">→</span><label>Through patch<select data-period-newer aria-label="Through patch">{archive.map(patch => <option selected={patch.id === model.newer}>{patch.id}</option>)}</select></label><a class="voyage-text-link" data-compare-link href={'/compare/' + model.newer + '/' + model.older}>Compare interval ↗</a></div>
       <p class="history-validation" role="status" data-period-status>Starting patch excluded. Ending patch included.</p>
-      <div class="history-trace" data-history-trace aria-label="Records for the selected field">{initialTrail.map((record) => <button type="button" class="history-stop" data-select-record={record.id} aria-pressed={record.id === initial?.id}><span class="history-pin" aria-hidden="true"></span><time>{record.date}</time><strong>{record.patch}</strong><span>{record.change.kind === 'numeric' ? record.change.before + ' → ' + record.change.after : record.change.label}</span></button>)}</div>
-      <div class="trace-reading"><span class="world-eyebrow" data-trace-caption>{initial?.change.label}</span><p class="trace-connection" data-trace-connection>{voyageConnection(initialTrail)}</p><p data-trace-description>These are exact archived records for the same field. Follow a date to read its values.</p><div class="voyage-actions"><button type="button" class="voyage-text-link" data-keep-trace aria-pressed="false">Keep this finding <span aria-hidden="true">+</span></button><a class="voyage-text-link" data-champion-link href={'/champion/' + model.identity.id.toLowerCase()}>Open the complete champion history ↗</a><a class="voyage-text-link" data-trace-source href={initial?.source ?? latest.sourceUrl} target="_blank" rel="noreferrer">Read this source record ↗</a></div></div>
-      <a class="chapter-invitation" href="#return"><span class="invitation-line" aria-hidden="true"></span><span>Take your perspective with you</span><span aria-hidden="true">↓</span></a>
+      <div class="history-trace" data-history-trace aria-label="Records for the selected field">{initialTrail.map(record => <button type="button" class="history-stop" data-select-record={record.id} aria-pressed={record.id === initial?.id}><span class="history-pin" aria-hidden="true"></span><time>{record.date}</time><strong>{record.patch}</strong><span>{record.change.kind === 'numeric' ? record.change.before + ' → ' + record.change.after : record.change.label}</span></button>)}</div>
+      <div class="trace-reading"><span class="journey-eyebrow" data-trace-caption>{initial?.change.label}</span><p class="trace-connection" data-trace-connection>{voyageConnection(initialTrail)}</p><p data-trace-description>Exact archived records for the same field.</p><div class="voyage-actions"><a class="voyage-action voyage-action--outline" href="#change">Inspect this record <span aria-hidden="true">↗</span></a><button type="button" class="voyage-text-link" data-keep-trace aria-pressed="false">Keep this finding <span aria-hidden="true">+</span></button><a class="voyage-text-link" data-trace-source href={initial?.source ?? latest.sourceUrl} target="_blank" rel="noreferrer">Original source ↗</a></div></div>
+      <a class="voyage-text-link" data-champion-link href={'/champion/' + model.identity.id.toLowerCase()}>Complete champion history ↗</a>
     </div>
   </section>
 
-  <section id="return" class="voyage-chapter return-chapter" data-scene="return" data-journey-chapter="4" data-observatory-chapter="04">
-    <div class="chapter-composition return-composition">
-      <header class="return-heading"><p class="world-eyebrow">04 / A PLACE TO COME BACK TO</p><h2>Your Rift.<br /><em>Next time.</em></h2><p class="chapter-description"><span data-return-perspective>Keep {model.identity.name} close. Resume your reading.</span><br />See the records added since you last reviewed.</p><div class="voyage-actions"><button type="button" class="voyage-action" data-save-champion aria-pressed="false">Save to My Pool <span aria-hidden="true">+</span></button><a class="voyage-text-link" href="/next-game">Open my player briefing <span aria-hidden="true">↗</span></a></div></header>
-      <div class="journey-findings" data-journey-findings hidden><p class="world-eyebrow">FINDINGS YOU KEPT</p><ul data-findings-list></ul></div>
-      <ReturnBriefing heading="A useful reason to return." />
-    </div>
+  <section id="return" class="voyage-station-scene" data-journey-panel data-journey-label="Keep a finding" data-journey-world="pool" data-journey-chapter="4">
+    <div class="voyage-kept-desk"><p class="journey-eyebrow">YOUR TRAIL / SAVED ON THIS DEVICE</p><h2>Keep what<br /><em>matters to you.</em></h2><p data-return-perspective>Keep {model.identity.name} close.</p><div class="voyage-actions"><button type="button" class="voyage-action" data-save-champion aria-pressed="false">Save to My Pool <span aria-hidden="true">+</span></button><a class="voyage-text-link" href="/pool#findings">Open kept findings ↗</a></div><div class="journey-findings" data-journey-findings hidden><h3>Findings you kept</h3><ul data-findings-list></ul></div><a class="voyage-station-continue" href="/next-game"><span>Continue to your automatic briefing</span><span aria-hidden="true">↗</span></a></div>
   </section>
 
-  <dialog class="voyage-roster-dialog" id="voyage-roster" aria-labelledby="voyage-roster-title"><div class="voyage-roster-shell">
-    <header><div><p class="world-eyebrow">CHOOSE YOUR PERSPECTIVE</p><h2 id="voyage-roster-title">Who are you here for?</h2></div><button type="button" class="world-close" data-roster-close aria-label="Close champion selection">Close <span aria-hidden="true">×</span></button></header>
-    <div class="roster-search-row"><label for="voyage-roster-query">Find a champion<input id="voyage-roster-query" type="search" autocomplete="off" placeholder="Name your champion…" data-roster-query /></label><label for="voyage-roster-role">Role<select id="voyage-roster-role" data-roster-role><option value="">All roles</option><option value="top">Top</option><option value="jungle">Jungle</option><option value="mid">Mid</option><option value="adc">Bot</option><option value="support">Support</option></select></label></div>
-    <p role="status" data-roster-status>Open the full roster to choose your perspective.</p><ul class="voyage-roster-results" data-roster-results></ul><footer><span>Every champion. Every available record.</span><a href="/champions">Open the full roster page ↗</a></footer>
-  </div></dialog>
+  <dialog class="voyage-roster-dialog" id="voyage-roster" aria-labelledby="voyage-roster-title"><div class="voyage-roster-shell"><header><div><p class="journey-eyebrow">CHOOSE YOUR PERSPECTIVE</p><h2 id="voyage-roster-title">Who are you here for?</h2></div><button type="button" class="world-close" data-roster-close aria-label="Close champion selection">Close <span aria-hidden="true">×</span></button></header><div class="roster-search-row"><label for="voyage-roster-query">Find a champion<input id="voyage-roster-query" type="search" autocomplete="off" placeholder="Name your champion…" data-roster-query /></label><label for="voyage-roster-role">Role<select id="voyage-roster-role" data-roster-role><option value="">All roles</option><option value="top">Top</option><option value="jungle">Jungle</option><option value="mid">Mid</option><option value="adc">Bot</option><option value="support">Support</option></select></label></div><p role="status" data-roster-status>Choose a champion to follow.</p><ul class="voyage-roster-results" data-roster-results></ul><footer><span>{roster.length} perspectives.</span><a href="/champions">Full roster ↗</a></footer></div></dialog>
   <script is:inline type="application/json" id="voyage-initial-data" set:html={safeModel}></script>
-  <noscript><div class="voyage-nojs"><p>The five chapters and source records remain available. Open <a href="/champions">Champions</a> to choose a history, <a href="/patches">the patch archive</a>, or <a href="/compare">compare periods</a>.</p></div></noscript>
+  <noscript><p class="voyage-nojs">All source records remain available. <a href="/champions">Choose another champion</a> or <a href="/patches">open the patch archive</a>.</p></noscript>
 </div>
 <script>
   import '../../scripts/voyage';

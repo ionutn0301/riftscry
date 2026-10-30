@@ -4,24 +4,25 @@ import { installFixtures, platform, profilePath, puuid, query, recentAramWin, vi
 // These documents include SSR player routes. Use the fixture-backed Astro
 // runtime, rather than the static archive server, to test their shared scene.
 const rooms = [
-  { path: '/', surface: 'home', task: '.home-arrival a[href="/next-game"]' },
-  { path: '/explore', surface: 'explore', task: '.arrival-composition a[href="#perspective"].voyage-action' },
+  { path: '/', surface: 'home', task: '[data-observatory] [data-world-link="next-game"]' },
+  { path: '/explore', surface: 'explore', task: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', task: '[data-roster-search]' },
-  { path: '/champion/nunu', surface: 'champion', task: '.route-arrival-actions a[href="#history"]' },
-  { path: '/patches', surface: 'patches', task: '.route-arrival-actions a.route-action' },
-  { path: '/patch/26.16', surface: 'patch', task: '.route-arrival-actions a[href="#champions"]' },
-  { path: '/compare/26.16/26.15', surface: 'compare', task: '.route-arrival-actions .compare-picker select' },
-  { path: '/pool', surface: 'pool', task: '.route-arrival-actions a.route-action' },
+  { path: '/champion/nunu', surface: 'champion', task: '[data-direct-save="Nunu"]' },
+  { path: '/patches', surface: 'patches', task: '[data-archive-focus-link]' },
+  { path: '/patch/26.16', surface: 'patch', task: '.filter-bar input' },
+  { path: '/compare/26.16/26.15', surface: 'compare', task: '.compare-picker select' },
+  { path: '/pool#edit-pool', surface: 'pool', task: '.pool-picker input' },
   { path: '/next-game', surface: 'next-game', task: '.automatic-lookup input' },
-  { path: '/notebook', surface: 'notebook', task: '.recall-context select' },
+  { path: '/notebook', surface: 'notebook', task: '#notes button' },
   { path: '/players?platform=eun1', surface: 'players', task: '.lookup-form input' },
   { path: profilePath, surface: 'player', task: '.player-tabs button' },
   { path: `/matches/${recentAramWin.metadata.matchId}?${query}`, surface: 'match', task: '.review-back' },
-  { path: '/404', surface: 'missing', task: '.route-arrival-actions a[href="/"]' },
+  { path: '/404', surface: 'missing', task: '[data-journey-deck] a[href="/"]' },
 ];
 
 async function ready(page: Page) {
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-ready', 'true');
+  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
   await expect(page.locator('astro-island[client="load"][ssr]')).toHaveCount(0);
   await page.evaluate(() => document.fonts.ready);
 }
@@ -79,8 +80,8 @@ test('a saved player stays reachable through hydration and rotation with full sc
   });
   await page.goto('/players?view=builds&queue=450&champion=Ahri&result=win', { waitUntil: 'domcontentloaded' });
   await ready(page);
-  const form = page.getByRole('form', { name: 'Find a League of Legends player', exact: true });
-  await expect(form.getByRole('button', { name: 'Find player', exact: true })).toBeEnabled();
+  const form = page.getByRole('form', { name: 'Find a League of Legends player', exact: true, includeHidden: true });
+  await expect(form.getByRole('button', { name: 'Find player', exact: true, includeHidden: true })).toBeEnabled();
   const remembered = page.locator('.remembered-player');
   await expect(remembered).toContainText('ABCDEFGHIJKLMNOP#ABCDE');
   await expect(remembered).toContainText('Builds');
@@ -90,7 +91,7 @@ test('a saved player stays reachable through hydration and rotation with full sc
     await expect.poll(() => page.locator('[data-player-gateway]').evaluate(element => element.getBoundingClientRect().bottom))
       .toBeLessThanOrEqual(viewport.height + 1);
     expect(await page.evaluate(() => scrollY)).toBe(0);
-    const controls = page.locator('[data-player-gateway]').locator('input, select, button, summary, .remembered-player');
+    const controls = page.locator('[data-player-gateway]').locator('summary:visible, .remembered-player:visible');
     for (const control of await controls.all()) {
       await expect(control).toBeInViewport({ ratio: 1 });
       const box = (await control.boundingBox())!;

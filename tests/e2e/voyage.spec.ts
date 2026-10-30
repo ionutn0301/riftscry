@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
+import type { JourneyModel } from '../../src/lib/voyage-data';
 
-// Current five-chapter presentation. These are new, unexecuted acceptance tests;
-// core-flow, keyboard and the migrated resilience specs protect related goals.
+// Focused scene navigation, canonical evidence, and resilience in the connected observatory.
 const ready = async (page: Page) => {
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-loading", "false");
@@ -24,52 +24,59 @@ async function uncachedFeaturedChampion(page: Page, excludedIds: string[] = []) 
 
 async function expectOpeningBounds(page: Page) {
   await page.evaluate(() => document.fonts.ready);
-  const bounds = await page.locator("#arrival").evaluate((arrival) => {
-    const rect = arrival.getBoundingClientRect();
-    return {
-      top: rect.top,
-      bottom: rect.bottom,
-      height: rect.height,
-      viewport: innerHeight,
-      documentHeight: document.documentElement.scrollHeight,
-      horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    };
+  const bounds = await page.locator('#change').evaluate(scene => {
+    const rect=scene.getBoundingClientRect();
+    return { top:rect.top,bottom:rect.bottom,height:rect.height,viewport:innerHeight,documentHeight:document.documentElement.scrollHeight,horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth };
   });
-  expect(Math.abs(bounds.top)).toBeLessThanOrEqual(2);
-  expect(Math.abs(bounds.height - bounds.viewport)).toBeLessThanOrEqual(2);
+  expect(bounds.height).toBeGreaterThan(150);
+  expect(bounds.top).toBeGreaterThan(0);
   expect(bounds.bottom).toBeLessThanOrEqual(bounds.viewport + 2);
   expect(bounds.horizontalOverflow).toBeLessThanOrEqual(1);
-  // Only the arrival fits a screen. The other four chapters need real document space.
-  expect(bounds.documentHeight).toBeGreaterThan(bounds.viewport * 3);
-  await expect(page.locator("#arrival h1")).toBeInViewport({ ratio: 1 });
-  await expect(page.getByRole("link", { name: /Enter the journey/ })).toBeInViewport({ ratio: 1 });
-  await expect(page.locator("[data-map-open]")).toBeInViewport({ ratio: 1 });
+  expect(bounds.documentHeight).toBeLessThanOrEqual(bounds.viewport + 1);
+  await expect(page.locator('.voyage-station-heading h1')).toBeInViewport({ratio:1});
+  await expect(page.locator('[data-roster-open]')).toBeInViewport({ratio:1});
+  await expect(page.locator('[data-map-open]')).toBeInViewport({ratio:1});
 }
 
-test("five document chapters are connected by named native links", async ({ page }) => {
-  await page.goto("/explore");
-  await ready(page);
-  const chapters = page.locator("[data-journey-chapter]");
-  await expect(chapters).toHaveCount(5);
-  expect(await chapters.evaluateAll((sections) => sections.map((section) => section.id))).toEqual([
-    "arrival", "perspective", "change", "history", "return",
-  ]);
-  expect(await chapters.evaluateAll((sections) => sections.map((section) => getComputedStyle(section).position)))
-    .not.toContain("absolute");
-  expect(await page.locator('nav[aria-label="Journey chapters"] a').evaluateAll((links) => links.map((link) => link.getAttribute("href"))))
-    .toEqual(["#arrival", "#perspective", "#change", "#history", "#return"]);
+test('three focused scenes expose real evidence without document scrolling', async ({page}) => {
+  await page.goto('/explore'); await ready(page);
+  const scenes=page.locator('[data-journey-panel]');
+  await expect(scenes).toHaveCount(3);
+  expect(await scenes.evaluateAll(nodes=>nodes.map(node=>node.id))).toEqual(['change','history','return']);
   await expectOpeningBounds(page);
-  await page.getByRole("link", { name: /Enter the journey/ }).click();
-  await expect(page).toHaveURL(/#perspective$/);
-  await expect(page.locator("#perspective h2")).toBeFocused();
-  await expect(page.locator("[data-champion-splash]")).toHaveCSS("object-fit", "contain");
+  await page.getByRole('button',{name:'Next scene',exact:true}).click();
+  await expect(page).toHaveURL(/#history$/);
+  await expect(page.locator('#history')).toBeFocused();
+  await expect(page.locator('#change')).toBeHidden();
+  await expect(page.getByLabel('After patch',{exact:true})).toBeVisible();
+  await page.goBack();
+  await expect(page.locator('#change')).toBeVisible();
+  await expect(page.locator('[data-champion-splash]')).toHaveCSS('object-fit','contain');
 });
-test("the arrival also fits a short desktop while the journey can scroll", async ({ page, isMobile }) => {
-  test.skip(isMobile, "The mobile project already exercises its actual 390×844 viewport.");
-  await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto("/explore");
-  await ready(page);
-  await expectOpeningBounds(page);
+test('the focused scene also fits a short desktop', async ({page,isMobile}) => {
+  test.skip(isMobile,'The mobile project exercises its own viewport.');
+  await page.setViewportSize({width:1280,height:720});
+  await page.goto('/explore'); await ready(page); await expectOpeningBounds(page);
+});
+
+test('free exploration starts with a real latest record without manual interval setup', async ({page})=>{
+  const response=await page.request.get('/journey/Ahri.json');
+  expect(response.ok()).toBe(true);
+  const model=await response.json() as JourneyModel;
+  const newest=[...model.records].sort((a,b)=>b.date.localeCompare(a.date))[0]!;
+  await page.goto('/explore?champion=Ahri#change'); await ready(page);
+  await expect(page.locator('[data-champion-name]')).toHaveText('Ahri');
+  await expect(page.locator('[data-record-patch]')).toHaveText('PATCH '+newest.patch);
+  await expect(page.locator('[data-period-newer]')).toHaveValue(newest.patch);
+  await expect(page.locator('[data-record-quiet]')).toBeHidden();
+  const id=await page.locator('[data-current-record]').getAttribute('data-record-id');
+  const selected=model.records.find(record=>record.id===id)!;
+  expect(selected).toBeDefined();
+  await expect(page.locator('[data-record-source]')).toHaveAttribute('href',selected.source);
+  if(selected.change.kind==='numeric') {
+    await expect(page.locator('[data-record-before]')).toHaveText(selected.change.before);
+    await expect(page.locator('[data-record-after]')).toHaveText(selected.change.after);
+  } else await expect(page.locator('[data-record-prose]')).toHaveText(selected.change.text);
 });
 
 test("champion choice loads a canonical static model and Back restores perspective", async ({ page }) => {
@@ -84,7 +91,7 @@ test("champion choice loads a canonical static model and Back restores perspecti
   expect((await response.json()).identity.id).toBe(champion.id);
   await ready(page);
   await expect(page.locator("[data-champion-name]")).toHaveText(champion.name);
-  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === champion.id && url.searchParams.get("ref") === "regression" && url.hash === "#perspective");
+  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === champion.id && url.searchParams.get("ref") === "regression" && url.hash === "#change");
   await page.locator('.quick-perspectives [data-choose-champion="Ahri"]').click();
   await ready(page);
   await expect(page.locator("[data-champion-name]")).toHaveText("Ahri");
@@ -156,7 +163,9 @@ test("exact rank arrays, scaling, prose and source survive selection and reload"
 test("interval boundaries, invalid input and a quiet champion stay honest", async ({ page }) => {
   await page.goto("/explore?champion=Belveth&older=26.14&newer=26.16#history");
   await ready(page);
+  await page.getByRole("tab", { name: "The change", exact: true }).click();
   await page.locator("[data-field-choice]").selectOption({ label: "Base stats / Health Growth" });
+  await page.getByRole("tab", { name: "Through time", exact: true }).click();
   await expect(page.locator("[data-history-trace] [data-select-record]")).toHaveCount(2);
   await page.locator("[data-period-older]").selectOption("26.15");
   await expect(page.locator("[data-history-trace] [data-select-record]")).toHaveCount(1);
@@ -172,7 +181,7 @@ test("interval boundaries, invalid input and a quiet champion stay honest", asyn
   await ready(page);
   await expect(page.locator("[data-record-quiet]")).toBeVisible();
   await expect(page.locator("[data-record-quiet]")).toContainText("No direct record");
-  await expect(page.locator("[data-record-quiet]")).toContainText("Items, systems, and other champions");
+  await expect(page.locator("[data-record-quiet]")).toContainText("Item and system changes are separate");
   await expect(page.locator("[data-field-choice]")).toBeDisabled();
   await expect(page.locator("[data-record-numeric]")).not.toBeVisible();
 });
@@ -206,7 +215,7 @@ test("a failed champion request keeps the last readable perspective and a retry"
   expect((await response.json()).identity.id).toBe(champion.id);
   await ready(page);
   await expect(page.locator("[data-champion-name]")).toHaveText(champion.name);
-  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === champion.id && url.searchParams.get("older") === "26.14" && url.searchParams.get("newer") === "26.16" && url.hash === "#perspective");
+  await expect(page).toHaveURL((url) => url.searchParams.get("champion") === champion.id && url.searchParams.get("older") === "26.14" && url.searchParams.get("newer") === "26.16" && url.hash === "#change");
   await page.goBack();
   await ready(page);
   await expect(page).toHaveURL(readableUrl);
@@ -222,8 +231,8 @@ test("Rift map has real destinations, restores focus and hands search out of its
   await opener.click();
   const map = page.locator("#rift-map-dialog");
   await expect(map).toBeVisible();
-  expect(await map.locator(".map-destination").evaluateAll((links) => links.map((link) => link.getAttribute("href"))))
-    .toEqual(["/players", "/next-game", "/pool", "/champions", "/patches", "/compare", "/explore", "/notebook"]);
+  expect(await map.locator("[data-world-link]").evaluateAll((links) => links.map((link) => link.getAttribute("href"))))
+    .toEqual(["/next-game", "/players", "/champions", "/patches", "/pool#briefing"]);
   await page.keyboard.press("Escape");
   await expect(opener).toBeFocused();
   await opener.click();
@@ -243,95 +252,42 @@ test("Rift map has real destinations, restores focus and hands search out of its
 });
 
 const readingRoutes = [
-  ["/champions", "champions", "/champions"],
-  ["/champion/belveth", "champion", "/champions"],
-  ["/patches", "patches", "/patches"],
-  ["/patch/26.16", "patch", "/patches"],
-  ["/compare/26.16/26.12", "compare", "/compare"],
-  ["/pool", "pool", "/pool"],
-  ["/404", "missing", null],
+  ['/champions','champions','/champions'], ['/champion/belveth','champion','/champions'],
+  ['/patches','patches','/patches'], ['/patch/26.16','patch','/patches'],
+  ['/compare/26.16/26.12','compare','/patches'], ['/pool','pool','/pool#briefing'], ['/404','missing',null],
 ] as const;
-for (const [path, surface, current] of readingRoutes) {
-  test(`reading destination ${path} has a distinct arrival and the shared map`, async ({ page }) => {
+for (const [path,surface,current] of readingRoutes) {
+  test(`reading destination ${path} exposes its task scenes and shared world`,async ({page})=>{
     await page.goto(path);
-    await expect(page.locator("body")).toHaveAttribute("data-surface", surface);
-    await expect(page.locator("#main h1")).toHaveCount(1);
-    await expect(page.locator("#main h1")).toBeVisible();
-    await expect(page.locator("#route-arrival")).toBeVisible();
-    if (surface === "missing") {
-      const actions = page.locator("#route-arrival .route-arrival-actions");
-      const returnLink = actions.getByRole("link", { name: "Return home", exact: true });
-      await expect(returnLink).toBeVisible();
-      await expect(returnLink).toHaveAttribute("href", "/");
-      await expect(actions.getByRole("button", { name: "Search the archive ↗", exact: true })).toBeVisible();
-      await expect(page.getByRole("navigation", { name: "Other destinations", exact: true })).toBeVisible();
-      await returnLink.click();
-      await expect(page).toHaveURL((url) => url.pathname === "/" && url.hash === "");
-      await expect(page.locator("#companion-heading")).toBeVisible();
-      await page.goBack();
-      await expect(page).toHaveURL((url) => url.pathname === path);
-      await expect(page.locator("body")).toHaveAttribute("data-surface", surface);
-    } else {
-      // Reading pages now have one concise section index at every viewport.
-      // Check each real destination, then follow a native anchor into its data.
-      if (surface === "champions") {
-        await expect(page.locator(".roster-arrival-figures")).toHaveAttribute("aria-label", /^Champions with records in patch \d+\.\d+$/);
-      } else if (surface === "pool") {
-        await expect(page.locator("#route-arrival .arrival-period-number")).toHaveText(/^\d+\.\d+$/);
+    await expect(page.locator('body')).toHaveAttribute('data-surface',surface);
+    await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
+    await expect(page.locator('#main h1')).toHaveCount(1);
+    await expect(page.locator('#main h1')).toBeVisible();
+    await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
+    const controls=page.getByRole('tablist',{name:'Scenes in this destination'});
+    if(await controls.isVisible()) {
+      const labels=await controls.getByRole('tab').allTextContents();
+      for(const label of labels) {
+        const tab=controls.getByRole('tab',{name:label,exact:true});
+        await tab.click();
+        await expect(tab).toHaveAttribute('aria-selected','true');
+        const id=await tab.getAttribute('aria-controls');
+        await expect(page.locator('#'+id)).toBeVisible();
+        await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
+        expect(await page.evaluate(()=>scrollY)).toBe(0);
       }
-      const destinations: ReadonlyArray<readonly [string, string, string]> = ({
-        champions: [
-          ["Champion roster", "#roster", "Champion roster."],
-        ],
-        champion: [
-          ["Patch history", "#history", "Patch history."],
-          ["Coverage & sources", "#perspective", "Coverage & sources."],
-        ],
-        patches: [
-          ["All patches", "#archive", "All archived patches."],
-        ],
-        patch: [
-          ["Your champions", "#your-perspective", "Your champions."],
-          ["Champions", "#champions", "Champions"],
-          ["Items", "#items", "Item changes."],
-          ["Systems", "#systems", "System changes."],
-        ],
-        compare: [
-          ["Champions", "#comparison", "Champion changes."],
-          ["Items", "#items", "Item changes."],
-          ["Systems", "#systems", "System changes."],
-        ],
-        pool: [
-          ["Your briefing", "#briefing", "Your briefing."],
-          ["Edit pool", "#edit-pool", "Choose your champions."],
-        ],
-      } as const)[surface];
-      const rail = page.getByRole("navigation", { name: "On this page", exact: true });
-      await expect(rail).toHaveCount(1);
-      await expect(rail).toBeVisible();
-      await expect(rail.locator("ol a")).toHaveCount(destinations.length);
-      for (const [name, href, heading] of destinations) {
-        const link = rail.getByRole("link", { name, exact: true });
-        await expect(link).toBeVisible();
-        await expect(link).toHaveAttribute("href", href);
-        await expect(page.locator(`${href} > .chapter-heading h2`)).toHaveText(heading);
-      }
-      if (surface === "compare") {
-        await expect(rail.getByRole("link", { name: "Change patches ↑", exact: true })).toHaveAttribute("href", "#route-arrival");
-        await expect(rail.getByRole("link", { name: "Change patches ↑", exact: true })).toBeVisible();
-      }
-      const [name, href, heading] = destinations[0]!;
-      await rail.getByRole("link", { name, exact: true }).click();
-      await expect(page).toHaveURL((url) => url.pathname.replace(/\/$/, "") === path && url.hash === href);
-      const targetHeading = page.locator(`${href} > .chapter-heading h2`);
-      await targetHeading.scrollIntoViewIfNeeded();
-      await expect(targetHeading).toHaveText(heading);
-      await expect(targetHeading).toBeVisible();
     }
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
-    await page.locator("[data-map-open]").click();
-    await expect(page.locator("#rift-map-dialog")).toBeVisible();
-    if (current) await expect(page.locator('#rift-map-dialog [aria-current="page"]')).toHaveAttribute("href", current);
-    await page.locator("[data-map-close]").click();
+    if(surface==='missing') {
+      await page.getByRole('link',{name:'Return to the Rift',exact:false}).first().click();
+      await expect(page).toHaveURL(url=>url.pathname==='/');
+      await expect(page.locator('[data-observatory]')).toBeVisible();
+      await page.goBack();
+    }
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+    await page.locator('[data-map-open]').click();
+    await expect(page.locator('#rift-map-dialog')).toBeVisible();
+    if(current) await expect(page.locator('#rift-map-dialog [aria-current="page"]')).toHaveAttribute('href',current);
+    await page.locator('[data-map-close]').click();
+    await expect(page.locator('[data-map-open]')).toBeFocused();
   });
 }

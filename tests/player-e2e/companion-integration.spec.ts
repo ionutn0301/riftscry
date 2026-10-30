@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { COMPANION_KEY } from '../../src/lib/companion';
+import { openScene } from './profile-controls';
 import { RECENT_PLAYER_KEY } from '../../src/lib/player/identity';
 import {
   installFixtures, mayhemMatch, otherPuuid, platform, profilePath, puuid, query, recentAramLoss, recentAramWin,
@@ -15,11 +16,11 @@ function isBriefingTarget(url: URL, queue: string, champion = 'Ahri') {
     url.searchParams.get('champion') === champion;
 }
 
-test('homepage Find my games completes lookup and remembers the player automatically', async ({ page }) => {
+test('homepage Games destination completes lookup and remembers the player automatically', async ({ page }) => {
   const requests = await installFixtures(page, { matches: [recentAramWin] });
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
-  await page.locator('[data-home-launcher]').getByRole('link', { name: 'Find my games', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('yours to explore.');
+  await page.locator('[data-observatory] a[data-world-link="players"]').click();
   await expect(page).toHaveURL(url => url.pathname === '/players');
   await expect(page.locator('[data-player-gateway]')).toBeVisible();
   expect(requests).toEqual([]);
@@ -42,6 +43,7 @@ for (const view of ['builds', 'memory'] as const) {
   test(`gateway preserves the ${view} task and exact filters through lookup`, async ({ page }) => {
     const requests = await installFixtures(page, { matches: [recentAramLoss, recentAramWin] });
     await page.goto(`/players?platform=${platform}&view=${view}&queue=450&champion=Ahri&result=loss`);
+    await page.locator('.gateway-destinations > summary').click();
     const intent = page.getByRole('group', { name: 'Start with', exact: true });
     await expect(intent.getByRole('button', { name: view === 'builds' ? 'Builds' : 'Build Memory', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await page.getByLabel('Riot ID', { exact: true }).fill(identity);
@@ -53,7 +55,7 @@ for (const view of ['builds', 'memory'] as const) {
     await expect(page.getByRole('region', { name: 'Recent match sample', exact: true })).toHaveAttribute('aria-busy', 'false');
     await expect(page.locator('.sample-status')).toContainText('2 of 2 recent matches imported.');
     const briefing = page.locator('.player-next-game-link');
-    await expect(briefing).toHaveText('Automatic briefing');
+    await expect(briefing).toHaveText('Your briefing');
     expect(isBriefingTarget(new URL(await briefing.getAttribute('href') ?? '', page.url()), '450')).toBe(true);
     await expect.poll(() => requests.filter(request => request.action === 'history').length).toBe(1);
     expect(new URL(requests.find(request => request.action === 'history')!.url).searchParams.get('queue')).toBe('450');
@@ -70,6 +72,7 @@ test('remembered player follows the selected task without losing the incoming fi
   const initialTarget = new URL(await remembered.getAttribute('href') ?? '', page.url());
   expect(initialTarget.searchParams.get('view')).toBe('builds');
 
+  await page.locator('.gateway-destinations > summary').click();
   await page.getByRole('group', { name: 'Start with', exact: true }).getByRole('button', { name: 'Build Memory', exact: true }).click();
   await expect(remembered).toContainText('Build Memory');
   await remembered.click();
@@ -98,6 +101,7 @@ test('an observed build opens its automatic briefing without saving or using ano
   const report = page.locator('[data-briefing-report]');
   await expect(report).toHaveAttribute('aria-busy', 'false');
   await expect(report).toContainText('1 of 1 recent games imported.');
+  await openScene(page, 'loadout');
   await expect(report.getByRole('heading', { name: 'Your last Ahri loadout.', exact: true })).toBeVisible();
   await expect(report.getByText('Boots', { exact: true })).toBeVisible();
   expect(await readCompanion(page)).toBeNull();
@@ -120,6 +124,7 @@ test('match review opens an automatic Mayhem briefing with exact player and mode
   await expect(report).toHaveAttribute('aria-busy', 'false');
   await expect(report).toContainText('1 of 1 recent games imported.');
   await expect(report).toContainText('ARAM: Mayhem');
+  await openScene(page, 'loadout');
   await expect(report.getByRole('heading', { name: 'Your last Ahri loadout.', exact: true })).toBeVisible();
   expect(await readCompanion(page)).toBeNull();
   expect(await page.evaluate(key => localStorage.getItem(key), `riftscry:build-memory:v1:${platform}:${puuid}`)).toBeNull();
@@ -151,6 +156,7 @@ test('lookup and explicit briefing links work when the browser cannot remember t
   const report = page.locator('[data-briefing-report]');
   await expect(report).toHaveAttribute('aria-busy', 'false');
   await expect(report).toContainText('1 of 1 recent games imported.');
+  await openScene(page, 'loadout');
   await expect(report.getByRole('heading', { name: 'Your last Ahri loadout.', exact: true })).toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), RECENT_PLAYER_KEY)).toBeNull();
   expect(await readCompanion(page)).toBeNull();

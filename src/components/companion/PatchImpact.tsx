@@ -49,10 +49,10 @@ export default function PatchImpact({ contexts, player, selectedChampion, source
     ?? (missingChampion ? undefined : preferredContext(contexts, selectedChampion));
   if (!selected && !missingChampion) return null;
 
-  return <section className="patch-impact" id="impact" data-patch-impact aria-labelledby={`${id}-heading`}>
+  return <section className="patch-impact" id="impact" data-journey-panel data-journey-label="Impact" data-journey-world="compare" data-patch-impact aria-labelledby={`${id}-heading`}>
     <div className="patch-impact-atmosphere" aria-hidden="true"><span /><span /><svg viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="86" /><circle cx="120" cy="120" r="105" /><path d="m120 30 65 90-65 90-65-90 65-90ZM120 3v27m0 180v27M3 120h52m130 0h52" /></svg></div>
     <header className="patch-impact-heading">
-      <div><p className="patch-impact-eyebrow"><PlayerIcon name="sparkles" size={15} /> PERSONAL PATCH IMPACT</p><h2 id={`${id}-heading`}>Your build.<br /><em>A different patch.</em></h2><p>The champions and items from your games, compared across patches. Already picked out for you.</p></div>
+      <div><p className="patch-impact-eyebrow"><PlayerIcon name="sparkles" size={15} /> PERSONAL PATCH IMPACT</p><h2 id={`${id}-heading`}>Your build.<br /><em>A different patch.</em></h2><p>Your recorded build, compared with the latest archive.</p></div>
       <span className="patch-impact-auto"><span aria-hidden="true" />FROM YOUR MATCHES</span>
     </header>
 

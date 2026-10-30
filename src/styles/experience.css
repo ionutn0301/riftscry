@@ -112,7 +112,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
   @keyframes arrival-depart { to { opacity: .1; transform: translate3d(0,-35px,0); } }
 }
 html[data-visibility="hidden"] * { animation-play-state: paused !important; }
-html[data-motion="reduced"] *,html[data-motion="reduced"] *::before,html[data-motion="reduced"] *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+html[data-motion="reduced"] *,html[data-motion="reduced"] *::before,html[data-motion="reduced"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 html[data-motion="reduced"] [data-reveal] { opacity: 1 !important; transform: none !important; }
 html[data-motion="reduced"]::view-transition-old(root),html[data-motion="reduced"]::view-transition-new(root) { animation: none; }
 /* Compact controls share one header row. The map never floats over page actions. */

@@ -1,7 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import RouteArrival from "../../components/experience/RouteArrival.astro";
-import TimelineEntry from "../../components/TimelineEntry.astro";
+import "../../styles/journey-readers.css";
+import DeltaRow from "../../components/DeltaRow.astro";
+import ClassificationBadge from "../../components/ClassificationBadge.astro";
 import SaveChampion from "../../components/experience/SaveChampion.astro";
 import { getAllPatches, getChampionHistory, getChampionMeta, getRoles, getLatestPatch } from "../../lib/data";
 import { assetFor } from "../../lib/investigation";
@@ -24,34 +25,49 @@ const counts = {
 const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",adc:"ADC",support:"Support" };
 const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#change";
 ---
-<Layout surface="champion" title={meta.name + " Patch History — RiftScry"} description={"Follow " + meta.name + "'s archived League of Legends changes, with complete before/after values and original patch sources."}>
-  <div class="reader-experience">
-    <RouteArrival eyebrow="CHAMPION HISTORY" title={meta.name} variant="champion"
-      description={history.length ? history.length + " archived " + (history.length === 1 ? "patch" : "patches") + ". Exact values, ability changes, and links to the original records." : "No direct changes in the loaded archive. Save this champion to your pool or explore the wider patch."}
-      note={"Archive coverage: " + patches.at(-1)!.releaseDate + " through " + latest.releaseDate + "."}>
-      <div slot="identity"><p class="arrival-champion-title">{meta.title}</p><p class="champion-roles">{roles.map((role) => <span>{roleLabels[role]}</span>)}</p></div>
-      <div slot="actions"><a class="route-action" href="#history">Read patch history <span aria-hidden="true">↓</span></a><SaveChampion id={championId} name={meta.name} /></div>
-      <figure slot="figure" class="champion-arrival-art">
-        <picture><source media="(max-width:700px)" srcset={artwork.portrait} /><img src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture>
-        <figcaption>RIOT GAMES / COMPLETE ORIGINAL SOURCE ARTWORK</figcaption>
-      </figure>
-    </RouteArrival>
-    <div class="reader-body">
-      <nav class="chapter-rail" aria-label="On this page"><ol><li><a href="#history">Patch history</a></li><li><a href="#perspective">Coverage & sources</a></li></ol></nav>
-      <div class="reader-chapters">
-        <section id="history" class="reading-chapter" data-scene="champion-history">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Patch history.</h2><p>Newest first. Open a patch for exact ability changes and its original record.</p><div class="archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{counts.other}</strong> other records</span></div></div></header>
-          {history.length ? <ol class="timeline record-timeline">
-            {history.map((h,i) => <TimelineEntry patchId={h.patchId} releaseDate={h.releaseDate} change={h.change} open={i === 0} />)}
-          </ol> : <div class="reader-empty"><h3>No direct records in this archive.</h3><p>{meta.name} has no recorded direct champion changes in these {patches.length} archived patches. Items, systems, and other champions can still affect how the game feels.</p><a href={"/patch/" + latest.id} class="route-text-link">Explore the latest archived patch ↗</a></div>}
-        </section>
-        <section id="perspective" class="reading-chapter" data-scene="champion-context">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>Coverage & sources.</h2><p>Every entry links to its patch and original notes. Buff, nerf, and other counts describe those records, not current champion strength.</p></div></header>
-          <p class="reader-section-note">Direct changes from {patches.at(-1)!.releaseDate} through {latest.releaseDate}. This archive does not reconstruct a live stat sheet.</p>
-          <p class="reader-section-note">Role labels are curated. <a href="https://github.com/ionutn0301/riftscry/blob/main/CONTRIBUTING.md">Suggest a correction ↗</a></p>
-          <div class="reader-next-actions"><a href={journeyUrl} class="route-action route-action--quiet">Explore this champion <span aria-hidden="true">↗</span></a><a href="/champions" class="route-text-link">All champions <span aria-hidden="true">↗</span></a></div>
-        </section>
+<Layout surface="champion" title={meta.name + " Patch History — RiftScry"} description={"Move through " + meta.name + "’s exact archived changes, with original patch sources."}>
+  <div class="journey-reader journey-champion" data-journey-deck>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">CHAMPION / {roles.map(role => roleLabels[role]).join(" · ")}</p><h1>{meta.name}<span class="journey-reader-subtitle">{meta.title}</span></h1></div><div class="journey-header-actions"><SaveChampion id={championId} name={meta.name} /><a class="journey-quiet-link" href="/champions">Change champion <span aria-hidden="true">↗</span></a></div></header>
+    <section id="history" class="journey-panel journey-champion-panel" data-journey-panel data-journey-label="Patch history" data-journey-world="champion" aria-label={meta.name + " patch history"}>
+      <figure class="journey-champion-art"><picture><img src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture><figcaption>RIOT GAMES / ORIGINAL ARTWORK</figcaption></figure>
+      <div class="journey-history-stage" data-history-stage>
+        {history.length ? <>
+          <nav class="journey-history-stops" aria-label={meta.name + " recorded patches"}>{history.map((entry, index) => <a href={"#record-" + entry.patchId.replaceAll(".", "-")} data-history-select={entry.patchId} aria-current={index === 0 ? 'true' : undefined}><span>{entry.patchId}</span><time datetime={entry.releaseDate}>{new Date(entry.releaseDate + "T00:00:00Z").toLocaleDateString('en', { month:'short', day:'numeric', timeZone:'UTC' })}</time></a>)}</nav>
+          <div class="journey-history-records">
+            {history.map(entry => <article id={"record-" + entry.patchId.replaceAll(".", "-")} class="journey-history-record" data-history-record={entry.patchId} tabindex="-1"><header class="journey-record-heading"><div><p class="journey-reader-kicker">PATCH {entry.patchId}</p><h2>The recorded change.</h2></div><ClassificationBadge classification={entry.change.classification} /></header>{entry.change.summary && <details class="journey-source-context"><summary>Riot’s context</summary><p class="journey-record-summary">{entry.change.summary}</p></details>}{entry.change.abilities.map(ability => <section class="journey-ability"><h3><span>{ability.ability === 'base' ? 'BASE' : ability.ability === 'passive' ? 'P' : ability.ability === 'other' ? '·' : ability.ability}</span>{ability.name}</h3>{ability.changes.map(change => <DeltaRow change={change} />)}</section>)}<div class="journey-record-links"><a href={"/patch/" + entry.patchId + "#" + championId.toLowerCase()}>Open in patch {entry.patchId} ↗</a><a href={patches.find(patch => patch.id === entry.patchId)?.sourceUrl} target="_blank" rel="noreferrer">Riot’s notes ↗</a></div></article>)}
+          </div>
+        </> : <div class="journey-empty"><h2>No direct records yet.</h2><p>{meta.name} has no direct champion changes in this archive. Items and systems can still affect the game.</p><a class="journey-primary-link" href={"/patch/" + latest.id}>Explore patch {latest.id} ↗</a></div>}
       </div>
-    </div>
+    </section>
+    <section id="perspective" class="journey-panel journey-source-panel" data-journey-panel data-journey-label="Coverage & sources" data-journey-world="explore"><div><p class="journey-reader-kicker">THE RECORD / IN CONTEXT</p><h2>Every change has a source.</h2><p>Direct champion records from {patches.at(-1)!.releaseDate} through {latest.releaseDate}. This archive does not reconstruct a live stat sheet.</p><dl class="journey-source-counts"><div><dt>Buff records</dt><dd>{counts.buff}</dd></div><div><dt>Nerf records</dt><dd>{counts.nerf}</dd></div><div><dt>Other records</dt><dd>{counts.other}</dd></div></dl><p>These labels describe the source records, not current champion strength. Roles are curated.</p><div class="journey-record-links"><a href={journeyUrl}>Explore {meta.name} ↗</a><a href="https://github.com/ionutn0301/riftscry/blob/main/CONTRIBUTING.md">Suggest a correction ↗</a></div></div></section>
   </div>
 </Layout>
+<script>
+  const stage = document.querySelector<HTMLElement>('[data-history-stage]');
+  if (stage) {
+    const records = [...stage.querySelectorAll<HTMLElement>('[data-history-record]')];
+    const links = [...stage.querySelectorAll<HTMLAnchorElement>('[data-history-select]')];
+    let selectedRecord = '';
+    function selectRecord(id: string) {
+      const current = records.find(record => record.id === id) ?? records.find(record => record.dataset.historyRecord === id);
+      if (!current) return;
+      if (selectedRecord !== current.id) window.dispatchEvent(new CustomEvent('riftscry:focus-change', { detail: { kind: 'patch', key: current.dataset.historyRecord ?? current.id } }));
+      selectedRecord = current.id;
+      records.forEach(record => { record.hidden = record !== current; record.inert = record !== current; });
+      links.forEach(link => { if (link.dataset.historySelect === current.dataset.historyRecord) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current'); });
+    }
+    function restore() { let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch {} selectRecord(id || records[0]?.id || ''); }
+    if (records.length) {
+      stage.dataset.historyReady = 'true';
+      selectRecord(records[0]!.id);
+      restore();
+      stage.addEventListener('click', event => {
+        const link = (event.target as Element).closest<HTMLAnchorElement>('[data-history-select]');
+        if (link && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && event.button === 0) selectRecord(link.hash.slice(1));
+      });
+      window.addEventListener('hashchange', restore);
+      window.addEventListener('popstate', restore);
+      window.addEventListener('riftscry:journey-change', restore);
+    }
+  }
+</script>

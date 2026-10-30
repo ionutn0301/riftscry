@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import RouteArrival from "../../components/experience/RouteArrival.astro";
+import "../../styles/journey-readers.css";
 import ChangeCard from "../../components/ChangeCard.astro";
 import ClassificationBadge from "../../components/ClassificationBadge.astro";
 import DeltaRow from "../../components/DeltaRow.astro";
@@ -29,55 +29,68 @@ const names = Object.fromEntries(Object.entries(meta).map(([id,m]) => [id,m.name
 const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
   classification:c.classification,changes:c.abilities.reduce((n,a) => n + a.changes.length,0),
 }]));
-const chapters = [
-  {href:"#your-perspective",label:"Your champions",detail:"Saved or shared champions"},
-  {href:"#champions",label:"Champions",detail:patch.champions.length + " direct records"},
-  ...(patch.items.length ? [{href:"#items",label:"Items",detail:patch.items.length + " item records"}] : []),
-  ...(patch.systems.length ? [{href:"#systems",label:"Systems",detail:patch.systems.length + " system records"}] : []),
-];
+
 ---
-<Layout surface="patch" title={"League Patch " + patch.id + " Changes — RiftScry"} description={"Explore the champion, item, and system changes in archived League of Legends patch " + patch.id + ", with complete before/after values."}>
-  <div class="reader-experience">
-    <RouteArrival eyebrow={(isLatest ? "NEWEST ARCHIVED PATCH" : "ARCHIVED PATCH") + " / " + releaseDate}
-      title={"Patch " + patch.id}
-      description="Champion, item, and system changes. Read the exact values and follow every record to Riot’s original notes."
-      variant="patch"
-      note={"Source record: " + patch.releaseDate + ". Newest loaded archive: " + latest.id + " / " + latest.releaseDate + "."}>
-      <div slot="actions" class="reader-next-actions"><a class="route-action" href="#champions">Read the changes <span aria-hidden="true">↓</span></a><a class="route-text-link" href={patch.sourceUrl} target="_blank" rel="noreferrer">Riot's original notes ↗</a></div>
-      <div slot="figure" class="arrival-stat-group" aria-label="Patch overview">
-        <div class="arrival-stat arrival-stat--signal"><strong>{patch.champions.length}</strong><span>champions with direct records</span></div>
-        <div class="arrival-stat arrival-stat--brass"><strong>{patch.items.length + patch.systems.length}</strong><span>items and systems with records</span></div>
+<Layout surface="patch" title={"League Patch " + patch.id + " Changes — RiftScry"} description={"Explore exact champion, item, and system records in archived League of Legends patch " + patch.id + "."}>
+  <div class="journey-reader journey-patch" data-journey-deck>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">{isLatest ? "NEWEST ARCHIVED" : "ARCHIVED PATCH"} / {releaseDate}</p><h1>Patch {patch.id}<span class="journey-reader-subtitle">{patch.champions.length} champions · {patch.items.length} items · {patch.systems.length} systems</span></h1></div><div class="journey-header-actions"><a class="journey-quiet-link" href={patch.sourceUrl} target="_blank" rel="noreferrer">Riot’s notes ↗</a><a class="journey-quiet-link" href={"/compare/" + patch.id}>Compare ↗</a></div></header>
+    <section id="champions" class="journey-panel journey-patch-champions" data-journey-panel data-journey-label="Champions" data-journey-world="champion" aria-label={"Champion records in patch " + patch.id}>
+      <details id="your-perspective" class="journey-disclosure journey-pool-disclosure"><summary>Saved & shared champions</summary><PoolStrip client:load patchId={patch.id} assetVersion={patch.assetVersion} names={names} changed={changed}/><a class="journey-quiet-link" href="/pool#edit-pool">Choose saved champions ↗</a></details>
+      <PatchFilterBar client:load entries={entries}/>
+      <div class="journey-result-caption"><p><span data-filter-count>{patch.champions.length}</span> champion records</p><span>{counts.buff} buffs · {counts.nerf} nerfs</span></div>
+      <p class="journey-empty" data-filter-empty hidden>No matching champions. Change a filter or select Clear filters.</p>
+      <div class="journey-patch-browser" data-patch-browser>
+        <nav class="journey-record-selector" aria-label="Choose a champion record">{patch.champions.map((champion, index) => <a href={"#" + champion.championId.toLowerCase()} data-patch-select={champion.championId.toLowerCase()} aria-current={index === 0 ? 'true' : undefined}><img src={"https://ddragon.leagueoflegends.com/cdn/" + patch.assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="40" height="40" loading="lazy" decoding="async"/><span>{meta[champion.championId]?.name ?? champion.championId}</span><span aria-hidden="true">→</span></a>)}</nav>
+        <div class="cards journey-record-canvas" aria-label="Selected champion record">{patch.champions.map((champion) => <ChangeCard change={champion} meta={meta[champion.championId]} roles={roles[champion.championId] ?? []} assetVersion={patch.assetVersion}/>)}</div>
       </div>
-    </RouteArrival>
-    <div class="reader-body">
-      <nav class="chapter-rail" aria-label="On this page"><ol>{chapters.map((chapter) => <li><a href={chapter.href}>{chapter.label}</a></li>)}{hotfixes.length > 0 && <li><a href="#hotfixes">Hotfixes</a></li>}</ol></nav>
-      <div class="reader-chapters">
-        <section id="your-perspective" class="reading-chapter reading-chapter--compact" data-scene="patch-perspective">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Your champions.</h2><p>Your saved pool, or the champions in a shared link, with their status in this patch.</p></div></header>
-          <PoolStrip client:load patchId={patch.id} assetVersion={patch.assetVersion} names={names} changed={changed}/>
-          <a class="route-text-link" href="/pool#edit-pool">Edit My Pool ↗</a>
-        </section>
-        <section id="champions" class="reading-chapter" aria-labelledby="champions-h" data-scene="patch-champions">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2 id="champions-h">Champions</h2><p>Filter by name, role, or classification. Exact ability changes stay with each champion.</p><div class="counts archive-statline"><span><strong>{counts.buff}</strong> buff records</span><span><strong>{counts.nerf}</strong> nerf records</span><span><strong>{patch.champions.length}</strong> champion records</span></div></div></header>
-          <PatchFilterBar client:load entries={entries}/>
-          <p class="record-count"><span data-filter-count>{patch.champions.length}</span> champion records in view</p>
-          <p class="reader-section-note" data-filter-empty hidden>No matching champions. Change a filter or select Clear filters.</p>
-          <div class="cards">{patch.champions.map((c) => <ChangeCard change={c} meta={meta[c.championId]} roles={roles[c.championId] ?? []} assetVersion={patch.assetVersion}/>)}</div>
-        </section>
-        {patch.items.length > 0 && <section id="items" class="reading-chapter" aria-labelledby="items-h" data-scene="patch-items">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">03</span><div><h2 id="items-h">Item changes.</h2><p>Complete values and conditions from this patch.</p></div></header>
-          {patch.items.map((item) => <article class="flat-card reader-flat-record"><header><h3>{item.name}</h3><ClassificationBadge classification={item.classification}/></header>{item.changes.map((c) => <DeltaRow change={c}/>)}</article>)}
-        </section>}
-        {patch.systems.length > 0 && <section id="systems" class="reading-chapter" aria-labelledby="systems-h" data-scene="patch-systems">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">{patch.items.length ? "04" : "03"}</span><div><h2 id="systems-h">System changes.</h2><p>Changes to game rules, with the original wording preserved.</p></div></header>
-          {patch.systems.map((system) => <article class="flat-card reader-flat-record"><header><h3>{system.name}</h3><ClassificationBadge classification={system.classification}/></header>{system.changes.map((c) => <DeltaRow change={c}/>)}</article>)}
-        </section>}
-        {hotfixes.length > 0 && <section id="hotfixes" class="reading-chapter" aria-labelledby="hotfixes-h" data-scene="patch-hotfixes">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">↳</span><div><h2 id="hotfixes-h">Hotfixes.</h2><p>Dated follow-up notes included in this archive.</p></div></header>
-          {hotfixes.map((hotfix) => <article class="hotfix-record"><time datetime={hotfix.date}>{hotfix.date}</time><p>{hotfix.description}</p></article>)}
-        </section>}
-        <section class="reader-next" data-reveal><div><h2>See what changed over time.</h2><p>Compare {patch.id} with another archived patch.</p></div><div class="reader-next-actions"><a class="route-action route-action--quiet" href={"/compare/" + patch.id}>Compare this patch <span aria-hidden="true">↗</span></a><a class="route-text-link" href="/champions">Champion histories ↗</a></div></section>
-      </div>
-    </div>
+    </section>
+    {patch.items.length > 0 && <section id="items" class="journey-panel journey-record-list" data-journey-panel data-journey-label="Items" data-journey-world="patch" aria-label={"Item records in patch " + patch.id}>
+      <div class="journey-panel-heading"><p class="journey-reader-kicker">{patch.items.length} ITEM RECORDS</p><h2>Inspect the loadout.</h2></div>
+      {patch.items.map((item, index) => <details class="journey-record-fold" name="patch-items" open={index === 0}><summary><span>{item.name}</span><ClassificationBadge classification={item.classification}/><span class="journey-fold-plus" aria-hidden="true">+</span></summary><div>{item.changes.map(change => <DeltaRow change={change}/>)}</div></details>)}
+    </section>}
+    {(patch.systems.length > 0 || hotfixes.length > 0) && <section id="systems" class="journey-panel journey-record-list" data-journey-panel data-journey-label={patch.systems.length ? "Systems & fixes" : "Hotfixes"} data-journey-world="compare" aria-label="System records and hotfixes">
+      <div class="journey-panel-heading"><p class="journey-reader-kicker">THE WIDER GAME</p><h2>Rules of the Rift.</h2></div>
+      {patch.systems.map((system, index) => <details class="journey-record-fold" name="patch-systems" open={index === 0}><summary><span>{system.name}</span><ClassificationBadge classification={system.classification}/><span class="journey-fold-plus" aria-hidden="true">+</span></summary><div>{system.changes.map(change => <DeltaRow change={change}/>)}</div></details>)}
+      {hotfixes.length > 0 && <section id="hotfixes" class="journey-hotfixes"><h2>Hotfixes</h2>{hotfixes.map(hotfix => <article><time datetime={hotfix.date}>{hotfix.date}</time><p>{hotfix.description}</p></article>)}</section>}
+    </section>}
   </div>
 </Layout>
+<script>
+  const browser = document.querySelector<HTMLElement>('[data-patch-browser]');
+  if (browser) {
+    const cards = [...browser.querySelectorAll<HTMLElement>('[data-champion-id]')];
+    const links = [...browser.querySelectorAll<HTMLAnchorElement>('[data-patch-select]')];
+    let selected = '';
+    const fromHash = () => { try { return decodeURIComponent(location.hash.slice(1)); } catch { return ''; } };
+    function selectRecord(id = '') {
+      const visible = cards.filter(card => card.dataset.filtered !== 'out');
+      const current = visible.find(card => card.id === id) ?? visible.find(card => card.id === selected) ?? visible[0];
+      if (current && selected !== current.id) window.dispatchEvent(new CustomEvent('riftscry:focus-change', { detail: { kind: 'champion', key: current.dataset.championId ?? current.id } }));
+      selected = current?.id ?? '';
+      cards.forEach(card => { card.hidden = card !== current; card.inert = card !== current; });
+      links.forEach(link => {
+        const card = cards.find(card => card.id === link.dataset.patchSelect);
+        link.hidden = !card || card.dataset.filtered === 'out';
+        if (link.dataset.patchSelect === selected) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
+      });
+      browser!.dataset.recordBrowserReady = 'true';
+    }
+    selectRecord(fromHash());
+    const observer = new MutationObserver(() => selectRecord(fromHash()));
+    cards.forEach(card => observer.observe(card, { attributes:true, attributeFilter:['data-filtered'] }));
+    // Native hash links remain shareable. The global scene controller reveals
+    // this panel; selection reveals the exact record within it.
+    document.addEventListener('click', event => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]');
+      if (!link || link.origin !== location.origin || link.pathname !== location.pathname || link.search !== location.search || !link.hash) return;
+      let id = ''; try { id = decodeURIComponent(link.hash.slice(1)); } catch { return; }
+      if (cards.some(card => card.id === id)) selectRecord(id);
+    });
+    const restore = () => selectRecord(fromHash());
+    window.addEventListener('hashchange', restore);
+    window.addEventListener('popstate', restore);
+    window.addEventListener('riftscry:journey-change', restore);
+    window.addEventListener('pagehide', event => { if (!event.persisted) observer.disconnect(); });
+  }
+</script>

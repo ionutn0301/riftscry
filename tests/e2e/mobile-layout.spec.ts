@@ -1,4 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
+import { openScene, readyWorld } from "./journey-test-helpers";
 import championData from "../../src/data/champions.json" with { type: "json" };
 import roleData from "../../src/data/roles.json" with { type: "json" };
 
@@ -8,6 +9,7 @@ const champions = championData.champions as Record<string, { name: string; title
 const longChampion = Object.entries(champions).sort((a, b) => b[1].name.length - a[1].name.length)[0]!;
 
 async function readyJourney(page: Page) {
+  await readyWorld(page);
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-loading", "false");
   await page.evaluate(() => document.fonts.ready);
@@ -42,7 +44,7 @@ test.beforeEach(async ({ page }) => {
 
 async function readyJourneyMap(page: Page, width: number, height: number) {
   await page.setViewportSize({ width, height });
-  // Start at the same scrolled chapter where the journey-control story ends.
+  // Preserve the selected scene and its real reading-panel position through overlays.
   await page.goto("/explore#change", { waitUntil: "domcontentloaded" });
   await readyJourney(page);
   // Astro islands use display:contents; attachment and the hydration attribute
@@ -53,8 +55,10 @@ async function readyJourneyMap(page: Page, width: number, height: number) {
   const opener = page.locator("[data-map-open]");
   await opener.focus();
   const scrollBefore = await page.evaluate(() => scrollY);
-  expect(scrollBefore, "Restoration must preserve a scrolled reading position").toBeGreaterThan(0);
-  return { opener, scrollBefore };
+  expect(scrollBefore).toBe(0);
+  const reading = page.locator('.voyage-evidence-desk');
+  const panelScroll = await reading.evaluate(element => { element.scrollTop = Math.min(100, element.scrollHeight - element.clientHeight); return element.scrollTop; });
+  return { opener, scrollBefore, reading, panelScroll };
 }
 
 for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], [844, 390], [1024, 768]] as const) {
@@ -74,23 +78,14 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
       }
     }
 
-    const enterJourney = page.getByRole("link", { name: /Enter the journey/ });
-    await expectUncovered(enterJourney);
-    await enterJourney.click();
-    await expect(page.locator("#perspective h2")).toBeFocused();
     const chooseChampion = page.locator("[data-roster-open]");
     await expectUncovered(chooseChampion);
-    const chooseBounds = await bounds(chooseChampion);
-    for (const label of await page.locator(".journey-coordinates .coordinate-label").all()) {
-      expect(overlaps(await bounds(label), chooseBounds), "Chapter labels must not cover the champion action").toBe(false);
-    }
-
-    const chapters = page.getByRole("navigation", { name: "Journey chapters" });
-    for (const link of await chapters.getByRole("link").all()) {
-      expect((await bounds(link)).height).toBeGreaterThanOrEqual(44);
-    }
-    await chapters.getByRole("link", { name: "Witness a change", exact: true }).click();
-    await expect(page.locator("#change h2")).toBeFocused();
+    expect((await bounds(chooseChampion)).height).toBeGreaterThanOrEqual(44);
+    const chapters = page.locator('[data-journey-tabs]');
+    for (const button of await chapters.getByRole('tab').all()) expect((await bounds(button)).height).toBeGreaterThanOrEqual(44);
+    await openScene(page, 'history');
+    for (const field of await page.locator('[data-period-older], [data-period-newer]').all()) await expectUncovered(field);
+    await openScene(page, 'change');
     const fieldSizes = await page.locator("[data-field-choice], [data-period-older], [data-period-newer]").evaluateAll((fields) =>
       fields.map((field) => Number.parseFloat(getComputedStyle(field).fontSize)));
     expect(fieldSizes).toHaveLength(3);
@@ -98,12 +93,12 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 
-  test(`all eight Rift map destinations fit and close restores the journey at ${width}×${height}`, async ({ page }) => {
-    const { opener, scrollBefore } = await readyJourneyMap(page, width, height);
+  test(`all five primary and three specialist destinations fit and close restores the journey at ${width}×${height}`, async ({ page }) => {
+    const { opener, scrollBefore, reading, panelScroll } = await readyJourneyMap(page, width, height);
     await opener.click();
     const map = page.locator("#rift-map-dialog");
     await expect(map).toBeVisible();
-    const destinations = map.getByRole("navigation", { name: "RiftScry destinations" }).getByRole("link");
+    const destinations = map.locator("[data-world-link], .journey-map-footer a");
     await expect(destinations).toHaveCount(8);
     for (const destination of await destinations.all()) {
       await expect(destination).toBeInViewport({ ratio: 0.99 });
@@ -120,11 +115,13 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await expect(map).not.toBeVisible();
     await expect(opener).toBeFocused();
     expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
+    await expect(page.locator("#change")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 
   test(`Rift map reopens into search and restores focus and scroll at ${width}×${height}`, async ({ page }) => {
-    const { opener, scrollBefore } = await readyJourneyMap(page, width, height);
+    const { opener, scrollBefore, reading, panelScroll } = await readyJourneyMap(page, width, height);
     const map = page.locator("#rift-map-dialog");
     const searchMap = map.locator("[data-palette-trigger]");
     await opener.click();
@@ -134,6 +131,8 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await expect(map).not.toBeVisible();
     await expect(opener).toBeFocused();
     expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
+    await expect(page.locator("#change")).toBeVisible();
     await opener.click();
     await expect(map).toBeVisible();
     await searchMap.click();
@@ -143,6 +142,8 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await expect(page.locator("[cmdk-input]")).not.toBeVisible();
     await expect(opener).toBeFocused();
     expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
+    await expect(page.locator("#change")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 }
@@ -196,7 +197,7 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
 
 test("all five pool roles fit a 320px screen and Support filters usable choices", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto("/pool", { waitUntil: "domcontentloaded" });
+  await page.goto("/pool#edit-pool", { waitUntil: "domcontentloaded" });
   const island = page.locator("astro-island:has(.pool-picker)");
   await island.waitFor({ state: "attached" });
   await expect(island).not.toHaveAttribute("ssr", "");
@@ -234,13 +235,13 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     await page.setViewportSize({ width, height });
     const [championId, champion] = longChampion;
     await page.goto(`/champion/${championId.toLowerCase()}`, { waitUntil: "domcontentloaded" });
-    await expect(page.locator("#main h1")).toHaveText(champion.name);
+    await expect(page.locator("#main h1")).toContainText(champion.name);
     await expect(page.locator("html")).toHaveClass(/experience-ready/);
     await page.evaluate(() => document.fonts.ready);
 
     const expectClearActions = async () => {
-      const art = await bounds(page.locator(".champion-arrival-art"));
-      const actions = await page.locator(".route-arrival-actions a, .route-arrival-actions button").all();
+      const art = await bounds(page.locator(".journey-champion-art"));
+      const actions = await page.locator(".journey-header-actions a, .journey-header-actions button").all();
       const rectangles = await Promise.all(actions.map(bounds));
       for (let index = 0; index < rectangles.length; index++) {
         const rect = rectangles[index]!;
@@ -258,21 +259,21 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     await save.click();
     await expect(save).toHaveAttribute("aria-pressed", "true");
     await expectClearActions();
-    await page.locator('.route-arrival-actions a[href="#history"]').click();
-    await expect(page.locator("#history h2")).toBeFocused();
+    await page.locator('[data-journey-tab="perspective"]').click();
+    await page.locator('[data-journey-tab="history"]').click();
+    await expect(page.locator("#history")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 }
 
-test("the short desktop opening keeps the scroll invitation clear of the Rift map", async ({ page, isMobile }) => {
-  test.skip(isMobile, "Touch devices use the compact header at this width.");
+test("the short desktop keeps the next-scene action clear of the destination rail", async ({ page, isMobile }) => {
+  test.skip(isMobile, "Touch layouts are covered at their own viewport sizes.");
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto("/explore", { waitUntil: "domcontentloaded" });
-  await readyJourney(page);
-  const invitation = page.locator(".arrival-footer .chapter-invitation");
-  await expectUncovered(invitation);
-  expect(overlaps(await bounds(invitation), await bounds(page.locator(".wayfinder-dock"))))
-    .toBe(false);
-  await invitation.click();
-  await expect(page.locator("#perspective h2")).toBeFocused();
+  await page.goto("/explore"); await readyJourney(page);
+  const next = page.locator('[data-journey-next]');
+  await expectUncovered(next);
+  expect(overlaps(await bounds(next), await bounds(page.locator('.journey-route-controls')))).toBe(false);
+  await next.click();
+  await expect(page.locator('#history')).toBeVisible();
+  await expect(page.locator('#history')).toBeFocused();
 });

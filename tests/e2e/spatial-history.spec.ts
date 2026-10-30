@@ -1,8 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
+import { openScene, readyWorld } from "./journey-test-helpers";
 
 // The filename is retained, but the viewport-only investigation is gone. These
 // cases now protect the current journey's URL, recovery and motion contracts.
 const ready = async (page: Page) => {
+  await readyWorld(page);
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-loading", "false");
 };
@@ -15,10 +17,12 @@ test("missing champion artwork keeps exact records and real route navigation", a
   await expect(page.locator("[data-art-fallback]")).toContainText("records remain available");
   await expect(page.locator("[data-record-before]")).toHaveText("110");
   await expect(page.locator("[data-record-after]")).toHaveText("105");
+  await openScene(page, "history");
   await page.locator("[data-champion-link]").click();
   await expect(page).toHaveURL(/\/champion\/belveth\/?$/);
-  await expect(page.locator("#main h1")).toHaveText("Bel'Veth");
-  await expect(page.locator(".timeline-entry").first()).toContainText("Health Growth");
+  await expect(page.locator("#main h1")).toContainText("Bel'Veth");
+  await expect(page.locator("[data-history-record]:visible")).toHaveCount(1);
+  await expect(page.locator("[data-history-record]:visible")).toContainText("Health Growth");
 });
 
 test("a lowercase champion deep link resolves exact evidence and reloads", async ({ page }) => {
@@ -59,7 +63,11 @@ test("legacy patch and kept-finding URLs restore only records from the chosen in
   await page.reload();
   await ready(page);
   await expect(page.locator("[data-findings-list] li")).toHaveCount(1);
+  await openScene(page, "change");
   await page.locator("[data-focus-record]").click();
+  await expect(page.locator("[data-focus-record]")).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator("[data-findings-list] li")).toHaveCount(0);
+  await openScene(page, "return");
   await expect(page.locator("[data-journey-findings]")).not.toBeVisible();
   await expect(page).toHaveURL((url) => !url.searchParams.has("seen") && url.searchParams.get("newer") === model.newer);
 });
@@ -76,6 +84,7 @@ test("unknown champions and invalid URL intervals explain the retained evidence"
   await expect(page.locator("[data-period-status]")).toHaveAttribute("data-invalid", "true");
   await expect(page.locator("[data-period-status]")).toContainText("default archived interval");
   const model = await (await page.request.get('/journey/Belveth.json')).json();
+  await openScene(page, "change");
   if (model.periodIds.length) {
     await expect(page.locator("[data-field-choice]")).toBeEnabled();
     await expect(page.locator("[data-record-after]")).not.toBeEmpty();
@@ -91,16 +100,16 @@ test("reduced motion keeps chapter links, dates and the map available on every v
   await ready(page);
   await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");
   await expect(page.locator("[data-motion-toggle]")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator('[data-world-shot="0"]')).toHaveCSS("transform", "none");
-  await page.locator('[aria-label="Journey chapters"] a[href="#history"]').click();
+  await expect(page.locator("[data-rift-scene]")).toHaveAttribute("data-rift-motion", "still");
+  await page.locator('[data-journey-tab="history"]').click();
   await expect(page).toHaveURL(/#history$/);
-  await expect(page.locator("#history h2")).toBeFocused();
+  await expect(page.locator("#history")).toBeVisible();
   await expect(page.locator("[data-period-older]")).toBeEnabled();
   await expect(page.locator("[data-period-newer]")).toBeEnabled();
   await page.locator("[data-map-open]").click();
   await expect(page.locator("#rift-map-dialog")).toBeVisible();
-  await page.locator('#rift-map-dialog a[href="/pool"]').click();
-  await expect(page).toHaveURL(/\/pool\/?$/);
+  await page.locator('#rift-map-dialog [data-world-link="pool"]').click();
+  await expect(page).toHaveURL(url => url.pathname === "/pool");
   await expect(page.locator("#main h1")).toBeVisible();
 });
 
@@ -116,6 +125,6 @@ test("a short landscape viewport keeps controls reachable without horizontal ove
   await page.locator("[data-roster-close]").click();
   await expect(page.locator("#voyage-roster")).not.toBeVisible();
   await page.locator("[data-map-open]").click();
-  await page.locator('#rift-map-dialog a[href="/pool"]').click();
-  await expect(page).toHaveURL(/\/pool\/?$/);
+  await page.locator('#rift-map-dialog [data-world-link="pool"]').click();
+  await expect(page).toHaveURL(url => url.pathname === "/pool");
 });

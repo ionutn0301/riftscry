@@ -1,7 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import RouteArrival from "../components/experience/RouteArrival.astro";
+import "../styles/journey-readers.css";
 import ReturnBriefing from "../components/experience/ReturnBriefing.astro";
+import KeptFindings from "../components/experience/KeptFindings";
 import PoolPicker, { type PoolChampion } from "../components/islands/PoolPicker";
 import { getAssetVersion, getChampionMeta, getLatestPatch, getRoles } from "../lib/data";
 const meta = getChampionMeta();
@@ -10,28 +11,11 @@ const assetVersion = getAssetVersion();
 const latest = getLatestPatch();
 const champions: PoolChampion[] = Object.entries(meta).map(([id,m]) => ({id,name:m.name,title:m.title,roles:roles[id] ?? []})).sort((a,b) => a.name.localeCompare(b.name));
 ---
-<Layout surface="pool" title="My Pool — RiftScry" description="Return to your saved League of Legends champions, review their archived changes, and shape a device-local pool without an account.">
-  <div class="reader-experience">
-    <RouteArrival eyebrow="MY POOL" title="Your champion pool."
-      description="Choose your mains once. Review their archived changes and return to the findings you saved."
-      variant="pool"
-      note={"Saved on this device. No account required. Archive through " + latest.releaseDate + "."}>
-      <div slot="actions"><a class="route-action" href="#edit-pool">Choose my champions <span aria-hidden="true">↓</span></a><a class="route-text-link" href="#briefing">View my briefing <span aria-hidden="true">↓</span></a></div>
-      <div slot="figure" class="arrival-period"><span class="arrival-period-caption">NEWEST LOADED ARCHIVE</span><span class="arrival-period-number">{latest.id}</span><time class="arrival-period-caption" datetime={latest.releaseDate}>{latest.releaseDate}</time></div>
-    </RouteArrival>
-    <div class="reader-body">
-      <nav class="chapter-rail" aria-label="On this page"><ol><li><a href="#briefing">Your briefing</a></li><li><a href="#edit-pool">Edit pool</a></li></ol></nav>
-      <div class="reader-chapters">
-        <section id="briefing" class="reading-chapter" data-scene="pool-briefing">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Your briefing.</h2><p>Review your pool’s changes, resume reading, or revisit a kept finding.</p></div></header>
-          <ReturnBriefing compact heading="Your saved champions" />
-        </section>
-        <section id="edit-pool" class="reading-chapter" data-scene="pool-selection">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2>Choose your champions.</h2><p>Select a champion to save them. Select again to remove them. Your pool filters patch pages on this device.</p></div></header>
-          <PoolPicker client:load champions={champions} assetVersion={assetVersion} latestPatchId={latest.id}/>
-        </section>
-        <section class="reader-next" data-reveal><div><h2>Read beyond your pool.</h2><p>All champion, item, and system changes in patch {latest.id}.</p></div><a class="route-action route-action--quiet" href={"/patch/" + latest.id}>Open the full patch <span aria-hidden="true">↗</span></a></section>
-      </div>
-    </div>
+<Layout surface="pool" title="Saved champions — RiftScry" description="Your champions and kept findings. Return to the records that matter to you.">
+  <div class="journey-reader journey-saved" data-journey-deck>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">SAVED / ON THIS DEVICE</p><h1>Your corner of the Rift.</h1></div><div class="journey-header-actions"><a class="journey-quiet-link" href="/notebook">Notebook ↗</a><a class="journey-quiet-link" href="/next-game">Automatic briefing ↗</a></div></header>
+    <section id="briefing" class="journey-panel journey-saved-panel" data-journey-panel data-journey-label="Saved champions" data-journey-world="pool" aria-label="Saved champions"><ReturnBriefing compact heading="Your saved champions" /></section>
+    <section id="findings" class="journey-panel journey-saved-panel" data-journey-panel data-journey-label="Findings" data-journey-world="pool" aria-label="Kept findings"><KeptFindings client:load /></section>
+    <section id="edit-pool" class="journey-panel journey-saved-panel" data-journey-panel data-journey-label="Choose champions" data-journey-world="champions" aria-label="Choose saved champions"><div class="journey-panel-heading"><p class="journey-reader-kicker">YOUR PERSPECTIVE</p><h2>Keep your champions close.</h2><p>Tap to save. Tap again to remove.</p></div><PoolPicker client:load champions={champions} assetVersion={assetVersion} latestPatchId={latest.id}/></section>
   </div>
 </Layout>

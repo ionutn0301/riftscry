@@ -1,0 +1,13 @@
+---
+import RiftNavigator from './RiftNavigator.astro';
+import { getLatestPatch } from '../../lib/data';
+const latest = getLatestPatch();
+---
+<div class="connected-observatory" data-observatory data-journey-deck>
+  <section id="observatory" class="observatory-arrival" data-journey-panel data-journey-label="The observatory" data-journey-world="home" aria-labelledby="observatory-title">
+    <header class="observatory-heading"><p class="journey-eyebrow"><i aria-hidden="true"></i> LEAGUE OF LEGENDS / AN INTERACTIVE OBSERVATORY</p><h1 id="observatory-title">The Rift is<br /><em>yours to explore.</em></h1><p>Choose a destination. Follow what matters.</p></header>
+    <RiftNavigator />
+    <div class="observatory-return" data-observatory-return hidden><span class="journey-eyebrow">CONTINUE WITH</span><strong data-resume-name></strong><a href="/next-game" data-resume-link>Open my briefing <span aria-hidden="true">↗</span></a></div>
+    <div class="observatory-signal"><span class="journey-eyebrow">LATEST ARCHIVED SIGNAL</span><a href={`/patch/${latest.id}`}><strong>{latest.id}</strong><span>{latest.releaseDate} <b aria-hidden="true">↗</b></span></a><a class="observatory-experiment" href="/explore#change">Explore a change <span aria-hidden="true">↗</span></a></div>
+  </section>
+</div>

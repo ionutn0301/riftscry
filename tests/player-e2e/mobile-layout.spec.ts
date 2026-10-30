@@ -1,6 +1,6 @@
 import { test, expect, type Locator } from '@playwright/test';
 import { installFixtures, profilePath, query, recentAramWin, visualMatches } from './fixtures';
-import { openFilters, selectQueue } from './profile-controls';
+import { openFilters, openScene, selectQueue } from './profile-controls';
 
 async function expectContained(locator: Locator) {
   const outside = await locator.evaluateAll(elements => elements.flatMap(element => {
@@ -57,7 +57,7 @@ for (const width of [320, 768]) {
     await expect(page.locator('.match-row')).toHaveCount(1);
   });
 
-  test(`${width}px: expanded purchase evidence scrolls with the page and notes stay readable`, async ({ page }) => {
+  test(`${width}px: expanded purchase evidence scrolls within its scene and notes stay readable`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     const timeline = { info: { frames: [{ timestamp: 1_500_000, events: Array.from({ length: 24 }, (_, index) => ({
       type: 'ITEM_PURCHASED', timestamp: (index + 1) * 60_000, participantId: 1, itemId: 3047,
@@ -66,7 +66,8 @@ for (const width of [320, 768]) {
       response: request => request.action === 'timeline' ? { status: 200, json: timeline } : undefined,
     });
     await page.goto(`/matches/${recentAramWin.metadata.matchId}?${query}`);
-    await page.getByRole('button', { name: 'Open timeline', exact: true }).click();
+    await openScene(page, 'match-evidence');
+  await page.getByRole('button', { name: 'Open timeline', exact: true }).click();
     await page.getByText('Recorded item and death events · 24', { exact: true }).click();
     const events = page.locator('.purchase-timeline');
     await expect(events.locator('li')).toHaveCount(24);
@@ -78,11 +79,13 @@ for (const width of [320, 768]) {
     await events.locator('li').first().scrollIntoViewIfNeeded();
     const row = await events.locator('li').first().boundingBox();
     await page.mouse.move(row!.x + row!.width / 2, row!.y + row!.height / 2);
-    const scrollBefore = await page.evaluate(() => scrollY);
+    const scrollBefore = await page.locator('#match-evidence').evaluate(element => element.scrollTop);
     await page.mouse.wheel(0, 250);
-    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(scrollBefore);
+    await expect.poll(() => page.locator('#match-evidence').evaluate(element => element.scrollTop)).toBeGreaterThan(scrollBefore);
     expect(await events.evaluate(element => element.scrollTop)).toBe(0);
+  expect(await page.evaluate(() => scrollY)).toBe(0);
 
+    await openScene(page, 'match-memory');
     await page.getByText('Save an adjustment from this match', { exact: true }).click();
     await expectReadableFields(page.locator('.memory-draft input, .memory-draft select, .memory-draft textarea'));
     await page.getByLabel('Decision being reconsidered', { exact: true }).fill('Review the recorded boots purchase');

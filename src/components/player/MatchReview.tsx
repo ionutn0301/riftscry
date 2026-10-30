@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useJourneyReady } from '../experience/useJourneyReady';
 import useSWR from 'swr';
 import { api, fetcher, playerBackLink } from './client';
 import { comparisonRole, comparisonRoleLabel, participant, evidence, fallbackReview, patchOf, type Match, type Timeline, type Review, type Fact } from '../../lib/player/contracts';
@@ -12,6 +13,7 @@ import { usePlayerCooldown } from './usePlayerCooldown';
 import ChampionPortrait from './ChampionPortrait';
 import { championDisplayName } from './championArtwork';
 import PlayerIcon from './PlayerIcon';
+import '../../styles/journey-companion.css';
 
 function clock(milliseconds: number) {
   const seconds = Math.max(0, Math.floor(milliseconds / 1000));
@@ -30,6 +32,7 @@ function EvidenceLink({ factId, fact, onReveal }: { factId: string; fact?: Fact;
 }
 
 export default function MatchReview({ id, platform, puuid, back }: { id: string; platform: string; puuid: string; back: string }) {
+  const journeyReady = useJourneyReady();
   const values = { id, platform, puuid };
   const { data: match, error, isLoading, mutate: retryMatch } = useSWR<Match>(api('match', values), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const retrySeconds = usePlayerCooldown();
@@ -60,6 +63,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   function revealEvidence(factId: string, updateHash = true) {
     const target = document.getElementById(`fact-${factId}`);
     if (!target) return;
+    window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: target.id, focus: false } }));
     if (evidenceDetails.current) evidenceDetails.current.open = true;
     target.focus({ preventScroll: true });
     target.scrollIntoView({ block: 'center', behavior: 'auto' });
@@ -101,8 +105,8 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     }
   }
 
-  return <>
-    <a className="player-text-link review-back" aria-label="← Back to player and filters" href={playerBackLink(back, platform, puuid)}><PlayerIcon name="arrow-left" /> Back to player</a>
+  return <div className="journey-match" data-journey-deck data-journey-hydrated={journeyReady} data-journey-default="match-overview">
+    <nav className="match-route-actions" aria-label="Continue from this match"><a className="player-text-link review-back" aria-label="← Back to player and filters" href={playerBackLink(back, platform, puuid)}><PlayerIcon name="arrow-left" /> Back to player</a>{match && p && <a className="player-text-link" href={briefingLink({ platform, puuid }, { champion: p.championName, queue: String(match.info.queueId) })}><PlayerIcon name="target" />Automatic briefing<PlayerIcon name="arrow-right" size={16} /></a>}</nav>
     <header className="player-hero review-champion-heading">
       {p && <ChampionPortrait className="review-champion-portrait" champion={p.championName} size={88} />}
       <div><p className="player-kicker">MATCH REVIEW</p><h1>{p ? championDisplayName(p.championName) : 'Selected match'}</h1>
@@ -112,6 +116,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
     {match && !p && <p role="alert">This player is not present in the returned match. Return to the profile and choose another match.</p>}
     {match && p && <>
+      <section id="match-overview" className="match-overview-scene" data-journey-panel data-journey-label="Match" data-journey-world="match">
       <section className="profile-stats review-summary" aria-label="Match overview">
         <div>
           <p className="player-kicker">{p.win ? 'VICTORY' : 'DEFEAT'}</p>
@@ -129,11 +134,12 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <div className="review-runes">{mode?.runeSetup ? p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} compact />)) || <span>Runes unavailable</span> : <span>{mode?.queueId === 2400 || mode?.family === 'arena' ? 'Augments mode' : 'Mode-specific setup'}</span>}</div>
           {(!items || itemError) && <p className="player-help">{itemError ? 'Item names unavailable. Recorded IDs are kept.' : 'Loading items and runes…'}</p>}
           {itemError && <button className="player-button-secondary" disabled={itemsLoading || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button>}
-          <p><a className="player-text-link" href={briefingLink({ platform, puuid }, { champion: p.championName, queue: String(match.info.queueId) })}><PlayerIcon name="target" />Automatic briefing<PlayerIcon name="arrow-right" size={16} /></a></p>
         </div>
       </section>
       <details className="player-explainer"><summary><PlayerIcon name="info" /> Match details</summary><p>{new Date(match.info.gameCreation).toLocaleString()} · {comparisonRoleLabel(comparisonRole(match, puuid))} · {id}</p>{mode && <p>{mode.context}</p>}<p>{items?.notice} Final loadout shows the end of the game; open the timeline for purchase order. Damage is champion damage across the whole match.</p></details>
+      </section>
 
+      <section id="match-review" className="match-review-scene" data-journey-panel data-journey-label="Review" data-journey-world="next-game">
       <section className="review-reading-section" aria-labelledby="short-review-heading">
         <div className="player-actions review-actions">
           <h2 id="short-review-heading">One thing to revisit</h2>
@@ -153,10 +159,12 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <details className="player-explainer"><summary>Why this option?</summary><p><strong>Recorded:</strong> {suggestion.original}</p><p>{suggestion.reason}</p><p className="suggestion-tradeoff"><strong>Tradeoff:</strong> {suggestion.tradeoff}</p>
           <div className="review-evidence-links">{suggestion.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div>
           {suggestion.source && /^https:\/\//.test(suggestion.source.url) && <p><a href={suggestion.source.url} target="_blank" rel="noreferrer">{suggestion.source.label} ↗</a></p>}
-          </details><button aria-controls="build-memory" onClick={() => setDraft({ ...suggestion })}><PlayerIcon name="bookmark" /> Review draft</button>
+          </details><button aria-controls="build-memory" onClick={() => { setDraft({ ...suggestion }); requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'build-memory' } }))); }}><PlayerIcon name="bookmark" /> Review draft</button>
         </article>)}
       </section>}
+      </section>
 
+      <section id="match-evidence" className="match-evidence-scene" data-journey-panel data-journey-label="Evidence" data-journey-world="patch">
       <section className="purchase-evidence" aria-labelledby="purchase-evidence-heading">
         <div className="player-actions"><h2 id="purchase-evidence-heading">Purchase evidence</h2>
           <button className="player-button-secondary" onClick={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} disabled={timelineLoading || retrySeconds > 0 || (!!timeline && !timelineError)}><PlayerIcon name="clock" />{retrySeconds && !timeline ? `Retry in ${retrySeconds}s` : timelineLoading ? 'Loading…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Open timeline'}</button>
@@ -172,7 +180,10 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       </section>
 
       <details ref={evidenceDetails} className="supporting-evidence"><summary><PlayerIcon name="info" /> Supporting facts</summary><p className="player-help">Recorded events show what happened, not why a decision worked.</p>{shown.facts.map(fact => <p id={`fact-${fact.id}`} tabIndex={-1} key={fact.id}><strong>{evidenceLabel(fact)}:</strong> {fact.text}</p>)}</details>
+      </section>
+      <section id="match-memory" className="match-memory-scene" data-journey-panel data-journey-label="Build Memory" data-journey-world="notebook">
       <BuildMemory player={`${platform}:${puuid}`} puuid={puuid} platform={platform} source={match} metadata={items} draft={draft} onDraftConsumed={() => setDraft(undefined)} />
+      </section>
     </>}
-  </>;
+  </div>;
 }

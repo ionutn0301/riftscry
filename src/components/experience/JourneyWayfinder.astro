@@ -1,0 +1,28 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../../assets/brand/logo-desktop-light.png';
+import RiftNavigator from './RiftNavigator.astro';
+import { journeyStations, stationForSurface } from '../../lib/journey-stations';
+interface Props { surface: string }
+const { surface } = Astro.props;
+const active = stationForSurface(surface);
+const location = journeyStations.find(station => station.id === active)?.label ?? 'Observatory';
+---
+<header class="world-controls journey-header" aria-label="RiftScry controls">
+  <a class="world-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={40} densities={[1, 2]} loading="eager" /></a>
+  <div class="journey-location"><span aria-hidden="true">◇</span><span>THE RIFT</span><i aria-hidden="true">/</i><strong data-current-location>{location}</strong></div>
+  <div class="world-utilities">
+    <button type="button" class="journey-map-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 2 9 10-9 10L3 12 12 2Zm0 5 4 5-4 5-4-5 4-5Z"/></svg><span>Destinations</span></button>
+    <button type="button" class="journey-search-trigger" data-palette-trigger aria-label="Search the archive"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Search</span><kbd>⌘ K</kbd></button>
+    <button type="button" class="motion-choice" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><span aria-hidden="true">◐</span><span data-motion-label>Motion on</span></button>
+    <button type="button" class="journey-info-trigger" data-about-open aria-haspopup="dialog" aria-controls="journey-about-dialog" aria-label="About RiftScry"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 11v6m0-10v1"/></svg></button>
+  </div>
+</header>
+<dialog id="rift-map-dialog" class="world-map-dialog journey-map" aria-labelledby="rift-map-title">
+  <div class="journey-map-inner">
+    <header class="journey-map-heading"><div><p class="journey-eyebrow">ONE WORLD / FIVE DESTINATIONS</p><h2 id="rift-map-title">Where next?</h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
+    <RiftNavigator mode="map" active={active} />
+    <footer class="journey-map-footer"><a href="/explore#change">Explore a change ↗</a><a href="/compare">Compare patches ↗</a><a href="/notebook">Notebook ↗</a><button type="button" data-palette-trigger>Search the archive <span aria-hidden="true">↗</span></button></footer>
+  </div>
+</dialog>
+<noscript><nav class="world-nojs-nav" aria-label="RiftScry destinations">{journeyStations.map(station => <a href={station.href}>{station.label}</a>)}<a href="/notebook">Notebook</a><a href="/explore">Explore</a></nav></noscript>

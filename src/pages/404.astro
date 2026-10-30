@@ -1,17 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import RouteArrival from "../components/experience/RouteArrival.astro";
+import "../styles/journey-readers.css";
 import { getLatestPatch } from "../lib/data";
 const latest = getLatestPatch();
 ---
-<Layout surface="missing" title="Page not found — RiftScry" description="This destination is outside RiftScry. Return home, find your champion, or open the newest archived patch.">
-  <div class="reader-experience">
-    <RouteArrival eyebrow="404 / SIGNAL LOST" title={"A step\nbeyond the Rift."}
-      description="This page isn't here. Return home, or search for what you need."
-      variant="missing"
-      chapters={[{href:"/champions",label:"Champions"},{href:"/patch/" + latest.id,label:"Patch " + latest.id}]}>
-      <div slot="actions"><a class="route-action" href="/">Return home <span aria-hidden="true">↗</span></a><button type="button" class="route-text-link" data-palette-trigger>Search the archive ↗</button></div>
-      <span slot="figure" class="reader-missing-code" aria-label="Error 404">404</span>
-    </RouteArrival>
+<Layout surface="missing" title="Page not found — RiftScry" description="This destination is outside RiftScry. Return to the observatory or find another signal.">
+  <div class="journey-reader journey-missing" data-journey-deck>
+    <section id="lost-signal" class="journey-panel journey-lost-panel" data-journey-panel data-journey-label="Find your way" data-journey-world="missing"><div><p class="journey-reader-kicker">404 / SIGNAL LOST</p><h1>A step beyond<br />the Rift.</h1><p>This destination isn’t here.</p><div class="journey-header-actions"><a class="journey-primary-link" href="/">Return to the Rift <span aria-hidden="true">↗</span></a><button type="button" class="journey-quiet-link" data-palette-trigger>Search the archive ↗</button></div><a class="journey-quiet-link" href={"/patch/" + latest.id}>Latest archived patch: {latest.id} ↗</a></div><span class="journey-lost-coordinate" aria-hidden="true">404</span></section>
   </div>
 </Layout>

@@ -2,6 +2,7 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 import type { Match } from '../../src/lib/player/contracts';
 import type { PatchImpactReport } from '../../src/lib/player/patch-impact';
 import { installFixtures, makeMatch, platform, puuid, type FixtureRequest } from '../player-e2e/fixtures';
+import { openScene, readyWorld } from './journey-test-helpers';
 
 // These are browser-only response fixtures. Engine reference calculations have
 // separate unit tests; these figures are not claims about live champion balance.
@@ -68,12 +69,19 @@ async function fixtures(page: Page, matches: Match[] = [first], respond?: (reque
   return requests;
 }
 
-async function open(page: Page, path = direct) {
-  await page.goto(path);
+async function enterImpact(page: Page) {
   await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy', 'false');
+  await readyWorld(page);
+  await openScene(page, 'impact');
   const impact = page.locator('#impact[data-patch-impact]');
   await expect(impact).toBeVisible();
+  await expect(page.locator('[data-journey-tab="impact"]')).toHaveAttribute('aria-selected', 'true');
   return impact;
+}
+
+async function open(page: Page, path = direct) {
+  await page.goto(path);
+  return enterImpact(page);
 }
 
 function metric(impact: Locator, id: string) { return impact.locator(`[data-impact-metric="${id}"]`); }
@@ -179,10 +187,9 @@ test('switching champions keeps the viewport and context controls still through 
     await page.evaluate(() => document.fonts.ready);
     const choices = impact.locator('.patch-impact-contexts');
     const secondChoice = impact.getByRole('button', { name: /Ahri/ });
-    await choices.evaluate(element => {
-      const header = document.querySelector('.world-controls')!.getBoundingClientRect().bottom;
-      window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - header - 40, behavior: 'instant' });
-    });
+    // Records can scroll within their active scene; the shared world stays put.
+    await choices.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => scrollY)).toBe(0);
     const position = async () => {
       await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
       return choices.evaluate(element => ({
@@ -320,31 +327,61 @@ test('the saved reduced-motion preference also disables impact animation', async
   expect(await impact.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0);
 });
 
+// This frozen response preserves the reference scenario's UI/source contract.
+// The engine and pinned Riot item references are independently covered by
+// tests/unit/home-impact.test.ts; this fixture never represents a live player.
+const referenceMatch = makeMatch('EUN1_88103', Date.parse('2026-10-15T12:00:00Z'), 3152);
+referenceMatch.info.gameVersion = '16.20.1';
+referenceMatch.info.queueId = 420;
+referenceMatch.info.gameMode = 'CLASSIC';
+referenceMatch.info.mapId = 11;
+referenceMatch.info.participants[0]!.championName = 'Orianna';
+referenceMatch.info.participants[0]!.teamPosition = 'MIDDLE';
+referenceMatch.info.participants[0]!.item1 = 4628;
+const referenceSources = [
+  { label: 'Riot patch notes', url: patchSource },
+  ...['16.20.1', '16.21.1'].map(version => ({ label: `Riot item reference ${version}`, url: `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json` })),
+];
+const referenceImpact = impactFor(referenceMatch, {
+  inventory: [{ id: 3152, name: 'Hextech Rocketbelt', quantity: 1 }, { id: 4628, name: 'Horizon Focus', quantity: 1 }],
+  metrics: [{
+    id: 'champion-ap-Orianna:Q:damage', kind: 'damage', label: 'Orianna Q item AP damage contribution', unit: 'damage',
+    before: 74.25, after: 81, delta: 6.75, percent: 9.090909,
+    summary: '6.75 more damage contribution in this supported reference comparison.',
+    formula: '135 item AP × 55% = 74.25 → 135 item AP × 60% = 81',
+    assumptions: ['Excludes base damage, runes, passives and target resistance.'], sources: referenceSources,
+  }],
+  sources: referenceSources,
+  notice: 'REFERENCE FIXTURE: This is a reference scenario, not a player match.',
+});
+
 for (const [width, height] of [[320, 568], [1440, 900]] as const) {
-  test(`the homepage example exposes real calculated sources without a player request at ${width}px`, async ({ page }) => {
+  test(`the homepage reaches a prepared impact scene with exact reference sources and no eager player request at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height });
-    const requests: string[] = [];
-    await page.route('**/api/player/**', async route => {
-      requests.push(route.request().url());
-      await route.fulfill({ status: 503, json: { error: 'The reference example must not import player data.' } });
-    });
+    const requests = await fixtures(page, [referenceMatch], () => ({ report: referenceImpact }));
+    await page.addInitScript(player => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(player)),
+      { platform, puuid, name: 'Reference Fixture#TEST' });
     await page.goto('/');
-    const example = page.locator('[data-home-impact]');
-    await expect(example).toBeVisible();
-    await expect(example).toContainText('REFERENCE EXAMPLE');
-    await expect(example).toContainText('This is a reference scenario, not a player match.');
-    await expect(example.locator('[data-home-impact-delta]')).toHaveText('+6.75');
-    const q = example.locator('[data-home-impact-metric="champion-ap-Orianna:Q:damage"]');
-    await expect(q.locator('[data-home-impact-before]')).toContainText('74.25');
-    await expect(q.locator('[data-home-impact-after]')).toHaveText(/Patch 26\.21:\s*81$/);
-    const cta = example.getByRole('link', { name: 'See my patch impact', exact: true });
-    await expect(cta).toHaveAttribute('href', '/next-game#impact');
+    await readyWorld(page);
+    const cta = page.locator('[data-observatory] a[data-world-link="next-game"]');
+    await expect(cta).toHaveAttribute('href', new RegExp(`/next-game\\?platform=${platform}&puuid=${puuid}`));
+    expect(requests, 'The observatory must not import player data before entering the destination').toEqual([]);
     await cta.scrollIntoViewIfNeeded();
     const bounds = await cta.boundingBox();
     expect(bounds!.height).toBeGreaterThanOrEqual(44);
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
-    const details = example.locator('.home-impact-example-method');
+    await cta.click();
+    await expect(page).toHaveURL(url => url.pathname === '/next-game' && url.searchParams.get('platform') === platform
+      && url.searchParams.get('puuid') === puuid);
+    const impact = await enterImpact(page);
+    await expect(impact).toContainText('REFERENCE FIXTURE');
+    await expect(impact).toContainText('This is a reference scenario, not a player match.');
+    const q = metric(impact, 'champion-ap-Orianna:Q:damage');
+    await expect(q.locator('.patch-impact-metric-value strong')).toHaveText('+6.75');
+    await expect(q.locator('[data-impact-before]')).toHaveText(/^74\.25\s*damage$/);
+    await expect(q.locator('[data-impact-after]')).toHaveText(/^81\s*damage$/);
+    const details = q.locator('details');
     await details.locator('summary').click();
     await expect(details).toContainText('135 item AP × 55% = 74.25 → 135 item AP × 60% = 81');
     await expect(details.locator(`a[href="${patchSource}"]`)).toBeVisible();
@@ -352,10 +389,11 @@ for (const [width, height] of [[320, 568], [1440, 900]] as const) {
       await expect(details.locator(`a[href="https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json"]`)).toBeVisible();
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    expect(requests).toEqual([]);
-    await cta.click();
-    await expect(page).toHaveURL(url => url.pathname === '/next-game' && url.hash === '#impact');
-    await expect(page.getByRole('form', { name: 'Get an automatic player briefing' })).toBeVisible();
-    expect(requests).toEqual([]);
+    expect(await page.evaluate(() => scrollY)).toBe(0);
+    await expect(page).toHaveURL(url => url.hash === '#impact');
+    expect(impactRequests(requests)).toHaveLength(1);
+    expect(new URL(impactRequests(requests)[0]!.url).searchParams.get('id')).toBe(referenceMatch.metadata.matchId);
+    expect(requests.filter(request => ['lookup', 'review', 'timeline'].includes(request.action))).toEqual([]);
+    await expect(impact.locator(`a[href^="/matches/${referenceMatch.metadata.matchId}"]`).first()).toHaveAttribute('href', new RegExp(`puuid=${puuid}`));
   });
 }

@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import CompanionHome from '../components/companion/CompanionHome.astro';
+import ObservatoryHome from '../components/experience/ObservatoryHome.astro';
 ---
 <Layout surface="home" title="RiftScry — The Rift is shifting." description="Every patch leaves a signal. Enter a cinematic League of Legends observatory, discover what changed for your champions, and get your personal next-game briefing.">
   <script is:inline>
@@ -12,5 +12,5 @@ import CompanionHome from '../components/companion/CompanionHome.astro';
       location.replace('/explore' + previousJourney.search + previousJourney.hash);
     }
   </script>
-  <CompanionHome />
+  <ObservatoryHome />
 </Layout>

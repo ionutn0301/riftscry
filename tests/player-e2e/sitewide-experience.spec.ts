@@ -13,24 +13,25 @@ const patchIds = readdirSync(patchDirectory).filter(file => file.endsWith('.json
 const latestPatchId = patchIds[0]!;
 const previousPatchId = patchIds[1]!;
 const routes = [
-  { path: '/', surface: 'home', action: '.home-arrival a[href="/next-game"]' },
-  { path: '/explore', surface: 'explore', action: '.arrival-composition a[href="#perspective"].voyage-action' },
+  { path: '/', surface: 'home', action: '[data-observatory] [data-world-link="next-game"]' },
+  { path: '/explore', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
-  { path: '/champion/nunu', surface: 'champion', action: '.route-arrival-actions a[href="#history"]' },
-  { path: '/patches', surface: 'patches', action: '.route-arrival-actions a.route-action' },
-  { path: '/patch/26.21', surface: 'patch', action: '.route-arrival-actions a[href="#champions"]' },
-  { path: '/compare/26.21/26.20', surface: 'compare', action: '.route-arrival-actions .compare-picker select' },
-  { path: '/pool', surface: 'pool', action: '.route-arrival-actions a.route-action' },
+  { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },
+  { path: '/patches', surface: 'patches', action: '[data-archive-focus-link]' },
+  { path: '/patch/26.21', surface: 'patch', action: '.filter-bar input' },
+  { path: '/compare/26.21/26.20', surface: 'compare', action: '.compare-picker select' },
+  { path: '/pool#edit-pool', surface: 'pool', action: '.pool-picker input' },
   { path: '/next-game', surface: 'next-game', action: '.automatic-lookup input' },
-  { path: '/notebook', surface: 'notebook', action: '.recall-context select' },
+  { path: '/notebook', surface: 'notebook', action: '#notes button' },
   { path: '/players?platform=eun1', surface: 'players', action: '.lookup-form input' },
   { path: profilePath, surface: 'player', action: '.player-tabs button' },
   { path: `/matches/${recentAramWin.metadata.matchId}?${query}`, surface: 'match', action: '.review-back' },
-  { path: '/404', surface: 'missing', action: '.route-arrival-actions a[href="/"]' },
+  { path: '/404', surface: 'missing', action: '[data-journey-deck] a[href="/"]' },
 ];
 
 async function settled(page: Page) {
   await expect(page.locator('main h1')).toHaveCount(1);
+  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('astro-island[client="load"][ssr]')).toHaveCount(0);
 }
@@ -95,8 +96,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await settled(page);
     await expect(page.locator('body')).toHaveAttribute('data-surface', 'notebook');
     await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
-    await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/notebook');
-    await expect(map.locator('a[href="/next-game"]')).not.toHaveAttribute('aria-current', 'page');
+    await expect(map.locator('[data-world-link][aria-current="page"]')).toHaveAttribute('data-world-link', 'pool');
+    await expect(map.locator('[data-world-link="next-game"]')).not.toHaveAttribute('aria-current', 'page');
     await page.keyboard.press('Escape');
     await expect(map).not.toBeVisible();
     await expect(page.getByRole('button', { name: 'Open the Rift map', exact: true })).toBeFocused();
@@ -150,14 +151,14 @@ test.describe('readers before JavaScript', () => {
     await expect(page.locator('main h1')).toContainText('Nunu & Willump');
     const navigation = page.locator('.world-nojs-nav');
     await expect(navigation.getByRole('link', { name: 'Notebook', exact: true })).toBeVisible();
-    await page.locator('.route-arrival-actions a[href="#history"]').click();
-    await expect(page.locator('#history')).toBeInViewport();
-    await expect(page.locator('.timeline details[open]')).not.toHaveCount(0);
-    await navigation.getByRole('link', { name: 'Patch archive', exact: true }).click();
+    await page.locator('[data-history-record]').first().scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-history-record]').first()).toBeVisible();
+    await expect(page.locator('[data-history-record]').first().getByRole('link', { name: /^Riot’s notes/ })).toHaveAttribute('href', /^https:\/\//);
+    await navigation.getByRole('link', { name: 'Patches', exact: true }).click();
     await expect(page).toHaveURL(/\/patches$/);
-    await page.locator('.route-arrival-actions a.route-action').click();
+    await page.locator('[data-archive-focus-link]').click();
     await expect(page).toHaveURL(new RegExp(`/patch/${latestPatchId.replaceAll('.', '\\.')}$`));
-    await expect(page.getByRole('link', { name: /Riot's original notes/ }).first()).toHaveAttribute('href', /^https:\/\//);
+    await expect(page.getByRole('link', { name: /Riot.?s notes/ }).first()).toHaveAttribute('href', /^https:\/\//);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   });
 

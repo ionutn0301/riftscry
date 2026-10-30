@@ -1,10 +1,11 @@
 import { useEffect, useId, useState, type SubmitEvent } from 'react';
 import { platforms } from '../../lib/player/contracts';
 import { historyOptions } from '../../lib/player/modes';
-import { rememberRecentPlayer } from '../../lib/player/identity';
+import { readRecentPlayer, RECENT_PLAYER_EVENT, rememberRecentPlayer } from '../../lib/player/identity';
 import { api, fetcher, playerLink, type PlayerView } from './client';
 import { usePlayerCooldown } from './usePlayerCooldown';
 import PlayerIcon from './PlayerIcon';
+import '../../styles/journey-companion.css';
 
 const platformNames: Record<string, string> = {
   eun1: 'EUNE · Nordic & East', euw1: 'EUW · Europe West', na1: 'NA · North America',
@@ -38,15 +39,11 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
 
   useEffect(() => {
     setReady(true);
-    try {
-      const value: unknown = JSON.parse(localStorage.getItem('riftscry:remembered-player:v1') ?? 'null');
-      if (value && typeof value === 'object' && 'platform' in value && 'puuid' in value && 'name' in value &&
-        typeof value.platform === 'string' && Object.hasOwn(platforms, value.platform) &&
-        typeof value.puuid === 'string' && /^[A-Za-z0-9_-]{30,120}$/.test(value.puuid) &&
-        typeof value.name === 'string' && value.name.length <= 150 && !/[\u0000-\u001f\u007f]/.test(value.name)) {
-        setRemembered(value as RememberedPlayer);
-      }
-    } catch { /* Lookup still works when optional browser storage is unavailable. */ }
+    const restore = () => setRemembered(readRecentPlayer());
+    restore();
+    window.addEventListener('storage', restore);
+    window.addEventListener(RECENT_PLAYER_EVENT, restore);
+    return () => { window.removeEventListener('storage', restore); window.removeEventListener(RECENT_PLAYER_EVENT, restore); };
   }, []);
 
   async function lookup(event: SubmitEvent<HTMLFormElement>) {
@@ -75,18 +72,19 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
     }
   }
 
-  return <section className="player-gateway" data-player-gateway aria-labelledby="player-gateway-heading" data-loading={busy}>
-    <div className="gateway-composition">
+  return <section className="player-gateway" data-journey-deck data-journey-hydrated={ready} data-player-gateway aria-labelledby="player-gateway-heading" data-loading={busy} data-has-player={Boolean(remembered)}>
+    <div id="player-connect" className="gateway-composition" data-journey-panel data-journey-label="Connect" data-journey-world="players">
       <header className="gateway-heading">
         <p className="player-kicker"><span className="observatory-section-mark" aria-hidden="true" /> YOUR GAMES</p>
         <h1 id="player-gateway-heading">Find your <em>games.</em></h1>
-        <p>Your matches, your builds, your next move. Start with a Riot ID.</p>
+        <p>Pick up where you left off.</p>
       </header>
 
       {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { ...filters, name: remembered.name, view })}>
         <span className="player-kicker"><PlayerIcon name="bookmark" size={15} /> CONTINUE WITH</span><strong>{remembered.name || 'Your remembered player'}</strong><span>{destinationLabel} <PlayerIcon name="arrow-right" size={16} /></span>
       </a>}
 
+      <details className="gateway-lookup-scene" open={!remembered || !!name}><summary>{remembered ? 'Find another player' : 'Enter your Riot ID'}<PlayerIcon name="plus" size={16} /></summary>
       <form onSubmit={lookup} className="lookup-form" aria-label="Find a League of Legends player" aria-busy={busy}>
         <div className="player-field lookup-identity">
           <label htmlFor={`${id}-riot-id`}>Riot ID</label>
@@ -102,16 +100,17 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
       </form>
       <p id={`${id}-lookup-status`} className="lookup-status" role={message ? 'alert' : 'status'} aria-live="polite">{message || (busy ? 'Finding player…' : '')}</p>
 
-      <div className="gateway-destinations">
+      </details>
+      <details className="gateway-destinations"><summary>Start with {destinationLabel}<PlayerIcon name="plus" size={16} /></summary>
         <p className="gateway-destination-label">Open with</p>
         <div className="gateway-intents" role="group" aria-label="Start with">
           {destinations.map(destination => <button key={destination.id} type="button" aria-pressed={view === destination.id} onClick={() => setView(destination.id)}>
             <PlayerIcon name={destination.icon} /><strong>{destination.label}</strong><PlayerIcon className="intent-arrow" name="arrow-right" size={16} />
           </button>)}
         </div>
-      </div>
+      </details>
 
+    <footer className="gateway-footnote"><span>RIOT MATCH RECORDS</span><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />About this lookup</summary><p>Your last player stays selected on this browser when storage is available. Looking up a player does not verify account ownership.</p></details></footer>
     </div>
-    <footer className="gateway-footnote"><span>LEAGUE OF LEGENDS · PLAYER RECORDS</span><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />About this lookup</summary><p>Your last player stays selected on this browser when storage is available. Looking up a player does not verify account ownership.</p></details></footer>
   </section>;
 }

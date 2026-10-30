@@ -1,0 +1,26 @@
+---
+import { journeyStations } from '../../lib/journey-stations';
+interface Props { mode?: 'home' | 'map'; active?: string; }
+const { mode = 'home', active = 'next-game' } = Astro.props;
+const selected = journeyStations.find(station => station.id === active) ?? journeyStations[0];
+---
+<div class:list={['rift-navigator', `rift-navigator--${mode}`]} data-navigator data-selected={selected.id} style={`--station-color:${selected.color}`}>
+  <div class="navigator-orbits" aria-hidden="true">
+    <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet"><ellipse cx="500" cy="310" rx="380" ry="236"/><ellipse cx="500" cy="310" rx="318" ry="190"/><path d="M500 12v42m0 512v42M67 310h42m782 0h42M230 107l22 20m496 366 22 20M230 513l22-20m496-366 22-20"/><circle cx="500" cy="310" r="4"/></svg>
+    <span class="navigator-axis">R / S</span><span class="navigator-longitude">THE CONNECTED RIFT</span>
+  </div>
+  <nav class="navigation-landscape navigator-destinations" aria-label={mode === 'map' ? 'RiftScry destinations' : 'Choose a destination'}>
+    {journeyStations.map((station, index) => <a class="navigator-destination" href={station.href} data-world-link={station.id} data-station-link={station.id} data-rift-destination={station.id} data-world-title={station.title} data-world-description={station.description} data-world-color={station.color} data-world-index={index} data-selected={station.id === selected.id ? 'true' : undefined} aria-current={active === station.id ? 'page' : undefined} style={`--node-index:${index};--node-color:${station.color}`}>
+      <span class="navigator-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d={station.glyph}/></svg><i></i></span>
+      <span class="navigator-node-copy"><small>{station.number} / DESTINATION</small><strong>{station.label}</strong><span>{station.description}</span></span><b aria-hidden="true">↗</b>
+    </a>)}
+  </nav>
+  <div class="navigator-focus">
+    <span class="navigator-coordinate" data-world-number>{selected.number} / 05</span>
+    <strong data-world-title>{selected.title}</strong>
+    <a href={selected.href} data-world-enter data-station-link={selected.id} aria-label={`Enter ${selected.label}`}><span>Enter <span data-world-label>{selected.label}</span></span><span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="navigator-selector" aria-label="Preview destinations">
+    <button type="button" data-world-prev aria-label="Preview previous destination">←</button><span data-world-position>{selected.number}<i aria-hidden="true">—</i>05</span><button type="button" data-world-next aria-label="Preview next destination">→</button>
+  </div>
+</div>

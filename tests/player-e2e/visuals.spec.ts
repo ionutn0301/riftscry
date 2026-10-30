@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { installFixtures, platform, profilePath, puuid, query, recentAramLoss, recentAramWin, savedNote, seedNotes, visualMatches } from './fixtures';
-import { expectSelectedQueue, selectQueue } from './profile-controls';
+import { expectSelectedQueue, openScene, selectQueue } from './profile-controls';
 
 // Success artifacts for human design review. These are not pixel baselines and
 // never represent the user's live identity, history, rank, or AI responses.
@@ -27,6 +27,8 @@ async function expectNoHorizontalOverflow(page: Page) {
 async function expectGatewayInViewport(page: Page) {
   const gateway = page.locator('[data-player-gateway]');
   const form = page.getByRole('form', { name: 'Find a League of Legends player', exact: true });
+  const lookup = page.locator('.gateway-lookup-scene');
+  if (!(await lookup.evaluate(element => (element as HTMLDetailsElement).open))) await lookup.locator('summary').click();
   await expect(form.getByRole('button', { name: /Find player/ })).toBeEnabled();
   await settledFonts(page);
   await expect(gateway.locator('h1')).toBeInViewport({ ratio: 1 });
@@ -128,6 +130,7 @@ for (const viewport of [
       await page.goto(`/matches/${recentAramWin.metadata.matchId}?${query}`, { waitUntil: 'domcontentloaded' });
       await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
       await expect(page.getByRole('region', { name: 'Match overview', exact: true })).toContainText('18 / 6 / 24');
+      await openScene(page, 'match-review');
       await expect(page.getByRole('button', { name: 'Review with AI', exact: true })).toBeEnabled();
       await expectNoHorizontalOverflow(page);
       await capture(page, `${viewport.name}-match-review`, true);

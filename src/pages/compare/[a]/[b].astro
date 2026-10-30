@@ -1,6 +1,6 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import RouteArrival from "../../../components/experience/RouteArrival.astro";
+import "../../../styles/journey-readers.css";
 import ComparePicker from "../../../components/islands/ComparePicker";
 import DeltaGlyph from "../../../components/DeltaGlyph.astro";
 import { comparePatches } from "../../../lib/compare";
@@ -23,50 +23,19 @@ const groups: {key:Classification;title:string}[] = [
   {key:"buff",title:"Buffed"},{key:"nerf",title:"Nerfed"},{key:"rework",title:"Reworked"},{key:"adjustment",title:"Adjusted"},
 ];
 const grouped = groups.map((group) => ({...group,champions:result.champions.filter((champion) => champion.net === group.key)})).filter((group) => group.champions.length > 0);
-const chapters = [
-  {href:"#comparison",label:"Champions"},
-  ...(result.items.length ? [{href:"#items",label:"Items"}] : []),
-  ...(result.systems.length ? [{href:"#systems",label:"Systems"}] : []),
-];
+
 ---
-<Layout surface="compare" title={"League " + result.newer + " vs " + result.older + " — RiftScry"} description={"Follow every recorded champion, item, and system change after League patch " + result.older + " through " + result.newer + "."}>
-  <div class="reader-experience">
-    <RouteArrival eyebrow="PATCH COMPARISON" title={result.older + " → " + result.newer}
-      description={"Every archived change after " + result.older + ", through and including " + result.newer + ". Choose different endpoints below."}
-      variant="compare"
-      note="The starting patch is excluded. Groups summarize source classifications, not current champion strength.">
-      <div slot="actions"><ComparePicker client:load ids={ids} newer={result.newer} older={result.older}/><a class="route-action" href="#comparison">Read the comparison <span aria-hidden="true">↓</span></a></div>
-      <div slot="figure" class="arrival-stat-group" aria-label="Selected interval">
-        <div class="arrival-stat arrival-stat--signal"><strong>{result.span.length}</strong><span>archived {result.span.length === 1 ? "patch" : "patches"} in this interval</span></div>
-        <div class="arrival-stat arrival-stat--brass"><strong>{result.champions.length}</strong><span>champions with direct records</span></div>
-      </div>
-    </RouteArrival>
-    <div class="reader-body">
-      <nav class="chapter-rail" aria-label="On this page"><ol>{chapters.map((chapter) => <li><a href={chapter.href}>{chapter.label}</a></li>)}</ol><a class="route-text-link chapter-rail-return" href="#route-arrival">Change patches ↑</a></nav>
-      <div class="reader-chapters">
-        <section id="comparison" class="reading-chapter" data-scene="comparison-champions">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>Champion changes.</h2><p>Open a patch in any row for its exact values. Champions with mixed classifications appear under Adjusted.</p></div></header>
-          <p class="compare-range-note" data-compare-context hidden></p><button class="route-text-link" data-compare-all hidden>Show all champions in this interval</button>
-          {grouped.map((group) => <section class="compare-group" aria-labelledby={"h-" + group.key}>
-            <h3 id={"h-" + group.key}><DeltaGlyph kind={group.key} showLabel={false}/>{group.title}<span class="count">{group.champions.length}</span></h3>
-            <ul class="champ-rows">{group.champions.map((champion) => <li data-compare-champion={champion.championId}>
-              <a href={"/champion/" + champion.championId.toLowerCase()} class="champ"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async"/><span class="name">{meta[champion.championId]?.name ?? champion.championId}</span></a>
-              <span class="trail">{champion.patches.map((patch,index) => <>{index > 0 && <span class="sep" aria-hidden="true">→</span>}<a href={"/patch/" + patch.patchId + "#" + champion.championId.toLowerCase()} class={"step step-" + patch.classification}>{patch.patchId} {patch.classification}</a></>)}</span>
-            </li>)}</ul>
-          </section>)}
-          {!result.champions.length && <div class="reader-empty"><h3>No direct champion records.</h3><p>This interval has no direct champion changes in the loaded archive. Item and system records, when available, appear in their own chapters below.</p></div>}
-        </section>
-        {result.items.length > 0 && <section id="items" class="reading-chapter" aria-labelledby="h-items" data-scene="comparison-items">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">02</span><div><h2 id="h-items">Item changes.</h2><p>Open a patch for the complete item record.</p></div></header>
-          <ul class="flat-rows">{result.items.map((item) => <li><span class="name">{item.name}</span><span class="trail">{item.patches.map((id) => <a href={"/patch/" + id + "#items"} class="step">Patch {id} ↗</a>)}</span></li>)}</ul>
-        </section>}
-        {result.systems.length > 0 && <section id="systems" class="reading-chapter" aria-labelledby="h-systems" data-scene="comparison-systems">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">{result.items.length ? "03" : "02"}</span><div><h2 id="h-systems">System changes.</h2><p>Open a patch for the complete system record.</p></div></header>
-          <ul class="flat-rows">{result.systems.map((system) => <li><span class="name">{system.name}</span><span class="trail">{system.patches.map((id) => <a href={"/patch/" + id + "#systems"} class="step">Patch {id} ↗</a>)}</span></li>)}</ul>
-        </section>}
-        <section class="reader-next" data-reveal><div><h2>Follow one champion.</h2><p>Read their full history, including changes outside this interval.</p></div><a href="/champions" class="route-action route-action--quiet">Champion histories <span aria-hidden="true">↗</span></a></section>
-      </div>
-    </div>
+<Layout surface="compare" title={"League " + result.newer + " vs " + result.older + " — RiftScry"} description={"Follow every recorded change after League patch " + result.older + " through " + result.newer + "."}>
+  <div class="journey-reader journey-compare" data-journey-deck>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">COMPARE / {result.span.length} ARCHIVED {result.span.length === 1 ? "PATCH" : "PATCHES"}</p><h1>Between two moments.</h1></div><ComparePicker client:load ids={ids} newer={result.newer} older={result.older}/></header>
+    <p class="journey-context-line">After {result.older}, through {result.newer}. Starting patch excluded. Classifications describe records, not current strength.</p>
+    <section id="comparison" class="journey-panel journey-comparison-panel" data-journey-panel data-journey-label="Champions" data-journey-world="compare" aria-label="Champion comparison">
+      <p class="compare-range-note" data-compare-context hidden></p><button class="journey-quiet-link" data-compare-all hidden>Show all champions</button>
+      {grouped.map(group => <section class="compare-group journey-comparison-group" aria-labelledby={"h-" + group.key}><h2 id={"h-" + group.key}><DeltaGlyph kind={group.key} showLabel={false}/>{group.title}<span>{group.champions.length}</span></h2><ul class="champ-rows">{group.champions.map(champion => <li data-compare-champion={champion.championId}><a href={"/champion/" + champion.championId.toLowerCase()} class="champ"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async"/><span class="name">{meta[champion.championId]?.name ?? champion.championId}</span></a><span class="trail">{champion.patches.map((patch,index) => <>{index > 0 && <span class="sep" aria-hidden="true">→</span>}<a href={"/patch/" + patch.patchId + "#" + champion.championId.toLowerCase()} class={"step step-" + patch.classification}>{patch.patchId} {patch.classification}</a></>)}</span></li>)}</ul></section>)}
+      {!result.champions.length && <div class="journey-empty"><h2>No direct champion records.</h2><p>Check items and systems for the wider changes.</p></div>}
+    </section>
+    {result.items.length > 0 && <section id="items" class="journey-panel journey-record-list" data-journey-panel data-journey-label="Items" data-journey-world="patch" aria-label="Item comparison"><div class="journey-panel-heading"><p class="journey-reader-kicker">{result.items.length} ITEMS</p><h2>Follow the loadout.</h2></div><ul class="journey-comparison-list">{result.items.map(item => <li><h3>{item.name}</h3><div>{item.patches.map(id => <a href={"/patch/" + id + "#items"}>Patch {id} ↗</a>)}</div></li>)}</ul></section>}
+    {result.systems.length > 0 && <section id="systems" class="journey-panel journey-record-list" data-journey-panel data-journey-label="Systems" data-journey-world="explore" aria-label="System comparison"><div class="journey-panel-heading"><p class="journey-reader-kicker">{result.systems.length} SYSTEMS</p><h2>The changing game.</h2></div><ul class="journey-comparison-list">{result.systems.map(system => <li><h3>{system.name}</h3><div>{system.patches.map(id => <a href={"/patch/" + id + "#systems"}>Patch {id} ↗</a>)}</div></li>)}</ul></section>}
   </div>
 </Layout>
 <script>

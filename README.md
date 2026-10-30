@@ -8,19 +8,21 @@ RiftScry is a League of Legends companion that turns available match history int
 an automatic briefing. Enter a Riot ID once, then return for the useful details:
 what changed since you played, how your latest session went, and one thing to review.
 
-**Current visual direction:** [The living Rift](docs/living-rift/README.md) — shared
-3D environment, distinct working pages, interactive archive previews, and fallbacks.
+**Current experience:** [The connected observatory](docs/connected-observatory/README.md) —
+a navigable world with five destinations and focused task scenes across the platform.
 
-- **A cinematic observatory:** an original fractured horizon, restrained atmospheric
-  motion, and three connected chapters take you from a champion's signal to its
-  impact and your next move. Champion artwork, exact evidence, and the archive link
-  respond together. Sound is opt-in; reduced motion and static fallbacks keep the
-  experience usable. The same visual world continues through every destination,
-  with compact page openings, direct task controls, and one shared navigation.
-- **A useful first visit and a faster return:** the homepage shows real, source-linked
-  archive examples before a player lookup. Returning visitors get their selected
-  player's briefing, matches, builds and catch-up links together, without a homepage
-  match-history request.
+- **Explore by choosing:** the homepage is an interactive destination instrument.
+  Briefing, Games, Champions, Patches, and Saved remain available everywhere. Hover,
+  focus, or the preview arrows change the world’s perspective; every destination
+  is also a direct native link.
+- **One task in focus:** scene controls replace long stacks of page sections. Select
+  a patch record, inspect a champion, switch briefing scenes, or open source detail
+  in place. Real reading areas scroll naturally. Browser Back, shared links,
+  keyboard controls, reduced motion, and no-JavaScript archive access are preserved.
+- **Less setup:** a remembered player resumes directly. Free champion exploration
+  starts from the latest available recorded change; explicit date ranges remain
+  exact. The notebook opens with saved notes and a one-field editor; preparation
+  cards and context settings are optional.
 - **Automatic briefing:** `/next-game` discovers recent champions, exact queues and
   recorded loadouts from imported games. It assembles a session recap and a focus
   supported by available evidence. No notes, saved cards or reflections are required.
@@ -47,7 +49,7 @@ cross-device account sync or ownership verification. Automatic results require e
 match history; Riot currently keeps ARAM: Mayhem history private, so the site explains
 that gap instead of inventing a report or substituting ordinary ARAM.
 
-![RiftScry cinematic observatory](docs/cinematic-observatory/screenshots/home-desktop.webp)
+![RiftScry connected observatory](docs/connected-observatory/screenshots/home-desktop.webp)
 
 ## Run it
 
@@ -85,6 +87,7 @@ Riot access mode, server-side credentials and Redis cache/budget state; see
 client or commit deployment environment files.
 
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
+- [Connected observatory](docs/connected-observatory/README.md) — current interaction model, platform audit, research, and verification
 - [Cinematic observatory](docs/cinematic-observatory/README.md) — research, visual direction, interaction design and release verification
 - [Cinematic continuity](docs/cinematic-everywhere/README.md) — all-page simplification, route coverage, responsive captures and verification
 - [Homepage refresh](docs/homepage-refresh/README.md) — newcomer and returning-player paths, archive examples and responsive audit

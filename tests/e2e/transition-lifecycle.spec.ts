@@ -54,12 +54,17 @@ test('cancelling native document transitions preserves links and browser Back wi
   const save = page.locator('[data-direct-save="Ahri"]');
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
-  const briefingLink = page.locator('.reader-next-actions a[href="/pool#briefing"]').first();
+  const briefingLink = page.getByRole('navigation',{name:'Journey destinations',exact:true}).getByRole('link',{name:'Saved',exact:true});
   await briefingLink.click();
   await expect(page).toHaveURL(url => url.pathname === '/pool' && url.hash === '#briefing');
   await expect(page.locator('body')).toHaveAttribute('data-surface', 'pool');
   await expect(page.locator('astro-island:has(.pool-picker)')).not.toHaveAttribute('ssr', '');
-  await expect(page.getByRole('option', { name: 'Ahri', exact: true })).toHaveAttribute('aria-selected', 'true');
+  // The inactive chooser is deliberately inert, so its descendant text does
+  // not supply an accessible name. Inspect its hydrated selection state.
+  const savedAhri = page.locator('.pool-picker [role="option"]').filter({
+    has: page.locator('.name', { hasText: /^Ahri$/ }),
+  });
+  await expect(savedAhri).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('.pool-bar .count')).toHaveText('1 champion in your pool');
 
   await page.goBack({ waitUntil: 'domcontentloaded' });

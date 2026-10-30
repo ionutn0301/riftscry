@@ -43,7 +43,7 @@ const ABILITY_LABEL: Record<string, string> = {
     </div>
     <ClassificationBadge classification={change.classification} />
   </header>
-  {change.summary && <p class="summary">{change.summary}</p>}
+  {change.summary && <details class="journey-source-context"><summary>Riot’s context</summary><p class="summary">{change.summary}</p></details>}
   <div class="abilities">
     {
       change.abilities.map((a) => (

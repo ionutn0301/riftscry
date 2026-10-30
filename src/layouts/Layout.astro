@@ -6,9 +6,10 @@ import "../styles/observatory-pages.css";
 import "../styles/observatory-companion.css";
 import "../styles/living-rift.css";
 import "../styles/living-readers.css";
-import Wayfinder from "../components/experience/Wayfinder.astro";
+import "../styles/connected-observatory.css";
+import Wayfinder from "../components/experience/JourneyWayfinder.astro";
 import RiftScene from "../components/experience/RiftScene.astro";
-import SiteFooter from "../components/SiteFooter.astro";
+import JourneyChrome from "../components/experience/JourneyChrome.astro";
 import CommandPalette from "../components/islands/CommandPalette";
 import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
 import displayUrl from "../assets/fonts/ClashDisplay-Variable.woff2?url";
@@ -31,6 +32,8 @@ const surface = requestedSurface ?? inferredSurface;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- The incoming document must opt in before reveal, even while its stylesheets are loading. -->
+    <style is:inline>@view-transition { navigation: auto; }</style>
     <meta name="theme-color" content="#070b13" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -56,12 +59,10 @@ const surface = requestedSurface ?? inferredSurface;
       const quietCrossing = (event) => {
         const transition = event.viewTransition;
         if (!transition) return;
-        // The outgoing document can be hidden before its snapshot is ready.
-        // A skipped native transition is an expected visual cancellation.
-        void transition.ready.catch((error) => {
-          if (error?.name === 'AbortError') return;
-          throw error;
-        });
+        // Cross-document readiness describes only the optional animation.
+        // Hidden documents, interrupted navigation and snapshot timeouts can
+        // reject it while the browser still completes the actual navigation.
+        void transition.ready.catch(() => {});
         if (document.documentElement.dataset.motion === 'reduced') transition.skipTransition();
       };
       addEventListener('pageswap', quietCrossing);
@@ -74,12 +75,12 @@ const surface = requestedSurface ?? inferredSurface;
     <div class="rift-site-shell">
       <Wayfinder surface={surface} />
       <main id="main"><slot /></main>
-      <SiteFooter />
+      <JourneyChrome surface={surface} />
     </div>
     <CommandPalette client:load />
     <script>
       import '../scripts/experience';
-      import '../scripts/living-rift';
+      import '../scripts/connected-observatory';
     </script>
   </body>
 </html>

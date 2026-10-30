@@ -1,303 +1,175 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { Patch } from '../../src/lib/schema';
+import { readyWorld, readyJourney, stationaryWorld, unobstructed } from './journey-test-helpers';
 
 const savedPlayer = { platform: 'eun1', puuid: 'fixture-player-000000000000000000000000000000000', name: 'Fixture Player#TEST' };
 const rememberedKey = 'riftscry:remembered-player:v1';
-const destinations = ['/players', '/next-game', '/pool', '/champions', '/patches', '/compare', '/explore', '/notebook'];
-
-async function homeReady(page: Page) {
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
-  await expect(page.locator('astro-island[component-url*="HomeReturn"]')).not.toHaveAttribute('ssr', '');
-  await expect(page.locator('[data-home-launcher]')).toBeVisible();
-  await page.evaluate(() => document.fonts.ready);
+const destinations = ['/next-game', '/players', '/champions', '/patches', '/pool#briefing'];
+const world = (page: Page) => page.locator('[data-observatory]');
+const destination = (page: Page, id: string) => world(page).locator(`[data-world-link="${id}"]`);
+async function ready(page: Page) {
+  await readyWorld(page);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('yours to explore.');
 }
-
-async function targetUrl(link: Locator, page: Page) {
-  return new URL(await link.getAttribute('href') ?? '', page.url());
-}
-
-function expectBriefingIdentity(url: URL, player: typeof savedPlayer) {
+async function target(link: Locator, page: Page) { return new URL(await link.getAttribute('href') ?? '', page.url()); }
+function identity(url: URL, player: typeof savedPlayer) {
   expect(url.pathname).toBe('/next-game');
   expect(url.searchParams.get('platform')).toBe(player.platform);
   expect(url.searchParams.get('puuid')).toBe(player.puuid);
   expect(url.searchParams.get('name')).toBe(player.name);
 }
-
-async function expectTapTarget(link: Locator, width: number, height: number) {
-  const bounds = await link.boundingBox();
-  expect(bounds).not.toBeNull();
-  expect(bounds!.height).toBeGreaterThanOrEqual(44);
-  expect(bounds!.width, `${await link.getAttribute('aria-label') ?? await link.innerText()} is too narrow`).toBeGreaterThanOrEqual(44);
-  expect(bounds!.x).toBeGreaterThanOrEqual(0);
-  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1);
-  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(height + 1);
-  expect(await link.evaluate(element => {
-    const rect = element.getBoundingClientRect();
-    const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-    return hit === element || (hit !== null && element.contains(hit));
-  })).toBe(true);
+async function tap(link: Locator, width: number, height: number) {
+  await expect(link).toBeInViewport({ ratio: 0.99 });
+  const box = (await link.boundingBox())!;
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  expect(box.width).toBeGreaterThanOrEqual(44);
+  expect(box.x).toBeGreaterThanOrEqual(-1);
+  expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
+  expect(box.y + box.height).toBeLessThanOrEqual(height + 1);
+  await unobstructed(link);
 }
+test.beforeEach(async ({ page }) => { await page.emulateMedia({ reducedMotion: 'reduce' }); });
 
-test.beforeEach(async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
+for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) test(`newcomer destinations and briefing fit ${width}×${height}`, async ({ page }) => {
+  await page.setViewportSize({ width, height });
+  const requests: string[] = [];
+  await page.route('**/api/player/**', route => {
+    requests.push(route.request().url());
+    return route.fulfill({ status: 503, json: { error: 'The opening must not request player data.' } });
+  });
+  await page.goto('/'); await ready(page);
+  await expect(page.locator('[data-observatory-return]')).toBeHidden();
+  for (const [id, href] of [['next-game', '/next-game'], ['players', '/players']] as const) {
+    await expect(destination(page, id)).toHaveAttribute('href', href);
+    await tap(destination(page, id), width, height);
+  }
+  await stationaryWorld(page);
+  expect(requests).toEqual([]);
+  await destination(page, 'next-game').click();
+  await expect(page).toHaveURL(url => url.pathname === '/next-game');
+  await expect(page.locator('[data-automatic-briefing]')).toBeVisible();
+  await page.goBack(); await ready(page);
+  await expect(page.locator('[data-observatory-return]')).toBeHidden();
+  expect(requests).toEqual([]);
 });
 
-for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) {
-  test(`newcomer purpose and primary actions fit ${width}×${height}`, async ({ page }) => {
-    await page.setViewportSize({ width, height });
-    const playerRequests: string[] = [];
-    await page.route('**/api/player/**', route => {
-      playerRequests.push(new URL(route.request().url()).pathname);
-      return route.fulfill({ status: 503, json: { error: 'Homepage must not request player data.' } });
-    });
-    await page.goto('/');
-    await homeReady(page);
-    const launcher = page.locator('[data-home-launcher]');
-    await expect(launcher).toHaveAttribute('data-player-state', 'new');
-    await expect(page.locator('[data-home-signals]')).toBeVisible();
-    const tasks = [
-      ['Get my briefing', '/next-game'],
-      ['Find my games', '/players'],
-    ] as const;
-    for (const [name, href] of tasks) {
-      const action = launcher.getByRole('link', { name, exact: true });
-      await expect(action).toHaveAttribute('href', href);
-      await expectTapTarget(action, width, height);
-    }
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    expect(playerRequests).toEqual([]);
-    if (width === 390) {
-      // The full archive example follows the viewport-sized introduction on
-      // phones; it remains available through ordinary page scrolling.
-      const example = page.locator('[data-home-signals]').getByRole('tabpanel');
-      await example.scrollIntoViewIfNeeded();
-      await expect(example.locator('[data-signal-before]')).toBeInViewport({ ratio: 1 });
-      await expect(example.locator('[data-signal-after]')).toBeInViewport({ ratio: 1 });
-      await page.evaluate(() => scrollTo(0, 0));
-    }
+for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] as const) test(`five primary and three specialist destinations fit ${width}×${height}`, async ({ page }) => {
+  await page.setViewportSize({ width, height });
+  await page.goto('/'); await ready(page);
+  const opener = page.getByRole('button', { name: 'Open the Rift map', exact: true });
+  await tap(opener, width, height); await opener.click();
+  const map = page.locator('#rift-map-dialog');
+  const links = map.locator('[data-world-link]');
+  await expect(links).toHaveCount(5);
+  expect(await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')))).toEqual(destinations);
+  for (const link of await links.all()) await tap(link, width, height);
+  for (const href of ['/explore#change', '/compare', '/notebook']) await unobstructed(map.locator(`a[href="${href}"]`));
+  expect(await map.locator('.navigation-landscape').evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1);
+  await tap(map.getByRole('button', { name: 'Close the Rift map' }), width, height);
+  await unobstructed(map.locator('[data-palette-trigger]'));
+  await map.getByRole('button', { name: 'Close the Rift map' }).click();
+  await expect(opener).toBeFocused(); await expect(map).toBeHidden();
+  await stationaryWorld(page);
+});
 
-    // The dynamic player entry is exercised end-to-end in companion-integration.
-    // This suite serves the production build's static archive/preparation output.
-    await launcher.getByRole('link', { name: 'Get my briefing', exact: true }).click();
-    await expect(page).toHaveURL(/\/next-game\/?$/);
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your next game.');
-    await expect(page.locator('[data-automatic-briefing]')).toBeVisible();
-    await page.goBack();
-    await homeReady(page);
-    await expect(page.locator('[data-home-launcher]')).toHaveAttribute('data-player-state', 'new');
-    expect(playerRequests).toEqual([]);
-  });
-}
-
-for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] as const) {
-  test(`homepage map fits eight destinations and restores focus at ${width}×${height}`, async ({ page }) => {
-    await page.setViewportSize({ width, height });
-    await page.goto('/');
-    await homeReady(page);
-    const opener = page.getByRole('button', { name: 'Open the Rift map', exact: true });
-    await expectTapTarget(opener, width, height);
-    await opener.click();
-    const map = page.locator('#rift-map-dialog');
-    await expect(map).toBeVisible();
-    const links = map.locator('.map-destination');
-    await expect(links).toHaveCount(8);
-    expect(await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')))).toEqual(destinations);
-    for (const link of await links.all()) await expectTapTarget(link, width, height);
-    expect(await map.locator('.navigation-landscape').evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1);
-    await expectTapTarget(map.getByRole('button', { name: 'Close the Rift map' }), width, height);
-    await expectTapTarget(map.locator('[data-palette-trigger]'), width, height);
-    await map.getByRole('button', { name: 'Close the Rift map' }).click();
-    await expect(opener).toBeFocused();
-    await expect(map).not.toBeVisible();
-  });
-}
-
-test('returning players get explicit briefing, match, build and catch-up destinations', async ({ page }) => {
+test('returning players resume the exact identity without a homepage API request', async ({ page }) => {
   await page.addInitScript(({ key, player }) => localStorage.setItem(key, JSON.stringify(player)), { key: rememberedKey, player: savedPlayer });
   const requests: string[] = [];
   page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) requests.push(request.url()); });
-  await page.goto('/');
-  await homeReady(page);
-  const launcher = page.locator('[data-home-launcher]');
-  await expect(launcher).toHaveAttribute('data-player-state', 'returning');
-  await expect(launcher.locator('.home-launcher-identity')).toContainText(savedPlayer.name);
-  await expect(launcher.locator('.home-launcher-region')).toContainText('EUNE');
-  await expect(launcher.getByRole('link', { name: 'Get my briefing', exact: true })).toHaveCount(0);
-  expectBriefingIdentity(await targetUrl(launcher.getByRole('link', { name: 'Open my briefing', exact: true }), page), savedPlayer);
-  for (const [name, view] of [['My matches', 'history'], ['My builds', 'builds']] as const) {
-    const destination = await targetUrl(launcher.getByRole('link', { name, exact: true }), page);
-    expect(destination.pathname).toBe(`/players/${savedPlayer.platform}/${savedPlayer.puuid}`);
-    expect(destination.searchParams.get('view')).toBe(view);
-    expect(destination.searchParams.get('name')).toBe(savedPlayer.name);
-  }
-  const catchUp = await targetUrl(launcher.getByRole('link', { name: 'Catch up', exact: true }), page);
-  expectBriefingIdentity(catchUp, savedPlayer);
-  expect(catchUp.hash).toBe('#changes');
-  await expect(launcher.getByRole('link', { name: 'Change player', exact: true })).toHaveAttribute('href', '/next-game?change=1');
+  await page.goto('/'); await ready(page);
+  await expect(page.locator('[data-resume-name]')).toHaveText(savedPlayer.name);
+  identity(await target(page.locator('[data-resume-link]'), page), savedPlayer);
+  identity(await target(destination(page, 'next-game'), page), savedPlayer);
+  const games = await target(destination(page, 'players'), page);
+  expect(games.pathname).toBe(`/players/${savedPlayer.platform}/${savedPlayer.puuid}`);
+  expect(games.searchParams.get('view')).toBe('history');
+  expect(games.searchParams.get('name')).toBe(savedPlayer.name);
   expect(requests).toEqual([]);
-
-  for (const invalid of [
-    { ...savedPlayer, platform: '__proto__' },
-    { ...savedPlayer, puuid: '../another-route' },
-    { ...savedPlayer, name: { text: 'Not a player name' } },
-  ]) {
-    await page.evaluate(({ key, value }) => {
-      localStorage.setItem(key, JSON.stringify(value));
-      window.dispatchEvent(new StorageEvent('storage', { key }));
-    }, { key: rememberedKey, value: invalid });
-    await expect(launcher).toHaveAttribute('data-player-state', 'new');
-    await expect(launcher.getByRole('link', { name: 'Open my briefing', exact: true })).toHaveCount(0);
+  for (const invalid of [{ ...savedPlayer, platform: '__proto__' }, { ...savedPlayer, puuid: '../another-route' }, { ...savedPlayer, name: { text: 'Invalid' } }]) {
+    await page.evaluate(({ key, value }) => { localStorage.setItem(key, JSON.stringify(value)); window.dispatchEvent(new StorageEvent('storage', { key })); }, { key: rememberedKey, value: invalid });
+    await expect(page.locator('[data-observatory-return]')).toBeHidden();
+    await expect(destination(page, 'next-game')).toHaveAttribute('href', '/next-game');
+    await expect(destination(page, 'players')).toHaveAttribute('href', '/players');
   }
-  await expect(launcher.getByRole('link', { name: 'Find my games', exact: true })).toBeVisible();
 });
 
-test('blocked browser storage leaves the public companion actions available', async ({ page }) => {
+test('blocked storage leaves the public destinations available', async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Blocked', 'SecurityError'); } }));
-  const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/');
-  await homeReady(page);
-  await expect(page.locator('[data-home-launcher]')).toHaveAttribute('data-player-state', 'new');
-  await page.locator('[data-home-launcher]').getByRole('link', { name: 'Get my briefing', exact: true }).click();
-  await expect(page).toHaveURL(/\/next-game\/?$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your next game.');
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/'); await ready(page);
+  await expect(page.locator('[data-observatory-return]')).toBeHidden();
+  await destination(page, 'next-game').click();
+  await expect(page).toHaveURL(url => url.pathname === '/next-game');
   await expect(page.locator('[data-automatic-briefing]')).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('the most recently selected player returns directly to a briefing without a homepage request', async ({ page }) => {
+test('the most recent selection and cross-tab changes update the same resume action', async ({ page }) => {
   const recent = { ...savedPlayer, name: 'Recent Player#TEST', puuid: 'recent-player-0000000000000000000000000000000000' };
   await page.addInitScript(({ remembered, selected }) => {
     localStorage.setItem('riftscry:remembered-player:v1', JSON.stringify(remembered));
     localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected));
   }, { remembered: savedPlayer, selected: recent });
-  const requests: string[] = [];
-  page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) requests.push(request.url()); });
-  await page.goto('/');
-  await homeReady(page);
-  const launcher = page.locator('[data-home-launcher]');
-  const shortcut = launcher.getByRole('link', { name: 'Open my briefing', exact: true });
-  await expect(launcher.locator('.home-launcher-identity')).toContainText(recent.name);
-  expectBriefingIdentity(await targetUrl(shortcut, page), recent);
-
-  await page.evaluate(selected => {
-    localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected));
-    window.dispatchEvent(new Event('riftscry:recent-player-change'));
-  }, savedPlayer);
-  await expect(launcher.locator('.home-launcher-identity')).toContainText(savedPlayer.name);
-  expectBriefingIdentity(await targetUrl(shortcut, page), savedPlayer);
-
-  const otherTab = await page.context().newPage();
-  await otherTab.goto('/');
-  await homeReady(otherTab);
-  await otherTab.evaluate(selected => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected)), recent);
-  await expect(launcher.locator('.home-launcher-identity')).toContainText(recent.name);
-  expectBriefingIdentity(await targetUrl(shortcut, page), recent);
-  await otherTab.close();
+  const requests: string[] = []; page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) requests.push(request.url()); });
+  await page.goto('/'); await ready(page);
+  const shortcut = page.locator('[data-resume-link]');
+  await expect(page.locator('[data-resume-name]')).toHaveText(recent.name);
+  identity(await target(shortcut, page), recent);
+  await page.evaluate(selected => { localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected)); window.dispatchEvent(new Event('riftscry:recent-player-change')); }, savedPlayer);
+  await expect(page.locator('[data-resume-name]')).toHaveText(savedPlayer.name);
+  identity(await target(shortcut, page), savedPlayer);
+  const other = await page.context().newPage(); await other.goto('/'); await ready(other);
+  await other.evaluate(selected => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected)), recent);
+  await expect(page.locator('[data-resume-name]')).toHaveText(recent.name);
+  identity(await target(shortcut, page), recent); await other.close();
   expect(requests).toEqual([]);
 });
 
-test('a long returning identity keeps the main action reachable and the page within 320px', async ({ page }) => {
+test('a long returning identity leaves the resume action reachable at 320px', async ({ page }) => {
   const player = { ...savedPlayer, name: `${'LongPlayerName'.repeat(9)}#TEST` };
   await page.setViewportSize({ width: 320, height: 568 });
   await page.addInitScript(selected => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected)), player);
-  await page.goto('/');
-  await homeReady(page);
-  const launcher = page.locator('[data-home-launcher]');
-  await expect(launcher).toHaveAttribute('data-player-state', 'returning');
-  await expect(launcher.locator('.home-launcher-name')).toHaveText(player.name);
-  const primary = launcher.getByRole('link', { name: 'Open my briefing', exact: true });
-  await primary.scrollIntoViewIfNeeded();
-  await expectTapTarget(primary, 320, 568);
-  expectBriefingIdentity(await targetUrl(primary, page), player);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
-  for (const link of await launcher.getByRole('link').all()) {
-    await link.scrollIntoViewIfNeeded();
-    await expectTapTarget(link, 320, 568);
-  }
+  await page.goto('/'); await ready(page);
+  await expect(page.locator('[data-resume-name]')).toHaveText(player.name);
+  await tap(page.locator('[data-resume-link]'), 320, 568);
+  identity(await target(page.locator('[data-resume-link]'), page), player);
+  await stationaryWorld(page);
 });
 
-test('archive examples show real records and support keyboard selection without automatic movement', async ({ page }) => {
-  await page.clock.install();
-  const playerRequests: string[] = [];
-  page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) playerRequests.push(request.url()); });
-  await page.goto('/');
-  await homeReady(page);
-  const signals = page.locator('[data-home-signals]');
-  await expect(signals).toHaveAttribute('data-ready', 'true');
-  await expect(signals).toContainText('An archive example.');
-  const tabs = signals.getByRole('tablist', { name: 'Choose a patch example', exact: true }).getByRole('tab');
-  await expect(tabs).toHaveCount(3);
-
-  for (const tab of await tabs.all()) {
-    await tab.click();
-    await expect(tab).toHaveAttribute('aria-selected', 'true');
-    const panelId = await tab.getAttribute('aria-controls');
-    expect(panelId).toBeTruthy();
-    const panel = page.locator(`[id="${panelId}"]`);
-    await expect(signals.getByRole('tabpanel')).toHaveCount(1);
-    await expect(panel).toBeVisible();
-    const patchId = await panel.getAttribute('data-patch');
-    const championId = await panel.getAttribute('data-champion');
-    expect(patchId).toMatch(/^\d+\.\d+$/);
-    expect(championId).toMatch(/^[A-Za-z0-9]+$/);
+test('the archive entry reaches real records and manual scene choice never rotates automatically', async ({ page }) => {
+  await page.goto('/'); await ready(page);
+  await world(page).getByRole('link', { name: /^Explore a change/ }).click(); await readyJourney(page);
+  for (const championId of ['Azir', 'Belveth']) {
+    await page.goto(`/explore?champion=${championId}&older=26.15&newer=26.16#change`); await readyJourney(page);
+    const patchId = (await page.locator('[data-record-patch]').innerText()).replace('PATCH ', '');
     const patch = JSON.parse(readFileSync(new URL(`../../src/data/patches/${patchId}.json`, import.meta.url), 'utf8')) as Patch;
-    const champion = patch.champions.find(change => change.championId === championId);
-    expect(champion).toBeDefined();
-    const before = (await panel.locator('[data-signal-before]').innerText()).trim();
-    const after = (await panel.locator('[data-signal-after]').innerText()).trim();
-    const label = (await panel.locator('.home-signal-label').innerText()).trim();
-    const recorded = champion!.abilities.flatMap(ability => ability.changes.map(change => ({ ability, change })))
-      .find(({ change }) => change.kind === 'numeric' && change.label === label && change.before === before && change.after === after);
-    expect(recorded, `${championId} ${patchId}: the displayed before/after pair must exist in the source record`).toBeDefined();
-    await expect(panel.locator('.home-signal-ability')).toContainText(recorded!.ability.name);
-    await expect(panel.getByRole('link', { name: 'Read the full record', exact: true })).toHaveAttribute('href', `/patch/${patchId}#${championId!.toLowerCase()}`);
-    await expect(panel.getByRole('link', { name: 'Riot’s notes', exact: true })).toHaveAttribute('href', patch.sourceUrl);
+    const before = await page.locator('[data-record-before]').innerText();
+    const after = await page.locator('[data-record-after]').innerText();
+    const label = await page.locator('[data-record-label]').innerText();
+    expect(patch.champions.find(champion => champion.championId === championId)?.abilities.flatMap(ability => ability.changes)
+      .find(change => change.kind === 'numeric' && change.label === label && change.before === before && change.after === after)).toBeDefined();
+    await expect(page.locator('[data-record-source]')).toHaveAttribute('href', patch.sourceUrl);
   }
-
-  await tabs.nth(0).focus();
-  await page.keyboard.press('ArrowRight');
-  await expect(tabs.nth(1)).toBeFocused();
-  await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-  await page.keyboard.press('End');
-  await expect(tabs.nth(2)).toBeFocused();
-  await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true');
-  await page.keyboard.press('ArrowRight');
-  await expect(tabs.nth(0)).toBeFocused();
-  await page.keyboard.press('ArrowLeft');
-  await expect(tabs.nth(2)).toBeFocused();
-  await page.keyboard.press('Home');
-  await expect(tabs.nth(0)).toBeFocused();
-  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
-  await expect(tabs.nth(0)).toHaveAttribute('tabindex', '0');
-  await expect(tabs.nth(1)).toHaveAttribute('tabindex', '-1');
-  await expect(tabs.nth(2)).toHaveAttribute('tabindex', '-1');
-  await page.clock.fastForward(30_000);
-  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
-  await expect(tabs.nth(0)).toBeFocused();
-  expect(await signals.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0);
-  expect(playerRequests).toEqual([]);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+  const tabs = page.locator('[data-journey-tabs] [role="tab"]'); await tabs.first().focus();
+  await page.keyboard.press('ArrowRight'); await expect(tabs.nth(1)).toBeFocused(); await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+  await page.keyboard.press('End'); await expect(tabs.last()).toHaveAttribute('aria-selected', 'true');
+  await page.keyboard.press('Home'); await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+  await page.clock.install(); await page.clock.fastForward(30_000);
+  await expect(tabs.first()).toHaveAttribute('aria-selected', 'true'); await expect(tabs.first()).toBeFocused(); await stationaryWorld(page);
 });
 
 test.describe('static first visit', () => {
   test.use({ javaScriptEnabled: false });
-  test('the purpose, primary entry and archive example remain usable without JavaScript', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Rift is shifting.');
-    const launcher = page.locator('[data-home-launcher]');
-    await expect(launcher).toHaveAttribute('data-player-state', 'new');
-    await expect(launcher.getByRole('link', { name: 'Get my briefing', exact: true })).toHaveAttribute('href', '/next-game');
-    await expect(launcher.getByRole('link', { name: 'Find my games', exact: true })).toHaveAttribute('href', '/players');
-    const signals = page.locator('[data-home-signals]');
-    await expect(signals).toBeVisible();
-    await expect(signals.getByRole('tabpanel')).toHaveCount(1);
-    await expect(signals.getByRole('tabpanel').locator('[data-signal-after]')).not.toBeEmpty();
-    await expect(signals.getByRole('link', { name: 'Read the full record', exact: true })).toHaveAttribute('href', /^\/patch\/\d+\.\d+#[a-z0-9]+$/);
-    for (const tab of await signals.getByRole('tab').all()) await expect(tab).toBeDisabled();
-    await expect(page.getByRole('navigation', { name: 'RiftScry destinations', exact: true }).last()).toBeVisible();
+  test('the world and source records remain accessible through native links', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
+    await expect(world(page)).toBeVisible();
+    await expect(destination(page, 'next-game')).toHaveAttribute('href', '/next-game');
+    await expect(destination(page, 'players')).toHaveAttribute('href', '/players');
+    await expect(world(page).locator('.observatory-signal a[href^="/patch/"]')).toHaveAttribute('href', /^\/patch\/\d+\.\d+$/);
+    await world(page).getByRole('link', { name: /^Explore a change/ }).click();
+    await expect(page.locator('[data-record-before]')).not.toBeEmpty(); await expect(page.locator('[data-record-after]')).not.toBeEmpty();
+    await expect(page.locator('[data-record-source]')).toHaveAttribute('href', /^https:\/\/www\.leagueoflegends\.com\//);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
 });
@@ -305,21 +177,14 @@ test.describe('static first visit', () => {
 test('old journey links retain their champion, interval and saved reading place', async ({ page }) => {
   await page.goto('/?champion=Azir&older=26.15&newer=26.16#change');
   await expect(page).toHaveURL(url => url.pathname === '/explore' && url.searchParams.get('champion') === 'Azir' && url.hash === '#change');
-  await expect(page.locator('[data-voyage]')).toHaveAttribute('data-ready', 'true');
-  await expect(page.locator('[data-voyage]')).toHaveAttribute('data-loading', 'false');
-  await expect(page.locator('[data-record-after]')).toContainText('75 / 95 / 115 / 135 / 155');
+  await readyJourney(page); await expect(page.locator('[data-record-after]')).toContainText('75 / 95 / 115 / 135 / 155');
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('riftscry:resume') ?? '{}').href)).toMatch(/^\/explore\?/);
-  await page.getByRole('link', { name: 'RiftScry home', exact: true }).click();
-  await expect(page).toHaveURL(url => url.pathname === '/' && url.search === '');
-  await homeReady(page);
-  await page.locator('.companion-explore').getByRole('link', { name: 'Explore the Rift', exact: true }).click();
-  await expect(page).toHaveURL(/\/explore\/?(?:\?|$)/);
-  await expect(page.locator('[data-voyage]')).toHaveAttribute('data-ready', 'true');
+  await page.getByRole('link', { name: 'RiftScry home', exact: true }).click(); await ready(page);
+  await world(page).getByRole('link', { name: /^Explore a change/ }).click(); await readyJourney(page);
 });
 
 test('a legacy patch-only journey link still opens the archive journey', async ({ page }) => {
   await page.goto('/?patch=26.16');
   await expect(page).toHaveURL(url => url.pathname === '/explore' && url.searchParams.get('patch') === '26.16');
-  await expect(page.locator('[data-voyage]')).toHaveAttribute('data-ready', 'true');
-  await expect(page.locator('[data-voyage]')).toHaveAttribute('data-loading', 'false');
+  await readyJourney(page);
 });

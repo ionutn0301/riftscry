@@ -15,6 +15,8 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
   let model = initial;
   let older = model.older;
   let newer = model.newer;
+  // A free exploration starts with a real signal. Explicit date links remain exact.
+  let followLatest = !['older', 'newer', 'patch'].some(key => new URLSearchParams(location.search).has(key));
   let period = voyagePeriod(model, older, newer);
   let selected = voyageSelection(period.records, '', model.selectedId ?? '');
   let seen = new Set<string>();
@@ -80,13 +82,14 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
   function renderIdentity() {
     setText('[data-champion-name]', model.identity.name);
     setText('[data-champion-title]', model.identity.title);
-    setText('[data-return-perspective]', 'Keep ' + model.identity.name + ' close. Resume your reading.');
-    setText('[data-selection-status]', `Following ${model.identity.name}. The records below now use this perspective.`);
-    artwork.hidden = false;
+    setText('[data-return-perspective]', 'Keep ' + model.identity.name + ' close.');
+    setText('[data-selection-status]', `Following ${model.identity.name}.`);
+    const replacingArtwork = artwork.getAttribute('src') !== model.identity.splash;
+    artwork.hidden = replacingArtwork;
     setHidden('[data-art-fallback]', true);
     artwork.alt = model.identity.name + ' — official Riot Games artwork';
     query<HTMLSourceElement>('[data-champion-portrait]').srcset = model.identity.portrait;
-    if (artwork.getAttribute('src') !== model.identity.splash) artwork.src = model.identity.splash;
+    if (replacingArtwork) artwork.src = model.identity.splash;
     requestAnimationFrame(reconcileArtwork);
     host.querySelectorAll<HTMLButtonElement>('[data-choose-champion]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.chooseChampion === model.identity.id)));
     setHref('[data-champion-link]', '/champion/' + model.identity.id.toLowerCase());
@@ -122,8 +125,8 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       if (last) { recovery.href = '/patch/' + last.patch + '#' + model.identity.id.toLowerCase(); recovery.textContent = `Open latest archived change · ${last.date} · Patch ${last.patch} ↗`; }
       const explanation = query('[data-record-quiet] p');
       explanation.textContent = model.records.length
-        ? `No direct record for ${model.identity.name} in (${older}, ${newer}]. Choose a wider interval below or open the complete champion history. Items, systems, and other champions can still affect the game.`
-        : `This archive does not yet contain a direct record for ${model.identity.name}. The champion is still part of your perspective and can be saved to My Pool. The absence of a record is not evidence that the champion has never changed.`;
+        ? `No direct ${model.identity.name} record in (${older}, ${newer}]. Try a wider interval in Through time. Item and system changes are separate.`
+        : `No direct ${model.identity.name} record in this archive. This does not mean the champion has never changed.`;
       return;
     }
     recordArticle.dataset.recordId = record.id;
@@ -358,8 +361,14 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       const changedChampion = model.identity.id !== next.identity.id;
       model = next;
       if (changedChampion) seen = new Set(readFindings().map((finding) => finding.id));
-      const requestedOlder = options.older ?? older;
-      const requestedNewer = options.newer ?? newer;
+      let requestedOlder = options.older ?? older;
+      let requestedNewer = options.newer ?? newer;
+      if (followLatest && model.records.length) {
+        const latestRecorded = [...model.records].sort((a, b) => b.date.localeCompare(a.date))[0]!;
+        const index = model.archive.findIndex(patch => patch.id === latestRecorded.patch);
+        const before = model.archive[index + 1];
+        if (before) { requestedNewer = latestRecorded.patch; requestedOlder = before.id; }
+      }
       const requestedPeriod = voyagePeriod(model, requestedOlder, requestedNewer);
       older = requestedPeriod.valid ? requestedOlder : model.older;
       newer = requestedPeriod.valid ? requestedNewer : model.newer;
@@ -372,7 +381,8 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
         setText('[data-period-status]', 'The URL’s dates are not a valid interval. Showing the default archived interval instead. Choose dates above.');
       }
       if (options.navigation !== false) {
-        updateUrl('push', '#perspective');
+        updateUrl('push', '#change');
+        window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'change', focus: false } }));
         // Choosing a champion updates the current view. Keep the triggering
         // control (or the roster opener) focused and leave scrolling to explicit
         // chapter links, so a selection never snaps the page back to a heading.
@@ -397,6 +407,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
 
   function readUrl() {
     const url = new URL(location.href);
+    followLatest = !['older', 'newer', 'patch'].some(key => url.searchParams.has(key));
     const requested = url.searchParams.get('champion');
     const previousBeat = url.searchParams.get('beat');
     void selectChampion(requested || initial.identity.id, {
@@ -410,7 +421,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     if (!url.hash && previousBeat) {
       const legacyDestinations: Record<string,string> = { subject: 'perspective', evidence: 'change', ending: 'return', opening: 'arrival' };
       const target = legacyDestinations[previousBeat];
-      if (target) requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView({ behavior: 'auto' }));
+      if (target) requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: ['arrival', 'perspective'].includes(target) ? 'change' : target, focus: false } })));
     }
   }
 
@@ -444,7 +455,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       focused = seen.has(selected.id);
       recordArticle.classList.toggle('is-focused', focused);
       updateFindingControls();
-      setText('[data-findings-status]', `${selected.change.label}, patch ${selected.patch}: ${focused ? 'saved on this device in Your briefing' : 'removed from your collected findings'}.`);
+      setText('[data-findings-status]', `${selected.change.label}, patch ${selected.patch}: ${focused ? 'saved on this device' : 'removed from your collected findings'}.`);
       renderFindings();
       updateUrl('replace');
       rememberPerspective();
@@ -474,7 +485,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     rememberPerspective();
   });
   const changePeriod = () => {
-    if (applyPeriod(olderInput.value, newerInput.value)) { updateUrl('push', '#history'); rememberPerspective(); }
+    if (applyPeriod(olderInput.value, newerInput.value)) { followLatest = false; updateUrl('push', '#history'); rememberPerspective(); }
   };
   olderInput.addEventListener('change', changePeriod);
   newerInput.addEventListener('change', changePeriod);
@@ -488,127 +499,10 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
   readUrl();
   host.dataset.ready = 'true';
   if (!pending) host.dataset.loading = 'false';
-  const stopDirector = directWorld(host, motionReduced);
   window.addEventListener('pagehide', (event) => {
     // A page restored from the back-forward cache keeps its live listeners.
     if (event.persisted) return;
     pending?.abort();
     unsubscribe();
-    stopDirector();
   });
-}
-
-function directWorld(host: HTMLElement, reduced: () => boolean) {
-  const chapters = [...host.querySelectorAll<HTMLElement>('[data-journey-chapter]')];
-  const shots = [...host.querySelectorAll<HTMLElement>('[data-world-shot]')];
-  const world = host.querySelector<HTMLElement>('.voyage-world')!;
-  const identity = host.querySelector<HTMLElement>('[data-champion-identity]')!;
-  let tops: number[] = [];
-  let frame = 0;
-  let pointerX = 0;
-  let pointerY = 0;
-  let currentChapter = -1;
-  const finePointer = matchMedia('(pointer: fine)');
-  const clamp = (value: number) => Math.max(0, Math.min(1, value));
-  const smooth = (value: number) => { const t = clamp(value); return t * t * (3 - 2 * t); };
-  const locationLabel = document.querySelector<HTMLElement>('[data-current-location]');
-  const chapterLabels = ['The journey', 'Your perspective', 'The change', 'Connected history', 'Your next visit'];
-  const worldObserver = new IntersectionObserver((entries) => {
-    for (const entry of entries) if (entry.target === host) {
-      world.style.visibility = entry.isIntersecting ? 'visible' : 'hidden';
-      if (entry.isIntersecting) schedule();
-    }
-  }, { threshold: 0 });
-  worldObserver.observe(host);
-
-  function loadShot(index: number) {
-    const shot = shots[index];
-    if (!shot) return;
-    const image = shot.querySelector<HTMLImageElement>('img[data-scene-src]');
-    if (!image || image.getAttribute('src')) return;
-    image.addEventListener('load', () => { shot.classList.add('is-ready'); schedule(); }, { once: true });
-    image.addEventListener('error', () => { shot.classList.add('asset-unavailable'); }, { once: true });
-    image.src = image.dataset.sceneSrc!;
-  }
-
-  function measure() {
-    tops = chapters.map((chapter) => chapter.getBoundingClientRect().top + window.scrollY);
-    schedule();
-  }
-
-  function draw() {
-    frame = 0;
-    if (document.hidden || world.style.visibility === 'hidden') return;
-    const y = window.scrollY;
-    const height = window.innerHeight;
-    let index = 0;
-    for (let i = 1; i < tops.length; i++) if (y >= tops[i]! - height * .16) index = i;
-    const start = tops[index] ?? 0;
-    const next = tops[index + 1];
-    const span = next === undefined ? chapters[index]?.offsetHeight ?? height : next - start;
-    const progress = clamp((y - start) / Math.max(1, span));
-    const blend = next === undefined ? 0 : smooth((progress - .45) / .48);
-    const displayIndex = blend > .5 ? Math.min(index + 1, shots.length - 1) : index;
-    const quiet = reduced();
-    const cameraX = quiet ? 0 : pointerX * 7;
-    const cameraY = quiet ? 0 : pointerY * 5;
-    if (currentChapter !== displayIndex) {
-      currentChapter = displayIndex;
-      host.dataset.chapter = String(displayIndex);
-      if (locationLabel) locationLabel.textContent = chapterLabels[displayIndex] ?? 'The journey';
-      loadShot(displayIndex);
-      loadShot(displayIndex + 1);
-    }
-    host.style.setProperty('--camera-x', cameraX.toFixed(2) + 'px');
-    host.style.setProperty('--camera-y', cameraY.toFixed(2) + 'px');
-    host.style.setProperty('--crossing', quiet ? '0' : String(Math.sin(blend * Math.PI) * .85));
-    for (let i = 0; i < shots.length; i++) {
-      const shot = shots[i]!;
-      const opacity = quiet ? Number(i === displayIndex) : i === index ? 1 : i === index + 1 ? blend : 0;
-      shot.style.opacity = String(opacity);
-      shot.style.willChange = !quiet && opacity > 0 ? 'transform,opacity' : 'auto';
-      if (quiet) { shot.style.transform = 'none'; continue; }
-      if (i !== index && i !== index + 1) continue;
-      const incoming = i === index + 1;
-      const chapterProgress = incoming ? blend : progress;
-      const scale = incoming ? 1.13 - blend * .09 : 1.03 + chapterProgress * (i === 0 ? .14 : .08);
-      const direction = i % 2 === 0 ? -1 : 1;
-      const x = incoming ? direction * (1 - blend) * 35 : direction * chapterProgress * 17;
-      const sy = incoming ? (1 - blend) * 22 : -chapterProgress * 25;
-      shot.style.transform = `translate3d(${(x + cameraX).toFixed(2)}px,${(sy + cameraY).toFixed(2)}px,0) scale(${scale.toFixed(4)})`;
-    }
-    const identityProgress = clamp((y - (tops[1] ?? height) + height * .5) / height);
-    identity.style.setProperty('--identity-x', quiet ? '0px' : `${cameraX * .65}px`);
-    identity.style.setProperty('--identity-y', quiet ? '0px' : `${(identityProgress - .5) * -24 + cameraY}px`);
-  }
-
-  function schedule() { if (!frame && !document.hidden) frame = requestAnimationFrame(draw); }
-  const onPointer = (event: PointerEvent) => {
-    if (!finePointer.matches || reduced() || event.pointerType === 'touch') return;
-    pointerX = event.clientX / window.innerWidth * 2 - 1;
-    pointerY = event.clientY / window.innerHeight * 2 - 1;
-    schedule();
-  };
-  const onVisibility = () => { if (document.hidden && frame) { cancelAnimationFrame(frame); frame = 0; } else schedule(); };
-  const resize = new ResizeObserver(measure);
-  chapters.forEach((chapter) => resize.observe(chapter));
-  window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', measure, { passive: true });
-  window.addEventListener('pointermove', onPointer, { passive: true });
-  window.addEventListener('riftscry:motion-change', schedule);
-  window.addEventListener('pageshow', measure);
-  document.addEventListener('visibilitychange', onVisibility);
-  document.fonts.ready.then(measure);
-  measure();
-  return () => {
-    cancelAnimationFrame(frame);
-    resize.disconnect();
-    worldObserver.disconnect();
-    window.removeEventListener('scroll', schedule);
-    window.removeEventListener('resize', measure);
-    window.removeEventListener('pointermove', onPointer);
-    window.removeEventListener('riftscry:motion-change', schedule);
-    window.removeEventListener('pageshow', measure);
-    document.removeEventListener('visibilitychange', onVisibility);
-  };
 }

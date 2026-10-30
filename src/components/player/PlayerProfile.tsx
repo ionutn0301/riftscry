@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react';
+import { useJourneyReady } from '../experience/useJourneyReady';
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
 import { participant, type SummonerProfile } from '../../lib/player/contracts';
 import { historyAvailabilityForQueue, historyOptions } from '../../lib/player/modes';
@@ -15,6 +16,7 @@ import PlayerIcon from './PlayerIcon';
 import { championDisplayName } from './championArtwork';
 import PlayerModePicker from './PlayerModePicker';
 import ChampionPortrait from './ChampionPortrait';
+import '../../styles/journey-companion.css';
 
 type Filters = { queue: string; champion: string; result: string; view: PlayerView };
 type Account = { puuid: string; gameName: string; tagLine: string };
@@ -27,6 +29,7 @@ const viewOf = (value: string): PlayerView => value === 'builds' || value === 'm
 const queueOf = (value: string) => historyOptions.some(option => option.value === value) ? value : 'all';
 
 export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
+  const journeyReady = useJourneyReady();
   const filterId = useId();
   const { platform, puuid } = initial;
   const [filters, setFilters] = useState<Filters>({ queue: queueOf(initial.queue), champion: initial.champion, result: initial.result, view: viewOf(initial.view) });
@@ -77,7 +80,9 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
       const saved = sessionStorage.getItem(key);
       if (saved && Number.isFinite(Number(saved))) {
         frame = requestAnimationFrame(() => {
-          window.scrollTo({ top: Number(saved), behavior: 'instant' });
+          const records = document.getElementById('player-records');
+          if (document.body.dataset.journeyReady && records) records.scrollTo({ top: Number(saved), behavior: 'instant' });
+          else window.scrollTo({ top: Number(saved), behavior: 'instant' });
           sessionStorage.removeItem(key);
         });
       }
@@ -101,7 +106,10 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   }
 
   function leave() {
-    try { sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`, String(window.scrollY)); }
+    try {
+      const records = document.getElementById('player-records');
+      sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`, String(document.body.dataset.journeyReady && records ? records.scrollTop : window.scrollY));
+    }
     catch { /* Match navigation remains available without browser storage. */ }
   }
 
@@ -128,15 +136,14 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
     } finally { setRefreshing(false); }
   }
 
-  return <div className="player-profile profile-hub" data-player-profile data-view={filters.view}>
-    <PlayerArrival initial={profile} summoner={summoner?.puuid === puuid ? summoner : undefined} ranks={ranks} rankFailed={!!rankError} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} />
-    <div className="player-records" id="player-records">
+  return <div className="player-profile profile-hub" data-journey-deck data-journey-hydrated={journeyReady} data-player-profile data-view={filters.view}>
+    <PlayerArrival briefingHref={nextGameHref} initial={profile} summoner={summoner?.puuid === puuid ? summoner : undefined} ranks={ranks} rankFailed={!!rankError} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} />
+    <div className="player-records" id="player-records" data-journey-panel data-journey-label="Your games" data-journey-world="player">
       {accountError && <p className="player-help" role="status">Name unavailable. Your matches are still here.</p>}
       <div className="player-view-navigation observatory-record-navigation">
         <nav className="player-tabs" aria-label="Player views">
           {views.map(view => <button type="button" key={view.id} aria-pressed={filters.view === view.id} aria-controls="player-view" onClick={() => change({ view: view.id })}><PlayerIcon name={view.icon} />{view.label}</button>)}
         </nav>
-        <a className="player-text-link player-next-game-link" href={nextGameHref}><PlayerIcon name="target" />Automatic briefing<PlayerIcon name="arrow-right" size={16} /></a>
       </div>
       <div className="profile-controls" role="group" aria-label="Filter match sample">
         <PlayerModePicker value={filters.queue} onChange={queue => change({ queue })} />
