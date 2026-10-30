@@ -7,20 +7,27 @@ The baseline was `ce1ce5f4d04217179feb7ef774dd31be9c6957f1`.
 
 | Check | Result |
 | --- | --- |
-| Astro / TypeScript | 246 files checked; zero errors, warnings or hints |
-| Unit and DOM integration suite | 51 files, 513 tests passed |
+| Astro / TypeScript | 247 files checked; zero errors, warnings or hints |
+| Unit and DOM integration suite | 52 files, 519 tests passed |
 | Production Astro / Vercel build | Passed, including static archive routes and server bundles |
 | Browser test discovery | General suite: 657 configured cases; player suite: 105 cases |
 | Diff whitespace validation | Passed |
 
 Browser test discovery confirms registration and imports; it is not browser
-execution. The current workflow runs both browser suites and uploads current
+execution. The first CI run for PR #55 (41100849150) remained queued with no
+runner or test steps assigned after publication; GitHub reported no failure
+annotation. Browser acceptance remains pending. The current workflow runs both browser suites and uploads current
 screenshots as `signal-journey` and `player-experience` artifacts.
 
 The first concurrent unit/build run hit the existing five-second timeout on the
 exhaustive voyage interval test. That test passed alone, and the full unit suite
 passed when run without the simultaneous build. No assertion or timeout was
 weakened to hide the failure.
+
+The six follow-up homepage DOM regressions reproduce cold reload, arrival Back,
+retained intervals for the same champion, public-context changes and clearing,
+and explicit reveal/carry entry. The canonical opening query changes presentation
+without overwriting an earlier exact record.
 
 ## Acceptance stories
 

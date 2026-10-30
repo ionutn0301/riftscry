@@ -1,7 +1,7 @@
 import type { HomeSignal } from '../lib/home-signals';
 import type { Evidence } from '../lib/investigation';
 import { readFindings, writeFindings, FINDINGS_EVENT, FINDINGS_KEY, FINDINGS_LIMIT } from '../lib/kept-findings';
-import { readSignalContext, rememberSignal } from '../lib/signal-context';
+import { parseSignalContext, readSignalContext, rememberSignal, SIGNAL_CONTEXT_EVENT, SIGNAL_CONTEXT_KEY } from '../lib/signal-context';
 import { readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
 import { rememberReading } from '../lib/return-briefing';
 
@@ -19,8 +19,18 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   const keep = host.querySelector<HTMLButtonElement>('[data-home-keep]')!;
   keep.hidden = false;
   let current = signals[0]!;
+  let retained = readSignalContext();
   const text = (selector: string, value: string) => host.querySelectorAll(selector).forEach(element => { element.textContent = value; });
   const href = (selector: string, value: string) => host.querySelectorAll<HTMLAnchorElement>(selector).forEach(element => { element.href = value; });
+
+  function resume() {
+    const link = host.querySelector<HTMLAnchorElement>('[data-home-context]')!;
+    const context = retained?.href === current.explore ? null : retained;
+    link.hidden = !context;
+    link.href = context ? context.href : '/explore#change';
+    link.textContent = context ? `Continue following ${context.name} ↗` : '';
+  }
+  const readingAct = () => ['#reveal', '#carry'].includes(location.hash);
 
   function saved() {
     const present = readFindings().some(finding => finding.id === current.record.id);
@@ -68,7 +78,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     }
     if (remember) rememberCurrent();
     if (push) window.dispatchEvent(new CustomEvent('riftscry:focus-change', { detail: { kind: 'champion', key: current.championId } }));
-    saved();
+    saved(); resume();
   }
   host.querySelectorAll<HTMLAnchorElement>('[data-home-choice]').forEach(link => link.addEventListener('click', event => {
     if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -104,7 +114,11 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   const artworkState = () => { if (image.complete) { fallback.hidden = image.naturalWidth > 0; image.hidden = image.naturalWidth === 0; } };
   image.addEventListener('load', artworkState, options);
   image.addEventListener('error', artworkState, options);
-  window.addEventListener('popstate', () => select(new URLSearchParams(location.search).get('signal') ?? signals[0]!.championId), options);
+  window.addEventListener('popstate', () => select(new URLSearchParams(location.search).get('signal') ?? signals[0]!.championId, false, readingAct()), options);
+  window.addEventListener(SIGNAL_CONTEXT_EVENT, event => {
+    retained = parseSignalContext((event as CustomEvent).detail) ?? readSignalContext();
+    resume();
+  }, options);
   window.addEventListener(FINDINGS_EVENT, saved, options);
   window.addEventListener('riftscry:journey-change', event => {
     if (['reveal', 'carry'].includes((event as CustomEvent<{ id: string }>).detail?.id)) rememberCurrent();
@@ -113,19 +127,17 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   window.addEventListener('storage', event => {
     if ([RECENT_PLAYER_KEY, 'riftscry:remembered-player:v1', null].includes(event.key)) player();
     if (event.key === FINDINGS_KEY || event.key === null) saved();
+    if (event.key === SIGNAL_CONTEXT_KEY || event.key === null) { retained = readSignalContext(); resume(); }
   }, options);
-  window.addEventListener('pageshow', () => { player(); saved(); }, options);
+  window.addEventListener('pageshow', () => { retained = readSignalContext(); player(); saved(); resume(); }, options);
   window.addEventListener('pagehide', event => { if (!event.persisted) abort.abort(); }, options);
   const requested = new URLSearchParams(location.search).get('signal');
-  const retained = readSignalContext();
-  select(requested ?? retained?.championId ?? signals[0]!.championId, false, Boolean(requested || ['#reveal', '#carry'].includes(location.hash)));
+  // The canonical arrival query controls presentation. Reading or an explicit
+  // subject choice carries context; loading an example never replaces a record.
+  select(requested ?? retained?.championId ?? signals[0]!.championId, false, readingAct());
   // A URL records the actual opening subject so Back restores it exactly.
   const initialUrl = new URL(location.href);
   initialUrl.searchParams.set('signal', current.championId);
   history.replaceState(history.state, '', initialUrl.pathname + initialUrl.search + initialUrl.hash);
-  if (retained && !requested) {
-    const resume = host.querySelector<HTMLAnchorElement>('[data-home-context]')!;
-    resume.href = retained.href; resume.textContent = `Continue following ${retained.name} ↗`; resume.hidden = false;
-  }
   player(); artworkState();
 }
