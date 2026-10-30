@@ -33,7 +33,7 @@ for(const preference of ['device','saved'] as const)test(`${preference} reduced 
   const navigator=page.locator('[data-observatory] [data-navigator]');
   await navigator.locator('[data-world-next]').click();
   await expect(navigator).toHaveAttribute('data-selected','players');
-  await expect(navigator.locator('[data-world-enter]')).toHaveAttribute('href','/players');
+  await expect(navigator.locator('[data-world-enter]')).toHaveJSProperty('href',new URL('/players',page.url()).href);
   await navigator.locator('[data-world-prev]').click();
   await expect(navigator).toHaveAttribute('data-selected','next-game');
   expect(await scene.evaluate(element=>element.getAnimations({subtree:true}).filter(animation=>animation.playState==='running').length)).toBe(0);
@@ -47,7 +47,7 @@ test('without WebGL the environment and both product entries remain usable',asyn
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-renderer','static');await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
   const environment=page.locator('.rift-scene__landscape img');await expect(environment).toBeVisible();
   await expect.poll(()=>environment.evaluate((image:HTMLImageElement)=>image.complete&&image.naturalWidth>0)).toBe(true);
-  for(const id of ['next-game','players']){const link=page.locator(`[data-observatory] [data-world-link="${id}"]`);await expect(link).toHaveAttribute('href','/'+id);await unobstructed(link);}
+  for(const id of ['next-game','players']){const link=page.locator(`[data-observatory] [data-world-link="${id}"]`);await expect(link).toHaveJSProperty('href',new URL('/'+id,page.url()).href);await unobstructed(link);}
   await page.locator('[data-observatory]').getByRole('link',{name:/^Explore a change/}).click();await readyJourney(page);
   await expect(page.locator('[data-current-record]')).toBeVisible();expect(errors).toEqual([]);
 });

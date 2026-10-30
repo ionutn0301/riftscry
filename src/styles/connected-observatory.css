@@ -110,14 +110,14 @@ body.living-rift[data-surface] .navigator-destinations { position: absolute; ins
 .navigator-selector > span { font: 9px 'Spline Sans Mono',monospace; color: #9fb7bd; white-space: nowrap; }
 .navigator-selector i { margin: 0 12px; font-style: normal; color: #54727e; }
 .observatory-signal { position: absolute; bottom: 4%; left: 0; z-index: 4; width: 220px; }
-.observatory-signal > a:first-of-type { display: flex; gap: 16px; align-items: flex-end; margin-top: 12px; }
+.observatory-signal > a:first-of-type { display: flex; gap: 16px; align-items: flex-end; margin-top: 12px; min-height: 44px; }
 .observatory-signal strong { color: #bedbd4; font: 400 36px/1 'Clash Display',sans-serif; letter-spacing: -.05em; }
 .observatory-signal a > span { color: #8ba5b2; font: 8px 'Spline Sans Mono',monospace; }
 .observatory-signal a b { padding-left: 7px; font-weight: 400; color: #b5d5c9; }
 .observatory-experiment { display: flex; width: fit-content; align-items: center; gap: 20px; margin-top: 14px; min-height: 44px; font-size: 12px; color: #c3d6d6; border-bottom: 1px solid #b4d8d233; }
-.observatory-return { position: absolute; top: 47%; left: 0; z-index: 5; max-width: 270px; border-left: 1px solid #b1e7ca66; padding: 5px 0 5px 16px; }
+.observatory-return { position: absolute; top: calc(47% + 28px); left: 0; z-index: 5; max-width: 270px; border-left: 1px solid #b1e7ca66; padding: 5px 0 5px 16px; }
 .observatory-return[hidden] { display: none; }
-.observatory-return strong { display: block; margin: 9px 0; color: #d7ebdf; font-size: 18px; overflow-wrap: anywhere; }
+.observatory-return strong { display: block; margin: 9px 0; color: #d7ebdf; font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .observatory-return a { display: flex; gap: 30px; color: #bcdfce; min-height: 44px; align-items: center; font-size: 12px; }
 body[data-surface="home"] .rift-scene[data-rift-scene] .rift-scene__object { left: 62%; top: 49%; width: min(59vw,94svh); opacity: 1; filter: brightness(1.9); }
 body[data-surface="home"] .rift-scene__distance { background: linear-gradient(90deg,#060a13cf,transparent 62%),linear-gradient(#050910aa,transparent 40%,#070b13ac); }
@@ -295,7 +295,8 @@ body.living-rift .journey-about-dialog .site-footer { margin: 20px 0 0; padding:
   .navigator-destination { gap: 8px; }
   .navigator-node { width: 25px; height: 25px; }
   .navigator-node-copy strong { font-size: 14px; }
-  .observatory-return { top: 53%; left: 0; right: auto; transform: none; max-width: 30%; }
+  /* Reserve two 44px archive rows and a 4px gap beneath the return action. */
+  .observatory-return { top: calc(100% - 136px); left: 0; right: auto; transform: none; max-width: 30%; }
   .observatory-return strong { display: none; }
   .observatory-signal { right: auto; bottom: 0; display: block; }
   .observatory-signal .journey-eyebrow { display: none; }

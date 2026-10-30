@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import { readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
 
 const sizes = [[320,480],[320,568],[390,844],[480,320],[568,320],[844,390],[768,1024],[1024,768],[1101,879],[1101,880],[1366,768],[1440,900],[1920,880],[1920,1080]] as const;
+// WebKit can report a CSS 44px target as 43.999969px after layout.
+const subpixelTolerance = 0.01;
 const player = { platform:'eun1', puuid:'fixture-player-000000000000000000000000000000000', name:`${'LongPlayerName'.repeat(9)}#TEST` };
 for (const [width,height] of sizes) test(`the world fits ${width}×${height} for new and returning players`, async ({page}) => {
   await page.setViewportSize({width,height}); await page.emulateMedia({reducedMotion:'reduce'});
@@ -29,7 +31,7 @@ for (const [width,height] of sizes) test(`the world fits ${width}×${height} for
         expect(label.replace(/\s+/g,' ').toLowerCase()).toContain(visibleLabel);
       }
       const target=(await link.boundingBox())!;
-      expect(target.height).toBeGreaterThanOrEqual(44);expect(target.width).toBeGreaterThanOrEqual(44);
+      expect(target.height).toBeGreaterThanOrEqual(44-subpixelTolerance);expect(target.width).toBeGreaterThanOrEqual(44-subpixelTolerance);
       expect(target.x).toBeGreaterThanOrEqual(-1);expect(target.x+target.width).toBeLessThanOrEqual(width+1);expect(target.y+target.height).toBeLessThanOrEqual(height+1);
       await unobstructed(link);
     }
