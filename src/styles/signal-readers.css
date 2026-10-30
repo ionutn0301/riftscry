@@ -458,3 +458,23 @@ html[data-motion=reduced] .signal-value { transition:none; transform:none; }
   .journey-patch-directory .archive-time-cursor { color: Highlight; }
   .journey-patch-directory .archive-timeline:has(input:focus-visible) { outline-color: Highlight; }
 }
+
+
+/* The primary archive action belongs in the first scene, not below its
+   internal scroll fold. Keep the chronology tall, but make the focal lens fit. */
+@media (min-width: 1101px) {
+  .journey-patch-directory .archive-instrument { padding-block: 6px; }
+  .journey-patch-directory .archive-instrument-current { margin: 12px 0 9px; }
+  .journey-patch-directory .archive-instrument-current strong { font-size: clamp(76px, 7.5vw, 110px); }
+  .journey-patch-directory .archive-instrument-current time { margin-top: 7px; }
+  .journey-patch-directory .archive-timeline { margin-top: 12px; }
+  .journey-patch-directory .archive-instrument svg { height: 105px; }
+  .journey-patch-directory .archive-instrument-axis { margin-top: 8px; }
+  .journey-patch-directory .archive-instrument-counts { margin-block: 12px; }
+  .journey-patch-directory .archive-instrument-counts dd { font-size: 28px; }
+  .journey-patch-directory .archive-instrument-note { margin-top: 8px; }
+}
+
+/* Without JS the picker cannot save champions. Its fixed save bar must not
+   intercept the native historical record disclosures higher in the document. */
+body:not([data-journey-ready]) .journey-saved .pool-bar { display: none; }
