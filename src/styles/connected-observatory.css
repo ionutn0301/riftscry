@@ -337,6 +337,7 @@ html[data-journey-crossing="return"] { --crossing-enter-x: 0px; --crossing-exit-
   .journey-map-heading h2 { font-size: 27px; margin: 4px 0; }
   .journey-map-heading .journey-eyebrow { display: none; }
   .journey-map-footer { padding: 0; margin-top: 0; }
+  .journey-map-footer [data-reading-shortcut] { flex: 1 1 0; }
 }
 @media (max-width: 380px) {
   .navigator-focus { width: 110px; }

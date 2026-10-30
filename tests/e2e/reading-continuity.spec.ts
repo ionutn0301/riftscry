@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openScene, readyJourney, readyWorld } from './journey-test-helpers';
+import { openScene, readyJourney, readyWorld, unobstructed } from './journey-test-helpers';
 
 test('continue restores the selected champion record and exact query after another destination', async ({ page }) => {
   const errors: string[] = [];
@@ -64,4 +64,58 @@ test('scene navigation leaves Explore’s selected interval and record in charge
   await expect(page.locator('[data-period-older]')).toHaveValue('26.15');
   await expect(page.locator('[data-period-newer]')).toHaveValue('26.16');
   await expect(page.locator('[data-record-after]')).toContainText('75 / 95 / 115 / 135 / 155');
+});
+
+test('a long Continue subject preserves the landscape map’s single footer row and destinations', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 568, height: 320 });
+  await page.goto('/champions');
+  await readyWorld(page);
+  await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
+  await expect(map).toBeVisible();
+  const destinations = map.locator('[data-world-link], .journey-map-footer a');
+  const shortcut = map.locator('[data-reading-shortcut]');
+  const footer = map.locator('.journey-map-footer');
+  await expect(destinations).toHaveCount(8);
+  await expect(shortcut).toHaveCount(1);
+  await expect(shortcut).toHaveAttribute('href', '/explore#change');
+  const originalShortcut = await shortcut.elementHandle();
+  const defaultHeight = await footer.evaluate(element => element.getBoundingClientRect().height);
+  const reading = {
+    href: '/patch/26.16#belveth',
+    label: 'Bel’Veth, the Empress of the Void — patch 26.16 — True Form Remora Indicator — complete archived champion record',
+    updatedAt: new Date().toISOString(),
+  };
+
+  // A public record remembered in another tab updates the existing shortcut.
+  await page.evaluate(value => {
+    const serialized = JSON.stringify(value);
+    localStorage.setItem('riftscry:resume', serialized);
+    window.dispatchEvent(new StorageEvent('storage', { key: 'riftscry:resume', newValue: serialized }));
+  }, reading);
+  await expect(shortcut).toHaveAccessibleName(`Continue ${reading.label}`);
+  await expect(shortcut).toHaveAttribute('href', reading.href);
+  await expect(shortcut).toHaveCount(1);
+  expect(await shortcut.evaluate((element, original) => element === original, originalShortcut)).toBe(true);
+  await expect(destinations).toHaveCount(8);
+  const longHeight = await footer.evaluate(element => element.getBoundingClientRect().height);
+  expect(Math.abs(longHeight - defaultHeight), 'Continue must not consume another row of navigator space').toBeLessThanOrEqual(1);
+  const rowTops = await footer.locator('a, button').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top));
+  expect(Math.max(...rowTops) - Math.min(...rowTops)).toBeLessThanOrEqual(1);
+  for (const control of await map.locator('[data-world-link], .journey-map-footer a, [data-world-enter], button:visible').all()) {
+    await unobstructed(control);
+    expect(await control.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+
+  await page.evaluate(() => {
+    localStorage.removeItem('riftscry:resume');
+    window.dispatchEvent(new StorageEvent('storage', { key: 'riftscry:resume', newValue: null }));
+  });
+  await expect(shortcut).toHaveAttribute('href', '/explore#change');
+  expect(await shortcut.evaluate((element, original) => element === original, originalShortcut)).toBe(true);
+  await expect(destinations).toHaveCount(8);
+  expect(errors).toEqual([]);
 });
