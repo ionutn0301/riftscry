@@ -235,3 +235,12 @@ html[data-motion='reduced'] *,html[data-motion='reduced'] *::before,html[data-mo
 }
 html[data-motion='reduced']::view-transition-group(*),html[data-motion='reduced']::view-transition-old(*),html[data-motion='reduced']::view-transition-new(*) { animation: none; }
 @media (prefers-reduced-motion: reduce) { ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*) { animation: none; } }
+
+
+/* On narrow screens the scene tabs should all remain discoverable beside the
+   44px previous/next controls, instead of clipping the final task offscreen. */
+@media (max-width: 700px) {
+  .journey-scene-controls { gap: 4px; }
+  .journey-scene-tabs { flex: 1 1 0; max-width: none; justify-content: space-between; }
+  .journey-scene-tabs button { flex: 1 0 auto; padding-inline: 5px; font-size: 10px; }
+}
