@@ -69,7 +69,9 @@ Shortcut routes under `/patch` and `/compare` keep their redirect behavior.
 shared instrument, controls, and scene navigation. `connected-observatory.ts`
 coordinates declarative route panels, URL hashes, browser history, focus, and
 camera events. It observes asynchronously hydrated panel changes without moving
-React-owned nodes or resetting task state. Route components keep responsibility
+React-owned nodes or resetting task state. React decks expose readiness after their
+first committed render, so the coordinator never mutates markup during hydration.
+Route components keep responsibility
 for evidence, filters, API calls, and saved data.
 
 A route declares one `data-journey-deck` with named `data-journey-panel` descendants.
@@ -119,7 +121,7 @@ Screenshots in this directory document actual rendered routes, not design mockup
 | [Desktop observatory](screenshots/home-desktop.webp) / [Phone observatory](screenshots/home-mobile.webp) | Interactive destination instrument with full motion enabled |
 | [Explore](screenshots/explore-desktop.webp) | Exact Azir record from patch 26.16 |
 | [Champion history](screenshots/champion-desktop.webp) | Ahri's selected archived patch record |
-| [Phone patch record](screenshots/patch-mobile.webp) | Direct record hash in the patch station |
+| [Phone patch record](screenshots/patch-mobile.webp) | Selected champion record in the patch station |
 | [Prepared briefing](screenshots/briefing-desktop-fixture.webp) | Synthetic `FixturePlayer#TEST` browser fixture, not a live account |
 | [Phone notebook](screenshots/notebook-mobile.webp) | Empty saved-note state |
 | [Phone saved champions](screenshots/saved-mobile.webp) | Locally seeded Ahri, Azir, and Jinx selection for visual verification |

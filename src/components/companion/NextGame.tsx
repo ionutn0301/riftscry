@@ -144,7 +144,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
   const reviewBuild = (buildId: string) => commit(current => ({ ...current, builds: current.builds.map(build => build.id === buildId ? { ...build, reviewedPatch: latest } : build) }), `Loadout marked reviewed for patch ${latest}.`);
   const pinNote = (noteId: string) => commit(current => ({ ...current, notes: current.notes.map(note => note.id === noteId ? { ...note, pinned: !note.pinned } : note) }), 'Note updated.');
 
-  return <div className="recall-workspace" data-journey-deck data-journey-default={active ? "game-card" : "notes"} data-rift-recall>
+  return <div className="recall-workspace" data-journey-deck data-journey-hydrated={ready} data-journey-default={active ? "game-card" : "notes"} data-rift-recall>
     <div className="recall-wrap">
       <header className="recall-header">
         <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR SAVED IDEAS</p><h1>Notebook.</h1><p className="recall-tagline">Keep what helps. Leave the rest.</p></div>

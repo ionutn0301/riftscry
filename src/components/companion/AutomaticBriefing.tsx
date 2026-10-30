@@ -74,7 +74,7 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
     window.history.replaceState(window.history.state, '', briefingLink(selection.player, { queue, champion }) + location.hash);
   }
 
-  return <div className="automatic-workspace" data-journey-deck data-journey-default="focus" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
+  return <div className="automatic-workspace" data-journey-deck data-journey-hydrated={ready} data-journey-default="focus" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
     <div className="automatic-wrap">
       <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your briefing.</h1>{!selection.player && <p>Your games become your next move.</p>}</header>
       {!ready ? <p className="automatic-loading" role="status">Opening your briefing…</p> : selection.player ?

@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react';
+import { useJourneyReady } from '../experience/useJourneyReady';
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
 import { participant, type SummonerProfile } from '../../lib/player/contracts';
 import { historyAvailabilityForQueue, historyOptions } from '../../lib/player/modes';
@@ -28,6 +29,7 @@ const viewOf = (value: string): PlayerView => value === 'builds' || value === 'm
 const queueOf = (value: string) => historyOptions.some(option => option.value === value) ? value : 'all';
 
 export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
+  const journeyReady = useJourneyReady();
   const filterId = useId();
   const { platform, puuid } = initial;
   const [filters, setFilters] = useState<Filters>({ queue: queueOf(initial.queue), champion: initial.champion, result: initial.result, view: viewOf(initial.view) });
@@ -134,7 +136,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
     } finally { setRefreshing(false); }
   }
 
-  return <div className="player-profile profile-hub" data-journey-deck data-player-profile data-view={filters.view}>
+  return <div className="player-profile profile-hub" data-journey-deck data-journey-hydrated={journeyReady} data-player-profile data-view={filters.view}>
     <PlayerArrival briefingHref={nextGameHref} initial={profile} summoner={summoner?.puuid === puuid ? summoner : undefined} ranks={ranks} rankFailed={!!rankError} loading={history.loading || refreshing} retrySeconds={history.retrySeconds} message={message} onRemember={remember} onRefresh={() => void refresh()} />
     <div className="player-records" id="player-records" data-journey-panel data-journey-label="Your games" data-journey-world="player">
       {accountError && <p className="player-help" role="status">Name unavailable. Your matches are still here.</p>}

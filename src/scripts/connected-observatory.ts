@@ -93,6 +93,9 @@ function activate(id: string, options: { history?: boolean; focus?: boolean; ann
 function discover() {
   pendingFrame = 0;
   const found = main?.querySelector<HTMLElement>('[data-journey-deck]') ?? null;
+  // Astro's hydration event can precede React's first commit. The island itself
+  // signals readiness after commit, so enhancement never mutates its SSR markup.
+  if (found?.closest('astro-island') && found.dataset.journeyHydrated !== 'true') return;
   const foundPanels = [...(found?.querySelectorAll<HTMLElement>('[data-journey-panel]') ?? [])].filter(panel => panel.id);
   if (!found || !foundPanels.length) return;
   const changed = found !== deck || foundPanels.length !== panels.length || foundPanels.some((panel, index) => panel !== panels[index]);
@@ -119,7 +122,7 @@ function discover() {
 
 function scheduleDiscover() { if (!pendingFrame) pendingFrame = requestAnimationFrame(discover); }
 const mutations = new MutationObserver(scheduleDiscover);
-if (main) mutations.observe(main, { childList: true, subtree: true });
+if (main) mutations.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-journey-hydrated'] });
 
 tabs?.addEventListener('click', event => {
   const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-journey-tab]') : null;

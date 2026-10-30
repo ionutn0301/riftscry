@@ -72,7 +72,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
     }
   }
 
-  return <section className="player-gateway" data-journey-deck data-player-gateway aria-labelledby="player-gateway-heading" data-loading={busy} data-has-player={Boolean(remembered)}>
+  return <section className="player-gateway" data-journey-deck data-journey-hydrated={ready} data-player-gateway aria-labelledby="player-gateway-heading" data-loading={busy} data-has-player={Boolean(remembered)}>
     <div id="player-connect" className="gateway-composition" data-journey-panel data-journey-label="Connect" data-journey-world="players">
       <header className="gateway-heading">
         <p className="player-kicker"><span className="observatory-section-mark" aria-hidden="true" /> YOUR GAMES</p>

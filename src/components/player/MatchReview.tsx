@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useJourneyReady } from '../experience/useJourneyReady';
 import useSWR from 'swr';
 import { api, fetcher, playerBackLink } from './client';
 import { comparisonRole, comparisonRoleLabel, participant, evidence, fallbackReview, patchOf, type Match, type Timeline, type Review, type Fact } from '../../lib/player/contracts';
@@ -31,6 +32,7 @@ function EvidenceLink({ factId, fact, onReveal }: { factId: string; fact?: Fact;
 }
 
 export default function MatchReview({ id, platform, puuid, back }: { id: string; platform: string; puuid: string; back: string }) {
+  const journeyReady = useJourneyReady();
   const values = { id, platform, puuid };
   const { data: match, error, isLoading, mutate: retryMatch } = useSWR<Match>(api('match', values), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const retrySeconds = usePlayerCooldown();
@@ -103,7 +105,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     }
   }
 
-  return <div className="journey-match" data-journey-deck data-journey-default="match-overview">
+  return <div className="journey-match" data-journey-deck data-journey-hydrated={journeyReady} data-journey-default="match-overview">
     <nav className="match-route-actions" aria-label="Continue from this match"><a className="player-text-link review-back" aria-label="← Back to player and filters" href={playerBackLink(back, platform, puuid)}><PlayerIcon name="arrow-left" /> Back to player</a>{match && p && <a className="player-text-link" href={briefingLink({ platform, puuid }, { champion: p.championName, queue: String(match.info.queueId) })}><PlayerIcon name="target" />Automatic briefing<PlayerIcon name="arrow-right" size={16} /></a>}</nav>
     <header className="player-hero review-champion-heading">
       {p && <ChampionPortrait className="review-champion-portrait" champion={p.championName} size={88} />}
