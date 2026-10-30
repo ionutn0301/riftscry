@@ -478,3 +478,18 @@ html[data-motion=reduced] .signal-value { transition:none; transform:none; }
 /* Without JS the picker cannot save champions. Its fixed save bar must not
    intercept the native historical record disclosures higher in the document. */
 body:not([data-journey-ready]) .journey-saved .pool-bar { display: none; }
+
+/* No-script reading must stay within the document viewport even when an
+   archived timeline contains a wide intrinsic-size grid or SVG. */
+body:not([data-journey-ready]) .journey-reader,
+body:not([data-journey-ready]) .journey-patch-directory,
+body:not([data-journey-ready]) [data-history-record] {
+  min-width: 0;
+  max-width: 100%;
+}
+body:not([data-journey-ready]) :is(.journey-reader, .journey-patch-directory) :is(svg, img, table) {
+  max-width: 100%;
+}
+body:not([data-journey-ready]) [data-history-record] {
+  overflow-wrap: anywhere;
+}
