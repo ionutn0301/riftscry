@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { RECENT_PLAYER_KEY } from '../../src/lib/player/identity';
 import { installFixtures, makeMatch, platform, puuid, otherPuuid, recentAramWin, sourceMatch, type FixtureRequest } from '../player-e2e/fixtures';
+import { openScene, readyWorld } from './journey-test-helpers';
 
 const player = { platform, puuid, name: 'Fixture Player#TEST' };
 const direct = (id = puuid, extra = '') => `/next-game?platform=${platform}&puuid=${id}${extra}`;
@@ -11,9 +12,10 @@ archiveMatch.info.participants[0]!.championName = 'Azir';
 
 async function open(page: Page, path = '/next-game') {
   await page.goto(path, { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your next game.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your briefing.');
   await expect(page.locator('astro-island:has([data-automatic-briefing])')).not.toHaveAttribute('ssr', '');
   await expect(page.getByRole('status').filter({ hasText: 'Opening your briefing' })).toHaveCount(0);
+  await readyWorld(page);
 }
 
 async function reportReady(page: Page) {
@@ -46,6 +48,7 @@ test('one lookup automatically prepares the report and the next visit resumes wi
   await expect(page).toHaveURL(url => url.pathname === '/next-game' && url.searchParams.get('puuid') === puuid && url.searchParams.get('platform') === platform);
   await expect(report.getByRole('heading', { name: 'Fixture Player#TEST', exact: true })).toBeVisible();
   await expect(report.locator('[data-automatic-focus]')).toBeVisible();
+  await openScene(page, 'loadout');
   await expect(report.getByRole('list', { name: 'Recorded final loadout' })).toContainText('Boots');
   await expect(page.locator('textarea')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /Add a quick note|Save note|Take this into my game|Save for next game/ })).toHaveCount(0);
@@ -63,6 +66,7 @@ test('old match data automatically produces exact numeric patch catch-up and a s
   await open(page, direct());
   const report = await reportReady(page);
   await expect(report.locator('[data-automatic-focus="patch"]')).toContainText('Azir');
+  await openScene(page, 'changes');
   const catchup = report.locator('[data-champion-catchup="Azir:420"]');
   await expect(catchup).toHaveAttribute('data-patch-status', 'changed');
   await expect(catchup).toContainText('patch 26.20');
@@ -70,6 +74,7 @@ test('old match data automatically produces exact numeric patch catch-up and a s
   await expect(change).toContainText('40');
   await expect(change).toContainText('50');
   await expect(catchup.getByRole('link', { name: 'Read patch 26.21', exact: true })).toHaveAttribute('href', '/patch/26.21#azir');
+  await openScene(page, 'loadout');
   await expect(report.getByRole('heading', { name: 'Your last Azir loadout.', exact: true })).toBeVisible();
   await expect(report.locator(`a[href^="/matches/${archiveMatch.metadata.matchId}"]`).first()).toHaveAttribute('href', new RegExp(`puuid=${puuid}`));
   noAuthoringRequests(requests);
@@ -79,6 +84,7 @@ test('mode changes request exact history and empty Mayhem never becomes regular 
   const requests = await installFixtures(page, { matches: [recentAramWin] });
   await open(page, direct());
   await reportReady(page);
+  await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:450"]')).toBeVisible();
   await page.getByLabel('Game mode', { exact: true }).selectOption('2400');
   const report = await reportReady(page);
@@ -88,6 +94,7 @@ test('mode changes request exact history and empty Mayhem never becomes regular 
   expect(historyRequests(requests).some(request => new URL(request.url).searchParams.get('queue') === '2400')).toBe(true);
   await report.getByRole('button', { name: 'Show regular ARAM', exact: true }).click();
   await reportReady(page);
+  await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:450"]')).toBeVisible();
   await expect(page.getByLabel('Game mode', { exact: true })).toHaveValue('450');
   noAuthoringRequests(requests);
@@ -106,6 +113,7 @@ test('partial and unsupported records are identified without inventing additiona
   await expect(report.locator('.automatic-sample')).toContainText(/1 records? (?:has|have) unsupported or incomplete context/);
   await expect(report.locator('[data-champion-catchup]')).toHaveCount(1);
   await expect(report.locator('[data-champion-catchup="Jinx:420"]')).toHaveCount(0);
+  await page.locator('.automatic-session > summary').click();
   await expect(report.locator('.automatic-session-modes')).toContainText('1W / 0L');
   noAuthoringRequests(requests);
 });
@@ -145,9 +153,11 @@ test('a direct player link works and reloads when browser storage is blocked', a
   const requests = await installFixtures(page, { matches: [sourceMatch] });
   await open(page, direct());
   await reportReady(page);
+  await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:420"]')).toBeVisible();
   await page.reload();
   await reportReady(page);
+  await openScene(page, 'loadout');
   await expect(page.getByRole('heading', { name: 'Your last Ahri loadout.', exact: true })).toBeVisible();
   expect(errors).toEqual([]);
   expect(requests.filter(request => request.action === 'lookup')).toHaveLength(0);
@@ -166,6 +176,7 @@ test('explicit identity overrides the saved shortcut and changing players keeps 
   } });
   await open(page, direct());
   await reportReady(page);
+  await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:420"]')).toBeVisible();
   expect(historyRequests(requests).every(request => new URL(request.url).searchParams.get('puuid') === puuid)).toBe(true);
   await page.getByRole('button', { name: 'Change player', exact: true }).click();
@@ -177,8 +188,10 @@ test('explicit identity overrides the saved shortcut and changing players keeps 
   await reportReady(page);
   await expect(page).toHaveURL(url => url.searchParams.get('puuid') === otherPuuid);
   await expect(page.getByRole('heading', { name: 'Other Fixture Player#TEST', exact: true })).toBeVisible();
+  await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Jinx:420"]')).toBeVisible();
   await expect(page.locator('[data-champion-catchup="Ahri:420"]')).toHaveCount(0);
+  await openScene(page, 'loadout');
   await expect(page.getByRole('heading', { name: 'Your last Jinx loadout.', exact: true })).toBeVisible();
   noAuthoringRequests(requests);
 });
@@ -189,6 +202,7 @@ test('visible automatic checks discover a newly finished game while hidden tabs 
   const requests = await installFixtures(page, { matches: records });
   await open(page, direct());
   await reportReady(page);
+  await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:420"]')).toBeVisible();
   const afterInitial = historyRequests(requests).length;
   await page.evaluate(() => Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }));
@@ -203,6 +217,7 @@ test('visible automatic checks discover a newly finished game while hidden tabs 
   });
   await expect.poll(() => historyRequests(requests).length).toBeGreaterThan(afterInitial);
   await expect(page.locator('[data-champion-catchup="Jinx:420"]')).toBeVisible();
+  await openScene(page, 'loadout');
   await expect(page.getByRole('heading', { name: 'Your last Jinx loadout.', exact: true })).toBeVisible();
   await expect(page.locator('.automatic-sample')).toContainText('2 of 2 recent games imported');
   noAuthoringRequests(requests);
@@ -235,8 +250,9 @@ test('the automatic lookup and report fit 320px with readable fields and usable 
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
   }
   await expect(page.locator('[data-automatic-focus="patch"]')).toBeVisible();
-  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.locator('#focus').evaluate(element => element.scrollTo(0, 0));
   await expect(page.locator('[data-automatic-focus] h2')).toBeInViewport({ ratio: 0.15 });
+  expect(await page.evaluate(() => scrollY)).toBe(0);
 });
 
 test('a delayed account response in an older tab preserves the newer player selection', async ({ page }) => {

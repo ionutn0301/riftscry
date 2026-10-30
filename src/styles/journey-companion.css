@@ -34,7 +34,7 @@ body.living-rift[data-journey-ready] .automatic-toolbar { display: flex; align-i
 body.living-rift[data-journey-ready] .automatic-toolbar .automatic-field { width: min(55%,260px); gap: 3px; }
 body.living-rift[data-journey-ready] .automatic-toolbar .automatic-field label { font-size: 10px; }
 body.living-rift[data-journey-ready] .automatic-toolbar .automatic-refresh { margin-left: auto; }
-body.living-rift[data-journey-ready] .automatic-toolbar select { min-height: 42px; padding-block: 7px; }
+body.living-rift[data-journey-ready] .automatic-toolbar select { min-height: 44px; padding-block: 7px; }
 body.living-rift[data-journey-ready] .automatic-sample { margin: 0 0 9px; flex: none; }
 body.living-rift[data-journey-ready] .automatic-sample p { font-size: 10px; line-height: 1.45; }
 body.living-rift[data-journey-ready] .automatic-lead-grid { display: block; margin: 0; }
@@ -165,9 +165,9 @@ body.living-rift[data-journey-ready] .match-memory-scene #build-memory { margin:
   body.living-rift[data-journey-ready] .automatic-identity .automatic-actions .automatic-button { font-size: 10px; padding: 8px; }
   body.living-rift[data-journey-ready] .automatic-identity .automatic-actions .automatic-text-link { display: none; }
   body.living-rift[data-journey-ready] .automatic-toolbar { flex-wrap: wrap; gap: 6px 10px; }
-  body.living-rift[data-journey-ready] .automatic-toolbar .automatic-field { width: min(66%,240px); }
+  body.living-rift[data-journey-ready] .automatic-toolbar .automatic-field { flex: 1 1 0; width: auto; min-width: 0; }
   body.living-rift[data-journey-ready] .automatic-toolbar .automatic-chip { order: 3; min-height: 34px; padding-block: 4px; }
-  body.living-rift[data-journey-ready] .automatic-toolbar .automatic-refresh { font-size: 11px; padding: 8px 10px; }
+  body.living-rift[data-journey-ready] .automatic-toolbar .automatic-refresh { flex: none; font-size: 11px; padding: 8px 10px; }
   body.living-rift[data-journey-ready][data-surface] .automatic-focus { padding: 20px; }
   body.living-rift[data-journey-ready] .automatic-focus h2 { font-size: 29px; }
   body.living-rift[data-journey-ready] .automatic-change-grid { grid-template-columns: 1fr; }
@@ -210,6 +210,7 @@ body.living-rift[data-journey-ready] .match-memory-scene #build-memory { margin:
   body.living-rift[data-journey-ready] :is(.automatic-header > p,.recall-tagline) { display: none; }
   body.living-rift[data-journey-ready] :is(.automatic-header,.recall-header,.player-identity-header,.review-champion-heading) { padding-bottom: 8px; }
   body.living-rift[data-journey-ready][data-surface] :is(.automatic-header,.recall-header,.review-champion-heading) h1 { font-size: 25px; }
+  body.living-rift[data-journey-ready] .automatic-toolbar { margin-block: 3px; }
   body.living-rift[data-journey-ready] .automatic-sample { margin-bottom: 5px; }
   body.living-rift[data-journey-ready] :is(.automatic-footnote,.recall-local-note,.gateway-footnote) { padding-top: 2px; }
 }

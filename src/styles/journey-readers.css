@@ -131,6 +131,8 @@ body.living-rift .journey-record-selector img { width: 40px; height: 40px; objec
 body.living-rift .journey-record-canvas { display: block; min-width: 0; min-height: 0; border-left: 1px solid var(--reader-line); padding-left: 26px; }
 body.living-rift[data-journey-ready] .journey-record-canvas { overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 8px; }
 body.living-rift .journey-record-canvas .change-card { padding: 8px 0 18px; border: 0; background: transparent; }
+body.living-rift .journey-record-canvas .change-card > header { flex-wrap: wrap; }
+body.living-rift .journey-record-canvas .change-card .who { min-width: 0; flex: 1 1 110px; }
 body.living-rift .journey-record-canvas .change-card > header h3 { font-size: clamp(27px, 3vw, 42px); }
 body.living-rift .journey-record-canvas .change-card .title { font-size: 12px; }
 body.living-rift .journey-record-fold { margin: 0; border-bottom: 1px solid var(--reader-line); }
@@ -346,6 +348,11 @@ body.living-rift .journey-champion-art picture { min-width: 0; }
 body.living-rift[data-journey-ready] .journey-champion-art picture { flex: 1 1 auto; min-height: 0; }
 body.living-rift[data-journey-ready] .journey-champion-art img { height: 100%; max-height: 100%; min-height: 0; }
 body.living-rift[data-journey-ready] .journey-champion-art figcaption { flex: none; }
+/* Short viewports scroll the active panel so filters cannot collapse the evidence. */
+@media (max-height: 650px) {
+  body.living-rift[data-journey-ready] .journey-patch-browser { flex: none; }
+  body.living-rift[data-journey-ready] .journey-record-canvas { overflow: visible; }
+}
 @media (max-height: 650px) and (min-width: 500px) {
   body.living-rift[data-journey-ready] .journey-champion { padding-block: 6px; }
   body.living-rift[data-journey-ready] .journey-champion .journey-reader-header { gap: 12px; padding-bottom: 8px; }

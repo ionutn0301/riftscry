@@ -1,103 +1,94 @@
 import { test, expect, type Page } from '@playwright/test';
+import { readyWorld, stationaryWorld } from './journey-test-helpers';
 
 async function settleLayout(page: Page) {
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
 }
 
-test('failed champion portraits have a clean fixed-size fallback even before the page script starts', async ({ page }) => {
+test('failed scene imagery leaves named native destinations available before and after enhancement', async ({ page }) => {
   let releaseScripts = () => {};
   const scriptsHeld = new Promise<void>(resolve => { releaseScripts = resolve; });
   await page.route('**/*', async route => {
+    if (route.request().resourceType() === 'image') return route.abort();
     if (route.request().resourceType() === 'script') await scriptsHeld;
     await route.continue();
   });
-  await page.route('https://ddragon.leagueoflegends.com/**/img/champion/*.png', route => route.abort());
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const world = page.locator('[data-observatory]');
+  const links = world.locator('[data-world-link]');
   try {
     await page.goto('/', { waitUntil: 'commit' });
-    const portraits = page.locator('.home-signal-portrait');
-    await expect(portraits).toHaveCount(3);
-    await page.waitForFunction(() => Array.from(document.querySelectorAll<HTMLImageElement>('.home-signal-portrait img')).every(image => image.complete && image.naturalWidth === 0));
-    const sizes = await portraits.evaluateAll(elements => elements.map(element => ({ width: element.getBoundingClientRect().width, height: element.getBoundingClientRect().height })));
-    for (const portrait of await portraits.all()) {
-      await expect(portrait.locator('img')).toHaveCSS('opacity', '0');
-      await expect(portrait.locator('span')).toBeVisible();
-      await expect(portrait).toHaveAttribute('aria-hidden', 'true');
+    await expect(links).toHaveCount(5);
+    await expect(world.getByRole('heading', { level: 1 })).toContainText('The Rift is');
+    const destinations = [
+      ['Briefing', '/next-game'], ['Games', '/players'], ['Champions', '/champions'],
+      ['Patches', '/patches'], ['Saved', '/pool#briefing'],
+    ] as const;
+    for (const [index, [name, href]] of destinations.entries()) {
+      await expect(links.nth(index)).toHaveAccessibleName(new RegExp(name));
+      await expect(links.nth(index)).toHaveAttribute('href', href);
+      await expect(links.nth(index).locator('svg')).toHaveCount(1);
     }
     releaseScripts();
-    const signals = page.locator('[data-home-signals]');
-    await expect(signals).toHaveAttribute('data-ready', 'true');
-    for (const [index, portrait] of (await portraits.all()).entries()) {
-      await expect(portrait.locator('img')).toBeHidden();
-      await expect(portrait.locator('img')).toHaveAttribute('data-loaded', 'false');
-      const bounds = await portrait.boundingBox();
-      expect(bounds!.width).toBe(sizes[index]!.width);
-      expect(bounds!.height).toBe(sizes[index]!.height);
+    await readyWorld(page);
+    await expect(world).toBeVisible();
+    await expect(links).toHaveCount(5);
+    for (const link of await links.all()) {
+      await expect(link).toBeInViewport({ ratio: 1 });
+      expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     }
-    const tabs = signals.getByRole('tab');
-    for (const tab of await tabs.all()) {
-      const name = await tab.locator('.home-signal-portrait + span').innerText();
-      await expect(tab).toHaveAccessibleName(name);
-    }
-    await tabs.nth(1).click();
-    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-    await expect(signals.getByRole('tabpanel')).toHaveCount(1);
+    await links.nth(2).click();
+    await expect(page).toHaveURL(url => url.pathname === '/champions');
+    await readyWorld(page);
+    const search = page.getByRole('searchbox', { name: 'Find a champion', exact: true });
+    await search.fill('nunu');
+    await expect(page.locator('[data-roster-row]:not([hidden])')).toHaveCount(1);
+    await expect(page.locator('[data-roster-row]:not([hidden]) a')).toHaveAttribute('href', '/champion/nunu');
+    expect(errors).toEqual([]);
   } finally { releaseScripts(); }
 });
 
-test('homepage champion examples change without moving the page, tabs or following content', async ({ page }) => {
+test('destination previews change without moving the world, named links or navigation', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  const signals = page.locator('[data-home-signals]');
-  await expect(signals).toHaveAttribute('data-ready', 'true');
-  await expect(page.locator('astro-island[component-url*="HomeReturn"]')).not.toHaveAttribute('ssr', '');
-  await page.evaluate(() => document.fonts.ready);
-  const tabs = signals.getByRole('tab');
-  await expect(tabs).toHaveCount(3);
-  // Enter the chapter, then clear the latest visible chrome. The chapter rail
-  // becomes sticky after the initial scroll; positioning twice accounts for
-  // that change without masking a selection-triggered jump.
-  for (let pass = 0; pass < 2; pass++) {
-    await tabs.first().evaluate(element => {
-      const chromeBottom = Math.max(0, ...Array.from(document.querySelectorAll('.world-controls, .cinema-chapter-bar'))
-        .map(node => node.getBoundingClientRect())
-        .filter(rect => rect.top < innerHeight && rect.bottom > 0)
-        .map(rect => rect.bottom));
-      window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - chromeBottom - 32, behavior: 'instant' });
-    });
-    await settleLayout(page);
-  }
-  const position = () => signals.evaluate(element => ({
-    scroll: window.scrollY,
-    height: element.getBoundingClientRect().height,
-    tabs: element.querySelector('.home-signal-tabs')!.getBoundingClientRect().top,
-    note: element.querySelector('.home-signal-note')!.getBoundingClientRect().top,
+  await readyWorld(page);
+  const navigator = page.locator('[data-observatory] [data-navigator]');
+  const links = navigator.locator('[data-world-link]');
+  const ids = await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('data-world-link')));
+  const position = () => page.evaluate(() => ({
+    scroll: scrollY,
+    boxes: [...document.querySelectorAll('[data-observatory], [data-observatory] [data-world-link], .journey-header, .journey-chrome')]
+      .map(element => { const box = element.getBoundingClientRect(); return [box.x, box.y, box.width, box.height]; }),
   }));
   const baseline = await position();
   const expectStationary = async () => {
     await settleLayout(page);
     const current = await position();
-    for (const key of ['scroll', 'height', 'tabs', 'note'] as const) {
-      expect(Math.abs(current[key] - baseline[key]), `${key} moved while selecting a champion`).toBeLessThanOrEqual(1);
+    expect(current.scroll).toBe(baseline.scroll);
+    for (const [index, box] of current.boxes.entries()) {
+      for (const [axis, value] of box.entries()) expect(Math.abs(value - baseline.boxes[index]![axis]!)).toBeLessThanOrEqual(1);
     }
-    await expect(signals.getByRole('tabpanel')).toHaveCount(1);
-    const inactive = signals.locator('[role="tabpanel"][hidden]');
-    await expect(inactive).toHaveCount(2);
-    for (const panel of await inactive.all()) {
-      await expect(panel).toHaveAttribute('inert', '');
-      await expect(panel).toHaveAttribute('aria-hidden', 'true');
-    }
+    await stationaryWorld(page);
   };
-
-  for (const index of [1, 2, 0, 2, 1, 0]) {
-    await tabs.nth(index).click();
-    await expect(tabs.nth(index)).toHaveAttribute('aria-selected', 'true');
+  for (const index of [1, 2, 3, 4, 0]) {
+    await navigator.locator('[data-world-next]').click();
+    await expect(navigator).toHaveAttribute('data-selected', ids[index]!);
+    const destination = await links.nth(index).evaluate(link => (link as HTMLAnchorElement).href);
+    await expect(navigator.locator('[data-world-enter]')).toHaveAttribute('href', destination);
     await expectStationary();
   }
-  await tabs.first().evaluate(element => (element as HTMLElement).focus({ preventScroll: true }));
-  for (const [key, index] of [['ArrowRight', 1], ['End', 2], ['ArrowRight', 0], ['ArrowLeft', 2], ['Home', 0]] as const) {
-    await page.keyboard.press(key);
-    await expect(tabs.nth(index)).toBeFocused();
-    await expect(tabs.nth(index)).toHaveAttribute('aria-selected', 'true');
+  for (const index of [4, 2, 0]) {
+    await links.nth(index).focus();
+    await expect(links.nth(index)).toBeFocused();
+    await expect(navigator).toHaveAttribute('data-selected', ids[index]!);
+    await expect(navigator.locator('[data-world-enter]')).toHaveAccessibleName(/^Enter /);
     await expectStationary();
   }
+  const previous = navigator.locator('[data-world-prev]');
+  await previous.focus();
+  await page.keyboard.press('Enter');
+  await expect(navigator).toHaveAttribute('data-selected', ids[4]!);
+  await expect(previous).toBeFocused();
+  await expectStationary();
 });

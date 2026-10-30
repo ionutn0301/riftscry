@@ -6,8 +6,8 @@ import type { RecallChampion } from './RecallParts';
 
 export type NoteFields = Pick<QuickNote, 'text' | 'champion' | 'queue' | 'situation' | 'pinned'>;
 
-export default function RecallNoteForm({ note, context, champions, onSave, onClose }: {
-  note?: QuickNote; context: RecallContext; champions: RecallChampion[];
+export default function RecallNoteForm({ note, context, champions, problem, onSave, onClose }: {
+  note?: QuickNote; context: RecallContext; champions: RecallChampion[]; problem?: string;
   onSave: (fields: NoteFields) => void; onClose: () => void;
 }) {
   const id = useId();
@@ -26,7 +26,7 @@ export default function RecallNoteForm({ note, context, champions, onSave, onClo
     return () => { if (dialog?.open) dialog.close(); };
   }, []);
 
-  return <dialog ref={dialogRef} onCancel={event => { event.preventDefault(); onClose(); }} className="recall-editor recall-panel" aria-labelledby={`${id}-heading`}>
+  return <dialog ref={dialogRef} onCancel={event => { event.preventDefault(); onClose(); }} className="recall-editor recall-panel" aria-labelledby={`${id}-heading`} aria-describedby={problem ? `${id}-problem` : undefined}>
     <header className="recall-section-heading"><div><p className="recall-eyebrow">YOUR OWN ADVICE</p><h2 id={`${id}-heading`}>{note ? 'Edit your note' : 'Keep one thought.'}</h2></div><button type="button" className="recall-icon-button" aria-label="Close note editor" onClick={onClose}><PlayerIcon name="close" /></button></header>
     <form className="recall-note-form" onSubmit={event => { event.preventDefault(); onSave({ text: text.trim(), champion, queue, situation, pinned }); }}>
       <div className="recall-field recall-field--wide">
@@ -39,6 +39,7 @@ export default function RecallNoteForm({ note, context, champions, onSave, onClo
       <div className="recall-field"><label htmlFor={`${id}-queue`}>Applies to game mode</label><select id={`${id}-queue`} value={queue} onChange={event => setQueue(event.target.value)}><option value="all">Any game mode</option>{queueCatalog.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</select></div>
       <div className="recall-field"><label htmlFor={`${id}-situation`}>Applies to situation</label><select id={`${id}-situation`} value={situation} onChange={event => setSituation(event.target.value as Situation)}>{situations.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</select></div>
       <label className="recall-checkbox recall-field--wide"><input type="checkbox" checked={pinned} onChange={event => setPinned(event.target.checked)} /><span>Pin this note near the top when it matches</span></label></div></details>
+      {problem && <p id={`${id}-problem`} className="recall-error" role="alert">{problem}</p>}
       <div className="recall-inline-actions recall-field--wide"><button className="recall-button" type="submit" disabled={!text.trim()}><PlayerIcon name="bookmark" size={17} />Save note</button><button type="button" className="recall-button recall-button--quiet" onClick={onClose}>Cancel</button></div>
     </form>
   </dialog>;

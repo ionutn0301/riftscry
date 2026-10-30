@@ -152,12 +152,12 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
       </header>
 
       {!ready && <p className="recall-loading" role="status">Opening your preparation…</p>}
-      {problem && <section className="recall-storage-error" aria-label="Preparation storage problem"><div><PlayerIcon name="info" /><p role="alert">{problem}</p></div><button type="button" className="recall-button recall-button--quiet" onClick={reload}>Retry storage</button></section>}
+      {problem && !editor && <section className="recall-storage-error" aria-label="Preparation storage problem"><div><PlayerIcon name="info" /><p role="alert">{problem}</p></div><button type="button" className="recall-button recall-button--quiet" onClick={reload}>Retry storage</button></section>}
       {(message || removed) && <div className="recall-feedback"><p role="status">{message}</p>{removed && <button type="button" className="recall-text-button" onClick={undoDelete}>Undo removal</button>}</div>}
 
 
 
-      {editor && <RecallNoteForm key={editor === 'new' ? 'new' : editor.id} note={editor === 'new' ? undefined : editor} context={editorContext} champions={champions} onSave={saveNote} onClose={closeEditor} />}
+      {editor && <RecallNoteForm key={editor === 'new' ? 'new' : editor.id} note={editor === 'new' ? undefined : editor} context={editorContext} champions={champions} problem={problem} onSave={saveNote} onClose={closeEditor} />}
 
         <section id="notes" className="recall-library-section recall-notes-scene" data-journey-panel data-journey-label="Notes" data-journey-world="notebook">
           <header className="recall-scene-heading"><div><p className="recall-eyebrow">KEPT FOR LATER</p><h2>Your quick notes</h2></div><span className="recall-summary-caption">{state.notes.length}/100</span></header>

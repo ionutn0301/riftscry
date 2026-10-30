@@ -122,6 +122,6 @@ Screenshots in this directory document actual rendered routes, not design mockup
 | [Explore](screenshots/explore-desktop.webp) | Exact Azir record from patch 26.16 |
 | [Champion history](screenshots/champion-desktop.webp) | Ahri's selected archived patch record |
 | [Phone patch record](screenshots/patch-mobile.webp) | Selected champion record in the patch station |
-| [Prepared briefing](screenshots/briefing-desktop-fixture.webp) | Synthetic `FixturePlayer#TEST` browser fixture, not a live account |
+| [Prepared briefing](screenshots/briefing-desktop-fixture.webp) | Synthetic `Fixture Player#TEST` browser fixture, not a live account |
 | [Phone notebook](screenshots/notebook-mobile.webp) | Empty saved-note state |
 | [Phone saved champions](screenshots/saved-mobile.webp) | Locally seeded Ahri, Azir, and Jinx selection for visual verification |
