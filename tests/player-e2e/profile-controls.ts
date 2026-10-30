@@ -38,3 +38,11 @@ export async function openStats(page: Page) {
   if (!(await disclosure.evaluate(element => (element as HTMLDetailsElement).open))) await summary.click();
   await expect(disclosure).toHaveJSProperty('open', true);
 }
+
+/** Choose a focused scene through the same tab control a visitor uses. */
+export async function openScene(page: Page, id: string) {
+  const tab = page.locator(`[data-journey-tab="${id}"]`);
+  await expect(tab).toBeVisible();
+  if (await tab.getAttribute('aria-selected') !== 'true') await tab.click();
+  await expect(page.locator(`#${id}`)).toBeVisible();
+}

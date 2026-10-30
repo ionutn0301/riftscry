@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import RouteArrival from "../../components/experience/RouteArrival.astro";
-import DeltaGlyph from "../../components/DeltaGlyph.astro";
+import "../../styles/journey-readers.css";
 import { getAllPatches } from "../../lib/data";
 const patches = getAllPatches();
 const latest = patches[0]!;
@@ -13,60 +12,29 @@ const firstDate = Date.parse(earliest.releaseDate + "T00:00:00Z");
 const dateSpan = Math.max(1, Date.parse(latest.releaseDate + "T00:00:00Z") - firstDate);
 function fmt(date: string) { return new Date(date + "T00:00:00Z").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); }
 ---
-<Layout surface="patches" title="All League Patches — RiftScry" description="Move through RiftScry's archived League of Legends patches and follow the champion, item, and system changes inside each one.">
-  <div class="reader-experience" data-patch-directory>
-    <RouteArrival eyebrow="PATCH ARCHIVE" title="Every patch. On record."
-      description="Open a patch for exact champion, item, and system changes. Start with the newest record or choose a date below."
-      variant="patches"
-      note={patches.length + " archived patches · " + earliest.releaseDate + " through " + latest.releaseDate + "."}>
-      <div slot="actions"><a class="route-action" href={"/patch/" + latest.id}>Open latest: {latest.id} <span aria-hidden="true">↗</span></a><a class="route-text-link" href="#archive">Browse all patches <span aria-hidden="true">↓</span></a></div>
-      <figure slot="figure" class="archive-instrument" data-archive-instrument data-reader-key={latest.id} aria-label={"Archive from patch " + earliest.id + " through " + latest.id}>
-        <figcaption><span>PATCH IN FOCUS</span><span>{patches.length} DATED ENTRIES</span></figcaption>
+<Layout surface="patches" title="Patch archive — RiftScry" description="Move between the Rift’s recorded moments. Choose a patch to reveal its exact changes.">
+  <div class="journey-reader journey-patch-directory" data-journey-deck data-patch-directory>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">PATCHES / {patches.length} RECORDED MOMENTS</p><h1>Move through time.</h1></div><a class="journey-quiet-link" href="/compare">Compare two patches <span aria-hidden="true">↗</span></a></header>
+    <section id="archive" class="journey-panel journey-archive-panel" data-journey-panel data-journey-label="Choose a patch" data-journey-world="patches" aria-label="Patch archive">
+      <figure class="archive-instrument" data-archive-instrument data-reader-key={latest.id} aria-label={"Archive from patch " + earliest.id + " through " + latest.id}>
+        <figcaption><span>PATCH IN FOCUS</span><span>THE ARCHIVE</span></figcaption>
         <div class="archive-instrument-current"><strong data-archive-focus-id>{latest.id}</strong><time data-archive-focus-date datetime={latest.releaseDate}>{fmt(latest.releaseDate)}</time></div>
-        <svg viewBox="0 0 560 150" role="img" aria-label="Archived patches positioned by release date. Each column’s height represents its listed champion, item, and system entries.">
-          <line class="archive-baseline" x1="10" y1="140" x2="550" y2="140" />
-          {chronological.map(patch => {
-            const x = 14 + ((Date.parse(patch.releaseDate + "T00:00:00Z") - firstDate) / dateSpan) * 532;
-            const height = (entryCount(patch) / largestEntryCount) * 120;
-            return <g data-reader-patch-bar={patch.id} data-reader-active={patch.id === latest.id ? "true" : undefined}>
-              <rect x={x - 4} y={140 - height} width="8" height={height} />
-              <line x1={x} y1={140 - height - 5} x2={x} y2={145} />
-            </g>;
-          })}
-        </svg>
+        <svg viewBox="0 0 560 150" role="img" aria-label="Archived patches positioned by release date. Column height counts champion, item, and system entries."><line class="archive-baseline" x1="10" y1="140" x2="550" y2="140" />{chronological.map(patch => {
+          const x = 14 + ((Date.parse(patch.releaseDate + "T00:00:00Z") - firstDate) / dateSpan) * 532;
+          const height = (entryCount(patch) / largestEntryCount) * 120;
+          return <g data-reader-patch-bar={patch.id} data-reader-active={patch.id === latest.id ? "true" : undefined}><rect x={x - 4} y={140 - height} width="8" height={height} /><line x1={x} y1={140 - height - 5} x2={x} y2={145} /></g>;
+        })}</svg>
         <div class="archive-instrument-axis"><time datetime={earliest.releaseDate}>{earliest.releaseDate}</time><time datetime={latest.releaseDate}>{latest.releaseDate}</time></div>
-        <dl class="archive-instrument-counts">
-          <div><dt>Champions</dt><dd data-archive-count="champions">{latest.champions.length}</dd></div>
-          <div><dt>Items</dt><dd data-archive-count="items">{latest.items.length}</dd></div>
-          <div><dt>Systems</dt><dd data-archive-count="systems">{latest.systems.length}</dd></div>
-        </dl>
-        <p class="archive-instrument-note">Column height counts listed entries, not the size of their impact.</p>
-        <a class="reader-lens-open" data-archive-focus-link href={"/patch/" + latest.id}>Open patch <span data-archive-link-id>{latest.id}</span><span aria-hidden="true">↗</span></a>
+        <dl class="archive-instrument-counts"><div><dt>Champions</dt><dd data-archive-count="champions">{latest.champions.length}</dd></div><div><dt>Items</dt><dd data-archive-count="items">{latest.items.length}</dd></div><div><dt>Systems</dt><dd data-archive-count="systems">{latest.systems.length}</dd></div></dl>
+        <a class="reader-lens-open journey-primary-link" data-archive-focus-link href={"/patch/" + latest.id}>Enter patch <span data-archive-link-id>{latest.id}</span><span aria-hidden="true">↗</span></a>
+        <p class="archive-instrument-note">Columns count entries, not impact. Archive dates are shown above.</p>
       </figure>
-    </RouteArrival>
-    <div class="reader-body">
-      <nav class="chapter-rail" aria-label="On this page"><ol><li><a href="#archive">All patches</a></li></ol></nav>
-      <div class="reader-chapters">
-        <section id="archive" class="reading-chapter" data-scene="patch-archive">
-          <header class="chapter-heading" data-reveal><span class="chapter-index">01</span><div><h2>All archived patches.</h2><p>Newest first. Buff and nerf counts use each patch’s champion classifications.</p></div></header>
-          <ol class="patch-list patch-chronology" reversed>
-            {patches.map((patch,index) => {
-              const buffs = patch.champions.filter((c) => c.classification === "buff").length;
-              const nerfs = patch.champions.filter((c) => c.classification === "nerf").length;
-              return <li data-reveal data-reader-patch-key={patch.id} data-patch-date={patch.releaseDate} data-champions={patch.champions.length} data-items={patch.items.length} data-systems={patch.systems.length} data-reader-active={index === 0 ? "true" : undefined}><a href={"/patch/" + patch.id}>
-                <span><span class="pid">{patch.id}</span>{index === 0 && <span class="latest-archive-note">Newest archived</span>}<time class="date" datetime={patch.releaseDate}>{fmt(patch.releaseDate)}</time></span>
-                <span class="stats"><span class="total">{patch.champions.length} champions · {patch.items.length} items · {patch.systems.length} systems</span><span class="stat"><DeltaGlyph kind="buff" showLabel={false}/>{buffs} buffs</span><span class="stat"><DeltaGlyph kind="nerf" showLabel={false}/>{nerfs} nerfs</span></span>
-                <span class="patch-enter" aria-hidden="true">↗</span>
-              </a></li>;
-            })}
-          </ol>
-        </section>
-        <section class="reader-next" data-reveal><div><h2>Missed a few patches?</h2><p>Choose two patches to see the changes between them.</p></div><a href="/compare" class="route-action route-action--quiet">Compare patches <span aria-hidden="true">↗</span></a></section>
-      </div>
-    </div>
+      <ol class="patch-list patch-chronology journey-patch-stops" reversed aria-label="Choose a recorded patch">
+        {patches.map((patch,index) => <li data-reader-patch-key={patch.id} data-patch-date={patch.releaseDate} data-champions={patch.champions.length} data-items={patch.items.length} data-systems={patch.systems.length} data-reader-active={index === 0 ? "true" : undefined}><a href={"/patch/" + patch.id}><span><span class="pid">{patch.id}</span><time class="date" datetime={patch.releaseDate}>{fmt(patch.releaseDate)}</time></span><span class="journey-patch-stop-meta">{index === 0 ? "NEWEST ARCHIVED" : `${entryCount(patch)} ENTRIES`}</span><span class="patch-enter" aria-hidden="true">↗</span></a></li>)}
+      </ol>
+    </section>
   </div>
 </Layout>
-
 <script>
   import '../../scripts/reader-lens';
 </script>

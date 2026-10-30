@@ -3,9 +3,8 @@ interface Props { id: string; name: string }
 const { id, name } = Astro.props;
 ---
 <div class="reader-next-actions">
-  <button type="button" class="route-action route-action--quiet" data-direct-save={id} data-save-name={name} aria-pressed="false">Save {name} to My Pool</button>
-  <a class="route-text-link" href="/pool#briefing">Your briefing ↗</a>
-  <span role="status" data-direct-save-status></span>
+  <button type="button" class="route-action route-action--quiet" data-direct-save={id} data-save-name={name} aria-pressed="false" aria-label={"Save " + name + " to My Pool"}>Save champion <span aria-hidden="true">+</span></button>
+  <span class="journey-save-status" role="status" data-direct-save-status></span>
 </div>
 <script>
   import { $pool, togglePool } from '../../lib/pool';
@@ -15,7 +14,8 @@ const { id, name } = Astro.props;
     $pool.subscribe((pool) => {
       const saved = pool.includes(id);
       button.setAttribute('aria-pressed', String(saved));
-      button.textContent = saved ? `${name} saved — remove from My Pool` : `Save ${name} to My Pool`;
+      button.textContent = saved ? 'Saved ✓' : 'Save champion +';
+      button.setAttribute('aria-label', saved ? `${name} saved — remove from My Pool` : `Save ${name} to My Pool`);
     });
     button.addEventListener('click', () => {
       const status = button.parentElement?.querySelector('[data-direct-save-status]');

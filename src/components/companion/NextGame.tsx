@@ -7,6 +7,7 @@ import PlayerIcon from '../player/PlayerIcon';
 import { useCompanion } from './useCompanion';
 import RecallBackup from './RecallBackup';
 import RecallNoteForm, { type NoteFields } from './RecallNoteForm';
+import '../../styles/journey-companion.css';
 import { ContextTags, LoadoutView, NoteSource, PatchCheck, dateLabel, outcomeLabels, queueName, situationName, type RecallChampion } from './RecallParts';
 
 type Update = (updater: (state: CompanionState) => CompanionState) => boolean;
@@ -14,6 +15,7 @@ type Removed = { kind: 'note'; entry: QuickNote } | { kind: 'build'; entry: Save
 
 function focusCard() {
   requestAnimationFrame(() => {
+    window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'recall-card', focus: false } }));
     const card = document.getElementById('recall-card');
     card?.focus({ preventScroll: true });
     card?.scrollIntoView({ block: 'start', behavior: 'auto' });
@@ -25,6 +27,8 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
   const id = useId();
   const appliedQuery = useRef(false);
   const editorOpener = useRef<HTMLButtonElement | null>(null);
+  const editorPanel = useRef('notes');
+  const [editorContext, setEditorContext] = useState<RecallContext>({ champion: '', queue: 'all', situation: 'any' });
   const [noteId, setNoteId] = useState<string | null>(null);
   const [buildId, setBuildId] = useState<string | null>(null);
   const [editor, setEditor] = useState<QuickNote | 'new' | null>(null);
@@ -51,8 +55,14 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
     const situation = params.get('situation');
     const validQueue = queue === 'all' || queueCatalog.some(option => String(option.id) === queue);
     const validSituation = situations.some(option => option.id === situation);
-    if (champion || validQueue || validSituation) update(current => ({ ...current, context: { ...current.context, ...(champion ? { champion } : {}), ...(validQueue && queue ? { queue } : {}), ...(validSituation ? { situation: situation as Situation } : {}) } }));
-  }, [ready, champions, update]);
+    const hasGameContext = champion || validQueue || validSituation;
+    if (hasGameContext) update(current => ({ ...current, context: { ...current.context, ...(champion ? { champion } : {}), ...(validQueue && queue ? { queue } : {}), ...(validSituation ? { situation: situation as Situation } : {}) } }));
+    // A shared game context or an unfinished card is an explicit continuation.
+    // An ordinary notebook visit opens saved notes with no setup required.
+    if (!window.location.hash && (hasGameContext || active)) requestAnimationFrame(() => {
+      window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'game-card', focus: false } }));
+    });
+  }, [ready, champions, update, active]);
 
   function commit(change: (current: CompanionState) => CompanionState, success: string) {
     setMessage('');
@@ -75,6 +85,8 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
 
   function openEditor(note: QuickNote | 'new', opener: HTMLButtonElement) {
     editorOpener.current = opener;
+    editorPanel.current = opener.closest<HTMLElement>('[data-journey-panel]')?.id ?? 'notes';
+    setEditorContext(editorPanel.current === 'game-card' ? state.context : { champion: '', queue: 'all', situation: 'any' });
     setEditor(note === 'new' ? note : { ...note });
   }
 
@@ -102,7 +114,12 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
       if (current.notes.length >= 100) throw new Error('Your notebook has 100 notes. Export a backup, then remove an older note to make room.');
       return { ...current, notes: [...current.notes, { ...fields, id: savedId, patch: latest, reviewedPatch: null, createdAt: now, updatedAt: now }] };
     }, editingId ? 'Note updated. Saved game cards keep their original copy.' : 'Note saved on this browser.')) {
-      setEditor(null); editorOpener.current = null; setNoteId(savedId); focusCard();
+      setEditor(null); editorOpener.current = null; setNoteId(savedId);
+      if (editorPanel.current === 'game-card') focusCard();
+      else requestAnimationFrame(() => {
+        window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'notes', focus: false } }));
+        [...document.querySelectorAll<HTMLElement>('[data-recall-note]')].find(note => note.dataset.recallNote === savedId)?.focus();
+      });
     }
   }
 
@@ -127,10 +144,10 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
   const reviewBuild = (buildId: string) => commit(current => ({ ...current, builds: current.builds.map(build => build.id === buildId ? { ...build, reviewedPatch: latest } : build) }), `Loadout marked reviewed for patch ${latest}.`);
   const pinNote = (noteId: string) => commit(current => ({ ...current, notes: current.notes.map(note => note.id === noteId ? { ...note, pinned: !note.pinned } : note) }), 'Note updated.');
 
-  return <div className="recall-workspace" data-rift-recall>
+  return <div className="recall-workspace" data-journey-deck data-journey-default={active ? "game-card" : "notes"} data-rift-recall>
     <div className="recall-wrap">
       <header className="recall-header">
-        <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR FIELD NOTES</p><h1>Saved notebook.</h1><p className="recall-tagline">Keep one idea. Take it into your next game.</p></div>
+        <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR SAVED IDEAS</p><h1>Notebook.</h1><p className="recall-tagline">Keep what helps. Leave the rest.</p></div>
         <div className="recall-header-note"><PlayerIcon name="bookmark" size={16} /><p>Saved in this browser.</p></div>
       </header>
 
@@ -138,13 +155,28 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
       {problem && <section className="recall-storage-error" aria-label="Preparation storage problem"><div><PlayerIcon name="info" /><p role="alert">{problem}</p></div><button type="button" className="recall-button recall-button--quiet" onClick={reload}>Retry storage</button></section>}
       {(message || removed) && <div className="recall-feedback"><p role="status">{message}</p>{removed && <button type="button" className="recall-text-button" onClick={undoDelete}>Undo removal</button>}</div>}
 
+
+
+      {editor && <RecallNoteForm key={editor === 'new' ? 'new' : editor.id} note={editor === 'new' ? undefined : editor} context={editorContext} champions={champions} onSave={saveNote} onClose={closeEditor} />}
+
+        <section id="notes" className="recall-library-section recall-notes-scene" data-journey-panel data-journey-label="Notes" data-journey-world="notebook">
+          <header className="recall-scene-heading"><div><p className="recall-eyebrow">KEPT FOR LATER</p><h2>Your quick notes</h2></div><span className="recall-summary-caption">{state.notes.length}/100</span></header>
+          <div className="recall-library-content">{orderedNotes.length > 0 && <div className="recall-library-intro"><p>One thought is enough.</p><button type="button" className="recall-button recall-button--quiet" disabled={!ready} onClick={event => openEditor('new', event.currentTarget)}><PlayerIcon name="plus" size={16} />New note</button></div>}
+            {orderedNotes.length ? <div className="recall-notebook-grid">{orderedNotes.map(note => <article className="recall-saved-note" key={note.id} data-recall-note={note.id} tabIndex={-1}><p className="recall-note-text">{note.text}</p><ContextTags context={note} /><PatchCheck record={note} archive={archive} onReviewed={() => reviewNote(note.id)} /><NoteSource note={note} /><div className="recall-record-actions"><button type="button" className="recall-text-button" aria-pressed={note.pinned} onClick={() => pinNote(note.id)}><PlayerIcon name="star" size={15} />{note.pinned ? 'Unpin' : 'Pin'}</button><button type="button" className="recall-text-button" onClick={event => openEditor(note, event.currentTarget)}>Edit note</button><button type="button" className="recall-text-button recall-delete" onClick={() => deleteEntry({ kind: 'note', entry: note })}>Delete note</button></div></article>)}</div> : <div className="notebook-empty-orbit"><span className="notebook-empty-mark" aria-hidden="true"><PlayerIcon name="bookmark" size={32} /></span><h3>A thought worth keeping.</h3><p>Your next useful reminder starts here.</p><button type="button" className="recall-button" disabled={!ready} onClick={event => openEditor('new', event.currentTarget)}><PlayerIcon name="plus" size={16} />New note</button></div>}
+          </div>
+        </section>
+        <section id="loadouts" className="recall-library-section" data-journey-panel data-journey-label="Loadouts" data-journey-world="player">
+          <header className="recall-scene-heading"><div><p className="recall-eyebrow">FROM YOUR GAMES</p><h2>Saved loadouts</h2></div><span className="recall-summary-caption">{state.builds.length}/30</span></header>
+          <div className="recall-library-content"><p>Your recorded items and runes, with their original game and patch.</p>{state.builds.length ? <div className="recall-notebook-grid">{[...state.builds].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt - a.createdAt).map(build => <SavedLoadout key={build.id} build={build} archive={archive} update={update} onDelete={() => deleteEntry({ kind: 'build', entry: build })} onReviewed={() => reviewBuild(build.id)} />)}</div> : <div className="recall-empty-small"><p>No saved loadouts yet.</p><a className="recall-text-link" href="/players?view=builds">Find your games and save a loadout<PlayerIcon name="arrow-right" size={16} /></a></div>}</div>
+        </section>
+      <section id="game-card" className="recall-game-scene" data-journey-panel data-journey-label="Game card" data-journey-world="next-game">
       {active ? <ActiveCard key={active.id} run={active} archive={archive} onFinish={(outcome, reflection) => {
         if (commit(current => finishRecall(current, active.id, outcome, reflection), 'Reflection saved. Your next game starts with a fresh card.')) { setNoteId(null); setBuildId(null); }
       }} onDiscard={() => {
         if (commit(current => ({ ...current, runs: current.runs.filter(run => run.id !== active.id) }), 'Unused card discarded. Your notes and saved loadouts are unchanged.')) setRemoved({ kind: 'run', entry: active });
       }} /> : <>
         <section className="recall-context recall-panel" aria-label="Choose your game">
-          <div className="recall-context-intro"><span className="recall-step">01</span><div><h2>Choose your game</h2><p>Set the champion, mode, and situation you want to prepare for.</p></div></div>
+          <div className="recall-context-intro"><span className="recall-step">01</span><div><h2>Choose your game</h2><p>Optional preparation for a particular game.</p></div></div>
           <div className="recall-context-fields">
             <div className="recall-field"><label htmlFor={`${id}-champion`}>Champion<span className="recall-sr-only"> for next game</span></label><select id={`${id}-champion`} value={state.context.champion} disabled={!ready} onChange={event => chooseContext({ champion: event.target.value })}><option value="">Choose a champion</option>{champions.map(champion => <option key={champion.id} value={champion.id}>{champion.name}</option>)}</select></div>
             <div className="recall-field"><label htmlFor={`${id}-queue`}>Game mode<span className="recall-sr-only"> for next game</span></label><select id={`${id}-queue`} value={state.context.queue} disabled={!ready} onChange={event => chooseContext({ queue: event.target.value })}><option value="all">Choose a game mode</option>{queueCatalog.map(queue => <option key={queue.id} value={queue.id}>{queue.label}</option>)}</select></div>
@@ -154,7 +186,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
 
         <div className="recall-planning-grid">
           <section className="recall-focus-picker" aria-labelledby={`${id}-focus-heading`}>
-            <header className="recall-section-heading"><div><p className="recall-eyebrow">02 / ONE THING TO REMEMBER</p><h2 id={`${id}-focus-heading`}>Choose one focus</h2></div><button type="button" className={`recall-button${notes.length ? ' recall-button--quiet' : ''}`} disabled={!ready} onClick={event => openEditor('new', event.currentTarget)}><PlayerIcon name="plus" size={16} />Add a quick note</button></header>
+            <header className="recall-section-heading"><div><p className="recall-eyebrow">ONE THING TO REMEMBER</p><h2 id={`${id}-focus-heading`}>Choose one focus</h2></div><button type="button" className={`recall-button${notes.length ? ' recall-button--quiet' : ''}`} disabled={!ready} onClick={event => openEditor('new', event.currentTarget)}><PlayerIcon name="plus" size={16} />Add a quick note</button></header>
             {notes.length > 0 ? <>
               <p className="recall-fineprint">{notes.length} {notes.length === 1 ? 'note matches' : 'notes match'} this context. Pinned notes appear first.</p>
               <div className="recall-note-options" role="radiogroup" aria-label="Your focus for this game">
@@ -187,30 +219,12 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
           </section>
         </div>
       </>}
-
-      {editor && <RecallNoteForm key={editor === 'new' ? 'new' : editor.id} note={editor === 'new' ? undefined : editor} context={state.context} champions={champions} onSave={saveNote} onClose={closeEditor} />}
-
-      <div className="recall-library" aria-label="Your saved preparation">
-        <details className="recall-library-section">
-          <summary><span><PlayerIcon name="bookmark" />Your quick notes</span><span className="recall-summary-caption">{state.notes.length}/100</span></summary>
-          <div className="recall-library-content"><div className="recall-library-intro"><p>Small reminders, saved for the context where they matter. Editing a note leaves your past game cards intact.</p><button type="button" className="recall-button recall-button--quiet" disabled={!ready} onClick={event => openEditor('new', event.currentTarget)}><PlayerIcon name="plus" size={16} />New note</button></div>
-            {orderedNotes.length ? <div className="recall-notebook-grid">{orderedNotes.map(note => <article className="recall-saved-note" key={note.id} data-recall-note={note.id}><p className="recall-note-text">{note.text}</p><ContextTags context={note} /><PatchCheck record={note} archive={archive} onReviewed={() => reviewNote(note.id)} /><NoteSource note={note} /><div className="recall-record-actions"><button type="button" className="recall-text-button" aria-pressed={note.pinned} onClick={() => pinNote(note.id)}><PlayerIcon name="star" size={15} />{note.pinned ? 'Unpin' : 'Pin'}</button><button type="button" className="recall-text-button" onClick={event => openEditor(note, event.currentTarget)}>Edit note</button><button type="button" className="recall-text-button recall-delete" onClick={() => deleteEntry({ kind: 'note', entry: note })}>Delete note</button></div></article>)}</div> : <p className="recall-empty-small">No quick notes yet. Create one for your next game.</p>}
-          </div>
-        </details>
-
-        <details className="recall-library-section">
-          <summary><span><PlayerIcon name="build" />Saved loadouts</span><span className="recall-summary-caption">{state.builds.length}/30</span></summary>
-          <div className="recall-library-content"><p>Recorded final items and runes from your own imported games. Keep the source and patch in view when using a loadout again.</p>{state.builds.length ? <div className="recall-notebook-grid">{[...state.builds].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt - a.createdAt).map(build => <SavedLoadout key={build.id} build={build} archive={archive} update={update} onDelete={() => deleteEntry({ kind: 'build', entry: build })} onReviewed={() => reviewBuild(build.id)} />)}</div> : <div className="recall-empty-small"><p>No saved loadouts yet.</p><a className="recall-text-link" href="/players?view=builds">Find your games and save a loadout<PlayerIcon name="arrow-right" size={16} /></a></div>}</div>
-        </details>
-
-        <details className="recall-library-section">
-          <summary><span><PlayerIcon name="history" />Past cards</span><span className="recall-summary-caption">{completed.length} reflected on</span></summary>
+      </section>
+        <section id="notebook-history" className="recall-library-section" data-journey-panel data-journey-label="History" data-journey-world="notebook">
+          <header className="recall-scene-heading"><div><p className="recall-eyebrow">YOUR RECORD</p><h2>Past cards</h2></div><span className="recall-summary-caption">{completed.length} reflected on</span></header>
           <div className="recall-library-content"><p>Your original plan and your own reflection. These are self-reports, not measured game outcomes.</p>{completed.length ? <div className="recall-history-list">{completed.map(run => <article className="recall-past-card" key={run.id} data-recall-run={run.id}><header><div><h3>{championDisplayName(run.context.champion)}</h3><p>{queueName(run.context.queue)} · {dateLabel(run.createdAt)} · Patch {run.patch}</p></div><span className="recall-outcome-label" data-outcome={run.outcome}>{outcomeLabels[run.outcome!]}</span></header>{run.note && <blockquote>{run.note.text}</blockquote>}{run.build && <details className="recall-historical-build"><summary>Saved loadout: {run.build.name}</summary><LoadoutView build={run.build} /></details>}{run.reflection && <p className="recall-past-reflection">{run.reflection}</p>}<div className="recall-record-actions"><span>{situationName(run.context.situation)}</span><button type="button" className="recall-text-button recall-delete" onClick={() => deleteEntry({ kind: 'run', entry: run })}>Delete card</button></div></article>)}</div> : <p className="recall-empty-small">After a game, reflect on your card to keep it here.</p>}<p className="recall-fineprint">Up to 50 game cards. Export a backup before removing cards you want to keep.</p></div>
-        </details>
-
-        <RecallBackup state={state} ready={ready} update={update} />
-      </div>
-      <footer className="recall-local-note"><PlayerIcon name="info" size={17} /><p>Rift Recall keeps your own notes in this browser. It works without importing a match. <a href="/pool#briefing">Your champion patch briefing</a> and <a href="/players?view=memory">Build Memory’s evidence tracking</a> are also available.</p></footer>
+        <RecallBackup state={state} ready={ready} update={update} /></section>
+      <footer className="recall-local-note"><PlayerIcon name="info" size={15} /><p>Saved on this browser. <a href="/next-game">Open your automatic briefing ↗</a></p></footer>
     </div>
   </div>;
 }

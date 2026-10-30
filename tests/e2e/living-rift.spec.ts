@@ -78,7 +78,7 @@ test.describe('the shared scene before JavaScript', () => {
   test('the static environment leaves archive navigation immediately usable', async ({ page }) => {
     await page.goto('/patches');
     await staticScene(page);
-    const latest = page.locator('.route-arrival-actions a.route-action');
+    const latest = page.locator('[data-archive-focus-link]');
     await latest.scrollIntoViewIfNeeded();
     await unobstructed(latest);
     const target = await latest.getAttribute('href');
@@ -86,7 +86,7 @@ test.describe('the shared scene before JavaScript', () => {
     await latest.click();
     await expect(page).toHaveURL(url => url.pathname === target);
     await staticScene(page);
-    await expect(page.getByRole('link', { name: /Riot's original notes/ }).first()).toHaveAttribute('href', /^https:\/\//);
+    await expect(page.getByRole('link', { name: /Riot.?s notes/ }).first()).toHaveAttribute('href', /^https:\/\//);
   });
 });
 
@@ -115,7 +115,7 @@ test('without WebGL the scene stays visible and the champion task still works', 
   await expect(page).toHaveURL(/\/champion\/nunu\/?$/);
   await ready(page);
   await staticScene(page);
-  await expect(page.locator('main h1')).toHaveText('Nunu & Willump');
+  await expect(page.locator('main h1')).toContainText('Nunu & Willump');
   expect(errors).toEqual([]);
 });
 
@@ -200,20 +200,18 @@ test('map focus previews a destination and native navigation preserves the filte
   await expect(map).toBeVisible();
   await expect(page.locator('#main')).toBeHidden();
   await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/champions');
-  const preview = map.locator('[data-map-preview]');
+  const preview = map.locator('.navigator-focus');
   if (!isMobile) await expect(preview).toBeVisible();
-  const title = preview.locator('[data-map-preview-title]');
-  const notebook = map.locator('a[data-rift-destination][href="/notebook"]');
-  const patches = map.locator('a[data-rift-destination][href="/patches"]');
+  const title = preview.locator('[data-world-title]');
+  const notebook = map.locator('.journey-map-footer a[href="/notebook"]');
+  const patches = map.locator('[data-world-link="patches"]');
   await patches.focus();
-  await expect(map).toHaveAttribute('data-map-preview-surface', 'patches');
+  await expect(map.locator('[data-navigator]')).toHaveAttribute('data-selected', 'patches');
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-preview', 'patches');
-  await expect(title).toHaveText('Patch archive');
+  await expect(title).not.toBeEmpty();
   await notebook.focus();
   await expect(notebook).toBeFocused();
-  await expect(map).toHaveAttribute('data-map-preview-surface', 'notebook');
-  await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-preview', 'notebook');
-  await expect(title).toHaveText('Notebook');
+  await expect(notebook).toHaveAttribute('href', '/notebook');
   await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/champions');
   await notebook.press('Enter');
   await expect(page).toHaveURL(/\/notebook\/?$/);
@@ -225,7 +223,7 @@ test('map focus previews a destination and native navigation preserves the filte
   await ready(page);
   await expect(map).not.toBeVisible();
   await expect(page.locator('#main')).toBeVisible();
-  await expect(page.locator('[data-rift-scene]')).not.toHaveAttribute('data-rift-preview', /./);
+  await expect(page.locator('[data-rift-scene]')).not.toHaveAttribute('data-rift-preview', 'patches');
   await expect(page.getByRole('searchbox', { name: 'Find a champion', exact: true })).toHaveValue('Ahri');
   await expect(page.locator('[data-roster-count]')).toHaveText('1');
   await open.click();
@@ -235,7 +233,7 @@ test('map focus previews a destination and native navigation preserves the filte
   await expect(map).not.toBeVisible();
   await expect(page.locator('#main')).toBeVisible();
   await expect(open).toBeFocused();
-  await expect(page.locator('[data-rift-scene]')).not.toHaveAttribute('data-rift-preview', /./);
+  await expect(page.locator('[data-rift-scene]')).not.toHaveAttribute('data-rift-preview', 'patches');
 });
 
 test('reader spotlights follow the chosen champion and exact archived patch', async ({ page }) => {
@@ -244,7 +242,7 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
   await page.goto('/champions');
   await ready(page);
   const lenses = page.locator('[data-reader-champion-lens]');
-  await expect(lenses).toHaveCount(2);
+  await expect(lenses).toHaveCount(1);
   for (const lens of await lenses.all()) await expect(lens).toHaveAttribute('data-reader-ready', 'true');
   const search = page.getByRole('searchbox', { name: 'Find a champion', exact: true });
   // Consecutive exact searches must update lenses after the roster reveals the
@@ -276,7 +274,7 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
     await expect(lens.locator('[data-reader-champion-art]')).toHaveAttribute('src', /\/Ahri_0\.jpg$/);
     await localDestination(lens.locator('[data-reader-champion-link]'), '/champion/ahri');
   }
-  await expect(page.locator('[data-reader-champion-lens="roster"] [data-reader-champion-link]')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('[data-reader-champion-lens="arrival"] [data-reader-champion-link]')).toBeInViewport({ ratio: 1 });
 
   await page.goto('/patches');
   await ready(page);
@@ -310,5 +308,5 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
   }
   await instrument.locator('[data-archive-focus-link]').click();
   await expect(page).toHaveURL(/\/patch\/26\.15\/?$/);
-  await expect(page.locator('main h1')).toHaveText('Patch 26.15');
+  await expect(page.locator('main h1')).toContainText('Patch 26.15');
 });

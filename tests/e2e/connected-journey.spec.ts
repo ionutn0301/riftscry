@@ -7,8 +7,10 @@ test('kept records survive champion and interval changes and support removal/res
   await expect(page.locator('[data-findings-status]')).toContainText('saved on this device');
   await page.locator('.quick-perspectives [data-choose-champion="Ahri"]').click();
   await expect(page.locator('[data-champion-name]')).toHaveText('Ahri');
+  await page.getByRole('tab', {name:'Through time',exact:true}).click();
   await page.locator('[data-period-older]').selectOption('26.15');
   await page.goto('/pool#briefing');
+  await page.getByRole('tab', { name: 'Findings', exact: true }).click();
   const collection = page.getByRole('region', { name: 'Kept findings' });
   await expect(collection).toContainText("Bel'Veth");
   await collection.getByRole('button', { name: /Remove Bel/ }).click();
@@ -34,8 +36,9 @@ test('champion history saves directly and reaches the briefing', async ({ page }
   const save = page.locator('[data-direct-save="Ahri"]');
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
-  await page.locator('.reader-next-actions a[href="/pool#briefing"]').first().click();
+  await page.getByRole('navigation', {name:'Journey destinations',exact:true}).getByRole('link',{name:'Saved',exact:true}).click();
   await expect(page).toHaveURL(/\/pool#briefing$/);
+  await page.getByRole('tab',{name:'Choose champions',exact:true}).click();
   const picker = page.locator('astro-island:has(.pool-picker)');
   const ahri = page.getByRole('option', { name: 'Ahri', exact: true });
   const count = page.locator('.pool-bar .count');

@@ -6,9 +6,10 @@ import "../styles/observatory-pages.css";
 import "../styles/observatory-companion.css";
 import "../styles/living-rift.css";
 import "../styles/living-readers.css";
-import Wayfinder from "../components/experience/Wayfinder.astro";
+import "../styles/connected-observatory.css";
+import Wayfinder from "../components/experience/JourneyWayfinder.astro";
 import RiftScene from "../components/experience/RiftScene.astro";
-import SiteFooter from "../components/SiteFooter.astro";
+import JourneyChrome from "../components/experience/JourneyChrome.astro";
 import CommandPalette from "../components/islands/CommandPalette";
 import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
 import displayUrl from "../assets/fonts/ClashDisplay-Variable.woff2?url";
@@ -74,12 +75,12 @@ const surface = requestedSurface ?? inferredSurface;
     <div class="rift-site-shell">
       <Wayfinder surface={surface} />
       <main id="main"><slot /></main>
-      <SiteFooter />
+      <JourneyChrome surface={surface} />
     </div>
     <CommandPalette client:load />
     <script>
       import '../scripts/experience';
-      import '../scripts/living-rift';
+      import '../scripts/connected-observatory';
     </script>
   </body>
 </html>

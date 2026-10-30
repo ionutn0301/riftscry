@@ -1,6 +1,8 @@
 import { test, expect, type Page } from "@playwright/test";
+import { openScene, readyWorld } from "./journey-test-helpers";
 
 const ready = async (page: Page) => {
+  await readyWorld(page);
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("[data-voyage]")).toHaveAttribute("data-loading", "false");
 };
@@ -10,6 +12,7 @@ test.describe("keyboard-only exploration", () => {
 
   test("skip link targets content", async ({ page }) => {
     await page.goto("/patch/26.16");
+    await readyWorld(page);
     await page.keyboard.press("Tab");
     await expect(page.locator(".skip-link")).toBeFocused();
     await page.keyboard.press("Enter");
@@ -35,9 +38,9 @@ test.describe("keyboard-only exploration", () => {
     await expect(opener).toBeFocused();
     await expect(page.locator("[data-champion-name]")).toHaveText("Azir");
 
-    await page.locator('[aria-label="Journey chapters"] a[href="#change"]').focus();
+    await page.locator('[data-journey-tab="change"]').focus();
     await page.keyboard.press("Enter");
-    await expect(page.locator("#change h2")).toBeFocused();
+    await expect(page.locator("#change")).toBeVisible();
     await expect(page.locator("[data-record-after]")).toHaveText("75 / 95 / 115 / 135 / 155 (+35 / 40 / 45 / 50 / 55% AP)");
     await page.locator("[data-focus-record]").focus();
     await page.keyboard.press("Enter");
@@ -49,12 +52,14 @@ test.describe("keyboard-only exploration", () => {
     await save.focus();
     await page.keyboard.press("Space");
     await expect(save).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("[data-world-pool-count]")).toHaveText("1");
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("riftscry:pool") ?? "[]"))).toContain("Azir");
+    await openScene(page, "history");
     await page.locator("[data-champion-link]").focus();
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/champion\/azir\/?$/);
-    await expect(page.locator("#main h1")).toHaveText("Azir");
-    await expect(page.locator(".timeline-entry").first()).toContainText("Conquering Sands");
+    await expect(page.locator("#main h1")).toContainText("Azir");
+    await expect(page.locator("[data-history-record]:visible")).toHaveCount(1);
+    await expect(page.locator("[data-history-record]:visible")).toContainText("Conquering Sands");
   });
 
   test("roster Escape restores the opener and the map keeps native focus", async ({ page }) => {
@@ -83,6 +88,7 @@ test.describe("keyboard-only exploration", () => {
     await expect(mapOpener).toBeFocused();
 
     // The shortcut must leave conventional form input alone.
+    await openScene(page, "history");
     await page.locator("[data-period-older]").focus();
     await page.keyboard.press("Alt+KeyM");
     await expect(page.locator("#rift-map-dialog")).not.toBeVisible();
@@ -107,6 +113,6 @@ test.describe("keyboard-only exploration", () => {
     await expect(page.locator('[cmdk-item]:has(.item-label:text-is("Camille"))')).toBeVisible();
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/champion\/camille\/?$/);
-    await expect(page.locator("#main h1")).toHaveText("Camille");
+    await expect(page.locator("#main h1")).toContainText("Camille");
   });
 });

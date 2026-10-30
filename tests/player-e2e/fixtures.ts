@@ -159,6 +159,13 @@ type FixtureOptions = {
 export async function installFixtures(page: Page, options: FixtureOptions = {}) {
   const records = options.matches ?? matches;
   const requests: FixtureRequest[] = [];
+  // Identity assertions test the verified icon URL and fallback behavior, not
+  // availability of the external image CDN. Individual artwork-failure tests
+  // can still override this route with an explicit abort after installation.
+  await page.route('**/img/profileicon/29.png', route => route.fulfill({
+    contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88" viewBox="0 0 88 88"><rect width="88" height="88" fill="#142e3b"/><circle cx="44" cy="34" r="13" fill="#acd7dd"/><path d="M20 77c0-18 10-27 24-27s24 9 24 27" fill="#6eabbc"/></svg>',
+  }));
   await page.route('**/api/player/**', async route => {
     const request = route.request();
     const url = new URL(request.url());

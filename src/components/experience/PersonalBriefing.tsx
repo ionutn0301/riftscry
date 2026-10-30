@@ -1,7 +1,6 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { $pool } from '../../lib/pool';
-import KeptFindings from './KeptFindings';
 import {
   RETURN_STATE_EVENT, REVIEWED_PATCH_KEY, RESUME_KEY,
   dailyArchiveInsight, deriveReturnBriefing, markPatchReviewed, readReturnState,
@@ -48,14 +47,15 @@ export default function PersonalBriefing({ archive, champions, insights, initial
   const briefing = useMemo(() => deriveReturnBriefing(archive, pool, device.reviewedPatch), [archive, pool, device.reviewedPatch]);
   const latest = briefing.latest;
   const changedNames = briefing.affectedChampionIds.map((championId) => champions[championId]!.name);
-  const baselineKnown = device.reviewedPatch && archive.some((patch) => patch.id === device.reviewedPatch);
-  const title = briefing.mode === 'new-records' ? `${changedNames.length} of your champions have records to revisit.`
-    : briefing.mode === 'caught-up' ? 'You’re up to date with this archive.'
-    : briefing.mode === 'quiet-interval' ? 'A quiet interval for your pool.'
-    : briefing.mode === 'first-visit' ? 'Start with a clear baseline.'
-    : briefing.mode === 'missing-baseline' ? 'Let’s reset your point of reference.'
+  const title = briefing.mode === 'new-records' ? `New records for ${changedNames.length} of your champions.`
+    : briefing.mode === 'caught-up' ? 'Your archive is up to date.'
+    : briefing.mode === 'quiet-interval' ? 'A quiet interval.'
+    : briefing.mode === 'first-visit' || briefing.mode === 'missing-baseline' ? 'Your champions, in view.'
     : briefing.mode === 'empty-archive' ? 'The archive is waiting.'
-    : 'Make the changes personal.';
+    : 'Choose who stays with you.';
+  const patchHref = briefing.mode === 'new-records' && latest && device.reviewedPatch
+    ? `/compare/${latest.id}/${device.reviewedPatch}?pool=1`
+    : latest ? `/patch/${latest.id}${pool.length ? '?pool=1' : ''}` : '/patches';
 
   return <section className={`return-briefing${compact ? ' return-briefing--compact' : ''}`} aria-labelledby={`${id}-heading`}>
     {compact ? <h2 className="visually-hidden" id={`${id}-heading`}>{heading}</h2> : <header className="return-briefing__intro">
@@ -65,46 +65,50 @@ export default function PersonalBriefing({ archive, champions, insights, initial
     </header>}
     <div className="return-briefing__columns">
       <section className="return-briefing__personal" aria-labelledby={`${id}-personal`}>
-        <div className="return-briefing__section-label"><span>YOUR BRIEFING</span><span>{pool.length} {pool.length === 1 ? 'CHAMPION' : 'CHAMPIONS'} SAVED</span></div>
+        <div className="return-briefing__section-label"><span>SAVED CHAMPIONS</span><span>{pool.length} {pool.length === 1 ? 'CHAMPION' : 'CHAMPIONS'}</span></div>
         <h3 id={`${id}-personal`}>{title}</h3>
-        {briefing.mode === 'unpersonalized' ? <p>Save champions to My Pool. On your next visit, see which appear in archived patch records after the last patch you marked reviewed.</p>
-          : briefing.mode === 'first-visit' ? <p>No patch has been marked reviewed on this device. Start with {latest?.id}, then mark it reviewed when you’re ready.</p>
-          : briefing.mode === 'missing-baseline' ? <p>Your saved baseline, {device.reviewedPatch}, is outside the loaded archive. Review the latest available patch to establish a new baseline.</p>
-          : briefing.mode === 'caught-up' ? <p>There are no newer archived patches after {device.reviewedPatch}. Your champion histories and comparisons are still here to explore.</p>
-          : briefing.mode === 'quiet-interval' ? <p>No direct changes for your saved champions appear in the {briefing.newerPatches.length} archived {briefing.newerPatches.length === 1 ? 'patch' : 'patches'} after {device.reviewedPatch}. Items, systems, and other champions can still affect the game.</p>
-          : briefing.mode === 'new-records' ? <p>Across {briefing.newerPatches.length} archived {briefing.newerPatches.length === 1 ? 'patch' : 'patches'} after {device.reviewedPatch}, these champions appear in direct change records.</p>
-          : <p>New records will appear here when they are added to the archive.</p>}
+        {briefing.mode === 'unpersonalized' ? <p>Save a champion. Their patch records stay close.</p>
+          : briefing.mode === 'first-visit' || briefing.mode === 'missing-baseline' ? <p>{changedNames.length} of {pool.length} appear in patch {latest?.id}.</p>
+          : briefing.mode === 'caught-up' ? <p>No newer archived patches after {device.reviewedPatch}.</p>
+          : briefing.mode === 'quiet-interval' ? <p>No direct champion changes across {briefing.newerPatches.length} archived {briefing.newerPatches.length === 1 ? 'patch' : 'patches'} after {device.reviewedPatch}. Items and systems may still matter.</p>
+          : briefing.mode === 'new-records' ? <p>Across {briefing.newerPatches.length} archived {briefing.newerPatches.length === 1 ? 'patch' : 'patches'} after {device.reviewedPatch}.</p>
+          : <p>New records will appear as the archive grows.</p>}
 
-        {changedNames.length > 0 && <div className="return-briefing__changes">
-          {!baselineKnown && <p className="return-briefing__caption">IN THE LATEST ARCHIVED PATCH</p>}
-          <ul>{briefing.affectedChampionIds.slice(0, 5).map((championId) => <li key={championId}><a href={'/champion/' + championId.toLowerCase()}>
+        {pool.length > 0 && <div className="return-briefing__changes">
+          <ul aria-label="Saved champion histories">{pool.map((championId) => <li key={championId}><a href={'/champion/' + championId.toLowerCase()}>
             <img src={champions[championId]!.icon} width={36} height={36} loading="lazy" decoding="async" alt="" />
             <span>{champions[championId]!.name}</span><span aria-hidden="true">↗</span>
           </a></li>)}</ul>
-          {changedNames.length > 5 && <a className="return-briefing__text-link" href="/pool">And {changedNames.length - 5} more in your pool ↗</a>}
         </div>}
 
         <div className="return-briefing__actions">
-          <a className="return-briefing__primary" href={briefing.mode === 'new-records' && latest && device.reviewedPatch ? `/compare/${latest.id}/${device.reviewedPatch}?pool=1` : latest ? `/patch/${latest.id}${pool.length ? '?pool=1' : ''}` : '/patches'}>{briefing.mode === 'new-records' ? 'Review records since my baseline' : pool.length ? 'Review my pool’s patch' : 'Read the latest archive'} <span aria-hidden="true">↗</span></a>
-          <a className="return-briefing__text-link" href="/pool#edit-pool">{pool.length ? 'Manage My Pool' : 'Build My Pool'} ↗</a>
-          <a className="return-briefing__text-link" href="/compare">Compare patches ↗</a>
+          <a className="return-briefing__primary" href={pool.length ? patchHref : '/pool#edit-pool'}>{pool.length ? briefing.mode === 'new-records' ? 'Review changes' : latest ? `Open patch ${latest.id}` : 'Open the archive' : 'Choose champions'} <span aria-hidden="true">↗</span></a>
+          <a className="return-briefing__text-link" href={pool.length ? '/pool#edit-pool' : patchHref}>{pool.length ? 'Edit saved champions' : 'Explore the latest patch'} ↗</a>
         </div>
 
-        {latest && <div className="return-briefing__reviewed">
-          <button type="button" disabled={!ready || !device.storageAvailable || device.reviewedPatch === latest.id} onClick={() => {
-            const saved = markPatchReviewed(latest.id);
-            setMessage(saved ? `Patch ${latest.id} marked reviewed on this device.` : 'This browser could not save your reviewed patch.');
-            if (!saved) setDevice((previous) => ({ ...previous, storageAvailable: false }));
-          }}>{device.reviewedPatch === latest.id ? `✓ ${latest.id} marked reviewed` : `Mark ${latest.id} reviewed`}</button>
-          <p>Only this button updates your reviewed baseline.</p>
-        </div>}
-        {!device.storageAvailable && <p className="return-briefing__storage-note">Device storage is unavailable. You can continue reading; this browser won’t remember your baseline or reading place.</p>}
+        {!device.storageAvailable && <p className="return-briefing__storage-note">Device storage is unavailable. Your reading place and progress cannot be saved.</p>}
         {ready && device.resume && <a className="return-briefing__resume" href={device.resume.href}>
           <span className="return-briefing__eyebrow">PICK UP WHERE YOU LEFT OFF</span><strong>{device.resume.label}</strong><span aria-hidden="true">↗</span>
         </a>}
       </section>
 
-      <details className="return-briefing__archive" open={!compact}>
+      <div className="return-briefing__extras">
+        {latest && <details className="return-briefing__progress">
+          <summary>Archive progress <span>{device.reviewedPatch ? `${device.reviewedPatch} reviewed` : 'Optional'}</span></summary>
+          <p className="return-briefing__caption">{briefing.mode === 'missing-baseline'
+            ? `Patch ${device.reviewedPatch} is outside this archive. Choose a new starting point when you’re ready.`
+            : device.reviewedPatch ? `Show records after patch ${device.reviewedPatch}.` : 'Choose a reviewed patch to follow later changes.'}</p>
+          <div className="return-briefing__reviewed">
+            <button type="button" disabled={!ready || !device.storageAvailable || device.reviewedPatch === latest.id} onClick={() => {
+              const saved = markPatchReviewed(latest.id);
+              setMessage(saved ? `Patch ${latest.id} marked reviewed on this device.` : 'This browser could not save your reviewed patch.');
+              if (!saved) setDevice((previous) => ({ ...previous, storageAvailable: false }));
+            }}>{device.reviewedPatch === latest.id ? `✓ ${latest.id} marked reviewed` : `Mark ${latest.id} reviewed`}</button>
+            <p>Only this button updates your reviewed baseline.</p>
+          </div>
+          <a className="return-briefing__text-link" href="/compare">Compare patches ↗</a>
+        </details>}
+        <details className="return-briefing__archive" open={!compact}>
         <summary className="return-briefing__archive-toggle">A record to revisit <span>From the archive</span></summary>
         <div className="return-briefing__section-label"><h3 id={`${id}-archive`}>FROM THE ARCHIVE</h3><span>A DAILY SELECTION</span></div>
         {insight ? <article>
@@ -115,18 +119,17 @@ export default function PersonalBriefing({ archive, champions, insights, initial
             {insight.unit && <div className="return-briefing__unit"><dt>Unit / conditions</dt><dd>{insight.unit}</dd></div>}
           </dl> : <p className="return-briefing__rule">{insight.text}</p>}
           <p className="return-briefing__record-date">Patch {insight.patch} · <time dateTime={insight.date}>{dateLabel(insight.date)}</time></p>
-          <p className="return-briefing__caption">An older record selected to revisit. This is not a new update.</p>
+          <p className="return-briefing__caption">An older archive record.</p>
           <div className="return-briefing__actions">
             <a className="return-briefing__text-link" href={`/patch/${insight.patch}`}>Explore this patch ↗</a>
             <a className="return-briefing__text-link" href={insight.source} target="_blank" rel="noreferrer">Riot’s original notes ↗</a>
           </div>
         </article> : <p>Source records will appear here as the archive grows.</p>}
-      </details>
+        </details>
+      </div>
     </div>
-    <KeptFindings />
     <footer className="return-briefing__footer">
       <span>{latest ? <>Archive through <time dateTime={latest.date}>{dateLabel(latest.date)}</time> · Patch {latest.id}</> : 'No archived patches loaded.'}</span>
-      <span>Saved on this device. No account required.</span>
     </footer>
     <span className="return-briefing__status" role="status" aria-live="polite">{message}</span>
     <noscript><p className="return-briefing__caption">Enable JavaScript for device-local progress. The patch archive and champion histories remain available through the links above.</p></noscript>

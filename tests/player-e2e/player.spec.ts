@@ -4,7 +4,7 @@ import {
   otherProfilePath, platform, profilePath, query, readNotes, savedNote, seedNotes,
   sourceMatch, suggestion, trackingStart,
 } from './fixtures';
-import { openFilters } from './profile-controls';
+import { openFilters, openScene } from './profile-controls';
 
 const matchUrl = `/matches/${sourceMatch.metadata.matchId}?${query}`;
 
@@ -52,6 +52,7 @@ test('lookup opens readable profile and grouped builds without eager timeline or
 test('AI suggestion prefills a draft, opens evidence, and saves only after confirmation', async ({ page }) => {
   const requests = await installFixtures(page);
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
+  await openScene(page, 'match-review');
   await page.getByRole('button', { name: 'Review with AI', exact: true }).click();
   await expect(page.getByText(/AI-assisted interpretation/)).toBeVisible();
   await expect(page.locator('.review-full')).toHaveJSProperty('open', true);
@@ -61,6 +62,7 @@ test('AI suggestion prefills a draft, opens evidence, and saves only after confi
   await expect(page.locator('#fact-event-0')).toBeVisible();
   await expect(page.locator('#fact-event-0')).toBeFocused();
 
+  await openScene(page, 'match-review');
   await page.getByRole('button', { name: 'Review draft', exact: true }).click();
   await expect(page.getByLabel('Decision being reconsidered', { exact: true })).toHaveValue(suggestion.original);
   await expect(page.getByLabel('Proposed alternative', { exact: true })).toHaveValue(suggestion.alternative);
@@ -95,6 +97,7 @@ test('a direct event evidence link loads its timeline and reveals the referenced
 test('manual adjustments persist privately and do not cross player contexts', async ({ page }) => {
   await installFixtures(page);
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
+  await openScene(page, 'match-memory');
   await page.getByText('Save an adjustment from this match', { exact: true }).click();
   await page.getByLabel('Decision being reconsidered', { exact: true }).fill('Review the first boots purchase');
   await page.getByLabel('Tracked item', { exact: true }).selectOption('1001');
@@ -215,8 +218,10 @@ test('timeline and AI failures keep the loaded match summary usable while unavai
   const overview = page.getByRole('region', { name: 'Match overview', exact: true });
   await expect(overview).toContainText('Item names unavailable. Recorded IDs are kept.');
   await expect(overview.getByText('Item 1001', { exact: true })).toBeVisible();
+  await openScene(page, 'match-evidence');
   await page.getByRole('button', { name: 'Open timeline', exact: true }).click();
   await expect(page.getByText(/Timeline unavailable/).first()).toBeVisible();
+  await openScene(page, 'match-review');
   await page.getByRole('button', { name: 'Review with AI', exact: true }).click();
   await expect(page.getByText(/Deterministic summary remains available/)).toBeVisible();
   await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
@@ -224,6 +229,7 @@ test('timeline and AI failures keep the loaded match summary usable while unavai
   await page.getByText('Full review', { exact: true }).click();
   await expect(page.getByText('Your build', { exact: true })).toBeVisible();
   itemsAvailable = true;
+  await openScene(page, 'match-overview');
   await overview.getByRole('button', { name: 'Retry item details', exact: true }).click();
   await expect(overview.locator('.item-label[title="Boots"]')).toBeVisible();
   await expect(overview.locator('.rune-label[title="Electrocute"]')).toBeVisible();
@@ -239,7 +245,9 @@ test('unreadable stored notes are not overwritten by a new save', async ({ page 
   await installFixtures(page);
   await page.addInitScript(key => localStorage.setItem(key, '{not valid JSON'), memoryKey);
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
+  await openScene(page, 'match-memory');
   await expect(page.getByText(/Saved notes could not be read/)).toBeVisible();
+  await openScene(page, 'match-memory');
   await page.getByText('Save an adjustment from this match', { exact: true }).click();
   await expect(page.getByRole('button', { name: 'Save adjustment', exact: true })).toBeDisabled();
   expect(await page.evaluate(key => localStorage.getItem(key), memoryKey)).toBe('{not valid JSON');

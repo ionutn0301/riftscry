@@ -3,7 +3,7 @@ import {
   installFixtures, mayhemMatch, mixedModeMatches, oldRankedMatch, platform, profilePath, puuid,
   query, recentAramLoss, recentAramWin, savedNote, seedNotes, swiftplayMatch,
 } from './fixtures';
-import { expectSelectedQueue, openStats, selectQueue } from './profile-controls';
+import { expectSelectedQueue, openScene, openStats, selectQueue } from './profile-controls';
 
 const identity = 'Fixture Player#TEST';
 const namedProfile = `${profilePath}?name=${encodeURIComponent(identity)}`;
@@ -95,7 +95,7 @@ test('History, Builds and Memory show their own content while preserving mode an
   await expect(filters.getByLabel('Result', { exact: true })).toHaveValue('loss');
   await expect(views.getByRole('button', { name: 'Builds', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.evaluate(() => document.fonts.ready);
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.locator('#player-records').evaluate(element => element.scrollTo({ top: 0, behavior: 'instant' }));
   await page.screenshot({ path: 'player-visuals/compact-profile-builds.png', fullPage: true, animations: 'disabled' });
 
   await views.getByRole('button', { name: 'Build Memory', exact: true }).click();
@@ -109,7 +109,7 @@ test('History, Builds and Memory show their own content while preserving mode an
   await expect(page.getByRole('group', { name: 'Filter saved adjustments', exact: true }).getByLabel('Champion', { exact: true })).toHaveValue('');
   await expect(views.getByRole('button', { name: 'Build Memory', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page).toHaveURL(url => url.searchParams.get('view') === 'memory' && url.searchParams.get('queue') === '450' && url.searchParams.get('champion') === 'Ahri' && url.searchParams.get('result') === 'loss');
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.locator('#player-records').evaluate(element => element.scrollTo({ top: 0, behavior: 'instant' }));
   await page.screenshot({ path: 'player-visuals/compact-profile-memory.png', fullPage: true, animations: 'disabled' });
 
   await views.getByRole('button', { name: 'Matches', exact: true }).click();
@@ -343,7 +343,9 @@ test('ARAM review labels its mode and does not invent Summoner’s Rift lane or 
   await installFixtures(page, { matches: mixedModeMatches });
   await page.goto(`/matches/${recentAramWin.metadata.matchId}?${query}`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
+  await openScene(page, 'match-review');
   await expect(page.getByText('Recorded summary', { exact: true })).toBeVisible();
+  await openScene(page, 'match-evidence');
   await page.getByText('Supporting facts', { exact: true }).click();
   await expect(page.locator('#fact-mode-context')).toContainText('ARAM');
   await expect(page.locator('#fact-farm-rate')).toHaveCount(0);
@@ -381,6 +383,7 @@ test('gateway form is keyboard operable and opens the separate player profile', 
   const server = form.getByLabel('Server', { exact: true });
   const submit = form.getByRole('button', { name: /Find player/ });
   await expect(submit).toBeEnabled();
+  await page.locator('.gateway-destinations > summary').click();
   const buildsIntent = page.getByRole('button', { name: 'Builds', exact: true });
   await buildsIntent.focus();
   await page.keyboard.press('Enter');
@@ -412,7 +415,7 @@ test('match cards and the shared map retain keyboard navigation when player and 
   const map = page.locator('#rift-map-dialog');
   await expect(map).toBeVisible();
   await expect(map.locator('[aria-current="page"]')).toHaveAttribute('href', '/players');
-  await map.locator('.map-destination[href="/players"]').click();
+  await map.locator('[data-world-link="players"]').click();
   await expect(page).toHaveURL(url => url.pathname === '/players');
   await expect(page.locator('body')).toHaveAttribute('data-surface', 'players');
   await expect(page.locator('[data-player-gateway]')).toBeVisible();

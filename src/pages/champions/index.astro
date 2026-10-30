@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import RouteArrival from "../../components/experience/RouteArrival.astro";
+import "../../styles/journey-readers.css";
 import { getAssetVersion, getChampionHistory, getChampionMeta, getLatestPatch, getRoles, ROLES } from "../../lib/data";
 import { assetFor } from "../../lib/investigation";
 
@@ -20,86 +20,36 @@ const spotlight = featured[0] ?? champions[0]!;
 const normalize = (value: string) => value.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",adc:"ADC",support:"Support" };
 ---
-<Layout surface="champions" title="Champions — RiftScry" description="Find your champion and follow their recorded League of Legends patch history, with exact changes and original sources.">
-  <div class="reader-experience" data-roster-directory>
-    <RouteArrival eyebrow="CHAMPION ARCHIVE" title="Find your champion."
-      description="Search by name or role. Open a champion’s history to see exactly what changed and when."
-      variant="roster"
-      note={champions.length + " champions · Archive through " + latest.releaseDate + ". Direct changes only."}>
-      <div slot="actions" class="roster-arrival-actions">
-        <form class="roster-tools" data-roster-tools hidden>
-          <div class="roster-search"><label for="roster-search">Find a champion</label><input id="roster-search" data-roster-search type="search" placeholder="Champion name…" autocomplete="off" spellcheck="false" /></div>
-          <div class="roster-role-options" role="group" aria-label="Champion role">
-            <button type="button" data-roster-role="" aria-pressed="true">All roles</button>
-            {ROLES.map((role) => <button type="button" data-roster-role={role} aria-pressed="false">{roleLabels[role]}</button>)}
-          </div>
-        </form>
-        <noscript><a class="route-action" href="#roster">Browse all champions <span aria-hidden="true">↓</span></a></noscript>
-        <a class="route-text-link" href="/pool">My Pool <span aria-hidden="true">↗</span></a>
-      </div>
-      <div slot="figure" class="roster-lens" data-reader-champion-lens="arrival" data-reader-key={spotlight.id}>
-        <div class="reader-lens-overline"><span>IN FOCUS</span><span>RIOT GAMES ARTWORK</span></div>
+<Layout surface="champions" title="Champions — RiftScry" description="Choose a champion. Move through exact patch records in the RiftScry observatory.">
+  <div class="journey-reader journey-roster" data-journey-deck data-roster-directory>
+    <header class="journey-reader-header" id="route-arrival">
+      <div><p class="journey-reader-kicker">CHAMPIONS / {champions.length} PERSPECTIVES</p><h1>Choose your perspective.</h1></div>
+      <a class="journey-quiet-link" href="/pool#briefing">Saved champions <span aria-hidden="true">↗</span></a>
+    </header>
+    <form class="roster-tools journey-roster-tools" data-roster-tools hidden>
+      <div class="roster-search"><label for="roster-search">Find a champion</label><input id="roster-search" data-roster-search type="search" placeholder="Champion name…" autocomplete="off" spellcheck="false" /></div>
+      <div class="roster-role-options" role="group" aria-label="Champion role"><button type="button" data-roster-role="" aria-pressed="true">All</button>{ROLES.map((role) => <button type="button" data-roster-role={role} aria-pressed="false">{roleLabels[role]}</button>)}</div>
+      <button type="button" class="journey-quiet-link" data-roster-reset hidden>Clear</button>
+    </form>
+    <section id="roster" class="journey-panel journey-roster-panel" data-journey-panel data-journey-label="Find a champion" data-journey-world="champions" aria-label="Champion roster">
+      <div class="roster-lens journey-roster-lens" data-reader-champion-lens="arrival" data-reader-key={spotlight.id}>
         <figure>
-          <div class="roster-lens-media" data-reader-lens-media>
-            <img data-reader-champion-art src={assetFor(spotlight.id).splash} alt={spotlight.name + " — official Riot Games artwork"} width="1215" height="717" loading="eager" decoding="async" />
-            <p class="roster-lens-fallback" data-reader-art-fallback hidden>Artwork unavailable. The champion’s history remains available below.</p>
-          </div>
-          <figcaption>
-            <div><strong data-reader-champion-name>{spotlight.name}</strong><span data-reader-champion-title>{spotlight.title}</span></div>
-            <a class="reader-lens-open" data-reader-champion-link href={"/champion/" + spotlight.id.toLowerCase()}>Open history <span aria-hidden="true">↗</span></a>
-          </figcaption>
+          <div class="roster-lens-media" data-reader-lens-media><img data-reader-champion-art src={assetFor(spotlight.id).splash} alt={spotlight.name + " — official Riot Games artwork"} width="1215" height="717" loading="eager" decoding="async" /><p class="roster-lens-fallback" data-reader-art-fallback hidden>Artwork unavailable. Champion records are still available.</p></div>
+          <figcaption><div><strong data-reader-champion-name>{spotlight.name}</strong><span data-reader-champion-title>{spotlight.title}</span></div><a class="reader-lens-open" data-reader-champion-link href={"/champion/" + spotlight.id.toLowerCase()}>Enter history <span aria-hidden="true">↗</span></a></figcaption>
         </figure>
         <p class="reader-lens-record" data-reader-champion-record>{spotlight.changes ? "Latest " + spotlight.latest + " · " + spotlight.changes + " archived " + (spotlight.changes === 1 ? "patch" : "patches") : "No direct records yet"}</p>
-        <nav class="roster-arrival-figures" aria-label={"Champions with records in patch " + latest.id}>
-          {featured.map((c) => <a href={"/champion/" + c.id.toLowerCase()} data-reader-preview-champion={c.id} data-reader-active={c.id === spotlight.id ? "true" : undefined}><span>{c.name}</span><span aria-hidden="true">↗</span></a>)}
-        </nav>
+        <p class="journey-art-credit">RIOT GAMES ARTWORK · ARCHIVE THROUGH {latest.releaseDate}</p>
       </div>
-    </RouteArrival>
-
-    <div class="reader-body">
-      <nav class="chapter-rail" aria-label="On this page">
-        <ol><li><a href="#roster">Champion roster</a></li></ol>
-      </nav>
-      <div class="reader-chapters">
-        <section id="roster" class="reading-chapter" data-scene="roster">
-          <header class="chapter-heading" data-reveal>
-            <span class="chapter-index">01</span>
-            <div><h2>Champion roster.</h2></div>
-          </header>
-          <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions in view</p><button type="button" class="route-text-link" data-roster-reset hidden>Clear filters ↗</button></div>
-          <p class="reader-section-note" data-roster-empty hidden>No matches. Try another name or clear the filters.</p>
-          <div class="roster-gallery">
-            <ul class="roster-wall">
-              {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-key={c.id} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
-                <a href={"/champion/" + c.id.toLowerCase()}>
-                  <span class="roster-portrait"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="64" height="64" loading="lazy" decoding="async" /></span>
-                  <span class="roster-entry-copy"><span class="name">{c.name}</span><span class="title">{c.title}</span><span class="roster-entry-roles">{c.roles.map(role => roleLabels[role]).join(" / ")}</span><span class="changes">{c.changes ? "Latest " + c.latest + " · " + c.changes + " archived " + (c.changes === 1 ? "patch" : "patches") : "No direct records yet"}</span></span>
-                  <span class="roster-arrow" aria-hidden="true">↗</span>
-                </a>
-              </li>)}
-            </ul>
-            <aside class="roster-lens roster-lens--sticky" data-reader-champion-lens="roster" data-reader-key={spotlight.id} aria-label="Champion preview">
-              <div aria-hidden="true">
-                <div class="reader-lens-overline"><span>IN FOCUS</span><span>RIOT GAMES ARTWORK</span></div>
-                <figure>
-                  <div class="roster-lens-media" data-reader-lens-media>
-                    <img data-reader-champion-art src={assetFor(spotlight.id).splash} alt="" width="1215" height="717" loading="lazy" decoding="async" />
-                    <p class="roster-lens-fallback" data-reader-art-fallback hidden>Artwork unavailable. The champion’s history remains available below.</p>
-                  </div>
-                  <figcaption><div><strong data-reader-champion-name>{spotlight.name}</strong><span data-reader-champion-title>{spotlight.title}</span></div></figcaption>
-                </figure>
-                <p class="reader-lens-record" data-reader-champion-record>{spotlight.changes ? "Latest " + spotlight.latest + " · " + spotlight.changes + " archived " + (spotlight.changes === 1 ? "patch" : "patches") : "No direct records yet"}</p>
-              </div>
-              <a class="reader-lens-open" data-reader-champion-link href={"/champion/" + spotlight.id.toLowerCase()}><span>Open <span data-reader-link-name>{spotlight.name}</span>’s history</span><span aria-hidden="true">↗</span></a>
-            </aside>
-          </div>
-        </section>
-        <section class="reader-next" data-reveal>
-          <div><h2>Read the latest patch.</h2><p>See champion, item, and system changes together in patch {latest.id}.</p></div>
-          <a href={"/patch/" + latest.id} class="route-action route-action--quiet">Open patch {latest.id} <span aria-hidden="true">↗</span></a>
-        </section>
+      <div class="journey-roster-results">
+        <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions</p><span>SELECT A PERSPECTIVE</span></div>
+        <p class="journey-empty" data-roster-empty hidden>No matches. Try another name or clear the filters.</p>
+        <ul class="roster-wall journey-casting-wall">
+          {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-key={c.id} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
+            <a href={"/champion/" + c.id.toLowerCase()}><span class="roster-portrait"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async" /></span><span class="roster-entry-copy"><span class="name">{c.name}</span><span class="roster-entry-roles">{c.roles.map(role => roleLabels[role]).join(" / ")}</span></span><span class="roster-arrow" aria-hidden="true">↗</span></a>
+          </li>)}
+        </ul>
       </div>
-    </div>
+    </section>
   </div>
 </Layout>
 

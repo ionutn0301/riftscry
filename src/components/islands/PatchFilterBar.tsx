@@ -110,8 +110,15 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
   const toggle = <K extends "role" | "type">(key: K, value: NonNullable<PatchFilters[K]>) =>
     set({ [key]: filters[key] === value ? null : value } as Partial<PatchFilters>);
 
+  const activeFilters = [
+    filters.role ? ROLE_OPTIONS.find(option => option.value === filters.role)?.label : null,
+    filters.type ? TYPE_OPTIONS.find(option => option.value === filters.type)?.label ?? filters.type : null,
+    filters.pool ? 'My pool' : null,
+    filters.champions.length ? `${filters.champions.length} shared champions` : null,
+  ].filter(Boolean);
+
   return (
-    <div className="filter-bar" data-ready={ready} role="group" aria-label="Filter changes">
+    <div className="filter-bar patch-filter-console" data-ready={ready} role="group" aria-label="Filter changes">
       <input
         type="search"
         placeholder="Filter champions…"
@@ -119,6 +126,9 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
         value={filters.q}
         onChange={(e) => set({ q: e.target.value })}
       />
+      <details className="patch-filter-options">
+        <summary>Filters{activeFilters.length > 0 && <span className="patch-filter-count">{activeFilters.length}</span>}<span aria-hidden="true">+</span></summary>
+        <div className="patch-filter-options-body">
       <div className="seg" role="group" aria-label="Role">
         {ROLE_OPTIONS.map((r) => (
           <button
@@ -153,8 +163,10 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
       >
         My pool{pool.length > 0 ? ` (${pool.length})` : ""}
       </button>
-      {serializeFilters(filters) && <button type="button" className="pool-toggle" onClick={() => setFilters({ ...EMPTY_FILTERS })}>Clear filters</button>}
-      {ready && <span role="status" aria-live="polite">{filterChampions(changes, filters, roles, pool, meta).length} of {entries.length} champions</span>}
+        </div>
+      </details>
+      {serializeFilters(filters) && <button type="button" className="pool-toggle patch-filter-clear" onClick={() => setFilters({ ...EMPTY_FILTERS })}>Clear filters</button>}
+      {ready && <span className="patch-filter-status" role="status" aria-live="polite">{filterChampions(changes, filters, roles, pool, meta).length} of {entries.length} champions{activeFilters.length > 0 ? ` · ${activeFilters.join(" · ")}` : ""}</span>}
       {ready && filters.pool && pool.length === 0 && <span>No champions saved on this device. Turn off My pool or <a href="/pool">choose champions</a>.</span>}
     </div>
   );
