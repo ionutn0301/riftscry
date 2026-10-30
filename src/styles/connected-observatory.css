@@ -10,9 +10,9 @@ body[data-journey-ready] #main > :not(script):not(noscript) { min-height: 0; wid
 body[data-journey-ready] #main astro-island { display: contents; }
 body[data-journey-ready] [data-journey-deck] { display: flex; flex-direction: column; flex: 1 1 auto; height: 100%; min-height: 0; width: 100%; margin: 0; max-width: none; position: relative; }
 body[data-journey-ready] [data-journey-panel] { flex: 1 1 auto; min-height: 0; max-height: 100%; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #9acbc24a transparent; outline: none; animation: scene-resolve .48s var(--journey-ease) both; }
-body[data-journey-ready] [data-journey-deck] { --scene-travel-x: 40px; --scene-travel-turn: -1.5deg; }
-body[data-journey-ready] [data-journey-travel="backward"] { --scene-travel-x: -40px; --scene-travel-turn: 1.5deg; }
-body[data-journey-ready] [data-journey-travel="arrive"] { --scene-travel-x: 0px; --scene-travel-turn: 0deg; }
+body[data-journey-ready] [data-journey-deck] { --scene-travel-x: 40px; }
+body[data-journey-ready] [data-journey-travel="backward"] { --scene-travel-x: -40px; }
+body[data-journey-ready] [data-journey-travel="arrive"] { --scene-travel-x: 0px; }
 body[data-journey-ready] [data-journey-panel][hidden] { display: none !important; }
 body[data-journey-ready] [data-journey-panel]:focus-visible { outline: 1px solid #b9e3dc80; outline-offset: -1px; }
 body[data-journey-ready] [data-reveal] { opacity: 1; transform: none; }
@@ -158,7 +158,9 @@ html { --crossing-enter-x: 42px; --crossing-exit-x: -30px; --crossing-enter-scal
 html[data-journey-crossing="backward"] { --crossing-enter-x: -42px; --crossing-exit-x: 30px; }
 html[data-journey-crossing="enter"] { --crossing-enter-x: 0px; --crossing-exit-x: 0px; --crossing-enter-scale: .965; --crossing-exit-scale: 1.045; }
 html[data-journey-crossing="return"] { --crossing-enter-x: 0px; --crossing-exit-x: 0px; --crossing-enter-scale: 1.045; --crossing-exit-scale: .965; }
-@keyframes scene-resolve { from { opacity: 0; transform: perspective(1200px) translate3d(var(--scene-travel-x),0,-12px) rotateY(var(--scene-travel-turn)); } to { opacity: 1; transform: none; } }
+/* Translating the live scene preserves every control's physical hit area.
+   Perspective/scale belong to document snapshots, not to interactive forms. */
+@keyframes scene-resolve { from { opacity: 0; transform: translate3d(var(--scene-travel-x),0,0); } to { opacity: 1; transform: none; } }
 @keyframes stage-depart { to { opacity: 0; transform: translate3d(var(--crossing-exit-x),0,0) scale(var(--crossing-exit-scale)); } }
 @keyframes stage-arrive { from { opacity: 0; transform: translate3d(var(--crossing-enter-x),0,0) scale(var(--crossing-enter-scale)); } to { opacity: 1; transform: none; } }
 @keyframes world-dissolve { to { opacity: 0; } }
