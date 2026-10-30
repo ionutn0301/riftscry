@@ -19,6 +19,10 @@ const result = comparePatches(a!,b!,patches);
 const meta = getChampionMeta();
 const assetVersion = getAssetVersion();
 const ids = patches.map((patch) => patch.id);
+const scenePatches = {
+  items: patches.filter(patch => patch.items.length > 0).map(patch => patch.id),
+  systems: patches.filter(patch => patch.systems.length > 0).map(patch => patch.id),
+};
 const groups: {key:Classification;title:string}[] = [
   {key:"buff",title:"Buffed"},{key:"nerf",title:"Nerfed"},{key:"rework",title:"Reworked"},{key:"adjustment",title:"Adjusted"},
 ];
@@ -27,11 +31,11 @@ const grouped = groups.map((group) => ({...group,champions:result.champions.filt
 ---
 <Layout surface="compare" title={"League " + result.newer + " vs " + result.older + " — RiftScry"} description={"Follow every recorded change after League patch " + result.older + " through " + result.newer + "."}>
   <div class="journey-reader journey-compare" data-journey-deck>
-    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">COMPARE / {result.span.length} ARCHIVED {result.span.length === 1 ? "PATCH" : "PATCHES"}</p><h1>Between two moments.</h1></div><ComparePicker client:load ids={ids} newer={result.newer} older={result.older}/></header>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">COMPARE / {result.span.length} ARCHIVED {result.span.length === 1 ? "PATCH" : "PATCHES"}</p><h1>Between two moments.</h1></div><ComparePicker client:load ids={ids} newer={result.newer} older={result.older} scenePatches={scenePatches}/></header>
     <p class="journey-context-line">After {result.older}, through {result.newer}. Starting patch excluded. Classifications describe records, not current strength.</p>
     <section id="comparison" class="journey-panel journey-comparison-panel" data-journey-panel data-journey-label="Champions" data-journey-world="compare" aria-label="Champion comparison">
-      <p class="compare-range-note" data-compare-context hidden></p><button class="journey-quiet-link" data-compare-all hidden>Show all champions</button>
-      {grouped.map(group => <section class="compare-group journey-comparison-group" aria-labelledby={"h-" + group.key}><h2 id={"h-" + group.key}><DeltaGlyph kind={group.key} showLabel={false}/>{group.title}<span>{group.champions.length}</span></h2><ul class="champ-rows">{group.champions.map(champion => <li data-compare-champion={champion.championId}><a href={"/champion/" + champion.championId.toLowerCase()} class="champ"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async"/><span class="name">{meta[champion.championId]?.name ?? champion.championId}</span></a><span class="trail">{champion.patches.map((patch,index) => <>{index > 0 && <span class="sep" aria-hidden="true">→</span>}<a href={"/patch/" + patch.patchId + "#" + champion.championId.toLowerCase()} class={"step step-" + patch.classification}>{patch.patchId} {patch.classification}</a></>)}</span></li>)}</ul></section>)}
+      <p class="compare-range-note" data-compare-context role="status" hidden></p><button class="journey-quiet-link" data-compare-all hidden>Show all champions</button>
+      {grouped.map(group => <section class="compare-group journey-comparison-group" data-compare-group={group.key} aria-labelledby={"h-" + group.key}><h2 id={"h-" + group.key}><DeltaGlyph kind={group.key} showLabel={false}/>{group.title}<span data-compare-count>{group.champions.length}</span></h2><ul class="champ-rows">{group.champions.map(champion => <li data-compare-champion={champion.championId}><a href={"/champion/" + champion.championId.toLowerCase()} class="champ"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async"/><span class="name">{meta[champion.championId]?.name ?? champion.championId}</span></a><span class="trail">{champion.patches.map((patch,index) => <>{index > 0 && <span class="sep" aria-hidden="true">→</span>}<a href={"/patch/" + patch.patchId + "#" + champion.championId.toLowerCase()} class={"step step-" + patch.classification}>{patch.patchId} {patch.classification}</a></>)}</span></li>)}</ul></section>)}
       {!result.champions.length && <div class="journey-empty"><h2>No direct champion records.</h2><p>Check items and systems for the wider changes.</p></div>}
     </section>
     {result.items.length > 0 && <section id="items" class="journey-panel journey-record-list" data-journey-panel data-journey-label="Items" data-journey-world="patch" aria-label="Item comparison"><div class="journey-panel-heading"><p class="journey-reader-kicker">{result.items.length} ITEMS</p><h2>Follow the loadout.</h2></div><ul class="journey-comparison-list">{result.items.map(item => <li><h3>{item.name}</h3><div>{item.patches.map(id => <a href={"/patch/" + id + "#items"}>Patch {id} ↗</a>)}</div></li>)}</ul></section>}

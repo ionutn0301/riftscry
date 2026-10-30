@@ -3,6 +3,7 @@ import { voyagePeriod, voyageFields, voyageSelection, voyageConnection, recordTe
 import { $pool, togglePool, inPool } from '../lib/pool';
 import { rememberReading } from '../lib/return-briefing';
 import { readFindings, writeFindings, FINDINGS_LIMIT } from '../lib/kept-findings';
+import { presentSelection, releaseSelectionMotion } from '../lib/selection-motion';
 
 const voyage = document.querySelector<HTMLElement>('[data-voyage]');
 const initialData = document.querySelector<HTMLScriptElement>('#voyage-initial-data');
@@ -11,7 +12,6 @@ if (voyage && initialData?.textContent) startVoyage(voyage, JSON.parse(initialDa
 
 function startVoyage(host: HTMLElement, initial: JourneyModel) {
   const query = <T extends HTMLElement = HTMLElement>(selector: string) => host.querySelector<T>(selector)!;
-  const root = document.documentElement;
   let model = initial;
   let older = model.older;
   let newer = model.newer;
@@ -32,12 +32,36 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
   const olderInput = query<HTMLSelectElement>('[data-period-older]');
   const newerInput = query<HTMLSelectElement>('[data-period-newer]');
   const recordArticle = query('[data-current-record]');
+  const traceReading = query('[data-trace-reading]');
+  const identityMedia = query('.perspective-media');
   const artwork = query<HTMLImageElement>('[data-champion-splash]');
   let rosterOpener: HTMLElement | null = null;
-  const motionReduced = () => root.dataset.motion === 'reduced' || matchMedia('(prefers-reduced-motion: reduce)').matches;
   const setText = (selector: string, value: string) => { query(selector).textContent = value; };
   const setHref = (selector: string, href: string) => { query<HTMLAnchorElement>(selector).href = href; };
   const setHidden = (selector: string, hidden: boolean) => { query(selector).hidden = hidden; };
+  const evidenceScene = () => document.body.dataset.journeyScene === 'history' || location.hash === '#history' ? 'history' : 'change';
+
+  host.querySelectorAll<HTMLImageElement>('[data-featured-art]').forEach(image => {
+    const fallback = image.parentElement!.querySelector<HTMLElement>('[data-featured-fallback]')!;
+    const reconcile = () => {
+      if (!image.complete) return;
+      const unavailable = image.naturalWidth === 0;
+      image.hidden = unavailable;
+      fallback.hidden = !unavailable;
+    };
+    image.addEventListener('load', reconcile);
+    image.addEventListener('error', reconcile);
+    reconcile();
+  });
+
+  // Data, controls and URLs commit synchronously. Only the changing evidence
+  // receives a brief presentation; the surrounding instrument stays still.
+  function presentEvidence() {
+    const key = selected?.id ?? `${model.identity.id}/${older}/${newer}/empty`;
+    presentSelection(identityMedia, model.identity.id);
+    presentSelection(recordArticle, key);
+    presentSelection(traceReading, key);
+  }
 
   function updateUrl(mode: 'push' | 'replace', hash = location.hash) {
     const url = new URL(location.href);
@@ -81,6 +105,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
 
   function renderIdentity() {
     setText('[data-champion-name]', model.identity.name);
+    setText('[data-field-champion]', model.identity.name);
     setText('[data-champion-title]', model.identity.title);
     setText('[data-return-perspective]', 'Keep ' + model.identity.name + ' close.');
     setText('[data-selection-status]', `Following ${model.identity.name}.`);
@@ -179,6 +204,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       button.className = 'history-stop';
       button.dataset.selectRecord = record.id;
       button.setAttribute('aria-pressed', String(selected?.id === record.id));
+      button.setAttribute('aria-label', `${record.date}, patch ${record.patch}: ${recordText(record)}`);
       const pin = document.createElement('span');
       pin.className = 'history-pin';
       pin.setAttribute('aria-hidden', 'true');
@@ -187,9 +213,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       date.textContent = record.date;
       const patch = document.createElement('strong');
       patch.textContent = record.patch;
-      const values = document.createElement('span');
-      values.textContent = record.change.kind === 'numeric' ? recordText(record) : record.change.label;
-      button.append(pin, date, patch, values);
+      button.append(pin, date, patch);
       container.append(button);
     }
     renderTraceReading();
@@ -198,18 +222,27 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     newerInput.value = newer;
     query('[data-period-status]').dataset.invalid = 'false';
     setText('[data-period-status]', `(${older}, ${newer}] · ${period.patchCount} archived patches · ${period.records.length} direct records. Starting patch excluded. Ending patch included.`);
-    setText('[data-trace-caption]', selected ? selected.change.label + (records.length === 1 ? ' / ONE RECORD IN THIS INTERVAL' : ' / ' + records.length + ' CONNECTED RECORDS') : 'COVERAGE, CLEARLY STATED');
+    setText('[data-trace-caption]', `${selected ? selected.change.label + ' · ' : ''}${records.length} ${records.length === 1 ? 'record' : 'records'}`);
     setText('[data-trace-connection]', voyageConnection(records));
     setHidden('[data-trace-connection]', records.length === 0);
   }
 
   function renderTraceReading() {
     const source = query<HTMLAnchorElement>('[data-trace-source]');
+    const date = query<HTMLTimeElement>('[data-trace-date]');
+    traceReading.dataset.kind = selected?.change.kind ?? 'empty';
+    setHidden('[data-trace-patch]', !selected);
+    date.hidden = !selected;
     if (selected) {
-      setText('[data-trace-description]', `${selected.date} · Patch ${selected.patch} · ${selected.abilityName}: ${recordText(selected)}. ${selected.reading}`);
+      setText('[data-trace-values]', recordText(selected));
+      setText('[data-trace-patch]', 'PATCH ' + selected.patch);
+      date.textContent = selected.date;
+      date.dateTime = selected.date;
+      setText('[data-trace-description]', selected.reading);
       source.href = selected.source;
       source.hidden = false;
     } else {
+      setText('[data-trace-values]', 'No direct record in this interval.');
       setText('[data-trace-description]', 'Only actual archived records appear here. The complete champion page makes the available coverage explicit.');
       source.hidden = true;
     }
@@ -386,13 +419,14 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
         // Choosing a champion updates the current view. Keep the triggering
         // control (or the roster opener) focused and leave scrolling to explicit
         // chapter links, so a selection never snaps the page back to a heading.
-        updateUrl('push', '#change');
-        window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'change', focus: false } }));
+        const scene = evidenceScene();
+        updateUrl('push', '#' + scene);
+        window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: scene, focus: false } }));
       }
       // Entry links and Back also resolve a real model. Keep the same exact
       // interval/event resume as an explicit selection, after that commit.
       rememberPerspective();
-      if (changedChampion && !motionReduced()) query('[data-champion-identity]').animate([{ opacity: .25, transform: 'translate3d(22px,18px,0) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: 500, easing: 'cubic-bezier(.2,.75,.2,1)' });
+      presentEvidence();
     } catch (error) {
       if (request.signal.aborted) return;
       const message = error instanceof Error && error.message === 'unknown'
@@ -476,6 +510,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       host.querySelectorAll('[data-select-record]').forEach((node) => node.setAttribute('aria-pressed', String(node === historyStop)));
       updateUrl('replace', '#history');
       rememberPerspective();
+      presentEvidence();
     }
   });
 
@@ -485,11 +520,12 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
   fieldInput.addEventListener('change', () => {
     selected = voyageSelection(period.records, fieldInput.value);
     renderRecord(); renderHistory();
-    updateUrl('replace', '#change');
+    updateUrl('replace', '#' + evidenceScene());
     rememberPerspective();
+    presentEvidence();
   });
   const changePeriod = () => {
-    if (applyPeriod(olderInput.value, newerInput.value)) { followLatest = false; updateUrl('push', '#history'); rememberPerspective(); }
+    if (applyPeriod(olderInput.value, newerInput.value)) { followLatest = false; updateUrl('push', '#history'); rememberPerspective(); presentEvidence(); }
   };
   olderInput.addEventListener('change', changePeriod);
   newerInput.addEventListener('change', changePeriod);
@@ -508,5 +544,6 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     if (event.persisted) return;
     pending?.abort();
     unsubscribe();
+    [identityMedia, recordArticle, traceReading].forEach(releaseSelectionMotion);
   });
 }

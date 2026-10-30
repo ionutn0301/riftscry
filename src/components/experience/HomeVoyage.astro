@@ -1,6 +1,6 @@
 ---
 import { buildJourneyModel, journeyRoster } from '../../lib/voyage-data';
-import { voyageConnection } from '../../lib/voyage-state';
+import { voyageConnection, recordText } from '../../lib/voyage-state';
 import { getLatestPatch, getAllPatches } from '../../lib/data';
 import '../../styles/voyage.css';
 import '../../styles/journey-voyage.css';
@@ -19,27 +19,26 @@ const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
   <header class="voyage-station-heading">
     <div><p class="journey-eyebrow">THE ARCHIVE / UNDER THE LENS</p><h1>Trace a change.</h1></div>
     <div class="voyage-perspective-controls">
-      <div class="quick-perspectives" role="group" aria-label="Featured champion perspectives">{featured.map(champion => <button type="button" data-choose-champion={champion.id} aria-pressed={champion.id === model.identity.id}><img src={champion.icon} alt="" width="40" height="40" loading="lazy" decoding="async" /><span>{champion.name}</span></button>)}</div>
+      <div class="quick-perspectives" role="group" aria-label="Featured champion perspectives">{featured.map(champion => <button type="button" data-choose-champion={champion.id} aria-label={champion.name} aria-pressed={champion.id === model.identity.id}><img src={champion.icon} alt="" width="40" height="40" loading="lazy" decoding="async" data-featured-art /><span class="perspective-label">{champion.name}</span><span class="perspective-icon-fallback" data-featured-fallback aria-hidden="true" hidden>{champion.name.slice(0, 2)}</span></button>)}</div>
       <button type="button" class="voyage-action voyage-action--outline" data-roster-open>Find your champion <span aria-hidden="true">↗</span></button>
     </div>
     <p class="perspective-status" role="status" data-selection-status>Following {model.identity.name}.</p>
   </header>
+  <div class="change-choice voyage-field-context"><label for="voyage-field"><strong data-field-champion>{model.identity.name}</strong><span>Recorded change</span></label><select id="voyage-field" data-field-choice>{initialFields.map(record => <option value={record.field} selected={record.field === initial?.field}>{record.ability === 'base' ? 'Base stats' : record.ability} / {record.change.label}</option>)}</select></div>
 
   <section id="change" class="voyage-station-scene" data-journey-panel data-journey-label="The change" data-journey-world="explore" data-journey-chapter="2">
     <span id="arrival" class="voyage-legacy-anchor" aria-hidden="true"></span><span id="perspective" class="voyage-legacy-anchor" aria-hidden="true"></span>
     <div class="voyage-inspection">
       <figure class="perspective-identity" data-champion-identity>
-        <picture><source media="(max-width:700px)" srcset={model.identity.portrait} data-champion-portrait /><img src={model.identity.splash} alt={model.identity.name + ' — official Riot Games artwork'} width="1215" height="717" loading="eager" decoding="async" data-champion-splash /></picture>
-        <div class="champion-art-fallback" data-art-fallback hidden>Artwork unavailable. The records remain available.</div>
+        <div class="perspective-media"><picture><source media="(max-width:700px)" srcset={model.identity.portrait} data-champion-portrait /><img src={model.identity.splash} alt={model.identity.name + ' — official Riot Games artwork'} width="1215" height="717" loading="eager" decoding="async" data-champion-splash /></picture><div class="champion-art-fallback" data-art-fallback hidden>Artwork unavailable. The records remain available.</div></div>
         <figcaption><div><p class="journey-eyebrow">YOUR PERSPECTIVE</p><h2 data-champion-name>{model.identity.name}</h2><p data-champion-title>{model.identity.title}</p></div><button type="button" class="champion-save" data-save-champion aria-pressed="false">Save to My Pool <span aria-hidden="true">+</span></button></figcaption>
         <small class="voyage-art-credit">RIOT GAMES ARTWORK</small>
       </figure>
       <div class="voyage-evidence-desk">
-        <div class="change-choice"><label for="voyage-field">Recorded change</label><select id="voyage-field" data-field-choice>{initialFields.map(record => <option value={record.field} selected={record.field === initial?.field}>{record.ability === 'base' ? 'Base stats' : record.ability} / {record.change.label}</option>)}</select></div>
         <article class="voyage-record" data-current-record>
           <p class="record-context"><span data-record-champion>{model.identity.name}</span><span data-record-patch>PATCH {initial?.patch}</span><time data-record-date>{initial?.date}</time><span data-record-ability>{initial?.abilityName}</span></p>
           <h3 data-record-label>{initial?.change.label}</h3>
-          <div class="record-values" data-record-numeric hidden={initial?.change.kind !== 'numeric'} data-long={initial?.change.kind === 'numeric' && (initial.change.before.length > 18 || initial.change.after.length > 18)}><div class="record-before"><span>Before</span><strong data-record-before>{initial?.change.kind === 'numeric' ? initial.change.before : ''}</strong></div><span class="record-crossing" aria-hidden="true">→</span><div class="record-after"><span>After</span><strong data-record-after>{initial?.change.kind === 'numeric' ? initial.change.after : ''}</strong></div></div>
+          <div class="record-values" data-record-numeric hidden={initial?.change.kind !== 'numeric'} data-long={initial?.change.kind === 'numeric' && (initial.change.before.length > 18 || initial.change.after.length > 18 || /[a-z]/i.test(initial.change.before + initial.change.after))}><div class="record-before"><span>Before</span><strong data-record-before>{initial?.change.kind === 'numeric' ? initial.change.before : ''}</strong></div><span class="record-crossing" aria-hidden="true">→</span><div class="record-after"><span>After</span><strong data-record-after>{initial?.change.kind === 'numeric' ? initial.change.after : ''}</strong></div></div>
           <p class="record-rule" data-record-prose hidden={initial?.change.kind !== 'prose'}>{initial?.change.kind === 'prose' ? initial.change.text : ''}</p>
           <p class="record-unit" data-record-unit>{initial?.change.kind === 'numeric' ? initial.change.unit : ''}</p>
           <p class="record-reading" data-record-reading>{initial?.reading}</p>
@@ -54,12 +53,12 @@ const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
 
   <section id="history" class="voyage-station-scene" data-journey-panel data-journey-label="Through time" data-journey-world="patches" data-journey-chapter="3">
     <div class="voyage-time-desk">
-      <header><p class="journey-eyebrow">THE SAME FIELD / THROUGH TIME</p><h2>Every change<br /><em>leaves a trace.</em></h2></header>
-      <div class="history-controls"><label>After patch<select data-period-older aria-label="After patch">{archive.map(patch => <option selected={patch.id === model.older}>{patch.id}</option>)}</select></label><span aria-hidden="true">→</span><label>Through patch<select data-period-newer aria-label="Through patch">{archive.map(patch => <option selected={patch.id === model.newer}>{patch.id}</option>)}</select></label><a class="voyage-text-link" data-compare-link href={'/compare/' + model.newer + '/' + model.older}>Compare interval ↗</a></div>
+      <header class="voyage-time-heading"><h2>Through time.</h2><a class="voyage-text-link" data-compare-link href={'/compare/' + model.newer + '/' + model.older}>Compare interval ↗</a></header>
+      <div class="history-controls"><label>After patch<select data-period-older aria-label="After patch">{archive.map(patch => <option selected={patch.id === model.older}>{patch.id}</option>)}</select></label><span aria-hidden="true">→</span><label>Through patch<select data-period-newer aria-label="Through patch">{archive.map(patch => <option selected={patch.id === model.newer}>{patch.id}</option>)}</select></label></div>
       <p class="history-validation" role="status" data-period-status>Starting patch excluded. Ending patch included.</p>
-      <div class="history-trace" data-history-trace aria-label="Records for the selected field">{initialTrail.map(record => <button type="button" class="history-stop" data-select-record={record.id} aria-pressed={record.id === initial?.id}><span class="history-pin" aria-hidden="true"></span><time>{record.date}</time><strong>{record.patch}</strong><span>{record.change.kind === 'numeric' ? record.change.before + ' → ' + record.change.after : record.change.label}</span></button>)}</div>
-      <div class="trace-reading"><span class="journey-eyebrow" data-trace-caption>{initial?.change.label}</span><p class="trace-connection" data-trace-connection>{voyageConnection(initialTrail)}</p><p data-trace-description>Exact archived records for the same field.</p><div class="voyage-actions"><a class="voyage-action voyage-action--outline" href="#change">Inspect this record <span aria-hidden="true">↗</span></a><button type="button" class="voyage-text-link" data-keep-trace aria-pressed="false">Keep this finding <span aria-hidden="true">+</span></button><a class="voyage-text-link" data-trace-source href={initial?.source ?? latest.sourceUrl} target="_blank" rel="noreferrer">Original source ↗</a></div></div>
-      <a class="voyage-text-link" data-champion-link href={'/champion/' + model.identity.id.toLowerCase()}>Complete champion history ↗</a>
+      <div class="history-trace" data-history-trace aria-label="Records for the selected field">{initialTrail.map(record => <button type="button" class="history-stop" data-select-record={record.id} aria-pressed={record.id === initial?.id} aria-label={record.date + ', patch ' + record.patch + ': ' + recordText(record)}><span class="history-pin" aria-hidden="true"></span><time>{record.date}</time><strong>{record.patch}</strong></button>)}</div>
+      <div class="trace-reading" data-trace-reading data-kind={initial?.change.kind ?? 'empty'}><div class="trace-record-context"><span class="journey-eyebrow" data-trace-caption>{initial ? initial.change.label + ' · ' : ''}{initialTrail.length} {initialTrail.length === 1 ? 'record' : 'records'}</span><span data-trace-patch>PATCH {initial?.patch}</span><time data-trace-date datetime={initial?.date}>{initial?.date}</time></div><p class="trace-values" data-trace-values>{initial ? recordText(initial) : 'No direct record in this interval.'}</p><div class="voyage-actions"><a class="voyage-action voyage-action--outline" href="#change">Inspect record <span aria-hidden="true">↗</span></a><button type="button" class="voyage-text-link" data-keep-trace aria-pressed="false">Keep this finding <span aria-hidden="true">+</span></button><a class="voyage-text-link" data-trace-source href={initial?.source ?? latest.sourceUrl} target="_blank" rel="noreferrer">Original source ↗</a></div></div>
+      <div class="trace-context-footer"><details class="trace-context"><summary>Read the context</summary><p class="trace-connection" data-trace-connection>{voyageConnection(initialTrail)}</p><p data-trace-description>{initial?.reading}</p></details><a class="voyage-text-link" data-champion-link href={'/champion/' + model.identity.id.toLowerCase()}>Complete champion history ↗</a></div>
     </div>
   </section>
 

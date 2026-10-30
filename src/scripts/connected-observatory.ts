@@ -1,4 +1,5 @@
 import { briefingLink, readRecentPlayer, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
+import { playerNavigationContext, PLAYER_CONTEXT_EVENT } from '../lib/player/navigation';
 import { playerLink } from '../components/player/client';
 
 /** The scene is the navigation unit. Real documents, records and links remain intact. */
@@ -224,10 +225,12 @@ const mapState = new MutationObserver(() => {
 if (map) mapState.observe(map, { attributes: true, attributeFilter: ['open'] });
 
 function restorePlayer() {
-  const player = readRecentPlayer();
+  const context = playerNavigationContext(new URL(location.href), readRecentPlayer());
+  const player = context?.player;
+  const scope: Record<string, string> = context ? { queue: context.queue, champion: context.champion } : {};
   document.querySelectorAll<HTMLAnchorElement>('[data-station-link]').forEach(link => {
-    if (link.dataset.stationLink === 'next-game') link.href = player ? briefingLink(player) : '/next-game';
-    if (link.dataset.stationLink === 'players') link.href = player ? playerLink(player.platform, player.puuid, { name: player.name, view: 'history' }) : '/players';
+    if (link.dataset.stationLink === 'next-game') link.href = player ? briefingLink(player, scope) : '/next-game';
+    if (link.dataset.stationLink === 'players') link.href = player ? playerLink(player.platform, player.puuid, { name: player.name, view: 'history', ...scope }) : '/players';
   });
   const resume = document.querySelector<HTMLElement>('[data-observatory-return]');
   if (resume) {
@@ -235,10 +238,12 @@ function restorePlayer() {
     const name = resume.querySelector('[data-resume-name]');
     const link = resume.querySelector<HTMLAnchorElement>('[data-resume-link]');
     if (name && player) name.textContent = player.name || 'Your selected player';
-    if (link && player) link.href = briefingLink(player);
+    if (link && player) link.href = briefingLink(player, scope);
   }
 }
 window.addEventListener(RECENT_PLAYER_EVENT, restorePlayer, listen);
+window.addEventListener(PLAYER_CONTEXT_EVENT, restorePlayer, listen);
+window.addEventListener('popstate', restorePlayer, listen);
 window.addEventListener('storage', event => { if (event.key === RECENT_PLAYER_KEY || event.key === null || event.key === 'riftscry:remembered-player:v1') restorePlayer(); }, listen);
 
 const about = document.querySelector<HTMLDialogElement>('#journey-about-dialog');

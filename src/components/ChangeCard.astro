@@ -9,9 +9,10 @@ interface Props {
   meta: ChampionMeta | undefined;
   roles: Role[];
   assetVersion: string;
+  patchId: string;
 }
 
-const { change, meta, roles, assetVersion } = Astro.props;
+const { change, meta, roles, assetVersion, patchId } = Astro.props;
 const name = meta?.name ?? change.championId;
 const title = meta?.title ?? "";
 const portrait = `https://ddragon.leagueoflegends.com/cdn/${assetVersion}/img/champion/${change.championId}.png`;
@@ -38,7 +39,7 @@ const ABILITY_LABEL: Record<string, string> = {
   <header>
     <img src={portrait} alt="" width="56" height="56" loading="lazy" decoding="async" />
     <div class="who">
-      <h3><a href={`/champion/${change.championId.toLowerCase()}`}>{name}</a></h3>
+      <h3><a href={`/champion/${change.championId.toLowerCase()}#record-${patchId.replaceAll(".", "-")}`}>{name}</a></h3>
       {title && <p class="title">{title}</p>}
     </div>
     <ClassificationBadge classification={change.classification} />
