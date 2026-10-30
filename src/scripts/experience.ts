@@ -1,5 +1,5 @@
 import { $pool } from '../lib/pool';
-import { rememberReading, RETURN_STATE_EVENT } from '../lib/return-briefing';
+import { readReturnState, rememberReading, RESUME_KEY, RETURN_STATE_EVENT } from '../lib/return-briefing';
 
 const root = document.documentElement;
 const preference = matchMedia('(prefers-reduced-motion: reduce)');
@@ -29,9 +29,44 @@ motionButton?.addEventListener('click', () => {
 
 const map = document.querySelector<HTMLDialogElement>('#rift-map-dialog');
 const trigger = document.querySelector<HTMLButtonElement>('[data-map-open]');
+const readingLink = map?.querySelector<HTMLAnchorElement>('[data-reading-resume]');
+const exploreLink = map?.querySelector<HTMLAnchorElement>('[data-map-explore]');
+const readingLocation = () => location.pathname + location.search + location.hash;
+function updateReadingLink() {
+  if (!readingLink) return;
+  const resume = readReturnState().resume;
+  const available = Boolean(resume && resume.href !== readingLocation());
+  readingLink.hidden = !available;
+  if (exploreLink) exploreLink.hidden = available;
+  if (!available || !resume) { readingLink.removeAttribute('href'); return; }
+  readingLink.href = resume.href;
+  const subject = resume.label.replace(/ — your explored interval$/, '').replace(/ Patch History$/, '')
+    .replace(/^League Patch (.+) Changes$/, 'patch $1').replace(/^League (.+ vs .+)$/, 'patches $1');
+  const label = readingLink.querySelector('[data-reading-subject]');
+  if (label) label.textContent = subject;
+  readingLink.setAttribute('aria-label', `Continue ${resume.label}`);
+}
+function rememberCurrentReading() {
+  // Explore owns its exact champion/interval/event resume. Directories and
+  // private companion routes must not replace the last public record read.
+  if (!['champion', 'patch', 'compare'].includes(document.body.dataset.surface ?? '')) return;
+  const href = readingLocation();
+  const label = document.title.split(' — ')[0] ?? document.title;
+  const current = readReturnState().resume;
+  if (current?.href !== href || current.label !== label) rememberReading(href, label);
+}
+function readingChanged() { rememberCurrentReading(); updateReadingLink(); }
+window.addEventListener(RETURN_STATE_EVENT, updateReadingLink);
+window.addEventListener('storage', event => { if (event.key === RESUME_KEY || event.key === null) updateReadingLink(); });
+// The scene controller dispatches this after committing pushState, which
+// intentionally does not cause a native hashchange event.
+window.addEventListener('riftscry:journey-change', readingChanged);
+window.addEventListener('hashchange', readingChanged);
+window.addEventListener('popstate', readingChanged);
 let mapOpener: HTMLElement | null = null;
 function openMap(event?: Event) {
   if (!map || map.open) return;
+  readingChanged();
   mapOpener = event?.currentTarget instanceof HTMLElement
     ? event.currentTarget
     : document.activeElement instanceof HTMLElement && document.activeElement !== document.body
@@ -85,6 +120,7 @@ document.addEventListener('click', (event) => {
       event.preventDefault();
       const moveToChapter = () => {
         if (destination.hash !== location.hash) history.pushState(null, '', destination.pathname + destination.search + destination.hash);
+        readingChanged();
         target.scrollIntoView({ behavior: root.dataset.motion === 'reduced' ? 'auto' : 'smooth', block: 'start' });
         const heading = target.querySelector<HTMLElement>('h1, h2, h3') ?? target;
         heading.tabIndex = -1;
@@ -141,12 +177,14 @@ window.addEventListener('pageshow', (event) => {
   } catch { /* Reading and navigation remain available without storage. */ }
   applyMotion();
   root.dataset.visibility = document.hidden ? 'hidden' : 'visible';
+  rememberCurrentReading();
   window.dispatchEvent(new Event(RETURN_STATE_EVENT));
 });
 
-if (!['home', 'missing', 'pool'].includes(document.body.dataset.surface ?? '')) {
-  rememberReading(location.pathname + location.search + location.hash, document.title.split(' — ')[0] ?? document.title);
-}
+readingChanged();
 window.addEventListener('pagehide', (event) => {
+  // Reader filters may commit replaceState without changing scenes. Capture
+  // that final URL before leaving, including when the document enters BFCache.
+  rememberCurrentReading();
   if (!event.persisted) { unsubscribe(); reveals.disconnect(); scenes.disconnect(); }
 });

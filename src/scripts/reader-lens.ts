@@ -148,12 +148,30 @@ function initPatchInstrument(root: HTMLElement) {
   const id = instrument.querySelector<HTMLElement>('[data-archive-focus-id]')!;
   const date = instrument.querySelector<HTMLTimeElement>('[data-archive-focus-date]')!;
   const link = instrument.querySelector<HTMLAnchorElement>('[data-archive-focus-link]')!;
+  const scrubber = instrument.querySelector<HTMLInputElement>('[data-archive-scrubber]');
+  const chart = instrument.querySelector<SVGSVGElement>('[data-archive-timeline-chart]');
+  const cursor = instrument.querySelector<SVGElement>('[data-archive-cursor]');
+  const chronological = [...rows].reverse();
+  // The native range steps through recorded patches for keyboard/assistive input.
+  // Pointer coordinates use the chart's real dates, including irregular gaps.
+  const stops = chronological.map(row => {
+    const bar = bars.find(item => item.dataset.readerPatchBar === row.dataset.readerPatchKey);
+    const rect = bar?.querySelector('rect');
+    return { row, x: Number(rect?.getAttribute('x') ?? 0) + Number(rect?.getAttribute('width') ?? 0) / 2 };
+  });
   const abort = new AbortController();
   const options = { signal: abort.signal };
 
   function select(row: HTMLElement) {
     const key = row.dataset.readerPatchKey;
-    if (!key || instrument!.dataset.readerKey === key) return;
+    if (!key) return;
+    const index = chronological.indexOf(row);
+    if (scrubber) {
+      scrubber.value = String(index);
+      scrubber.setAttribute('aria-valuetext', `Patch ${key}, ${row.querySelector('time')?.textContent ?? row.dataset.patchDate ?? ''}`);
+    }
+    if (cursor && stops[index]) cursor.setAttribute('transform', `translate(${stops[index]!.x} 0)`);
+    if (instrument!.dataset.readerKey === key) return;
     instrument!.dataset.readerKey = key;
     rows.forEach(item => {
       if (item === row) item.dataset.readerActive = 'true';
@@ -187,6 +205,46 @@ function initPatchInstrument(root: HTMLElement) {
   root.addEventListener('pointermove', previewFromPointer, options);
   root.addEventListener('focusin', event => selectFrom(event.target), options);
   root.addEventListener('click', event => selectFrom(event.target), options);
+  if (scrubber && chart && stops.length) {
+    scrubber.hidden = false;
+    scrubber.disabled = stops.length < 2;
+    const gesture = instrument.querySelector<HTMLElement>('[data-archive-gesture]');
+    if (gesture) gesture.textContent = 'DRAG THROUGH TIME ↔';
+    select(rows.find(row => row.dataset.readerPatchKey === instrument.dataset.readerKey) ?? rows[0]!);
+    scrubber.addEventListener('input', () => {
+      const row = chronological[Number(scrubber.value)];
+      if (row) select(row);
+    }, options);
+    let pointer: number | null = null;
+    const selectAtPointer = (event: PointerEvent) => {
+      const transform = chart.getScreenCTM();
+      if (!transform) return;
+      const x = new DOMPoint(event.clientX, event.clientY).matrixTransform(transform.inverse()).x;
+      const nearest = stops.reduce((best, stop) => Math.abs(stop.x - x) < Math.abs(best.x - x) ? stop : best);
+      select(nearest.row);
+    };
+    scrubber.addEventListener('pointerdown', event => {
+      if (!event.isPrimary || event.button !== 0) return;
+      // Keep the browser's native keyboard/AT range behavior, while a physical
+      // drag follows date positions instead of assuming equally spaced releases.
+      event.preventDefault();
+      pointer = event.pointerId;
+      scrubber.focus({ preventScroll: true });
+      scrubber.setPointerCapture(event.pointerId);
+      selectAtPointer(event);
+    }, options);
+    scrubber.addEventListener('pointermove', event => {
+      if (pointer === event.pointerId) selectAtPointer(event);
+    }, options);
+    scrubber.addEventListener('pointerup', event => {
+      if (pointer !== event.pointerId) return;
+      selectAtPointer(event);
+      pointer = null;
+      if (scrubber.hasPointerCapture(event.pointerId)) scrubber.releasePointerCapture(event.pointerId);
+    }, options);
+    scrubber.addEventListener('pointercancel', () => { pointer = null; }, options);
+    scrubber.addEventListener('lostpointercapture', () => { pointer = null; }, options);
+  }
   window.addEventListener('pagehide', event => { if (!event.persisted) abort.abort(); }, options);
 }
 

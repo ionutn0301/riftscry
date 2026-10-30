@@ -22,7 +22,12 @@ const location = journeyStations.find(station => station.id === active)?.label ?
   <div class="journey-map-inner">
     <header class="journey-map-heading"><div><p class="journey-eyebrow">ONE WORLD / FIVE DESTINATIONS</p><h2 id="rift-map-title">Where next?</h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
     <RiftNavigator mode="map" active={active} />
-    <footer class="journey-map-footer"><a href="/explore#change">Explore a change ↗</a><a href="/compare">Compare patches ↗</a><a href="/notebook">Notebook ↗</a><button type="button" data-palette-trigger>Search the archive <span aria-hidden="true">↗</span></button></footer>
+    <footer class="journey-map-footer"><a href="/explore#change" data-map-explore>Explore a change ↗</a><a data-reading-resume hidden>Continue <span data-reading-subject></span><span aria-hidden="true">↗</span></a><a href="/compare">Compare patches ↗</a><a href="/notebook">Notebook ↗</a><button type="button" data-palette-trigger>Search the archive <span aria-hidden="true">↗</span></button></footer>
   </div>
 </dialog>
 <noscript><nav class="world-nojs-nav" aria-label="RiftScry destinations">{journeyStations.map(station => <a href={station.href}>{station.label}</a>)}<a href="/notebook">Notebook</a><a href="/explore">Explore</a></nav></noscript>
+
+<style>
+  [data-reading-resume] { min-width: 0; max-width: min(100%, 260px); gap: 5px; }
+  [data-reading-subject] { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>

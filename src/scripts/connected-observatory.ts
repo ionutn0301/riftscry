@@ -34,7 +34,12 @@ function activate(id: string, options: { history?: boolean; focus?: boolean; ann
   const panel = containingPanel(id) ?? panels[0];
   if (!panel || !deck) return false;
   const old = active;
+  const previousIndex = panels.findIndex(item => item.id === old);
   const index = panels.indexOf(panel);
+  // Travel belongs to the scene, not to the surrounding instrument. Updating
+  // selection never waits for presentation, so rapid choices remain immediate.
+  if (old !== panel.id) deck.dataset.journeyTravel = previousIndex < 0 ? 'arrive'
+    : index > previousIndex ? 'forward' : 'backward';
   active = panel.id;
   for (const item of panels) {
     item.hidden = item !== panel;

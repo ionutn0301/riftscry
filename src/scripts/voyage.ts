@@ -381,13 +381,15 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
         setText('[data-period-status]', 'The URL’s dates are not a valid interval. Showing the default archived interval instead. Choose dates above.');
       }
       if (options.navigation !== false) {
-        updateUrl('push', '#change');
-        window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'change', focus: false } }));
         // Choosing a champion updates the current view. Keep the triggering
         // control (or the roster opener) focused and leave scrolling to explicit
         // chapter links, so a selection never snaps the page back to a heading.
-        rememberPerspective();
+        updateUrl('push', '#change');
+        window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'change', focus: false } }));
       }
+      // Entry links and Back also resolve a real model. Keep the same exact
+      // interval/event resume as an explicit selection, after that commit.
+      rememberPerspective();
       if (changedChampion && !motionReduced()) query('[data-champion-identity]').animate([{ opacity: .25, transform: 'translate3d(22px,18px,0) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: 500, easing: 'cubic-bezier(.2,.75,.2,1)' });
     } catch (error) {
       if (request.signal.aborted) return;

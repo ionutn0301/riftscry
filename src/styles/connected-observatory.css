@@ -9,7 +9,10 @@ body[data-journey-ready] #main { flex: 1 1 auto; min-height: 0; width: 100%; dis
 body[data-journey-ready] #main > :not(script):not(noscript) { min-height: 0; width: 100%; }
 body[data-journey-ready] #main astro-island { display: contents; }
 body[data-journey-ready] [data-journey-deck] { display: flex; flex-direction: column; flex: 1 1 auto; height: 100%; min-height: 0; width: 100%; margin: 0; max-width: none; position: relative; }
-body[data-journey-ready] [data-journey-panel] { flex: 1 1 auto; min-height: 0; max-height: 100%; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #9acbc24a transparent; outline: none; animation: scene-resolve .55s var(--journey-ease) both; }
+body[data-journey-ready] [data-journey-panel] { flex: 1 1 auto; min-height: 0; max-height: 100%; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #9acbc24a transparent; outline: none; animation: scene-resolve .48s var(--journey-ease) both; }
+body[data-journey-ready] [data-journey-deck] { --scene-travel-x: 40px; --scene-travel-turn: -1.5deg; }
+body[data-journey-ready] [data-journey-travel="backward"] { --scene-travel-x: -40px; --scene-travel-turn: 1.5deg; }
+body[data-journey-ready] [data-journey-travel="arrive"] { --scene-travel-x: 0px; --scene-travel-turn: 0deg; }
 body[data-journey-ready] [data-journey-panel][hidden] { display: none !important; }
 body[data-journey-ready] [data-journey-panel]:focus-visible { outline: 1px solid #b9e3dc80; outline-offset: -1px; }
 body[data-journey-ready] [data-reveal] { opacity: 1; transform: none; }
@@ -143,11 +146,35 @@ body.living-rift:has(.journey-map[open]) .rift-scene[data-rift-scene] .rift-scen
 body.living-rift .journey-about-dialog .site-footer { margin: 20px 0 0; padding: 20px 0 0; background: none; }
 .journey-about-dialog .site-footer .cols { display: none; }
 
-@keyframes scene-resolve { from { opacity: 0; transform: translate3d(25px,0,0); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
-@keyframes world-crossing-out { to { opacity: 0; transform: scale(1.065); filter: blur(6px); } }
-@keyframes world-crossing-in { from { opacity: 0; transform: scale(.965); filter: blur(5px); } to { opacity: 1; transform: none; filter: none; } }
-::view-transition-old(root) { animation: world-crossing-out .25s ease-in both; }
-::view-transition-new(root) { animation: world-crossing-in .55s var(--journey-ease) both; }
+/* Independent layers make a destination change feel like movement inside the
+   same world. Chrome and WebKit handle the snapshots; ordinary links remain
+   the complete fallback. Chrome controls never travel with the task stage. */
+.rift-scene { view-transition-name: journey-world; }
+.journey-header { view-transition-name: journey-header; }
+.journey-header .world-brand { view-transition-name: none; }
+.journey-chrome { view-transition-name: journey-navigation; }
+#main { view-transition-name: journey-stage; }
+html { --crossing-enter-x: 42px; --crossing-exit-x: -30px; --crossing-enter-scale: 1; --crossing-exit-scale: 1; }
+html[data-journey-crossing="backward"] { --crossing-enter-x: -42px; --crossing-exit-x: 30px; }
+html[data-journey-crossing="enter"] { --crossing-enter-x: 0px; --crossing-exit-x: 0px; --crossing-enter-scale: .965; --crossing-exit-scale: 1.045; }
+html[data-journey-crossing="return"] { --crossing-enter-x: 0px; --crossing-exit-x: 0px; --crossing-enter-scale: 1.045; --crossing-exit-scale: .965; }
+@keyframes scene-resolve { from { opacity: 0; transform: perspective(1200px) translate3d(var(--scene-travel-x),0,-12px) rotateY(var(--scene-travel-turn)); } to { opacity: 1; transform: none; } }
+@keyframes stage-depart { to { opacity: 0; transform: translate3d(var(--crossing-exit-x),0,0) scale(var(--crossing-exit-scale)); } }
+@keyframes stage-arrive { from { opacity: 0; transform: translate3d(var(--crossing-enter-x),0,0) scale(var(--crossing-enter-scale)); } to { opacity: 1; transform: none; } }
+@keyframes world-dissolve { to { opacity: 0; } }
+@keyframes world-emerge { from { opacity: 0; } }
+::view-transition { pointer-events: none; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+::view-transition-group(journey-world), ::view-transition-group(journey-header), ::view-transition-group(journey-navigation), ::view-transition-group(journey-stage) { animation-duration: .52s; animation-timing-function: var(--journey-ease); }
+::view-transition-group(journey-world) { z-index: 0; }
+::view-transition-group(journey-stage) { z-index: 1; }
+::view-transition-group(journey-header), ::view-transition-group(journey-navigation) { z-index: 2; }
+::view-transition-old(journey-world) { animation: world-dissolve .52s ease-in-out both; mix-blend-mode: normal; }
+::view-transition-new(journey-world) { animation: world-emerge .52s ease-in-out both; mix-blend-mode: normal; }
+::view-transition-old(journey-stage) { animation: stage-depart .24s ease-in both; mix-blend-mode: normal; }
+::view-transition-new(journey-stage) { animation: stage-arrive .52s var(--journey-ease) both; mix-blend-mode: normal; }
+::view-transition-old(journey-header), ::view-transition-old(journey-navigation) { animation: world-dissolve .16s linear both; }
+::view-transition-new(journey-header), ::view-transition-new(journey-navigation) { animation: none; }
 
 @media (max-width: 1100px) {
   .journey-location { display: none; }
@@ -328,6 +355,7 @@ body.living-rift .journey-about-dialog .site-footer { margin: 20px 0 0; padding:
 }
 @media (prefers-reduced-motion: reduce) {
   [data-journey-panel], .rift-scene__object { animation: none !important; transition: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 html[data-motion="reduced"] [data-journey-panel],html[data-motion="reduced"] .rift-scene__object { animation: none !important; transition: none !important; }
-html[data-motion="reduced"]::view-transition-old(root),html[data-motion="reduced"]::view-transition-new(root) { animation: none !important; }
+html[data-motion="reduced"]::view-transition-group(*),html[data-motion="reduced"]::view-transition-old(*),html[data-motion="reduced"]::view-transition-new(*) { animation: none !important; }

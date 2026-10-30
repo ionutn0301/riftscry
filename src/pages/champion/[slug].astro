@@ -29,7 +29,7 @@ const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#cha
   <div class="journey-reader journey-champion" data-journey-deck>
     <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">CHAMPION / {roles.map(role => roleLabels[role]).join(" · ")}</p><h1>{meta.name}<span class="journey-reader-subtitle">{meta.title}</span></h1></div><div class="journey-header-actions"><SaveChampion id={championId} name={meta.name} /><a class="journey-quiet-link" href="/champions">Change champion <span aria-hidden="true">↗</span></a></div></header>
     <section id="history" class="journey-panel journey-champion-panel" data-journey-panel data-journey-label="Patch history" data-journey-world="champion" aria-label={meta.name + " patch history"}>
-      <figure class="journey-champion-art"><picture><img src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture><figcaption>RIOT GAMES / ORIGINAL ARTWORK</figcaption></figure>
+      <figure class="journey-champion-art" data-champion-art><picture><img data-champion-art-image src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture><div class="journey-champion-art-fallback" data-champion-art-fallback hidden><strong>{meta.name}</strong><span>Artwork unavailable</span></div><figcaption data-champion-art-credit>RIOT GAMES / ORIGINAL ARTWORK</figcaption></figure>
       <div class="journey-history-stage" data-history-stage>
         {history.length ? <>
           <nav class="journey-history-stops" aria-label={meta.name + " recorded patches"}>{history.map((entry, index) => <a href={"#record-" + entry.patchId.replaceAll(".", "-")} data-history-select={entry.patchId} aria-current={index === 0 ? 'true' : undefined}><span>{entry.patchId}</span><time datetime={entry.releaseDate}>{new Date(entry.releaseDate + "T00:00:00Z").toLocaleDateString('en', { month:'short', day:'numeric', timeZone:'UTC' })}</time></a>)}</nav>
@@ -43,6 +43,20 @@ const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#cha
   </div>
 </Layout>
 <script>
+  const art = document.querySelector<HTMLImageElement>('[data-champion-art-image]');
+  const artFallback = document.querySelector<HTMLElement>('[data-champion-art-fallback]');
+  const artCredit = document.querySelector<HTMLElement>('[data-champion-art-credit]');
+  if (art && artFallback) {
+    function updateArtworkAvailability() {
+      const available = art!.naturalWidth > 0;
+      art!.hidden = !available;
+      artFallback!.hidden = available;
+      if (artCredit) artCredit.hidden = !available;
+    }
+    art.addEventListener('load', updateArtworkAvailability);
+    art.addEventListener('error', updateArtworkAvailability);
+    if (art.complete) updateArtworkAvailability();
+  }
   const stage = document.querySelector<HTMLElement>('[data-history-stage]');
   if (stage) {
     const records = [...stage.querySelectorAll<HTMLElement>('[data-history-record]')];

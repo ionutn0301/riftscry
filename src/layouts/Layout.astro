@@ -55,6 +55,13 @@ const surface = requestedSurface ?? inferredSurface;
       try {
         document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches || localStorage.getItem('riftscry:motion') === 'reduced' ? 'reduced' : 'full';
       } catch { document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'; }
+      // Read native activation metadata rather than intercepting clicks. The
+      // browser still owns URLs, modified links, cancellation and Back/Forward.
+      const journeyCoordinate = (url) => {
+        const parts = new URL(url, location.href).pathname.split('/').filter(Boolean);
+        const station = { 'next-game': 1, players: 2, matches: 2, champions: 3, champion: 3, explore: 3, patches: 4, patch: 4, compare: 4, pool: 5, notebook: 5 }[parts[0]] || 0;
+        return { station, depth: !station ? 0 : ['champion', 'patch', 'matches', 'compare', 'explore', 'notebook'].includes(parts[0]) || parts.length > 1 ? 2 : 1 };
+      };
       // A saved preference also applies to the browser's document transition.
       const quietCrossing = (event) => {
         const transition = event.viewTransition;
@@ -63,7 +70,19 @@ const surface = requestedSurface ?? inferredSurface;
         // Hidden documents, interrupted navigation and snapshot timeouts can
         // reject it while the browser still completes the actual navigation.
         void transition.ready.catch(() => {});
-        if (document.documentElement.dataset.motion === 'reduced') transition.skipTransition();
+        if (document.documentElement.dataset.motion === 'reduced') {
+          transition.skipTransition();
+          return;
+        }
+        const activation = event.activation || window.navigation?.activation;
+        if (activation?.from?.url && activation?.entry?.url) {
+          const from = journeyCoordinate(activation.from.url);
+          const to = journeyCoordinate(activation.entry.url);
+          document.documentElement.dataset.journeyCrossing = !from.station ? 'enter'
+            : !to.station ? 'return'
+            : from.station === to.station && from.depth !== to.depth ? to.depth > from.depth ? 'enter' : 'return'
+            : to.station < from.station || (activation.navigationType === 'traverse' && activation.entry.index < activation.from.index) ? 'backward' : 'forward';
+        }
       };
       addEventListener('pageswap', quietCrossing);
       addEventListener('pagereveal', quietCrossing);
