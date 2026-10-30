@@ -327,7 +327,7 @@
   .rift-shell .gateway-heading h1 { font-size: clamp(1.5rem, 7vw, 1.8rem); line-height: 1.08; margin: .2rem 0; }
   .rift-shell .gateway-heading > p:last-child { margin: 0; font-size: .69rem; line-height: 1.2; }
   .rift-shell .gateway-lookup-scene > summary,
-  .rift-shell .gateway-destinations > summary { min-height: 38px; }
+  .rift-shell .gateway-destinations > summary { min-height: 44px; }
   .rift-shell .lookup-form { margin: .25rem 0 0; padding: .25rem 0; gap: .35rem; }
   .rift-shell .lookup-form :is(input, select, button) { min-height: 44px; }
   .rift-shell .gateway-destinations { margin-top: .3rem; }
