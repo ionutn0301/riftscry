@@ -79,7 +79,7 @@ function openMap(event?: Event) {
       ? document.activeElement
       : trigger;
   map.showModal();
-  const navigation = map.querySelector<HTMLElement>('.navigation-landscape');
+  const navigation = map.querySelector<HTMLElement>('.signal-destinations');
   const current = map.querySelector<HTMLAnchorElement>('[aria-current="page"]');
   navigation?.scrollTo({ top: 0, behavior: 'instant' });
   current?.focus({ preventScroll: true });

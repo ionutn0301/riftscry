@@ -4,7 +4,7 @@ import { installFixtures, platform, profilePath, puuid, query, recentAramWin, vi
 // The development runtime serves the SSR player/profile/match documents.
 // All player responses are existing synthetic fixtures, never a live account.
 const routes = [
-  { path: '/', surface: 'home', action: '[data-observatory] a[data-world-link][href="/champions"]' },
+  { path: '/', surface: 'home', action: '.journey-primary [data-station-link="next-game"]' },
   { path: '/explore#perspective', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },
@@ -62,12 +62,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const panelCount = await page.locator('[data-journey-panel]').count();
       if (panelCount > 1) await expect(page.locator('[data-journey-controls]')).toBeVisible();
       // Single-task destinations do not need an extra scene-navigation row;
-      // their panel still has an accessible name and the same destination rail.
+      // their panel still has an accessible name and the same main navigation.
       await expect(panel).toHaveAttribute('role', 'tabpanel');
       await expect(panel).toHaveAccessibleName(/\S/);
-      const stations = page.getByRole('navigation', { name: 'Journey destinations', exact: true }).locator('a[data-station-link]');
-      await expect(stations).toHaveCount(5);
-      for (const station of await stations.all()) await reachable(station);
+      const navigation = page.getByRole('navigation', { name: 'Main navigation', exact: true });
+      await expect(navigation.getByRole('link')).toHaveCount(3);
+      for (const name of ['Discover', 'My game', 'Saved']) {
+        const destination = navigation.getByRole('link', { name, exact: true });
+        await reachable(destination);
+        expect((await destination.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      }
       await reachable(page.locator(route.action).first());
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
       // Data may scroll inside its reading panel; the world itself must stay put.

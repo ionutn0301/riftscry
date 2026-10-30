@@ -1,4 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import type { HomeSignal } from '../../src/lib/home-signals';
+
+export type OpeningSignal = HomeSignal & { record: { id: string }; explore: string };
 
 export async function readyWorld(page: Page) {
   await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
@@ -11,6 +14,31 @@ export async function readyJourney(page: Page) {
   await readyWorld(page);
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-ready', 'true');
   await expect(page.locator('[data-voyage]')).toHaveAttribute('data-loading', 'false');
+}
+
+export async function readySignal(page: Page) {
+  await readyWorld(page);
+  await expect(page.locator('[data-home-signals]')).toHaveAttribute('data-home-subject', /^[A-Za-z0-9]+$/);
+  await expect(page.locator('[data-journey-tab]')).toHaveCount(3);
+  await expect(page.locator('#signal-title')).toContainText('stands still.');
+}
+
+/** Read the build-time examples so assertions follow archive updates. */
+export async function homeSignals(page: Page): Promise<OpeningSignal[]> {
+  return JSON.parse(await page.locator('#home-signals-data').textContent() ?? '[]') as OpeningSignal[];
+}
+
+export async function reachableTarget(control: Locator, page: Page) {
+  await unobstructed(control);
+  const box = (await control.boundingBox())!;
+  const viewport = page.viewportSize()!;
+  // WebKit can report a CSS 44px target as 43.999969px after layout.
+  expect(box.height).toBeGreaterThanOrEqual(43.99);
+  expect(box.width).toBeGreaterThanOrEqual(43.99);
+  expect(box.x).toBeGreaterThanOrEqual(-1);
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+  expect(box.y).toBeGreaterThanOrEqual(-1);
+  expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
 }
 
 export async function openScene(page: Page, id: string) {

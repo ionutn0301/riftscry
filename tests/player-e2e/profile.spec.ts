@@ -414,11 +414,13 @@ test('match cards and the shared map retain keyboard navigation when player and 
   await mapOpener.click();
   const map = page.locator('#rift-map-dialog');
   await expect(map).toBeVisible();
-  await expect(map.locator('[aria-current="page"]')).toHaveAttribute('href', '/players');
-  await map.locator('[data-world-link="players"]').click();
-  await expect(page).toHaveURL(url => url.pathname === '/players');
-  await expect(page.locator('body')).toHaveAttribute('data-surface', 'players');
-  await expect(page.locator('[data-player-gateway]')).toBeVisible();
+  const games = map.locator('[data-world-link="players"]');
+  await expect(games).toHaveAttribute('aria-current', 'page');
+  await expect(games).toHaveJSProperty('pathname', profilePath);
+  await games.click();
+  await expect(page).toHaveURL(url => url.pathname === profilePath && url.searchParams.get('view') === 'history');
+  await expect(page.locator('body')).toHaveAttribute('data-surface', 'player');
+  await expect(page.locator('[data-player-profile]')).toBeVisible();
   await expect(mapOpener).toHaveCount(1);
 
   await page.goBack();
@@ -441,7 +443,8 @@ test('match cards and the shared map retain keyboard navigation when player and 
   await expect(mapOpener).toHaveCount(1);
   await mapOpener.click();
   await expect(map).toBeVisible();
-  await expect(map.locator('[aria-current="page"]')).toHaveAttribute('href', '/players');
+  await expect(games).toHaveAttribute('aria-current', 'page');
+  await expect(games).toHaveJSProperty('pathname', profilePath);
   await page.keyboard.press('Escape');
   await expect(map).not.toBeVisible();
   await expect(mapOpener).toBeFocused();

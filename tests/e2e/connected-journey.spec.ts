@@ -36,8 +36,9 @@ test('champion history saves directly and reaches the briefing', async ({ page }
   const save = page.locator('[data-direct-save="Ahri"]');
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('navigation', {name:'Journey destinations',exact:true}).getByRole('link',{name:'Saved',exact:true}).click();
-  await expect(page).toHaveURL(/\/pool#briefing$/);
+  await page.getByRole('navigation', {name:'Main navigation',exact:true}).getByRole('link',{name:'Saved',exact:true}).click();
+  await expect(page).toHaveURL(url => url.pathname === '/pool');
+  await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'briefing');
   await page.getByRole('tab',{name:'Choose champions',exact:true}).click();
   const picker = page.locator('astro-island:has(.pool-picker)');
   const ahri = page.getByRole('option', { name: 'Ahri', exact: true });

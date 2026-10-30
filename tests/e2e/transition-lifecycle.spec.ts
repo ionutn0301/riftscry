@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { readyWorld } from './journey-test-helpers';
 
 test('cancelling native document transitions preserves links and browser Back without page errors', async ({ page, browserName }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -44,6 +45,7 @@ test('cancelling native document transitions preserves links and browser Back wi
   `);
 
   await page.goto('/champion/ahri', { waitUntil: 'domcontentloaded' });
+  await readyWorld(page);
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'full');
   await expect(page.locator('body')).toHaveAttribute('data-surface', 'champion');
   const capability = await page.evaluate(() => ({
@@ -54,10 +56,12 @@ test('cancelling native document transitions preserves links and browser Back wi
   const save = page.locator('[data-direct-save="Ahri"]');
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
-  const briefingLink = page.getByRole('navigation',{name:'Journey destinations',exact:true}).getByRole('link',{name:'Saved',exact:true});
+  const briefingLink = page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Saved', exact: true });
   await briefingLink.click();
-  await expect(page).toHaveURL(url => url.pathname === '/pool' && url.hash === '#briefing');
+  await expect(page).toHaveURL(url => url.pathname === '/pool');
+  await readyWorld(page);
   await expect(page.locator('body')).toHaveAttribute('data-surface', 'pool');
+  await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'briefing');
   await expect(page.locator('astro-island:has(.pool-picker)')).not.toHaveAttribute('ssr', '');
   // The inactive chooser is deliberately inert, so its descendant text does
   // not supply an accessible name. Inspect its hydrated selection state.
@@ -68,6 +72,7 @@ test('cancelling native document transitions preserves links and browser Back wi
   await expect(page.locator('.pool-bar .count')).toHaveText('1 champion in your pool');
 
   await page.goBack({ waitUntil: 'domcontentloaded' });
+  await readyWorld(page);
   await expect(page).toHaveURL(url => url.pathname === '/champion/ahri');
   await expect(page.locator('body')).toHaveAttribute('data-surface', 'champion');
   await expect(save).toHaveAttribute('aria-pressed', 'true');

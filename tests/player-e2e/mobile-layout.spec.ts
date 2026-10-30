@@ -87,6 +87,7 @@ for (const width of [320, 768]) {
 
     await openScene(page, 'match-memory');
     await page.getByText('Save an adjustment from this match', { exact: true }).click();
+    await expect(page.locator('.signal-adjustment-details')).toHaveJSProperty('open', true);
     await expectReadableFields(page.locator('.memory-draft input, .memory-draft select, .memory-draft textarea'));
     await page.getByLabel('Decision being reconsidered', { exact: true }).fill('Review the recorded boots purchase');
     await expect(page.getByLabel('Decision being reconsidered', { exact: true })).toHaveValue('Review the recorded boots purchase');

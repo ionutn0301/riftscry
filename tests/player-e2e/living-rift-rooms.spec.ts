@@ -4,7 +4,7 @@ import { installFixtures, platform, profilePath, puuid, query, recentAramWin, vi
 // These documents include SSR player routes. Use the fixture-backed Astro
 // runtime, rather than the static archive server, to test their shared scene.
 const rooms = [
-  { path: '/', surface: 'home', task: '[data-observatory] [data-world-link="next-game"]' },
+  { path: '/', surface: 'home', task: '.journey-primary [data-station-link="next-game"]' },
   { path: '/explore', surface: 'explore', task: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', task: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', task: '[data-direct-save="Nunu"]' },

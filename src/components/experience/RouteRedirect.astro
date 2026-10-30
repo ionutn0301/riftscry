@@ -9,7 +9,15 @@ const { title, target, label } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#070b13" />
-    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <noscript><meta http-equiv="refresh" content={`0;url=${target}`} /></noscript>
+    <script is:inline define:vars={{ target }}>
+      // These static entry routes cannot know the incoming query at build time.
+      // Retain an explicitly shared perspective and record fragment on arrival.
+      const destination = new URL(target, location.origin);
+      destination.search = location.search;
+      destination.hash = location.hash;
+      location.replace(destination.pathname + destination.search + destination.hash);
+    </script>
     <title>{title}</title>
     <link rel="canonical" href={new URL(target, Astro.site)} />
   </head>

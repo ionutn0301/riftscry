@@ -13,7 +13,7 @@ const patchIds = readdirSync(patchDirectory).filter(file => file.endsWith('.json
 const latestPatchId = patchIds[0]!;
 const previousPatchId = patchIds[1]!;
 const routes = [
-  { path: '/', surface: 'home', action: '[data-observatory] [data-world-link="next-game"]' },
+  { path: '/', surface: 'home', action: '.journey-primary [data-station-link="next-game"]' },
   { path: '/explore', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },
@@ -44,7 +44,7 @@ async function contained(locator: Locator, viewportWidth: number) {
 }
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
-  test(`${viewport.width}px: every route family has a clear first task and the shared observatory controls`, async ({ page }) => {
+  test(`${viewport.width}px: every route family has a clear first task and shared navigation`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize(viewport);
     await installFixtures(page, { matches: visualMatches });
@@ -62,7 +62,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         const header = page.getByRole('banner', { name: 'RiftScry controls' });
         const color = await page.locator('body').evaluate(element => getComputedStyle(element).backgroundColor);
         if (!canvasColor) canvasColor = color;
-        expect(color, 'The page canvas should retain the observatory theme between destinations').toBe(canvasColor);
+        expect(color, 'The page canvas should retain the shared theme between destinations').toBe(canvasColor);
         for (const control of [
           header.getByRole('button', { name: 'Open the Rift map', exact: true }),
           header.getByRole('button', { name: 'Search the archive', exact: true }),
@@ -88,7 +88,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await settled(page);
     const open = page.getByRole('button', { name: 'Open the Rift map', exact: true });
     await open.click();
-    const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
+    const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
     await expect(map).toBeVisible();
     await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/champions');
     await map.getByRole('link', { name: /Notebook/ }).click();

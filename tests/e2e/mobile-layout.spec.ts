@@ -67,7 +67,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await page.goto("/explore", { waitUntil: "domcontentloaded" });
     await readyJourney(page);
 
-    const headerControls = page.locator(".world-brand, .world-utilities > a, [data-map-open], .world-utilities > [data-palette-trigger], [data-motion-toggle]");
+    const headerControls = page.locator(".world-brand:visible, .world-utilities > a:visible, [data-map-open]:visible, .world-utilities > [data-palette-trigger]:visible, [data-motion-toggle]:visible");
     const controlBounds = await Promise.all((await headerControls.all()).map(bounds));
     for (let index = 0; index < controlBounds.length; index++) {
       const rect = controlBounds[index]!;
@@ -93,7 +93,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 
-  test(`all five primary and three specialist destinations fit and close restores the journey at ${width}×${height}`, async ({ page }) => {
+  test(`all five primary and three specialist destinations are reachable and close restores the journey at ${width}×${height}`, async ({ page }) => {
     const { opener, scrollBefore, reading, panelScroll } = await readyJourneyMap(page, width, height);
     await opener.click();
     const map = page.locator("#rift-map-dialog");
@@ -101,12 +101,16 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     const destinations = map.locator("[data-world-link], .journey-map-footer a");
     await expect(destinations).toHaveCount(8);
     for (const destination of await destinations.all()) {
-      await expect(destination).toBeInViewport({ ratio: 0.99 });
+      await expectUncovered(destination);
     }
     const scrollableRegions = await map.evaluate((dialog) => [dialog, ...dialog.querySelectorAll("*")]
       .filter((element) => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
-        && element.scrollHeight > element.clientHeight + 1).length);
-    expect(scrollableRegions, "A fitting destination menu must not need scrolling").toBe(0);
+        && element.scrollHeight > element.clientHeight + 1)
+      .map(element => element.className));
+    // The direct destination list can scroll on short screens. Its header,
+    // search, specialist links and the page behind it remain stationary.
+    expect(scrollableRegions.length).toBeLessThanOrEqual(1);
+    if (scrollableRegions.length) expect(scrollableRegions[0]).toContain('signal-destinations');
     const closeMap = map.getByRole("button", { name: "Close the Rift map" });
     const searchMap = map.locator("[data-palette-trigger]");
     await expectUncovered(closeMap);
@@ -266,13 +270,15 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
   });
 }
 
-test("the short desktop keeps the next-scene action clear of the destination rail", async ({ page, isMobile }) => {
+test("the short desktop keeps the next-scene action clear of the main navigation", async ({ page, isMobile }) => {
   test.skip(isMobile, "Touch layouts are covered at their own viewport sizes.");
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/explore"); await readyJourney(page);
   const next = page.locator('[data-journey-next]');
   await expectUncovered(next);
-  expect(overlaps(await bounds(next), await bounds(page.locator('.journey-route-controls')))).toBe(false);
+  const navigation = page.getByRole('navigation', { name: 'Main navigation', exact: true });
+  await expect(navigation).toBeInViewport({ ratio: 1 });
+  expect(overlaps(await bounds(next), await bounds(navigation))).toBe(false);
   await next.click();
   await expect(page.locator('#history')).toBeVisible();
   await expect(page.locator('#history')).toBeFocused();

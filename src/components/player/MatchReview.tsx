@@ -10,10 +10,12 @@ import BuildMemory from './BuildMemory';
 import { ItemLabel, RuneLabel } from './ItemPicker';
 import { useItemMetadata } from './useItemMetadata';
 import { usePlayerCooldown } from './usePlayerCooldown';
+import { useSelectedPlayer } from './useSelectedPlayer';
+import SaveBuildButton from '../companion/SaveBuildButton';
 import ChampionPortrait from './ChampionPortrait';
 import { championDisplayName } from './championArtwork';
 import PlayerIcon from './PlayerIcon';
-import '../../styles/journey-companion.css';
+import '../../styles/signal-player.css';
 
 function clock(milliseconds: number) {
   const seconds = Math.max(0, Math.floor(milliseconds / 1000));
@@ -47,6 +49,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   const { data: timeline, error: timelineError, isLoading: timelineLoading, mutate: retryTimeline } = useSWR<Timeline>(timelineRequested ? api('timeline', values) : null, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const { data: items, error: itemError, isValidating: itemsLoading, mutate: retryItems } = useItemMetadata(match, platform, puuid);
   const p = match && participant(match, puuid);
+  useSelectedPlayer(platform, puuid, '', Boolean(p));
   const mode = match && modeForMatch(match);
   const facts = useMemo(() => match && p ? evidence(match, puuid, timeline, items) : [], [match, p, puuid, timeline, items]);
   const suggestions = useMemo(() => match ? buildSuggestions(match, puuid, facts, items) : [], [match, puuid, facts, items]);
@@ -112,11 +115,14 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       <div><p className="player-kicker">MATCH REVIEW</p><h1>{p ? championDisplayName(p.championName) : 'Selected match'}</h1>
       <div className="player-chips">{match ? <><span className="player-chip">{mode?.label}</span><span>Patch {patchOf(match.info.gameVersion)}</span><span><PlayerIcon name="clock" />{clock(match.info.gameDuration * 1000)}</span></> : <span>Loading match…</span>}</div></div>
     </header>
-    {isLoading && <p role="status">Loading match summary…</p>}
-    {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
-    {match && !p && <p role="alert">This player is not present in the returned match. Return to the profile and choose another match.</p>}
+    {(!match || !p) && <section id="match-overview" className="match-overview-scene" data-journey-panel data-journey-label="Match" data-journey-world="match">
+      {isLoading && <p role="status">Loading match summary…</p>}
+      {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
+      {match && !p && <p role="alert">This player is not present in the returned match. Return to the profile and choose another match.</p>}
+    </section>}
     {match && p && <>
       <section id="match-overview" className="match-overview-scene" data-journey-panel data-journey-label="Match" data-journey-world="match">
+      {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
       <section className="profile-stats review-summary" aria-label="Match overview">
         <div>
           <p className="player-kicker">{p.win ? 'VICTORY' : 'DEFEAT'}</p>
@@ -134,6 +140,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <div className="review-runes">{mode?.runeSetup ? p.perks?.styles?.flatMap(style => style.selections.map(selection => <RuneLabel key={selection.perk} id={selection.perk} metadata={items} compact />)) || <span>Runes unavailable</span> : <span>{mode?.queueId === 2400 || mode?.family === 'arena' ? 'Augments mode' : 'Mode-specific setup'}</span>}</div>
           {(!items || itemError) && <p className="player-help">{itemError ? 'Item names unavailable. Recorded IDs are kept.' : 'Loading items and runes…'}</p>}
           {itemError && <button className="player-button-secondary" disabled={itemsLoading || retrySeconds > 0} onClick={() => void retryItems().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry item details'}</button>}
+          <SaveBuildButton match={match} platform={platform} puuid={puuid} metadata={items} />
         </div>
       </section>
       <details className="player-explainer"><summary><PlayerIcon name="info" /> Match details</summary><p>{new Date(match.info.gameCreation).toLocaleString()} · {comparisonRoleLabel(comparisonRole(match, puuid))} · {id}</p>{mode && <p>{mode.context}</p>}<p>{items?.notice} Final loadout shows the end of the game; open the timeline for purchase order. Damage is champion damage across the whole match.</p></details>
@@ -159,7 +166,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <details className="player-explainer"><summary>Why this option?</summary><p><strong>Recorded:</strong> {suggestion.original}</p><p>{suggestion.reason}</p><p className="suggestion-tradeoff"><strong>Tradeoff:</strong> {suggestion.tradeoff}</p>
           <div className="review-evidence-links">{suggestion.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div>
           {suggestion.source && /^https:\/\//.test(suggestion.source.url) && <p><a href={suggestion.source.url} target="_blank" rel="noreferrer">{suggestion.source.label} ↗</a></p>}
-          </details><button aria-controls="build-memory" onClick={() => { setDraft({ ...suggestion }); requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'build-memory' } }))); }}><PlayerIcon name="bookmark" /> Review draft</button>
+          </details><button aria-controls="build-memory" onClick={() => { setDraft({ ...suggestion }); requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id: 'build-memory', focus: false } }))); }}><PlayerIcon name="bookmark" /> Review draft</button>
         </article>)}
       </section>}
       </section>

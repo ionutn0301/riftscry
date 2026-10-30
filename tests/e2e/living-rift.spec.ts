@@ -5,6 +5,7 @@ import type { Patch } from '../../src/lib/schema';
 async function ready(page: Page) {
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-ready', 'true');
   await expect(page.locator('main h1')).toHaveCount(1);
+  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
   await page.evaluate(() => document.fonts.ready);
 }
 
@@ -190,25 +191,27 @@ test('full motion paints while visible, pauses for the back-forward cache and re
   expect(errors).toEqual([]);
 });
 
-test('map focus previews a destination and native navigation preserves the filtered return', async ({ page, isMobile }) => {
+test('the destination menu keeps native links and restores the filtered return', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/champions?q=Ahri&role=mid');
   await ready(page);
   const open = page.getByRole('button', { name: 'Open the Rift map', exact: true });
   await open.click();
-  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
+  const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
   await expect(map).toBeVisible();
-  await expect(page.locator('#main')).toBeHidden();
-  await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/champions');
-  const preview = map.locator('.navigator-focus');
-  if (!isMobile) await expect(preview).toBeVisible();
-  const title = preview.locator('[data-world-title]');
+  await expect(map).toHaveJSProperty('open', true);
+  const current = map.locator('a[aria-current="page"]');
+  await expect(current).toHaveAttribute('href', '/champions');
+  await expect(current).toBeFocused();
+  // A native modal excludes background controls from focus while preserving
+  // the user's filtered scene behind it.
+  await page.locator('[data-roster-search]').evaluate(element => (element as HTMLElement).focus());
+  await expect(current).toBeFocused();
   const notebook = map.locator('.journey-map-footer a[href="/notebook"]');
-  const patches = map.locator('[data-world-link="patches"]');
+  const patches = map.locator('[data-rift-destination="patches"]');
   await patches.focus();
-  await expect(map.locator('[data-navigator]')).toHaveAttribute('data-selected', 'patches');
-  await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-preview', 'patches');
-  await expect(title).not.toBeEmpty();
+  await expect(patches).toBeFocused();
+  await expect(patches).toHaveAttribute('href', '/patches');
   await notebook.focus();
   await expect(notebook).toBeFocused();
   await expect(notebook).toHaveAttribute('href', '/notebook');
@@ -223,17 +226,15 @@ test('map focus previews a destination and native navigation preserves the filte
   await ready(page);
   await expect(map).not.toBeVisible();
   await expect(page.locator('#main')).toBeVisible();
-  await expect(page.locator('[data-rift-scene]')).not.toHaveAttribute('data-rift-preview', 'patches');
   await expect(page.getByRole('searchbox', { name: 'Find a champion', exact: true })).toHaveValue('Ahri');
   await expect(page.locator('[data-roster-count]')).toHaveText('1');
   await open.click();
-  await expect(page.locator('#main')).toBeHidden();
+  await expect(map).toHaveJSProperty('open', true);
   await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/champions');
   await page.keyboard.press('Escape');
   await expect(map).not.toBeVisible();
   await expect(page.locator('#main')).toBeVisible();
   await expect(open).toBeFocused();
-  await expect(page.locator('[data-rift-scene]')).not.toHaveAttribute('data-rift-preview', 'patches');
 });
 
 test('reader spotlights follow the chosen champion and exact archived patch', async ({ page }) => {

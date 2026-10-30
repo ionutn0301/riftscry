@@ -2,6 +2,7 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 import type { Match } from '../../src/lib/player/contracts';
 import type { PatchImpactReport } from '../../src/lib/player/patch-impact';
 import { installFixtures, makeMatch, platform, puuid, type FixtureRequest } from '../player-e2e/fixtures';
+import { openBriefingSettings } from '../player-e2e/briefing-controls';
 import { openScene, readyWorld } from './journey-test-helpers';
 
 // These are browser-only response fixtures. Engine reference calculations have
@@ -281,6 +282,7 @@ test('changing exact game mode clears the old result when there are no imported 
   const requests = await fixtures(page);
   const impact = await open(page);
   await settled(impact);
+  await openBriefingSettings(page);
   await page.getByLabel('Game mode', { exact: true }).selectOption('2400');
   await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy', 'false');
   await expect(page.getByRole('heading', { name: 'Mayhem history is not available from Riot.', exact: true })).toBeVisible();
@@ -363,9 +365,9 @@ for (const [width, height] of [[320, 568], [1440, 900]] as const) {
       { platform, puuid, name: 'Reference Fixture#TEST' });
     await page.goto('/');
     await readyWorld(page);
-    const cta = page.locator('[data-observatory] a[data-world-link="next-game"]');
+    const cta = page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'My game', exact: true });
     await expect(cta).toHaveAttribute('href', new RegExp(`/next-game\\?platform=${platform}&puuid=${puuid}`));
-    expect(requests, 'The observatory must not import player data before entering the destination').toEqual([]);
+    expect(requests, 'The homepage must not import player data before entering the destination').toEqual([]);
     await cta.scrollIntoViewIfNeeded();
     const bounds = await cta.boundingBox();
     expect(bounds!.height).toBeGreaterThanOrEqual(44);

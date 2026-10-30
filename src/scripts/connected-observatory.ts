@@ -185,39 +185,6 @@ window.addEventListener('riftscry:journey-reveal', event => {
   if (detail?.id) activate(detail.id, { history: true, focus: detail.focus !== false, announce: true });
 }, listen);
 
-// One instrument serves the homepage and the destination overlay. Every point remains a native link.
-document.querySelectorAll<HTMLElement>('[data-navigator]').forEach(navigator => {
-  const destinations = [...navigator.querySelectorAll<HTMLAnchorElement>('[data-world-link]')];
-  let selected = Math.max(0, destinations.findIndex(link => link.dataset.selected === 'true'));
-  const choose = (index: number, scene = true) => {
-    selected = (index + destinations.length) % destinations.length;
-    const link = destinations[selected];
-    if (!link) return;
-    navigator.dataset.selected = link.dataset.worldLink;
-    navigator.style.setProperty('--station-color', link.dataset.worldColor ?? '#bcebe8');
-    destinations.forEach(item => item.toggleAttribute('data-selected', item === link));
-    const title = navigator.querySelector<HTMLElement>('.navigator-focus [data-world-title]');
-    const label = navigator.querySelector('[data-world-label]');
-    const enter = navigator.querySelector<HTMLAnchorElement>('[data-world-enter]');
-    const number = navigator.querySelector('[data-world-number]');
-    const position = navigator.querySelector('[data-world-position]');
-    if (title) title.textContent = link.dataset.worldTitle ?? '';
-    const name = link.querySelector('strong')?.textContent ?? 'destination';
-    if (label) label.textContent = name;
-    if (number) number.textContent = `${String(selected + 1).padStart(2, '0')} / 05`;
-    if (position) position.firstChild!.textContent = String(selected + 1).padStart(2, '0');
-    if (enter) { enter.href = link.href; enter.dataset.stationLink = link.dataset.worldLink; enter.setAttribute('aria-label', `Enter ${name}`); }
-    if (scene) setWorld(link.dataset.worldLink ?? null);
-  };
-  destinations.forEach((link, index) => {
-    link.addEventListener('pointerenter', event => { if (event.pointerType !== 'touch') choose(index); }, listen);
-    link.addEventListener('focus', () => choose(index), listen);
-  });
-  navigator.querySelector('[data-world-prev]')?.addEventListener('click', () => choose(selected - 1), listen);
-  navigator.querySelector('[data-world-next]')?.addEventListener('click', () => choose(selected + 1), listen);
-  choose(selected, false);
-});
-
 const mapState = new MutationObserver(() => {
   if (!map?.open) setWorld(currentWorld);
 });
@@ -229,14 +196,6 @@ function restorePlayer() {
     if (link.dataset.stationLink === 'next-game') link.href = player ? briefingLink(player) : '/next-game';
     if (link.dataset.stationLink === 'players') link.href = player ? playerLink(player.platform, player.puuid, { name: player.name, view: 'history' }) : '/players';
   });
-  const resume = document.querySelector<HTMLElement>('[data-observatory-return]');
-  if (resume) {
-    resume.hidden = !player;
-    const name = resume.querySelector('[data-resume-name]');
-    const link = resume.querySelector<HTMLAnchorElement>('[data-resume-link]');
-    if (name && player) name.textContent = player.name || 'Your selected player';
-    if (link && player) link.href = briefingLink(player);
-  }
 }
 window.addEventListener(RECENT_PLAYER_EVENT, restorePlayer, listen);
 window.addEventListener('storage', event => { if (event.key === RECENT_PLAYER_KEY || event.key === null || event.key === 'riftscry:remembered-player:v1') restorePlayer(); }, listen);

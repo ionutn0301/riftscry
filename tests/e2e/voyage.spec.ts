@@ -280,7 +280,7 @@ for (const [path,surface,current] of readingRoutes) {
     if(surface==='missing') {
       await page.getByRole('link',{name:'Return to the Rift',exact:false}).first().click();
       await expect(page).toHaveURL(url=>url.pathname==='/');
-      await expect(page.locator('[data-observatory]')).toBeVisible();
+      await expect(page.locator('[data-home-signals]')).toBeVisible();
       await page.goBack();
     }
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);

@@ -1,12 +1,6 @@
 ---
 import "../styles/global.css";
-import "../styles/experience.css";
-import "../styles/connected.css";
-import "../styles/observatory-pages.css";
-import "../styles/observatory-companion.css";
-import "../styles/living-rift.css";
-import "../styles/living-readers.css";
-import "../styles/connected-observatory.css";
+import "../styles/experience-shell.css";
 import Wayfinder from "../components/experience/JourneyWayfinder.astro";
 import RiftScene from "../components/experience/RiftScene.astro";
 import JourneyChrome from "../components/experience/JourneyChrome.astro";
@@ -88,7 +82,7 @@ const surface = requestedSurface ?? inferredSurface;
       addEventListener('pagereveal', quietCrossing);
     </script>
   </head>
-  <body class:list={["observatory-shell", "living-rift", (isHome || surface === 'explore') ? "is-home" : "observatory-route"]} data-surface={surface}>
+  <body class:list={["rift-shell", (isHome || surface === 'explore') && "is-home"]} data-surface={surface}>
     <a class="skip-link" href="#main">Skip to content</a>
     <RiftScene surface={surface} />
     <div class="rift-site-shell">
@@ -100,6 +94,7 @@ const surface = requestedSurface ?? inferredSurface;
     <script>
       import '../scripts/experience';
       import '../scripts/connected-observatory';
+      import '../scripts/signal-continuity';
     </script>
   </body>
 </html>

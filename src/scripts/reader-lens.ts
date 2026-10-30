@@ -1,3 +1,5 @@
+export {};
+
 type ReaderFocus = { kind: 'champion' | 'patch'; key: string };
 
 const normalize = (value: string) => value.normalize('NFKD')
@@ -37,6 +39,7 @@ function initChampionLens(root: HTMLElement) {
   root.dataset.readerLensReady = 'true';
   lenses.forEach(lens => { lens.dataset.readerReady = 'true'; });
   let selectedKey = lenses[0]!.dataset.readerKey ?? '';
+  let announcedKey = '';
   const rows = [...root.querySelectorAll<HTMLElement>('[data-roster-row][data-roster-key]')];
   const byKey = new Map(rows.map(row => [row.dataset.rosterKey!, row]));
   const previews = [...root.querySelectorAll<HTMLElement>('[data-reader-preview-champion]')];
@@ -60,7 +63,13 @@ function initChampionLens(root: HTMLElement) {
 
   function select(key: string) {
     const row = byKey.get(key);
-    if (!row || row.hidden || selectedKey === key) return;
+    if (!row || row.hidden) return;
+    if (selectedKey === key) {
+      // The default artwork can itself be an intentional first selection.
+      // Publish it once without repainting it on every pointer movement.
+      if (announcedKey !== key) { announcedKey = key; announceFocus({ kind: 'champion', key }); }
+      return;
+    }
     const previous = byKey.get(selectedKey);
     previous?.removeAttribute('data-reader-active');
     row.dataset.readerActive = 'true';
@@ -88,15 +97,21 @@ function initChampionLens(root: HTMLElement) {
       art.alt = lens.dataset.readerChampionLens === 'roster' ? '' : `${championName} — official Riot Games artwork`;
       const source = row.dataset.rosterSplash;
       if (source) {
-        art.hidden = false;
+        art.hidden = true;
         fallback.hidden = true;
         art.src = source;
+        if (art.complete) {
+          const available = art.naturalWidth > 0;
+          art.hidden = !available;
+          fallback.hidden = available;
+        }
       } else {
         art.hidden = true;
         fallback.hidden = false;
       }
     }
     panes.forEach(animatePane);
+    announcedKey = key;
     announceFocus({ kind: 'champion', key });
   }
 
@@ -124,10 +139,13 @@ function initChampionLens(root: HTMLElement) {
 
   function selectExactSearch() {
     const query = normalize(search?.value ?? '');
-    if (!query) return;
-    const match = rows.find(row => !row.hidden &&
-      (normalize(row.dataset.rosterKey ?? '') === query || normalize(row.dataset.rosterName ?? '') === query));
+    const visible = rows.filter(row => !row.hidden);
+    lenses.forEach(lens => { lens.hidden = visible.length === 0; });
+    if (!visible.length) return;
+    const match = query ? visible.find(row =>
+      (normalize(row.dataset.rosterKey ?? '') === query || normalize(row.dataset.rosterName ?? '') === query)) : undefined;
     if (match?.dataset.rosterKey) select(match.dataset.rosterKey);
+    else if (byKey.get(selectedKey)?.hidden && visible[0]?.dataset.rosterKey) select(visible[0].dataset.rosterKey);
   }
   // Filtering owns the query and URL. Its event runs after visibility settles,
   // including when a pasted name was hidden by the previous exact search.
@@ -249,7 +267,6 @@ function initPatchInstrument(root: HTMLElement) {
 }
 
 function initializeReaders() {
-  if (!document.body.classList.contains('living-rift')) return;
   document.querySelectorAll<HTMLElement>('[data-roster-directory]').forEach(initChampionLens);
   document.querySelectorAll<HTMLElement>('[data-patch-directory]').forEach(initPatchInstrument);
 }

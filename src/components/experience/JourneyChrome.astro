@@ -3,26 +3,18 @@ import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 import SiteFooter from '../SiteFooter.astro';
 interface Props { surface: string }
 const { surface } = Astro.props;
-const active = stationForSurface(surface);
+const station = journeyStations.find(item => item.id === stationForSurface(surface));
 ---
-<div class="journey-chrome" data-journey-chrome>
+<footer class="journey-chrome" data-journey-chrome>
+  <a class="signal-thread" href="/explore#change" data-signal-thread aria-label="Continue exploring a change"><span class="signal-thread-mark" aria-hidden="true">◇</span><span><small data-signal-thread-caption>{station?.label ?? 'THE SPACE BETWEEN GAMES'}</small><strong data-signal-thread-name>Find your signal</strong></span><span aria-hidden="true">↗</span></a>
   <div class="journey-scene-controls" data-journey-controls hidden>
-    <span class="journey-scene-coordinate"><span data-journey-position>01</span><i aria-hidden="true"></i><span data-journey-count>01</span></span>
+    <span class="journey-scene-coordinate"><span data-journey-position>01</span><span aria-hidden="true">/</span><span data-journey-count>01</span></span>
     <button class="journey-scene-arrow" type="button" data-journey-prev aria-label="Previous scene">←</button>
     <div class="journey-scene-tabs" data-journey-tabs role="tablist" aria-label="Scenes in this destination"></div>
     <button class="journey-scene-arrow" type="button" data-journey-next aria-label="Next scene">→</button>
-    <span class="journey-scene-hint">CHOOSE YOUR PERSPECTIVE</span>
   </div>
-  <div class="journey-route-controls">
-    <a class="journey-world-return" href="/" aria-current={active === 'home' ? 'page' : undefined} aria-label="Return to the observatory"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="m16 2 13 14-13 14L3 16 16 2Zm0 6 7 8-7 8-7-8 7-8Z"/></svg><span>THE RIFT</span></a>
-    <nav class="journey-stations" aria-label="Journey destinations">
-      {journeyStations.map(station => <a href={station.href} data-station-link={station.id} aria-current={active === station.id ? 'page' : undefined} style={`--station-color:${station.color}`}><span class="journey-station-dot" aria-hidden="true"></span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={station.glyph}/></svg><span>{station.label}</span></a>)}
-    </nav>
-    <button class="journey-about" type="button" data-about-open aria-haspopup="dialog" aria-controls="journey-about-dialog">About <span aria-hidden="true">ⓘ</span></button>
-  </div>
+  <div class="journey-trail-end"><span class="journey-status-dot" aria-hidden="true"></span><span data-journey-caption>CHOOSE. REVEAL. CARRY.</span><button class="journey-about" type="button" data-about-open aria-haspopup="dialog" aria-controls="journey-about-dialog" aria-label="About RiftScry">ⓘ</button></div>
   <p class="sr-only" role="status" aria-live="polite" data-journey-announcement></p>
-</div>
-<dialog id="journey-about-dialog" class="journey-about-dialog" aria-labelledby="journey-about-title">
-  <div><header><h2 id="journey-about-title">About this observatory.</h2><button type="button" data-about-close aria-label="Close about">Close ×</button></header><SiteFooter /></div>
-</dialog>
+</footer>
+<dialog id="journey-about-dialog" class="journey-about-dialog" aria-labelledby="journey-about-title"><div><header><h2 id="journey-about-title">About RiftScry.</h2><button type="button" data-about-close aria-label="Close about">Close ×</button></header><SiteFooter /></div></dialog>
 <noscript><SiteFooter /></noscript>

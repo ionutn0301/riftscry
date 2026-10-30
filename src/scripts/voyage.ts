@@ -3,6 +3,7 @@ import { voyagePeriod, voyageFields, voyageSelection, voyageConnection, recordTe
 import { $pool, togglePool, inPool } from '../lib/pool';
 import { rememberReading } from '../lib/return-briefing';
 import { readFindings, writeFindings, FINDINGS_LIMIT } from '../lib/kept-findings';
+import { rememberSignal, readSignalContext } from '../lib/signal-context';
 
 const voyage = document.querySelector<HTMLElement>('[data-voyage]');
 const initialData = document.querySelector<HTMLScriptElement>('#voyage-initial-data');
@@ -65,6 +66,8 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     if (selected) params.set('event', selected.id);
     if (seen.size) params.set('seen', [...seen].join('|'));
     rememberReading('/explore?' + params.toString() + '#change', model.identity.name + ' — your explored interval');
+    rememberSignal({ championId: model.identity.id, name: model.identity.name,
+      href: '/explore?' + params.toString() + '#change', patch: selected?.patch, event: selected?.id });
   }
 
   function updateSaved(pool: readonly string[] = $pool.get()) {
@@ -115,6 +118,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     for (const selector of ['[data-record-label]', '[data-record-patch]', '[data-record-date]', '[data-record-ability]', '[data-record-reading]', '[data-record-source]', '[data-focus-record]', '[data-keep-trace]']) setHidden(selector, missing);
     setHidden('[data-record-quiet]', !missing);
     setHidden('[data-record-numeric]', record?.change.kind !== 'numeric');
+    setHidden('[data-signal-scrub]', record?.change.kind !== 'numeric');
     setHidden('[data-record-prose]', record?.change.kind !== 'prose');
     setHidden('[data-record-unit]', record?.change.kind !== 'numeric' || !record.change.unit);
     if (!record) {
@@ -141,6 +145,10 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       setText('[data-record-before]', record.change.before);
       setText('[data-record-after]', record.change.after);
       setText('[data-record-unit]', record.change.unit ?? '');
+      const range = query<HTMLInputElement>('[data-signal-range]');
+      range.dataset.beforeValue = record.change.before;
+      range.dataset.afterValue = record.change.after;
+      range.setAttribute('aria-valuetext', Number(range.value) < 50 ? `Before: ${record.change.before}` : `After: ${record.change.after}`);
       // Compact units such as "40/Level" need reading-sized type as well as long rank arrays.
       query('[data-record-numeric]').dataset.long = String(record.change.before.length > 18 || record.change.after.length > 18
         || /[a-z]/i.test(record.change.before + record.change.after));
@@ -413,12 +421,14 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     const url = new URL(location.href);
     followLatest = !['older', 'newer', 'patch'].some(key => url.searchParams.has(key));
     const requested = url.searchParams.get('champion');
+    // Only a context-free entry resumes a subject. Explicit URL scope always wins.
+    const retained = !requested && !['older', 'newer', 'patch', 'event', 'focus'].some(key => url.searchParams.has(key)) ? readSignalContext() : null;
     const previousBeat = url.searchParams.get('beat');
-    void selectChampion(requested || initial.identity.id, {
+    void selectChampion(requested || retained?.championId || initial.identity.id, {
       navigation: false,
       older: url.searchParams.get('older') ?? initial.older,
       newer: url.searchParams.get('newer') ?? url.searchParams.get('patch') ?? initial.newer,
-      event: url.searchParams.get('event') ?? (!requested ? initial.selectedId ?? '' : ''),
+      event: url.searchParams.get('event') ?? retained?.event ?? (!requested ? initial.selectedId ?? '' : ''),
       field: url.searchParams.get('focus') ?? '',
       seen: url.searchParams.get('seen') ?? '',
     });

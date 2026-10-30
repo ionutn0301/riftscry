@@ -30,18 +30,24 @@ async function activeScene(page: Page, id: string) {
   return panel;
 }
 
-test('the world opens a native destination and immediately supports a useful champion choice', async ({ page }) => {
+test('the opening reveals a real signal and its menu supports a useful champion choice', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await ready(page);
-  const world = page.locator('[data-observatory]');
-  await expect(world).toBeVisible();
-  const destinations = world.locator('a[data-world-link]');
+  await expect(page.locator('[data-home-signals]')).toBeVisible();
+  await page.locator('[data-home-reveal]').click();
+  const reveal = await activeScene(page, 'reveal');
+  await expect(reveal.locator('[data-home-record]:not([hidden]) .before')).not.toBeEmpty();
+  await expect(reveal.locator('[data-home-record]:not([hidden]) .after')).not.toBeEmpty();
+  await page.locator('[data-map-open]').click();
+  const map = page.locator('#rift-map-dialog');
+  const destinations = map.locator('a[data-world-link]');
   await expect(destinations).toHaveCount(5);
   const paths = await destinations.evaluateAll(links => links.map(link => new URL((link as HTMLAnchorElement).href).pathname).sort());
   expect(paths).toEqual(['/champions', '/next-game', '/patches', '/players', '/pool']);
-  const champions = world.locator('a[data-world-link][href="/champions"]');
+  const champions = map.locator('a[data-world-link][href="/champions"]');
+  await champions.scrollIntoViewIfNeeded();
   await reachable(champions);
   await champions.click();
   await expect(page).toHaveURL(url => url.pathname === '/champions');
@@ -112,7 +118,7 @@ test('a deep record reveals its containing scene and keeps a saved champion thro
   await recordLink.click();
   const selected = page.locator(recordHash!);
   await expect(selected).toBeVisible();
-  await expect(selected.getByRole('link', { name: /^Riot’s notes/ })).toHaveAttribute('href', /^https:\/\/www\.leagueoflegends\.com\//);
+  await expect(selected.getByRole('link', { name: /^Original source/ })).toHaveAttribute('href', /^https:\/\/www\.leagueoflegends\.com\//);
   await page.reload();
   await ready(page);
   await activeScene(page, 'history');
@@ -121,7 +127,7 @@ test('a deep record reveals its containing scene and keeps a saved champion thro
   await reachable(save);
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
-  const pool = page.getByRole('navigation', { name: 'Journey destinations', exact: true }).locator('a[data-station-link="pool"]');
+  const pool = page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Saved', exact: true });
   await reachable(pool);
   await pool.click();
   await expect(page).toHaveURL(url => url.pathname === '/pool');

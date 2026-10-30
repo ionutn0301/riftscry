@@ -1,11 +1,11 @@
 import { test, expect, type Page } from '@playwright/test';
-import { readyWorld, stationaryWorld } from './journey-test-helpers';
+import { homeSignals, readySignal, readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
 
 async function settleLayout(page: Page) {
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
 }
 
-test('failed scene imagery leaves named native destinations available before and after enhancement', async ({ page }) => {
+test('failed imagery leaves named native signal choices and exact evidence available before and after enhancement', async ({ page }) => {
   let releaseScripts = () => {};
   const scriptsHeld = new Promise<void>(resolve => { releaseScripts = resolve; });
   await page.route('**/*', async route => {
@@ -15,30 +15,35 @@ test('failed scene imagery leaves named native destinations available before and
   });
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  const world = page.locator('[data-observatory]');
-  const links = world.locator('[data-world-link]');
+  const home = page.locator('[data-home-signals]');
+  const choices = home.locator('[data-home-choice]');
   try {
     await page.goto('/', { waitUntil: 'commit' });
-    await expect(links).toHaveCount(5);
-    await expect(world.getByRole('heading', { level: 1 })).toContainText('The Rift is');
-    const destinations = [
-      ['Briefing', '/next-game'], ['Games', '/players'], ['Champions', '/champions'],
-      ['Patches', '/patches'], ['Saved', '/pool#briefing'],
-    ] as const;
-    for (const [index, [name, href]] of destinations.entries()) {
-      await expect(links.nth(index)).toHaveAccessibleName(new RegExp(name));
-      await expect(links.nth(index)).toHaveAttribute('href', href);
-      await expect(links.nth(index).locator('svg')).toHaveCount(1);
+    await expect(choices).toHaveCount(3);
+    await expect(home.getByRole('heading', { level: 1 })).toContainText('stands still.');
+    const signals = await homeSignals(page);
+    for (const [index, signal] of signals.entries()) {
+      await expect(choices.nth(index)).toHaveAttribute('href', signal.explore);
+      await expect(choices.nth(index).locator('strong')).toHaveText(signal.championName);
+      await expect(choices.nth(index)).toHaveAccessibleName(new RegExp(signal.championName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     }
+    await expect(page.locator('#signal [data-home-personal]')).toHaveAttribute('href', '/next-game');
+    await expect(page.locator('[data-home-keep]')).toBeHidden();
+    const initial = home.locator('[data-home-record]:not([hidden])');
+    await expect(initial.locator('.before')).toHaveText(signals[0]!.before);
+    await expect(initial.locator('.after')).toHaveText(signals[0]!.after);
+    await expect(initial.getByRole('link', { name: 'Original source' })).toHaveAttribute('href', signals[0]!.sourceUrl);
     releaseScripts();
-    await readyWorld(page);
-    await expect(world).toBeVisible();
-    await expect(links).toHaveCount(5);
-    for (const link of await links.all()) {
-      await expect(link).toBeInViewport({ ratio: 1 });
-      expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
-    }
-    await links.nth(2).click();
+    await readySignal(page);
+    await expect(home.locator('[data-home-art-fallback]')).toBeVisible();
+    await expect(home.locator('[data-home-art]')).toBeHidden();
+    for (const choice of await choices.all()) await unobstructed(choice);
+    await home.locator('[data-home-reveal]').click();
+    await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'reveal');
+    await expect(initial.locator('.before')).toHaveText(signals[0]!.before);
+    await expect(initial.locator('.after')).toHaveText(signals[0]!.after);
+    await page.locator('[data-map-open]').click();
+    await page.locator('#rift-map-dialog [data-station-link="champions"]').click();
     await expect(page).toHaveURL(url => url.pathname === '/champions');
     await readyWorld(page);
     const search = page.getByRole('searchbox', { name: 'Find a champion', exact: true });
@@ -63,9 +68,10 @@ test('failed champion artwork leaves an honest identity and exact records availa
   await expect(page.locator('[data-champion-art-credit]')).toBeHidden();
   const current = page.locator('[data-history-record="26.6"]');
   await expect(current).toBeVisible();
-  await expect(current).toContainText('Orb of Deception');
-  await expect(current).toContainText('40 / 65 / 90 / 115 / 140');
-  await expect(current).toContainText('35 / 60 / 85 / 110 / 135');
+  const record = current.locator('[data-signal-record]:not([hidden])');
+  await expect(record).toContainText('Orb of Deception');
+  await expect(record.locator('.before')).toHaveText('40 / 65 / 90 / 115 / 140');
+  await expect(record.locator('.after')).toHaveText('35 / 60 / 85 / 110 / 135');
   await page.locator('[data-history-select="26.3"]').click();
   const earlier = page.locator('[data-history-record="26.3"]');
   await expect(earlier).toBeVisible();
@@ -77,16 +83,15 @@ test('failed champion artwork leaves an honest identity and exact records availa
   expect(errors).toEqual([]);
 });
 
-test('destination previews change without moving the world, named links or navigation', async ({ page }) => {
+test('choosing a signal changes the subject and evidence without moving the opening or navigation', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
-  await readyWorld(page);
-  const navigator = page.locator('[data-observatory] [data-navigator]');
-  const links = navigator.locator('[data-world-link]');
-  const ids = await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('data-world-link')));
+  await page.goto('/'); await readySignal(page);
+  const home = page.locator('[data-home-signals]');
+  const choices = home.locator('[data-home-choice]');
+  const signals = await homeSignals(page);
   const position = () => page.evaluate(() => ({
     scroll: scrollY,
-    boxes: [...document.querySelectorAll('[data-observatory], [data-observatory] [data-world-link], .journey-header, .journey-chrome')]
+    boxes: [...document.querySelectorAll('[data-home-signals], #signal-title, [data-home-choice], .journey-header, .journey-chrome')]
       .map(element => { const box = element.getBoundingClientRect(); return [box.x, box.y, box.width, box.height]; }),
   }));
   const baseline = await position();
@@ -94,29 +99,34 @@ test('destination previews change without moving the world, named links or navig
     await settleLayout(page);
     const current = await position();
     expect(current.scroll).toBe(baseline.scroll);
+    expect(current.boxes).toHaveLength(baseline.boxes.length);
     for (const [index, box] of current.boxes.entries()) {
       for (const [axis, value] of box.entries()) expect(Math.abs(value - baseline.boxes[index]![axis]!)).toBeLessThanOrEqual(1);
     }
     await stationaryWorld(page);
   };
-  for (const index of [1, 2, 3, 4, 0]) {
-    await navigator.locator('[data-world-next]').click();
-    await expect(navigator).toHaveAttribute('data-selected', ids[index]!);
-    const destination = await links.nth(index).evaluate(link => (link as HTMLAnchorElement).href);
-    await expect(navigator.locator('[data-world-enter]')).toHaveAttribute('href', destination);
+  for (const index of [1, 2, 0]) {
+    const signal = signals[index]!;
+    await choices.nth(index).click();
+    await expect(home).toHaveAttribute('data-home-subject', signal.championId);
+    await expect(choices.nth(index)).toHaveAttribute('aria-current', 'true');
+    await expect(page).toHaveURL(url => url.searchParams.get('signal') === signal.championId);
+    await expect(home.locator('[data-home-subject]')).toHaveText(signal.championName);
+    await expect(home.locator('[data-home-art]')).toHaveAttribute('alt', `${signal.championName} — official Riot Games artwork`);
+    await expect(home.locator('[data-home-trace]')).toHaveAttribute('href', signal.explore.replace('#change', '#history'));
+    const record = home.locator('[data-home-record]:not([hidden])');
+    await expect(record.locator('.before')).toHaveText(signal.before);
+    await expect(record.locator('.after')).toHaveText(signal.after);
     await expectStationary();
   }
-  for (const index of [4, 2, 0]) {
-    await links.nth(index).focus();
-    await expect(links.nth(index)).toBeFocused();
-    await expect(navigator).toHaveAttribute('data-selected', ids[index]!);
-    await expect(navigator.locator('[data-world-enter]')).toHaveAccessibleName(/^Enter /);
-    await expectStationary();
-  }
-  const previous = navigator.locator('[data-world-prev]');
-  await previous.focus();
-  await page.keyboard.press('Enter');
-  await expect(navigator).toHaveAttribute('data-selected', ids[4]!);
-  await expect(previous).toBeFocused();
+  await choices.nth(1).focus(); await page.keyboard.press('Enter');
+  await expect(home).toHaveAttribute('data-home-subject', signals[1]!.championId);
+  await expect(choices.nth(1)).toBeFocused();
   await expectStationary();
+  await page.goBack();
+  await expect(home).toHaveAttribute('data-home-subject', signals[0]!.championId);
+  await expect(choices.first()).toHaveAttribute('aria-current', 'true');
+  await expectStationary();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('riftscry:kept-findings') ?? '[]'))).toEqual([]);
+  expect(await page.evaluate(() => localStorage.getItem('riftscry:last-reviewed-patch'))).toBeNull();
 });

@@ -17,12 +17,12 @@ test('continue restores the selected champion record and exact query after anoth
   const expected = new URL(page.url());
   const exactReading = expected.pathname + expected.search + expected.hash;
 
-  await page.getByRole('navigation', { name: 'Journey destinations', exact: true })
-    .getByRole('link', { name: 'Patches', exact: true }).click();
+  await page.locator('[data-map-open]').click();
+  await page.locator('#rift-map-dialog [data-world-link="patches"]').click();
   await readyWorld(page);
   await expect(page).toHaveURL(url => url.pathname === '/patches');
   await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
-  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
+  const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
   const resume = map.getByRole('link', { name: 'Continue Ahri Patch History', exact: true });
   await expect(resume).toBeVisible();
   await expect(resume).toHaveAttribute('href', exactReading);
@@ -34,7 +34,7 @@ test('continue restores the selected champion record and exact query after anoth
   await expect(page).toHaveURL(expected.href);
   await expect(selected).toBeVisible();
   await expect(page.locator('[data-history-record]:visible')).toHaveCount(1);
-  await expect(selected.getByRole('link', { name: /^Riot’s notes/ })).toHaveAttribute('href', /^https:\/\/www\.leagueoflegends\.com\//);
+  await expect(selected.getByRole('link', { name: /^Original source/ })).toHaveAttribute('href', /^https:\/\/www\.leagueoflegends\.com\//);
 
   await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
   await expect(map.locator('[data-reading-resume]')).toBeHidden();
@@ -51,8 +51,8 @@ test('scene navigation leaves Explore’s selected interval and record in charge
   await expect(page).toHaveURL(url => url.hash === '#history');
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('riftscry:resume') ?? '{}').href)).toBe(exactReading);
 
-  await page.getByRole('navigation', { name: 'Journey destinations', exact: true })
-    .getByRole('link', { name: 'Champions', exact: true }).click();
+  await page.locator('[data-map-open]').click();
+  await page.locator('#rift-map-dialog [data-world-link="champions"]').click();
   await readyWorld(page);
   await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
   const resume = page.locator('#rift-map-dialog [data-reading-resume]');
@@ -73,7 +73,7 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   await page.goto('/champions');
   await readyWorld(page);
   await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
-  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
+  const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
   await expect(map).toBeVisible();
   const destinations = map.locator('[data-world-link], .journey-map-footer a');
   const shortcut = map.locator('[data-reading-shortcut]');

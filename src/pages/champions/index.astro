@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import "../../styles/journey-readers.css";
+import "../../styles/signal-readers.css";
 import { getAssetVersion, getChampionHistory, getChampionMeta, getLatestPatch, getRoles, ROLES } from "../../lib/data";
 import { assetFor } from "../../lib/investigation";
 
@@ -23,7 +23,7 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
 <Layout surface="champions" title="Champions — RiftScry" description="Choose a champion. Move through exact patch records in the RiftScry observatory.">
   <div class="journey-reader journey-roster" data-journey-deck data-roster-directory>
     <header class="journey-reader-header" id="route-arrival">
-      <div><p class="journey-reader-kicker">CHAMPIONS / {champions.length} PERSPECTIVES</p><h1>Choose your perspective.</h1></div>
+      <div><p class="journey-reader-kicker">CHAMPIONS / {champions.length} PERSPECTIVES</p><h1>Find your champion.</h1></div>
       <a class="journey-quiet-link" href="/pool#briefing">Saved champions <span aria-hidden="true">↗</span></a>
     </header>
     <form class="roster-tools journey-roster-tools" data-roster-tools hidden>
@@ -44,7 +44,7 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
         <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions</p><span>SELECT A PERSPECTIVE</span></div>
         <p class="journey-empty" data-roster-empty hidden>No matches. Try another name or clear the filters.</p>
         <ul class="roster-wall journey-casting-wall">
-          {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-key={c.id} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
+          {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-key={c.id} data-signal-subject={c.id} data-signal-name={c.name} data-signal-patch={c.latest} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
             <a href={"/champion/" + c.id.toLowerCase()}><span class="roster-portrait"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async" /></span><span class="roster-entry-copy"><span class="name">{c.name}</span><span class="roster-entry-roles">{c.roles.map(role => roleLabels[role]).join(" / ")}</span></span><span class="roster-arrow" aria-hidden="true">↗</span></a>
           </li>)}
         </ul>
