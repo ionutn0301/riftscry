@@ -357,3 +357,12 @@
   .rift-shell .gateway-footnote { order: 4; flex: none; margin: 0; padding: 0; }
   .rift-shell .lookup-form { margin: .3rem 0; padding: .3rem 0; }
 }
+
+/* Make every gateway action a full touch target, including its native disclosure. */
+.rift-shell .gateway-lookup-scene > summary,
+.rift-shell .gateway-destinations > summary,
+.rift-shell .gateway-intents button { min-height: 46px; box-sizing: border-box; }
+@media (max-height: 480px) {
+  .rift-shell[data-journey-ready] .player-gateway-shell { min-height: 0; overflow: hidden; }
+  .rift-shell[data-journey-ready] .player-gateway { min-height: 0; max-height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+}
