@@ -493,3 +493,14 @@ body:not([data-journey-ready]) :is(.journey-reader, .journey-patch-directory) :i
 body:not([data-journey-ready]) [data-history-record] {
   overflow-wrap: anywhere;
 }
+
+/* The mobile champion selector is horizontally navigable, never a 2,000px
+   intrinsic-width document. Keep its overflow inside the selector itself. */
+@media (max-width: 700px) {
+  body:not([data-journey-ready]) .journey-patch-browser { min-width: 0; max-width: 100%; }
+  body:not([data-journey-ready]) .journey-record-selector {
+    width: 100%; max-width: 100%; min-width: 0;
+    overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain;
+  }
+  body:not([data-journey-ready]) .journey-record-canvas { width: 100%; min-width: 0; }
+}
