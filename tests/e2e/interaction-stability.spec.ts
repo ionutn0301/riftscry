@@ -49,6 +49,34 @@ test('failed scene imagery leaves named native destinations available before and
   } finally { releaseScripts(); }
 });
 
+test('failed champion artwork leaves an honest identity and exact records available', async ({ page }) => {
+  await page.route('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg', route => route.abort());
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/champion/ahri');
+  await readyWorld(page);
+  await expect(page.locator('[data-champion-art-image]')).toBeHidden();
+  const fallback = page.locator('[data-champion-art-fallback]');
+  await expect(fallback).toBeVisible();
+  await expect(fallback).toContainText('Ahri');
+  await expect(fallback).toContainText('Artwork unavailable');
+  await expect(page.locator('[data-champion-art-credit]')).toBeHidden();
+  const current = page.locator('[data-history-record="26.6"]');
+  await expect(current).toBeVisible();
+  await expect(current).toContainText('Orb of Deception');
+  await expect(current).toContainText('40 / 65 / 90 / 115 / 140');
+  await expect(current).toContainText('35 / 60 / 85 / 110 / 135');
+  await page.locator('[data-history-select="26.3"]').click();
+  const earlier = page.locator('[data-history-record="26.3"]');
+  await expect(earlier).toBeVisible();
+  await expect(current).toBeHidden();
+  await earlier.getByRole('link', { name: 'Open in patch 26.3' }).click();
+  await expect(page).toHaveURL(url => url.pathname === '/patch/26.3' && url.hash === '#ahri');
+  await readyWorld(page);
+  await expect(page.locator('.change-card:not([hidden])')).toHaveAttribute('id', 'ahri');
+  expect(errors).toEqual([]);
+});
+
 test('destination previews change without moving the world, named links or navigation', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');

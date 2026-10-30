@@ -29,7 +29,8 @@ body.living-rift .journey-quiet-link:hover { color: #eefeff; }
 body.living-rift .journey-primary-link { display: inline-flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 12px 20px; gap: 22px; border: 1px solid #b5e9ed73; background: #b5e9ed0c; color: var(--reader-paper); font-size: 13px; }
 body.living-rift .journey-primary-link:hover { background: #b5e9ed1a; }
 body.living-rift .journey-context-line { flex: none; margin: -6px 0 18px; color: var(--reader-muted); font-size: 11px; line-height: 1.6; }
-body.living-rift .journey-panel { position: relative; min-width: 0; padding: 24px; margin-bottom: 24px; border: 1px solid var(--reader-line); background: linear-gradient(125deg, #111d2cce, #080e19b8); border-radius: 2px; }
+/* A reading light belongs to the evidence; the surrounding world stays open. */
+body.living-rift .journey-panel { position: relative; min-width: 0; padding: 24px; margin-bottom: 24px; border: 1px solid transparent; background: linear-gradient(100deg, #07111ce6, #07111cc4 64%, #07111c45); border-radius: 0; }
 body.living-rift .journey-panel-heading { margin-bottom: 22px; }
 body.living-rift .journey-panel-heading h2 { font-size: clamp(25px, 3vw, 42px); line-height: 1.1; }
 body.living-rift .journey-panel-heading > p:last-child { color: var(--reader-muted); font-size: 13px; margin-top: 9px; }
@@ -46,11 +47,11 @@ body.living-rift .journey-roster-tools .roster-search label { font-size: 10px; m
 body.living-rift .journey-roster-tools .roster-search input { min-height: 44px; font-size: 21px; border-color: #b5e9ed50; padding-inline: 0; }
 body.living-rift .journey-roster-tools .roster-role-options { justify-content: flex-end; gap: 3px; }
 body.living-rift .journey-roster-tools .roster-role-options button { min-height: 44px; padding: 8px 12px; }
-body.living-rift .journey-roster-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, 1fr); gap: clamp(24px, 4vw, 60px); align-items: center; }
+body.living-rift .journey-roster-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, 1fr); gap: clamp(24px, 4vw, 60px); align-items: center; background: linear-gradient(90deg, transparent 38%, #07111cbd 58%, #07111ca6); }
 body.living-rift .journey-roster-lens { align-self: center; min-height: 0; }
-body.living-rift .journey-roster-lens .roster-lens-media { max-height: 44dvh; background: #080d18a6; box-shadow: 0 22px 50px #0003; }
+body.living-rift .journey-roster-lens .roster-lens-media { max-height: 44dvh; background: transparent; box-shadow: 0 22px 50px #0003; }
 body.living-rift .journey-roster-lens .roster-lens-media img { max-height: 44dvh; object-fit: contain; }
-body.living-rift .journey-roster-lens .roster-lens-media::before { transform: skewY(-2deg); }
+body.living-rift .journey-roster-lens .roster-lens-media::before { display: none; }
 body.living-rift .journey-roster-lens figcaption { padding-top: 18px; }
 body.living-rift .journey-roster-lens figcaption strong { font-size: clamp(30px, 4vw, 62px); }
 body.living-rift .journey-roster-results { align-self: stretch; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
@@ -66,7 +67,7 @@ body.living-rift .journey-casting-wall .roster-entry-roles { margin-top: 6px; fo
 body.living-rift .journey-casting-wall .roster-arrow { font-size: 15px; }
 
 /* Dated patches: the instrument and the choices occupy the same scene. */
-body.living-rift .journey-archive-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, 1fr); align-items: center; gap: clamp(30px, 5vw, 75px); }
+body.living-rift .journey-archive-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, 1fr); align-items: center; gap: clamp(30px, 5vw, 75px); background: linear-gradient(90deg, #07111c60, transparent 45%, #07111cbd 65%, #07111c91); }
 body.living-rift .journey-archive-panel .archive-instrument { padding: 22px 26px; box-shadow: none; background: linear-gradient(110deg, #b5e9ed08, transparent); }
 body.living-rift .journey-archive-panel .archive-instrument-current strong { font-size: clamp(65px, 9vw, 140px); }
 body.living-rift .journey-archive-panel .archive-instrument .journey-primary-link { margin-top: 25px; width: 100%; }
@@ -79,17 +80,20 @@ body.living-rift .journey-patch-stops > li::before { top: 38px; }
 body.living-rift .journey-patch-stop-meta { color: #9db1c8; font: 8px/1.5 'Spline Sans Mono', monospace; letter-spacing: .04em; }
 
 /* Champion history: selecting a date replaces the exact record in the lens. */
-body.living-rift .journey-champion-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(26px, 4vw, 58px); }
-body.living-rift .journey-champion-art { margin: 0; display: flex; flex-direction: column; justify-content: center; min-height: 0; min-width: 0; }
+body.living-rift .journey-champion-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(26px, 4vw, 58px); background: linear-gradient(90deg, transparent 32%, #07111ce6 51%, #07111cbd); }
+body.living-rift .journey-champion-art { position: relative; margin: 0; display: flex; flex-direction: column; justify-content: center; min-height: 0; min-width: 0; }
 body.living-rift .journey-champion-art picture { display: grid; place-items: center; min-height: 0; }
 body.living-rift .journey-champion-art img { width: 100%; max-height: 54dvh; object-fit: contain; }
 body.living-rift .journey-champion-art figcaption { color: #8fa1b8; font: 8px/1.5 'Spline Sans Mono', monospace; letter-spacing: .07em; padding-top: 16px; }
+body.living-rift .journey-champion-art-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 14px; text-align: center; background: radial-gradient(ellipse, #07111c80, transparent 70%); }
+body.living-rift .journey-champion-art-fallback strong { font: 400 clamp(24px, 4vw, 58px)/1.1 var(--font-display); letter-spacing: -.035em; color: var(--reader-paper); }
+body.living-rift .journey-champion-art-fallback > span { color: var(--reader-muted); font-size: 11px; }
 body.living-rift .journey-history-stage { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 body.living-rift .journey-history-stops { flex: none; display: flex; gap: 7px; overflow: auto; overscroll-behavior: contain; padding: 4px 4px 15px; margin: -4px -4px 10px; scrollbar-width: thin; }
-body.living-rift .journey-history-stops a { flex: none; display: flex; flex-direction: column; justify-content: center; min-height: 66px; min-width: 86px; padding: 10px 14px; border: 1px solid #b5cce329; color: #a9b9cc; background: #b5e9ed03; }
+body.living-rift .journey-history-stops a { flex: none; display: flex; flex-direction: column; justify-content: center; min-height: 66px; min-width: 86px; padding: 10px 14px; border: 1px solid transparent; border-bottom-color: #b5cce329; color: #a9b9cc; background: transparent; }
 body.living-rift .journey-history-stops a > span { font: 500 23px/1 var(--font-display); }
 body.living-rift .journey-history-stops time { font-size: 10px; margin-top: 6px; }
-body.living-rift .journey-history-stops a[aria-current] { border-color: #b5e9ed83; background: #b5e9ed0b; color: var(--reader-signal); }
+body.living-rift .journey-history-stops a[aria-current] { border-bottom-color: #b5e9edc4; background: linear-gradient(0deg, #b5e9ed12, transparent); color: var(--reader-signal); }
 body.living-rift .journey-history-records { min-height: 0; }
 body.living-rift[data-journey-ready] .journey-history-records { overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 8px; }
 body.living-rift .journey-history-record { padding-bottom: 18px; scroll-margin-top: 8px; }
@@ -111,22 +115,22 @@ body.living-rift .journey-source-counts dd { font: 500 48px/1 var(--font-display
 body.living-rift .journey-source-counts dt { font-size: 12px; color: var(--reader-muted); }
 
 /* Patch details: the rail chooses a record; filters remain the existing island. */
-body.living-rift .journey-disclosure { flex: none; border-bottom: 1px solid var(--reader-line); margin-bottom: 12px; padding-bottom: 8px; }
+body.living-rift .journey-disclosure { flex: none; border-bottom: 1px solid var(--reader-line); margin-bottom: 8px; padding-bottom: 0; }
 body.living-rift .journey-disclosure summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--reader-signal); }
 body.living-rift .journey-disclosure summary::after { content: '+'; margin-left: auto; font-size: 20px; }
 body.living-rift .journey-disclosure[open] summary::after { content: '−'; }
-body.living-rift .journey-patch-champions:not([hidden]) { display: flex; flex-direction: column; }
-body.living-rift .journey-patch-champions .filter-bar { position: static; flex: none; background: #b5e9ed04; border: 1px solid var(--reader-line); backdrop-filter: none; margin: 0 0 12px; padding: 10px 12px; gap: 8px; }
+body.living-rift .journey-patch-champions:not([hidden]) { display: flex; flex-direction: column; background: linear-gradient(100deg, #07111cb3, #07111ce0 42%, #07111c9c); }
+body.living-rift .journey-patch-champions .filter-bar { position: static; flex: none; background: transparent; border: 1px solid transparent; backdrop-filter: none; margin: 0 0 8px; padding: 0 0 6px; gap: 8px; }
 body.living-rift .journey-patch-champions .filter-bar input { min-height: 44px; flex: 1 1 150px; }
 body.living-rift .journey-patch-champions .filter-bar button { min-height: 44px; }
-body.living-rift .journey-result-caption { display: flex; justify-content: space-between; gap: 14px; flex: none; margin-bottom: 12px; color: var(--reader-muted); font-size: 11px; }
+body.living-rift .journey-result-caption { display: flex; justify-content: space-between; gap: 14px; flex: none; margin-bottom: 8px; color: var(--reader-muted); font-size: 11px; }
 body.living-rift .journey-patch-browser { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 0; gap: 26px; }
 body.living-rift[data-journey-ready] .journey-patch-browser { flex: 1; }
 body.living-rift .journey-record-selector { min-height: 0; display: flex; flex-direction: column; gap: 4px; }
 body.living-rift .journey-record-selector { min-width: 0; max-width: 100%; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 body.living-rift .journey-record-selector a { display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 10px; border: 1px solid transparent; color: var(--reader-muted); font-size: 14px; }
 body.living-rift .journey-record-selector a > span:last-child { margin-left: auto; color: var(--reader-signal); }
-body.living-rift .journey-record-selector a[aria-current] { border-color: #b5e9ed48; background: #b5e9ed0a; color: var(--reader-paper); }
+body.living-rift .journey-record-selector a[aria-current] { border-left-color: #b5e9edb3; background: linear-gradient(90deg, #b5e9ed12, transparent); color: var(--reader-paper); }
 body.living-rift .journey-record-selector img { width: 40px; height: 40px; object-fit: contain; flex: none; }
 body.living-rift .journey-record-canvas { display: block; min-width: 0; min-height: 0; border-left: 1px solid var(--reader-line); padding-left: 26px; }
 body.living-rift[data-journey-ready] .journey-record-canvas { overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 8px; }
@@ -211,7 +215,7 @@ body.living-rift .journey-lost-coordinate { color: #b5e9ed15; font: 500 clamp(10
   body.living-rift .journey-roster-tools .roster-role-options { grid-column: 1 / -1; grid-row: 2; flex-wrap: nowrap; justify-content: space-between; overflow: auto; }
   body.living-rift .journey-roster-tools .roster-role-options button { padding: 8px 9px; font-size: 11px; }
   body.living-rift .journey-roster-tools > button { grid-column: 2; grid-row: 1; }
-  body.living-rift .journey-roster-panel:not([hidden]) { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(100px, 1fr); gap: 18px; }
+  body.living-rift .journey-roster-panel:not([hidden]) { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(100px, 1fr); gap: 18px; background: linear-gradient(180deg, transparent 20%, #07111ce6 49%, #07111ca6); }
   body.living-rift .journey-roster-lens .roster-lens-media { height: 122px; max-height: 21dvh; aspect-ratio: auto; background: transparent; box-shadow: none; }
   body.living-rift .journey-roster-lens .roster-lens-media img { height: 100%; max-height: 21dvh; }
   body.living-rift .journey-roster-lens .roster-lens-media::before { display: none; }
@@ -229,7 +233,7 @@ body.living-rift .journey-lost-coordinate { color: #b5e9ed15; font: 500 clamp(10
   body.living-rift .journey-casting-wall .roster-entry-roles { font-size: 7px; margin-top: 4px; }
   body.living-rift .journey-casting-wall .roster-arrow { display: none; }
   body.living-rift .journey-roster-results .roster-results-bar { font-size: 10px; padding-bottom: 8px; }
-  body.living-rift .journey-archive-panel:not([hidden]) { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(110px, 1fr); gap: 20px; }
+  body.living-rift .journey-archive-panel:not([hidden]) { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(110px, 1fr); gap: 20px; background: linear-gradient(180deg, #07111c60, #07111cc9 60%, #07111ca6); }
   body.living-rift .journey-archive-panel .archive-instrument { padding: 10px 14px; }
   body.living-rift .journey-archive-panel .archive-instrument::before { display: none; }
   body.living-rift .journey-archive-panel .archive-instrument-current { margin-top: 12px; }
@@ -247,7 +251,7 @@ body.living-rift .journey-lost-coordinate { color: #b5e9ed15; font: 500 clamp(10
   body.living-rift .journey-patch-stops > li::before { top: 31px; }
   body.living-rift .journey-patch-stops .pid { font-size: 30px; }
   body.living-rift .journey-patch-stops .date { margin-top: 4px; font-size: 10px; }
-  body.living-rift .journey-champion-panel:not([hidden]) { grid-template-columns: minmax(0, 1fr); grid-template-rows: 110px minmax(0, 1fr); gap: 16px; }
+  body.living-rift .journey-champion-panel:not([hidden]) { grid-template-columns: minmax(0, 1fr); grid-template-rows: 110px minmax(0, 1fr); gap: 16px; background: linear-gradient(180deg, transparent, #07111ce6 30%, #07111cc4); }
   body.living-rift .journey-champion-art { flex-direction: row; justify-content: flex-start; gap: 18px; }
   body.living-rift .journey-champion-art picture { width: 100%; height: 110px; }
   body.living-rift .journey-champion-art img { width: 100%; height: 110px; object-fit: contain; }
@@ -261,7 +265,7 @@ body.living-rift .journey-lost-coordinate { color: #b5e9ed15; font: 500 clamp(10
   body.living-rift .journey-record-summary { font-size: 12px; margin-block: 12px 18px; }
   body.living-rift .journey-record-links { gap: 2px 14px; }
   body.living-rift .journey-record-links a { font-size: 11px; }
-  body.living-rift .journey-patch-champions .filter-bar { padding: 8px; max-height: 150px; overflow: auto; overscroll-behavior: contain; }
+  body.living-rift .journey-patch-champions .filter-bar { padding: 0 0 4px; max-height: 150px; overflow: auto; overscroll-behavior: contain; }
   body.living-rift .journey-patch-champions .filter-bar .seg { flex-wrap: wrap; }
   body.living-rift .journey-result-caption { font-size: 10px; }
   body.living-rift .journey-patch-browser { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 14px; }
@@ -269,7 +273,7 @@ body.living-rift .journey-lost-coordinate { color: #b5e9ed15; font: 500 clamp(10
   body.living-rift .journey-record-selector a { flex: none; min-height: 48px; padding: 7px 10px; gap: 8px; font-size: 12px; }
   body.living-rift .journey-record-selector img { width: 30px; height: 30px; }
   body.living-rift .journey-record-selector a > span:last-child { display: none; }
-  body.living-rift .journey-record-canvas { border-left: 0; border-top: 1px solid var(--reader-line); padding: 12px 5px 0 0; }
+  body.living-rift .journey-record-canvas { border-left: 0; border-top: 1px solid var(--reader-line); padding: 8px 5px 0 0; }
   body.living-rift .journey-record-canvas .change-card > header h3 { font-size: 29px; }
   body.living-rift .journey-record-fold > summary { min-height: 68px; gap: 12px; }
   body.living-rift .journey-record-fold > summary > span:first-child { font-size: 21px; }
@@ -327,7 +331,7 @@ body.living-rift .journey-patch-champions .patch-filter-options-body .seg { flex
   body.living-rift .journey-patch .journey-header-actions { gap: 0 12px; }
   body.living-rift .journey-patch .journey-header-actions a { min-height: 44px; }
 }
-body.living-rift .journey-source-context { margin: 8px 0 16px; }
+body.living-rift .journey-source-context { margin: 4px 0 10px; }
 body.living-rift .journey-source-context > summary { display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--reader-muted); font-size: 11px; min-height: 44px; list-style: none; }
 body.living-rift .journey-source-context > summary::after { content: '+'; color: var(--reader-signal); font-size: 17px; }
 body.living-rift .journey-source-context[open] > summary::after { content: '−'; }

@@ -37,7 +37,7 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
     <section id="champions" class="journey-panel journey-patch-champions" data-journey-panel data-journey-label="Champions" data-journey-world="champion" aria-label={"Champion records in patch " + patch.id}>
       <details id="your-perspective" class="journey-disclosure journey-pool-disclosure"><summary>Saved & shared champions</summary><PoolStrip client:load patchId={patch.id} assetVersion={patch.assetVersion} names={names} changed={changed}/><a class="journey-quiet-link" href="/pool#edit-pool">Choose saved champions ↗</a></details>
       <PatchFilterBar client:load entries={entries}/>
-      <div class="journey-result-caption"><p><span data-filter-count>{patch.champions.length}</span> champion records</p><span>{counts.buff} buffs · {counts.nerf} nerfs</span></div>
+      <p class="journey-result-caption">Patch totals: {counts.buff} buffs · {counts.nerf} nerfs</p>
       <p class="journey-empty" data-filter-empty hidden>No matching champions. Change a filter or select Clear filters.</p>
       <div class="journey-patch-browser" data-patch-browser>
         <nav class="journey-record-selector" aria-label="Choose a champion record">{patch.champions.map((champion, index) => <a href={"#" + champion.championId.toLowerCase()} data-patch-select={champion.championId.toLowerCase()} aria-current={index === 0 ? 'true' : undefined}><img src={"https://ddragon.leagueoflegends.com/cdn/" + patch.assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="40" height="40" loading="lazy" decoding="async"/><span>{meta[champion.championId]?.name ?? champion.championId}</span><span aria-hidden="true">→</span></a>)}</nav>

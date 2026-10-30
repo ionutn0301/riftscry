@@ -35,11 +35,23 @@ export function safeInternalHref(value: unknown): string | null {
   } catch { return null; }
 }
 
+/** A reading place never carries player identity, match review, or authoring state. */
+export function safeReadingHref(value: unknown): string | null {
+  const href = safeInternalHref(value);
+  if (!href) return null;
+  const url = new URL(href, "https://riftscry.invalid");
+  if (!/^(?:\/champion\/[a-z0-9]+|\/patch\/\d+\.\d+|\/compare\/\d+\.\d+\/\d+\.\d+|\/explore)\/?$/.test(url.pathname)) return null;
+  // Public archive URLs do not use these identity fields. Do not retain them
+  // if a stale or externally supplied URL happens to append them to a reader.
+  if ([...url.searchParams.keys()].some(key => /^(?:puuid|player|playerid|platform|match|matchid|review|ai)$/i.test(key))) return null;
+  return href;
+}
+
 export function parseReadingResume(raw: string | null): ReadingResume | null {
   if (!raw) return null;
   try {
     const value = JSON.parse(raw) as Partial<ReadingResume>;
-    const href = safeInternalHref(value.href);
+    const href = safeReadingHref(value.href);
     if (!href || typeof value.label !== "string" || !value.label.trim() || typeof value.updatedAt !== "string" || !Number.isFinite(Date.parse(value.updatedAt))) return null;
     return { href, label: value.label.trim().slice(0, 120), updatedAt: value.updatedAt };
   } catch { return null; }
@@ -60,7 +72,7 @@ export function readReturnState(): ReturnState {
 
 /** The scene controller can call this on a real reading destination. Device-local only. */
 export function rememberReading(href: string, label: string): boolean {
-  const safeHref = safeInternalHref(href);
+  const safeHref = safeReadingHref(href);
   if (typeof window === "undefined" || !safeHref || !label.trim()) return false;
   try {
     const resume: ReadingResume = { href: safeHref, label: label.trim().slice(0, 120), updatedAt: new Date().toISOString() };

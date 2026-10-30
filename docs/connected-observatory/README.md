@@ -96,6 +96,8 @@ change, or Vercel protection change is required by this redesign.
 
 ## Audit and research
 
+- [Movement with a purpose](KINETIC_REFINEMENT.md): the follow-up pass on directional
+  travel, direct timeline control, exact reading continuation, and shared task surfaces.
 - [Full route audit](AUDIT.md): actual tasks, manual friction, duplicated structures,
   retained data invariants, and implementation priorities.
 - [Current reference research](RESEARCH.md): primary studio/product sources, observed

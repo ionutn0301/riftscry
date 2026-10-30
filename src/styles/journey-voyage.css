@@ -26,7 +26,7 @@
 .voyage-station .change-choice { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 100%; margin-bottom: 23px; }
 .voyage-station .change-choice label { color: #9fbec2; font-size: 10px; }
 .voyage-station .change-choice select { width: 100%; min-height: 44px; font-size: 12px; padding: 10px 12px; background: #0d202bdb; color: #deece7; border-color: #b2d4d641; }
-.voyage-station .voyage-record { position: relative; background: linear-gradient(130deg,#0c1e28da,#0a1522a3); padding: clamp(18px,2.6vw,38px); border: 1px solid #accfd52e; border-left: 2px solid #b6e6d788; min-height: 0; max-width: none; margin: 0; }
+.voyage-station .voyage-record { position: relative; background: linear-gradient(100deg,#071522f2,#071522d9 70%,#07152280); padding: clamp(18px,2.6vw,38px); border: 1px solid transparent; border-left: 2px solid #b6e6d766; min-height: 0; max-width: none; margin: 0; box-shadow: none; }
 .voyage-station .voyage-record::before,.voyage-station .voyage-record::after { display: none; }
 .voyage-station .record-context { display: flex; flex-wrap: wrap; gap: 7px 14px; color: #9fbdc6; font-size: 8px; margin: 0 0 17px; }
 .rift-voyage.voyage-station .record-context { position: static; z-index: auto; padding: 0; background: none; }
@@ -54,8 +54,8 @@
 .voyage-station .history-controls > span { align-self: center; }
 .voyage-station .history-validation { font-size: 10px; color: #92acb7; margin: 13px 0 22px; }
 .voyage-station .history-trace { display: flex; gap: 15px; overflow-x: auto; padding: 15px 0 22px; margin: 0; }
-.voyage-station .history-stop { flex: 1 0 200px; max-width: 400px; min-height: 150px; padding: 18px; background: #112431ad; border: 1px solid #a6c3d235; }
-.voyage-station .history-stop[aria-pressed="true"] { border-color: #c5e8d4; background: #15312ec2; }
+.voyage-station .history-stop { flex: 1 0 200px; max-width: 400px; min-height: 150px; padding: 18px; background: linear-gradient(180deg,#08152252,#081522cc); border: 1px solid transparent; border-bottom-color: #a6c3d247; }
+.voyage-station .history-stop[aria-pressed="true"] { border-bottom-color: #c5e8d4; background: linear-gradient(180deg,#102b2c99,#102b2cdb); }
 .voyage-station .trace-reading { border: 0; background: none; padding: 15px 0; margin: 0; }
 .voyage-station .trace-connection { font-size: 21px; color: #d6e4dc; }
 .voyage-station [data-trace-description] { color: #adc3cc; font-size: 13px; max-width: 80ch; }
