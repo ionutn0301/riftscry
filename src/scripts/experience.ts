@@ -29,21 +29,27 @@ motionButton?.addEventListener('click', () => {
 
 const map = document.querySelector<HTMLDialogElement>('#rift-map-dialog');
 const trigger = document.querySelector<HTMLButtonElement>('[data-map-open]');
-const readingLink = map?.querySelector<HTMLAnchorElement>('[data-reading-resume]');
-const exploreLink = map?.querySelector<HTMLAnchorElement>('[data-map-explore]');
+const readingLink = map?.querySelector<HTMLAnchorElement>('[data-reading-shortcut]');
 const readingLocation = () => location.pathname + location.search + location.hash;
 function updateReadingLink() {
   if (!readingLink) return;
   const resume = readReturnState().resume;
   const available = Boolean(resume && resume.href !== readingLocation());
-  readingLink.hidden = !available;
-  if (exploreLink) exploreLink.hidden = available;
-  if (!available || !resume) { readingLink.removeAttribute('href'); return; }
+  // One native shortcut changes purpose; the map always has exactly three
+  // specialist links, including before enhancement or without device storage.
+  readingLink.toggleAttribute('data-reading-resume', available);
+  readingLink.toggleAttribute('data-map-explore', !available);
+  const label = readingLink.querySelector('[data-reading-subject]');
+  if (!available || !resume) {
+    readingLink.href = '/explore#change';
+    readingLink.removeAttribute('aria-label');
+    if (label) label.textContent = 'Explore a change';
+    return;
+  }
   readingLink.href = resume.href;
   const subject = resume.label.replace(/ — your explored interval$/, '').replace(/ Patch History$/, '')
     .replace(/^League Patch (.+) Changes$/, 'patch $1').replace(/^League (.+ vs .+)$/, 'patches $1');
-  const label = readingLink.querySelector('[data-reading-subject]');
-  if (label) label.textContent = subject;
+  if (label) label.textContent = `Continue ${subject}`;
   readingLink.setAttribute('aria-label', `Continue ${resume.label}`);
 }
 function rememberCurrentReading() {
