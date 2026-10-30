@@ -32,6 +32,8 @@ const surface = requestedSurface ?? inferredSurface;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- The incoming document must opt in before reveal, even while its stylesheets are loading. -->
+    <style is:inline>@view-transition { navigation: auto; }</style>
     <meta name="theme-color" content="#070b13" />
     <title>{title}</title>
     <meta name="description" content={description} />
