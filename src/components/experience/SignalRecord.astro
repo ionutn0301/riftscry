@@ -42,7 +42,7 @@ const { entries, label, patchId, sourceUrl, championId, inspectHref } = Astro.pr
       </article>;
     })}
   </div>
-  {(sourceUrl || inspectHref) && <footer class="signal-record-footer">{inspectHref && <a href={inspectHref}>Follow this signal <span aria-hidden="true">↗</span></a>}{sourceUrl && <a href={sourceUrl} target="_blank" rel="noreferrer">Original source <span aria-hidden="true">↗</span></a>}</footer>}
+  {(sourceUrl || inspectHref) && <footer class="signal-record-footer">{inspectHref && <a href={inspectHref}>Follow this signal <span aria-hidden="true">↗</span></a>}{sourceUrl && <a href={sourceUrl} target="_blank" rel="noreferrer">Riot’s notes · Original source <span aria-hidden="true">↗</span></a>}</footer>}
   <p class="visually-hidden" data-signal-status role="status" aria-live="polite"></p>
 </div>
 <script>
