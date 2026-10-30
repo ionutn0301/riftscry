@@ -49,12 +49,19 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
     if (!draft) return;
     setOpen(true);
     setStatus('Draft ready. Review it before saving.');
+  }, [draft]);
+
+  // The prepared card is rendered only after the disclosure opens. Focusing in
+  // the draft effect races React's next commit and silently loses keyboard focus.
+  useEffect(() => {
+    if (!draft || !open) return;
     const frame = requestAnimationFrame(() => {
-      draftDetails.current?.querySelector<HTMLElement>('[data-prepared-adjustment]')?.focus({ preventScroll: true });
-      draftDetails.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+      const target = draftDetails.current?.querySelector<HTMLElement>('[data-prepared-adjustment]');
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ block: 'nearest', behavior: 'auto' });
     });
     return () => cancelAnimationFrame(frame);
-  }, [draft]);
+  }, [draft, open]);
 
   useEffect(() => {
     if (!savedId || !notes.some(note => note.id === savedId)) return;
