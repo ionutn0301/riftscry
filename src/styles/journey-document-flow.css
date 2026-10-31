@@ -236,3 +236,17 @@ body.rift-shell[data-journey-ready] .signal-opening-copy .signal-return-hint[hid
    Clip its paint without introducing any horizontal scrolling region. */
 html:has(body.rift-shell[data-journey-ready]) { overflow-x: clip; }
 body.rift-shell[data-journey-ready] .signal-journey { overflow-x: clip; }
+
+/* On the shortest portrait phones, the carry-forward action stays entirely
+   above the chapter controls rather than being covered by the cast. */
+@media (max-width:700px) and (max-height:620px) and (orientation:portrait) {
+  body.rift-shell[data-journey-ready] .signal-carry-desk { width:100%; padding:0 0 8px; }
+  body.rift-shell[data-journey-ready] .signal-carry-desk h2 { font-size:clamp(21px,6.5vw,28px); margin:2px 0; }
+  body.rift-shell[data-journey-ready] .signal-carried-record { gap:10px; margin-top:0; padding:3px 0; }
+  body.rift-shell[data-journey-ready] .signal-carried-mark { font-size:28px; }
+  body.rift-shell[data-journey-ready] .signal-carried-record > div { gap:3px; }
+  body.rift-shell[data-journey-ready] .signal-carried-record strong { font-size:clamp(17px,5vw,22px); }
+  body.rift-shell[data-journey-ready] .signal-carried-record div > span { display:none; }
+  body.rift-shell[data-journey-ready] .signal-carry-explore { margin-top:0; }
+  body.rift-shell[data-journey-ready] .signal-carry-desk .signal-opening-actions { margin-top:0; }
+}
