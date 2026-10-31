@@ -10,7 +10,7 @@ async function separated(passage:Locator){
   expect(collisions).toEqual([]);
 }
 
-for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,height:384},{width:844,height:390},{width:1366,height:768},{width:1440,height:900},{width:1920,height:1080}]){
+for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,height:384},{width:844,height:390},{width:1366,height:600},{width:1366,height:768},{width:1440,height:900},{width:1920,height:1080}]){
   test(`${viewport.width}×${viewport.height}: one homepage, one title and no overlapping controls`,async({page})=>{
     await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
     const requests=await installFixtures(page);await page.goto('/');
@@ -33,6 +33,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
     await page.locator('[data-map-close]').click();
     await entrance.locator('[data-passage-range]').focus();await page.keyboard.press('Home');
     await expect(entrance.locator('h1')).toHaveAccessibleName('Every game leaves a ripple.');
+    await entrance.locator('[data-passage-gesture]').click();
     await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
     await mkdir('player-visuals',{recursive:true});await page.screenshot({path:`player-visuals/home-${viewport.width}x${viewport.height}.png`,fullPage:true});
   });

@@ -36,7 +36,7 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
     if(home)enter.toggleAttribute('data-home-briefing',selected===0);
     enter.setAttribute('aria-label',personal?`Continue briefing for ${player!.name||'your player'}`:`Enter ${station.label}`);
     const identity=root.querySelector<HTMLElement>('[data-passage-personal]');
-    if(identity){identity.hidden=!personal||!player?.name;identity.textContent=personal?player!.name:'';}
+    if(identity){identity.textContent=personal?player!.name:'';identity.setAttribute('aria-hidden',String(!personal||!player?.name));}
     enter.href=stops[selected]!.href;
   }
   function select(value:number){
@@ -106,7 +106,9 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
   range.addEventListener('input',()=>select(Number(range.value)),events);
   root.querySelectorAll<HTMLButtonElement>('[data-passage-step]').forEach(button=>button.addEventListener('click',()=>select(Math.round(target)+Number(button.dataset.passageStep)),events));
   stops.forEach((stop,index)=>{
-    stop.addEventListener('pointerover',event=>{if(event.pointerType!=='touch')select(index);},events);
+    // Layout changes can fire pointerover beneath a stationary cursor. Only
+    // physical pointer movement should preview another destination.
+    stop.addEventListener('pointermove',event=>{if(event.pointerType!=='touch'&&selected!==index)select(index);},events);
     stop.addEventListener('focus',()=>select(index),events);
   });
   viewport.addEventListener('keydown',event=>{

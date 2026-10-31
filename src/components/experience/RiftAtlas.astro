@@ -29,7 +29,7 @@ const faces = projectRift({...getRiftPreset('home'),...pose,accent:first.color})
     {entrance?<h1 id="atlas-title" data-passage-title aria-label="Every game leaves a ripple.">Every game leaves <em>a ripple.</em></h1>:<h2 data-passage-title>{first.title}</h2>}
     <p data-passage-description>{first.description}</p>
     <a class="passage-enter" href={first.href} data-passage-enter data-home-briefing={entrance?'':undefined}><span data-passage-enter-label data-home-briefing-label={entrance?'':undefined}>Enter {first.label}</span><span aria-hidden="true">↗</span></a>
-    {entrance&&<p class="passage-personal" data-passage-personal hidden></p>}
+    {entrance&&<p class="passage-personal" data-passage-personal aria-hidden="true"></p>}
   </div>
   <div class="passage-instrument" data-passage-instrument hidden>
     <button type="button" data-passage-step="-1" aria-label="Previous destination">←</button>

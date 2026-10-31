@@ -1,5 +1,5 @@
 /* The same traversable object is the entrance, mobile menu and route compass. */
-.rift-passage { --passage-color:#bcf5de; position:relative; isolation:isolate; display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); grid-template-rows:minmax(300px,1fr) 44px 66px; grid-template-areas:"copy visual" "copy controls" "stops stops"; gap:0 30px; width:100%; height:clamp(480px,calc(100svh - 170px),760px); min-width:0; }
+.rift-passage { --passage-color:#bcf5de; position:relative; isolation:isolate; display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); grid-template-rows:minmax(300px,1fr) 72px 66px; grid-template-areas:"copy visual" "copy controls" "stops stops"; gap:0 30px; width:100%; height:auto; min-height:clamp(480px,calc(100svh - 170px),760px); min-width:0; }
 .passage-viewport { grid-area:visual; position:relative; min-height:0; overflow:clip; touch-action:none; cursor:grab; outline-offset:-5px; }
 .passage-viewport:active { cursor:grabbing; }
 .passage-viewport::before { content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 48%,color-mix(in srgb,var(--passage-color) 15%,transparent),transparent 60%); }
@@ -13,19 +13,21 @@
 .passage-axis { left:0; writing-mode:vertical-rl; }.passage-coordinate { right:4px; }
 .passage-reading { grid-area:copy; position:relative; z-index:2; align-self:center; min-width:0; padding-block:24px; }
 .passage-reading :is(h1,h2) { font:400 clamp(28px,4vw,59px)/1.02 var(--font-display); color:#e8eee5; letter-spacing:-.045em; margin:12px 0; text-wrap:balance; }
-.passage-reading h1 { font-size:clamp(36px,4.7vw,68px); line-height:1.08; max-width:14ch; }
+.passage-reading h1 { font-size:clamp(36px,4.7vw,68px); line-height:1.08; max-width:14ch; min-height:2.16em; }
+.passage-reading h2 { min-height:2.16em; }
+.passage-reading [data-passage-description] { min-height:3.2em; }
 .passage-reading h1 em { display:block; font:italic 400 1em Georgia,serif; color:#bde3cf; }
 .passage-reading > p:not(.journey-eyebrow) { font-size:12px; color:#aec5c6; line-height:1.6; max-width:28ch; }
 .passage-reading .journey-eyebrow { color:var(--passage-color); font-size:8px; }
 .passage-enter { pointer-events:auto; display:inline-flex; align-items:center; justify-content:space-between; gap:30px; min-width:180px; min-height:48px; margin-top:18px; padding:10px 17px; border:1px solid #c7eed36b; background:#c7eed312; color:#d8f1df; font-size:12px; }
 .passage-enter:hover { border-color:#d4f5df; background:#c7eed326; color:#effaef; }
 .passage-enter > span:last-child { font-size:22px; }
-.passage-reading .passage-personal { max-width:100%; margin-top:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
-.passage-instrument { grid-area:controls; display:flex; align-items:center; justify-content:center; gap:18px; padding:0; min-width:0; }
+.passage-reading .passage-personal { max-width:100%; min-height:18px; margin-top:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
+.passage-instrument { grid-area:controls; display:flex; align-items:flex-end; justify-content:center; gap:18px; padding:0; min-height:72px; min-width:0; }
 .passage-instrument button { width:44px; height:44px; flex:none; border:1px solid #b8d9c831; border-radius:50%; color:#c8e8d6; font-size:20px; }
 .passage-instrument button:disabled { opacity:.3; }
-.passage-instrument label { display:block; position:relative; height:44px; width:min(220px,45%); font:7px 'Spline Sans Mono',monospace; text-align:center; color:#9ab9b7; }
-.passage-instrument label > span { position:absolute; left:0; right:0; top:-9px; pointer-events:none; }
+.passage-instrument label { display:grid; grid-template-rows:24px 44px; position:relative; height:68px; width:min(220px,45%); font:8px/12px 'Spline Sans Mono',monospace; text-align:center; color:#9ab9b7; }
+.passage-instrument label > span { align-self:center; pointer-events:none; }
 .passage-instrument input { width:100%; height:44px; min-height:44px; margin:0; accent-color:var(--passage-color); cursor:ew-resize; touch-action:pan-y; }
 /* These are ordinary destinations, all visible. Exploring the object is optional. */
 .rift-passage .passage-stops { grid-area:stops; display:flex; align-items:stretch; justify-content:center; gap:clamp(8px,2vw,36px); min-height:66px; padding:4px 0 0; border-top:1px solid #bddbc51c; overflow:visible; flex:none; }
@@ -65,7 +67,7 @@ body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibili
 .journey-map .journey-map-inner { height:auto; min-height:100dvh; max-width:1380px; padding-block:20px; justify-content:center; }
 .journey-map .journey-map-heading { position:sticky; top:0; z-index:5; padding:0; background:#07151af5; }
 .journey-map .journey-map-heading h2 { margin-top:5px; font-size:clamp(30px,4vw,56px); }
-.journey-map .rift-passage { flex:none; height:clamp(480px,calc(100svh - 180px),760px); }
+.journey-map .rift-passage { flex:none; height:auto; min-height:clamp(480px,calc(100svh - 180px),760px); }
 
 .journey-map .journey-map-footer { display:flex; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:5px; gap:0 28px; }
 .journey-map { background:radial-gradient(ellipse at 60% 40%,#112a2ce8,#061016fc 72%); overflow-y:auto; }
@@ -97,14 +99,15 @@ body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibili
   body.rift-shell[data-journey-ready] .journey-primary { display:none; }
   .world-utilities { gap:4px; }.world-brand img { width:120px; }
   .journey-map-trigger > span:last-child { display:none; }
-  .rift-passage,.journey-map .rift-passage { height:auto; grid-template-columns:minmax(0,1fr); grid-template-rows:auto clamp(220px,34svh,360px) 44px auto; grid-template-areas:"copy" "visual" "controls" "stops"; gap:8px 0; }
+  .rift-passage,.journey-map .rift-passage { height:auto; min-height:0; grid-template-columns:minmax(0,1fr); grid-template-rows:auto clamp(220px,34svh,360px) 72px auto; grid-template-areas:"copy" "visual" "controls" "stops"; gap:8px 0; }
   .passage-reading { padding:12px 0 0; align-self:start; }
   .passage-reading :is(h1,h2) { font-size:clamp(30px,8vw,44px); line-height:1.08; margin:10px 0; max-width:19ch; }
+  .passage-reading h1 { min-height:2.16em; }
   .passage-reading .journey-eyebrow { font-size:8px; }
   .passage-reading > p:not(.journey-eyebrow) { font-size:12px; max-width:36ch; }
   .passage-enter { min-height:44px; margin-top:14px; min-width:165px; background:#081b20d9; }
   .passage-axis { left:6px; top:14px; font-size:6px; }.passage-coordinate { top:14px; font-size:8px; }
-  .passage-instrument { gap:14px; }.passage-instrument label { font-size:7px; width:min(210px,55%); }
+  .passage-instrument { gap:14px; }.passage-instrument label { width:min(210px,55%); }
   .rift-passage .passage-stops { gap:0; min-height:58px; padding:0; }
   .rift-passage .passage-stops > a { flex:1; width:auto; min-width:44px; min-height:56px; gap:5px; padding:4px 1px; font-size:10px; }
   .rift-passage .passage-stops > a svg { width:18px; height:18px; }
@@ -128,7 +131,7 @@ body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibili
 }
 @media (max-height:620px) { body.rift-shell[data-journey-ready] .signal-journey { min-height:0; } }
 @media (max-height:480px) and (min-width:701px) {
-  .rift-passage,.journey-map .rift-passage { height:auto; min-height:360px; grid-template-rows:minmax(240px,1fr) 44px 58px; }
+  .rift-passage,.journey-map .rift-passage { height:auto; min-height:360px; grid-template-rows:minmax(240px,1fr) 72px 58px; }
   .passage-reading { padding-block:12px; }.passage-reading :is(h1,h2) { font-size:34px; }
 }
 @media (prefers-reduced-motion:reduce) { .rift-shell [data-journey-panel] { animation:none!important; } }

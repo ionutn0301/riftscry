@@ -167,9 +167,16 @@ The previous browser CI finished with 105 passes and six failures after the
 merge. Some checks referenced retired navigation/artwork; the Saved chapter
 also exposed an initial fragment scroll defect. Those expectations and the
 fragment behavior are corrected. A separate CI job now measures intersections
-between actual browser boxes at 320, 390, 683, 844, 1366, 1440 and 1920px,
+between actual browser boxes at 320, 390, 683, 844, 1366, 1440 and 1920px, including a 600px-tall laptop,
 checks all five destinations and the menu, and retains screenshots. Its results
 must be reviewed before treating the correction as visually verified.
+
+The first geometry run passed six viewports and exposed a separate 390px
+interaction defect: after a title changed height, `pointerover` could preview a
+destination under the stationary cursor and skip the expected next stop. Hover
+preview now requires physical pointer movement; title/caption space is stable,
+and the grid can grow with content. The range hint has its own row so a keyboard
+focus ring cannot cross its text. The follow-up run includes eight viewports.
 
 ## Actual verification and limitations
 
@@ -177,14 +184,14 @@ Validation for this revision:
 
 - Astro check: 266 files, zero errors and warnings, one pre-existing unused-import
   hint in `src/pages/players.astro`.
-- Vitest: all 550 tests pass across 59 files. New cases cover camera convergence,
+- Vitest: all 551 tests pass across 59 files. New cases cover camera convergence,
   boundary/reversal behavior, reduced motion, resize without canvas clearing,
   wheel scroll release, image races/failure/abort, fast React scene registration,
   explicit AI request/success/failure/deterministic fallback, camera tangent
   continuity, closed shape topology, kinetic text semantics and useful returns.
 - Production build succeeds with the existing Astro/Vercel adapter.
 - Production-output contract passes on all 622 generated content pages.
-- Browser collections parse successfully: 753 archive/journey cases and 118
+- Browser collections parse successfully: 753 archive/journey cases and 119
   fixture-backed player cases. Collection is not browser execution.
 
 Browser suites cover the five destinations, menu focus return, long profile

@@ -61,11 +61,19 @@ it('uses one entry action for the remembered player, then restores the home titl
   await import('../../../src/scripts/rift-passage');
   expect(enter().textContent).toContain('Continue briefing');expect(person.textContent).toBe('Returning Player#TEST');
   viewport.dispatchEvent(new KeyboardEvent('keydown',{key:'End',cancelable:true}));
-  expect(enter().hasAttribute('data-home-briefing')).toBe(false);expect(person.hidden).toBe(true);expect(enter().textContent).toContain('Enter Saved');
+  expect(enter().hasAttribute('data-home-briefing')).toBe(false);expect(person.getAttribute('aria-hidden')).toBe('true');expect(enter().textContent).toContain('Enter Saved');
   localStorage.clear();window.dispatchEvent(new StorageEvent('storage',{key:null}));
   viewport.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',cancelable:true}));
   expect(title.getAttribute('aria-label')).toBe('Every game leaves a ripple.');expect(title.querySelector('em')?.textContent).toBe('a ripple.');
-  expect(enter().textContent).toContain('Enter Briefing');expect(person.hidden).toBe(true);
+  expect(enter().textContent).toContain('Enter Briefing');expect(person.getAttribute('aria-hidden')).toBe('true');
+});
+it('ignores pointerover caused by layout shifts and previews only physical movement',async()=>{
+  await import('../../../src/scripts/rift-passage');
+  const stop=document.querySelector('[data-passage-stop="4"]')!;
+  stop.dispatchEvent(new PointerEvent('pointerover',{pointerType:'mouse',bubbles:true}));
+  expect(enter().textContent).toContain('Enter Briefing');
+  stop.dispatchEvent(new PointerEvent('pointermove',{pointerType:'mouse',bubbles:true}));
+  expect(enter().textContent).toContain('Enter Saved');
 });
 it('keeps reduced motion immediate, with no continuous idle animation',async()=>{
   await import('../../../src/scripts/rift-passage');
