@@ -41,6 +41,7 @@ function activate(id: string, options: { history?: boolean; focus?: boolean; ann
   if (old !== panel.id) deck.dataset.journeyTravel = previousIndex < 0 ? 'arrive'
     : index > previousIndex ? 'forward' : 'backward';
   active = panel.id;
+  panel.querySelector('h1,h2')?.setAttribute('data-kinetic-heading','');
   // A new chapter begins at its own entrance. With a single document scroll
   // (not a trapped panel scrollbar), preserve the previous chapter only when
   // navigating browser history; direct chapter activation returns to the top.
@@ -48,6 +49,7 @@ function activate(id: string, options: { history?: boolean; focus?: boolean; ann
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
   for (const item of panels) {
+    item.toggleAttribute('data-journey-visible',item===panel);
     item.hidden = item !== panel;
     item.inert = item !== panel;
     item.setAttribute('role', 'tabpanel');
@@ -56,6 +58,8 @@ function activate(id: string, options: { history?: boolean; focus?: boolean; ann
   }
   deck.dataset.journeyActive = active;
   document.body.dataset.journeyScene = active;
+  const currentLabel = document.querySelector('[data-journey-current-label]');
+  if (currentLabel) currentLabel.textContent = panel.dataset.journeyLabel ?? 'Scene';
   document.body.dataset.journeyReady = 'true';
   const tabButtons = [...(tabs?.querySelectorAll<HTMLButtonElement>('button') ?? [])];
   for (const button of tabButtons) {
@@ -130,6 +134,7 @@ function discover() {
   if (controls) controls.hidden = panels.length < 2;
   const requested = containingPanel(hashId())?.id ? hashId()
     : panels.some(panel => panel.id === active) ? active
+    : found.matches('[data-home-signals]') && new URLSearchParams(location.search).has('signal') ? 'signal'
     : deck.dataset.journeyDefault ?? panels[0]!.id;
   activate(requested);
 }
@@ -191,6 +196,9 @@ window.addEventListener('hashchange', restore, listen);
 window.addEventListener('popstate', restore, listen);
 window.addEventListener('riftscry:journey-reveal', event => {
   const detail = (event as CustomEvent<{ id?: string; focus?: boolean }>).detail;
+  // A React commit can expose an action before the observer's next frame.
+  // Register those panels now so that action opens and focuses its real target.
+  discover();
   if (detail?.id) activate(detail.id, { history: true, focus: detail.focus !== false, announce: true });
 }, listen);
 

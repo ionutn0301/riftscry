@@ -20,6 +20,14 @@ main { min-width: 0; }
 button,a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 :focus-visible { outline: 2px solid var(--world-signal); outline-offset: 4px; }
 ::selection { background: var(--world-signal); color: var(--ink); }
+/* Type shares the camera's sense of depth, while keeping its final text immediate. */
+.kinetic-word-mask { display:inline-block; overflow:clip; vertical-align:bottom; padding-block:.18em; margin-block:-.18em; perspective:700px; }
+.kinetic-word { display:inline-block; transform-origin:50% 100%; animation:kinetic-word-arrive .72s var(--journey-ease) var(--word-delay,0ms) both; }
+[data-kinetic-heading]:not([data-kinetic-title]) { transform-origin:0 100%; animation:kinetic-heading-arrive .7s var(--journey-ease) both; }
+@keyframes kinetic-word-arrive { from { transform:translate3d(0,115%,0) rotateX(-65deg) skewX(-7deg); } to { transform:none; } }
+@keyframes kinetic-heading-arrive { from { clip-path:inset(0 0 100%); transform:perspective(900px) translate3d(0,18px,-22px) rotateX(-12deg); } to { clip-path:inset(0); transform:none; } }
+html[data-motion=reduced] :is(.kinetic-word,[data-kinetic-heading]) { animation:none; }
+@media (prefers-reduced-motion:reduce) { :is(.kinetic-word,[data-kinetic-heading]) { animation:none!important; } }
 .skip-link { position: fixed; z-index: 100; }
 .rift-site-shell { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100svh; }
 .rift-shell #main { position: relative; flex: 1; padding: 24px var(--scene-gutter); isolation: isolate; }
@@ -132,6 +140,17 @@ button,a { -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 .kept-collection a { color: var(--world-signal); overflow-wrap: anywhere; }
 .kept-collection a span { display: block; color: var(--cream-dim); margin-top: 8px; font-size: 14px; }
 .kept-collection button { flex: none; min-height: 44px; border: 1px solid var(--line); padding: 8px 14px; font-size: 12px; }
+
+/* A consistent handoff makes the useful next action part of the scene. */
+.rift-shell .journey-handoff { display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:76px; margin-top:24px; padding:18px 20px; border:1px solid #accdce3b; border-left:2px solid var(--world-signal); background:linear-gradient(110deg,#b9e6cc0e,transparent 80%); color:#d9efde; text-decoration:none; }
+.journey-handoff > span { min-width:0; }
+.journey-handoff small { display:block; margin-bottom:5px; color:#9fbab4; font:9px/1.4 'Spline Sans Mono',monospace; letter-spacing:.08em; text-transform:uppercase; }
+.journey-handoff strong { font:400 clamp(13px,1.5vw,17px)/1.5 var(--font-ui); overflow-wrap:anywhere; }
+.journey-handoff svg { flex:none; width:24px; height:24px; stroke:var(--world-signal); stroke-width:1.2; transition:transform .24s var(--journey-ease); }
+.journey-handoff:hover { border-color:#bddfc88a; background-color:#b9e6cc08; }
+.journey-handoff:hover svg { transform:translateX(4px); }
+html[data-motion=reduced] .journey-handoff svg { transition:none; }
+@media (prefers-reduced-motion:reduce) { .journey-handoff svg { transition:none; } }
 
 /* Shared object continuity, with native URLs and an immediate fallback. */
 @view-transition { navigation: auto; }

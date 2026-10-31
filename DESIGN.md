@@ -1,14 +1,32 @@
 # RiftScry design
 
-## Current direction: the signal journey
+## Current direction: the Rift atlas
 
-This is the design contract implemented in the 30 October 2026 refactor. It
+This is the design contract implemented in the 31 October 2026 refactor,
+with motion and return-path refinement on 1 November 2026.
+The [atlas audit and research](docs/rift-atlas/AUDIT.md) record this change. It
 supersedes earlier scrolling-homepage, observatory, and disconnected player
 presentation amendments. See the [platform audit](docs/signal-journey/AUDIT.md)
 and [research](docs/signal-journey/RESEARCH.md) for the rationale, and
 [PRODUCT.md](PRODUCT.md) for evidence, queue, privacy, and storage contracts.
 
-The organizing idea is the space between games: where the visitor left off,
+The organizing idea is a connected world in the space between games. The Beacon
+(briefing), Echoes (games), Archive (champions), Fracture (patches), and Sanctuary
+(saved material) are places on one atlas. A persistent route path and the same
+spatial instrument on every route supply a stable geography. The entrance and
+menu use one perspective-projected Rift with five authored camera positions.
+Drag, wheel, keyboard and a native range move the same object continuously;
+all five destinations also remain ordinary links. Camera work is optional and
+reduced motion selects the destination immediately. Destination type unfolds in
+masked words; the same camera position drives a closed, morphing aperture.
+Spline interpolation keeps tangents continuous between stations, while pointer
+lean and travel streaks provide depth. Rendering stops at rest. Shared chapter
+headings use a finite depth reveal without modifying React-owned text nodes.
+Kinetic text retains one complete accessible heading and preserves authored
+emphasis; reduced motion removes these animations.
+
+The homepage brings the remembered briefing and exact public reading place
+forward without making another lookup or storing new work. Within each place: where the visitor left off,
 what changed, and what they take forward. A champion, player, recorded match, or
 patch pair gives the scene a subject. **Choose → reveal → inspect → keep** is the
 shared interaction grammar. The important moment is an understandable change or
@@ -16,7 +34,8 @@ useful recorded fact; scenery and movement frame that moment.
 
 ## One shell across the platform
 
-The header offers Discover, My game, and Saved. The map provides direct links to
+The desktop header offers Discover, My game, and Saved. Mobile uses a compact
+header, the five-place path and a full-screen Rift instrument. The map provides direct links to
 the five established destinations, with comparison, exploration, and notebook
 shortcuts. A lower continuation link follows the selected archive subject or
 player; named scene tabs and previous/next controls belong to the active route.
@@ -36,10 +55,12 @@ delay a request, block a record, or require an animation to finish.
 
 ## The opening and its continuations
 
-The homepage is `SignalJourney.astro`. It has three focused scenes:
+The homepage is `SignalJourney.astro`. The atlas is its entrance; the evidence
+journey remains a direct branch with three focused scenes:
 
 | Scene | Experience |
 | --- | --- |
+| The Rift — `#atlas` | Five native destination portals, setting previews, directional keyboard focus, and a direct automatic briefing action. |
 | Find a signal — `#signal` | Recognizable champion art, a real archive example, a reveal action, and a direct route to the visitor's games. Featured subjects change the actual record. |
 | Reveal the change — `#reveal` | An exact before/after record or rule is the focal object. The field, patch, and source remain identifiable; keeping the finding is explicit. |
 | Take it forward — `#carry` | The selected record remains recognizable. Continue to the briefing, reopen kept findings, or trace the same subject in `/explore`. |
@@ -124,7 +145,10 @@ shortcuts must not capture text entry or composition.
 
 | Responsibility | Active sources |
 | --- | --- |
+| Spatial atlas and route path | `src/components/experience/RiftAtlas.astro`, `JourneySpine.astro`, `src/scripts/rift-atlas.ts`, `src/scripts/rift-passage.ts`, `src/lib/passage-camera.ts`, `src/styles/rift-atlas.css` |
 | Shared shell and navigation | `src/layouts/Layout.astro`, `src/components/experience/JourneyWayfinder.astro`, `src/components/experience/JourneyChrome.astro`, `src/styles/experience-shell.css` |
+| Kinetic type and camera-linked shape | `src/scripts/kinetic-type.ts`, `src/lib/passage-camera.ts`, `src/scripts/rift-passage.ts` |
+| Evidence-to-action handoffs | `src/components/experience/JourneyHandoff.tsx`; native links from changes to impact, and from impact/loadout to the exact source match |
 | Scene visibility, history, and focus | `src/scripts/connected-observatory.ts`; shared map/motion behavior in `src/scripts/experience.ts` |
 | Public subject and player continuation | `src/scripts/signal-continuity.ts`, `src/lib/signal-context.ts`, `src/lib/player/identity.ts` |
 | Homepage | `src/components/experience/SignalJourney.astro`, `src/scripts/signal-journey.ts`, `src/styles/signal-journey.css` |
@@ -132,6 +156,7 @@ shortcuts must not capture text entry or composition.
 | Champion exploration | `src/components/experience/HomeVoyage.astro`, `src/scripts/voyage.ts`, `src/styles/signal-explore.css` |
 | Roster/archive preview and comparisons | `src/scripts/reader-lens.ts`, `src/scripts/signal-comparison.ts` |
 | Player, briefing, and notebook presentation | `src/components/player/`, `src/components/companion/`, `src/styles/signal-player.css`, and their retained task styles |
+| Decoded artwork swaps | `src/scripts/artwork.ts` (latest selection wins; retain the current image until the next is decoded) |
 | Shared environment | `src/components/experience/RiftScene.astro`, `src/scripts/rift-scene.ts`, `src/styles/rift-scene.css` |
 
 The filename `connected-observatory.ts` remains the scene controller; it does not
@@ -146,7 +171,10 @@ archive merely to present the opening scene.
 
 ## Verification and historical evidence
 
-Verification of this refactor is still in progress. Record the tested commit and
+The first implementation passed typecheck, the production build and 519 tests.
+Five atlas DOM tests passed separately. The output contract checked 622 generated
+content pages. Browser QA is pending: managed preview infrastructure was unavailable,
+Vercel access was protected, and the workspace became unavailable during cleanup. Record the tested commit and
 actual results in the pull request and CI artifacts. Test collection is not a
 browser pass, historical screenshots are not current baselines, and controlled
 fixtures do not establish successful live Riot or AI access.

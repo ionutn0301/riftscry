@@ -10,6 +10,7 @@ import ChampionPortrait from '../player/ChampionPortrait';
 import { championDisplayName } from '../player/championArtwork';
 import PlayerIcon, { type PlayerIconName } from '../player/PlayerIcon';
 import { usePlayerCooldown } from '../player/usePlayerCooldown';
+import JourneyHandoff from '../experience/JourneyHandoff';
 
 type Props = {
   contexts: AutomaticChampionContext[];
@@ -64,6 +65,7 @@ export default function PatchImpact({ contexts, player, selectedChampion, source
 
     {selected ? <ImpactResult key={`${scope}:${selected.latestMatch.metadata.matchId}:${selected.latestMatch.info.gameVersion}`} id={`${id}-result`} context={selected} player={player} sourceHref={sourceHref(selected.latestMatch)} />
       : <div id={`${id}-result`} className="patch-impact-state" data-impact-status="unknown"><span className="patch-impact-state-symbol"><PlayerIcon name="info" size={25} /></span><div><h3>No imported {championDisplayName(selectedChampion ?? '')} game yet.</h3><p>A personal comparison needs a recorded game on this champion.{contexts.length > 0 ? ' Choose another recent champion above to explore its patch impact.' : ' Return after a supported game appears in match history.'}</p></div></div>}
+    {selected&&<JourneyHandoff href={sourceHref(selected.latestMatch)} cue="Next · Match review" label={`Review the ${championDisplayName(selected.champion)} match behind this build`}/>}
   </section>;
 }
 

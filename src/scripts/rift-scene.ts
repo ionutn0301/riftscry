@@ -275,6 +275,7 @@ export function initializeRiftScene(root: HTMLElement): () => void {
 
   function available() {
     if (disposed || suspended || document.hidden || lost || failed) return false;
+    if (getComputedStyle(object!).visibility === 'hidden') return false;
     if (!preview && window.scrollY > innerHeight * (mobile ? 1.10 : 1.45)) return false;
     const bounds = object!.getBoundingClientRect();
     return bounds.width > 0 && bounds.height > 0 && bounds.right > 0 && bounds.left < innerWidth
@@ -352,7 +353,7 @@ export function initializeRiftScene(root: HTMLElement): () => void {
       try {
         gl = canvas!.getContext('webgl', {
           alpha: true, antialias: true, depth: true, stencil: false,
-          premultipliedAlpha: true, preserveDrawingBuffer: false,
+          premultipliedAlpha: true, preserveDrawingBuffer: true,
           powerPreference: 'low-power',
         });
       } catch { gl = null; }
@@ -370,12 +371,16 @@ export function initializeRiftScene(root: HTMLElement): () => void {
     // The object occupies a square buffer, not a high-DPR full-screen shader.
     const size = Math.max(1, Math.floor(Math.min(bounds.width * dpr, Math.sqrt(mobile ? 480_000 : 1_050_000))));
     viewportSize = size;
-    if (canvas!.width !== size || canvas!.height !== size) { canvas!.width = size; canvas!.height = size; }
     schedule();
   }
 
   function render(delta: number) {
     if (!gl || !resources) return;
+    // Resize only inside the paint, so ResizeObserver never exposes a cleared
+    // buffer between animation frames or during a browser transition snapshot.
+    if (canvas!.width !== viewportSize || canvas!.height !== viewportSize) {
+      canvas!.width = viewportSize; canvas!.height = viewportSize;
+    }
     elapsed += delta;
     const ease = 1 - Math.exp(-delta * 3.5);
     const cameraEase = 1 - Math.exp(-delta * 2.2);

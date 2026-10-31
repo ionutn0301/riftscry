@@ -19,7 +19,9 @@ export async function readyJourney(page: Page) {
 export async function readySignal(page: Page) {
   await readyWorld(page);
   await expect(page.locator('[data-home-signals]')).toHaveAttribute('data-home-subject', /^[A-Za-z0-9]+$/);
-  await expect(page.locator('[data-journey-tab]')).toHaveCount(3);
+  await expect(page.locator('[data-journey-tab]')).toHaveCount(4);
+  // Signal cases take the explicit branch; the atlas entrance has its own suite.
+  if (await page.locator('#atlas').isVisible()) await page.locator('.atlas-follow-signal').click();
   await expect(page.locator('#signal-title')).toContainText('stands still.');
 }
 

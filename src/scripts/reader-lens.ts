@@ -1,4 +1,4 @@
-export {};
+import { swapArtwork } from './artwork';
 
 type ReaderFocus = { kind: 'champion' | 'patch'; key: string };
 
@@ -94,17 +94,10 @@ function initChampionLens(root: HTMLElement) {
       if (linkName) linkName.textContent = championName;
       const art = lens.querySelector<HTMLImageElement>('[data-reader-champion-art]')!;
       const fallback = lens.querySelector<HTMLElement>('[data-reader-art-fallback]')!;
-      art.alt = lens.dataset.readerChampionLens === 'roster' ? '' : `${championName} — official Riot Games artwork`;
+      const alt = lens.dataset.readerChampionLens === 'roster' ? '' : `${championName} — official Riot Games artwork`;
       const source = row.dataset.rosterSplash;
       if (source) {
-        art.hidden = true;
-        fallback.hidden = true;
-        art.src = source;
-        if (art.complete) {
-          const available = art.naturalWidth > 0;
-          art.hidden = !available;
-          fallback.hidden = available;
-        }
+        void swapArtwork(art,{src:source,alt,fallback},abort.signal);
       } else {
         art.hidden = true;
         fallback.hidden = false;

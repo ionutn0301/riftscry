@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import logo from '../../assets/brand/logo-desktop-light.png';
 import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 import { getAllPatches } from '../../lib/data';
+import RiftAtlas from './RiftAtlas.astro';
 interface Props { surface: string }
 const { surface } = Astro.props;
 const active = stationForSurface(surface);
@@ -20,15 +21,13 @@ const compareHref = patches.length > 1 ? `/compare/${patches[0]!.id}/${patches[1
   <div class="world-utilities">
     <button type="button" class="journey-search-trigger" data-palette-trigger aria-label="Search the archive"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><kbd>⌘ K</kbd></button>
     <button type="button" class="motion-choice" data-motion-toggle aria-pressed="false" aria-label="Reduce motion"><span aria-hidden="true">◐</span><span data-motion-label class="sr-only">Motion on</span></button>
-    <button type="button" class="journey-map-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M"><span class="journey-menu-mark" aria-hidden="true"><i></i><i></i></span><span>Explore</span></button>
+    <button type="button" class="journey-map-trigger" data-map-open aria-haspopup="dialog" aria-controls="rift-map-dialog" aria-label="Open the Rift map" aria-keyshortcuts="Alt+M"><span class="journey-menu-mark" aria-hidden="true"><i></i><i></i></span><span>Rift atlas</span></button>
   </div>
 </header>
 <dialog id="rift-map-dialog" class="world-map-dialog journey-map" aria-labelledby="rift-map-title">
   <div class="journey-map-inner">
-    <header class="journey-map-heading"><div><p class="journey-eyebrow">YOUR WAY THROUGH THE RIFT</p><h2 id="rift-map-title">Follow a signal.</h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
-    <nav class="signal-destinations" aria-label="RiftScry destinations">
-      {journeyStations.map(station => <a href={station.href} data-station-link={station.id} data-world-link={station.id} data-rift-destination={station.id} aria-current={active === station.id ? 'page' : undefined} style={`--station-color:${station.color}`}><span class="signal-destination-number">{station.number}</span><div><strong>{station.label}</strong><span>{station.description}</span></div><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={station.glyph}/></svg><b aria-hidden="true">↗</b></a>)}
-    </nav>
+    <header class="journey-map-heading"><div><p class="journey-eyebrow">ONE RIFT / FIVE DESTINATIONS</p><h2 id="rift-map-title">Where next?</h2></div><button type="button" class="world-close" data-map-close aria-label="Close the Rift map">Close <span aria-hidden="true">×</span></button></header>
+    <RiftAtlas surface={surface} />
     <footer class="journey-map-footer"><a href="/explore#change" data-reading-shortcut data-map-explore><span data-reading-subject>Explore a change</span><span aria-hidden="true">↗</span></a><a href={compareHref} data-signal-compare>Compare patches ↗</a><a href="/notebook">Notebook ↗</a><button type="button" data-palette-trigger aria-label="Search the archive">Search</button><button type="button" data-about-open>About RiftScry</button></footer>
   </div>
 </dialog>

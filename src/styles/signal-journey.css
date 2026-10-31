@@ -23,8 +23,8 @@
 .signal-art-coordinate { position: absolute; top: 6%; right: 3%; writing-mode: vertical-rl; color: #98b7b1; font: 8px 'Spline Sans Mono',monospace; letter-spacing: .15em; }
 .signal-opening-copy { position: relative; padding-top: clamp(20px,6vh,70px); width: 52%; max-width: 700px; }
 .signal-opening-copy .journey-eyebrow { font-size: 9px; }
-.signal-opening-copy h1 { margin: 25px 0 24px; font: 400 clamp(55px,6.4vw,106px)/.96 var(--font-display); letter-spacing: -.055em; color: #eaf0e6; text-wrap: nowrap; }
-.signal-opening-copy h1 em { font-style: normal; color: #bfd8cb; }
+.signal-opening-copy :is(h1,h2) { margin: 25px 0 24px; font: 400 clamp(55px,6.4vw,106px)/.96 var(--font-display); letter-spacing: -.055em; color: #eaf0e6; text-wrap: nowrap; }
+.signal-opening-copy :is(h1,h2) em { font-style: normal; color: #bfd8cb; }
 .signal-opening-caption { font: 14px/1.7 var(--font-ui); color: #a5babf; }
 .signal-opening-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 26px; margin-top: 34px; }
 .signal-primary-action { display: inline-flex; align-items: center; justify-content: space-between; gap: 28px; min-height: 52px; padding: 13px 20px; color: #092623; background: #c8ecd4; border: 1px solid #c8ecd4; border-radius: 2px; font: 500 13px/1.5 var(--font-ui); transition: background .18s,transform .18s; }
@@ -90,7 +90,7 @@
 
 @media (min-width: 1700px) { .signal-journey { max-width: 1600px; margin-inline: auto; } }
 @media (max-width: 1100px) {
-  .signal-opening-copy h1 { font-size: clamp(54px,7.2vw,78px); }
+  .signal-opening-copy :is(h1,h2) { font-size: clamp(54px,7.2vw,78px); }
   .signal-opening-actions { gap: 8px 20px; }
   .signal-beacon { min-width: 220px; right: 3%; padding: 16px; top: 56%; }
   .signal-cast { gap: 20px; }
@@ -105,9 +105,9 @@
   .signal-journey .signal-act { min-height: 500px; padding-bottom: 30px; }
   .signal-opening-copy { width: 100%; padding-top: 14px; max-width: none; }
   .signal-opening-copy .journey-eyebrow { font-size: 7px; letter-spacing: .13em; }
-  .signal-opening-copy h1 { font-size: clamp(37px,9.4vw,60px); line-height: 1; margin: 17px 0 12px; }
-  .signal-opening-copy h1 br { display: none; }
-  .signal-opening-copy h1 em { display: block; }
+  .signal-opening-copy :is(h1,h2) { font-size: clamp(37px,9.4vw,60px); line-height: 1; margin: 17px 0 12px; }
+  .signal-opening-copy :is(h1,h2) br { display: none; }
+  .signal-opening-copy :is(h1,h2) em { display: block; }
   .signal-opening-caption { font-size: 11px; }
   .signal-subject-visual { width: 78%; height: 65%; right: -2%; top: 24%; }
   .signal-subject-window { inset: 0; }
@@ -157,7 +157,7 @@
   .signal-carried-record div > span { font-size: 10px; }
 }
 @media (max-width: 360px) {
-  .signal-opening-copy h1 { font-size: 35px; }
+  .signal-opening-copy :is(h1,h2) { font-size: 35px; }
   .signal-opening-actions { gap: 2px 10px; }
   .signal-cast img { width: 25px; height: 25px; }
   .signal-cast strong { font-size: 10px; }
@@ -165,7 +165,7 @@
 }
 @media (max-height: 740px) and (min-width: 701px) {
   .signal-opening-copy { padding-top: 18px; }
-  .signal-opening-copy h1 { font-size: clamp(50px,5.5vw,80px); margin: 20px 0; }
+  .signal-opening-copy :is(h1,h2) { font-size: clamp(50px,5.5vw,80px); margin: 20px 0; }
   .signal-opening-actions { margin-top: 23px; }
   .signal-beacon { top: 50%; }
   .signal-cast { padding-top: 9px; }
@@ -178,7 +178,7 @@
 }
 @media (max-height: 740px) and (max-width: 700px) {
   .signal-opening-copy { padding-top: 5px; }
-  .signal-opening-copy h1 { font-size: 34px; margin: 12px 0 8px; }
+  .signal-opening-copy :is(h1,h2) { font-size: 34px; margin: 12px 0 8px; }
   .signal-opening-caption { display: none; }
   .signal-opening-actions { margin-top: 10px; }
   .signal-beacon { bottom: 5%; padding-block: 10px; }
@@ -188,7 +188,7 @@
   .signal-cast > div > a { min-height: 44px; }
 }
 @media (max-height: 520px) and (min-width: 701px) {
-  .signal-opening-copy h1 { font-size: 44px; margin: 14px 0 8px; }
+  .signal-opening-copy :is(h1,h2) { font-size: 44px; margin: 14px 0 8px; }
   .signal-opening-copy { padding-top: 3px; }
   .signal-opening-caption { display: none; }
   .signal-opening-actions { margin-top: 12px; }
@@ -208,7 +208,7 @@
   .signal-cast > div > a { min-height: 44px; }
   .signal-cast-all { min-height: 44px; max-width: 100px; text-align: center; font-size: 9px; }
   .signal-opening-copy { width: 64%; padding-top: 7px; }
-  .signal-opening-copy h1 { font-size: 31px; margin-top: 10px; }
+  .signal-opening-copy :is(h1,h2) { font-size: 31px; margin-top: 10px; }
   .signal-opening-copy .journey-eyebrow { font-size: 6px; }
   .signal-opening-actions { margin-top: 10px; }
   .signal-return-hint { display: none; }

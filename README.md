@@ -9,11 +9,17 @@ something useful into the next game. Choose a champion, reveal an exact archive
 record, or enter a Riot ID once for an automatic briefing from available match
 history. The experience connects those paths across the whole site.
 
-**Current experience: the signal journey.** Read the
-[platform audit](docs/signal-journey/AUDIT.md) and
-[research behind the direction](docs/signal-journey/RESEARCH.md).
+**Current experience: the Rift atlas.** Read the
+[platform audit and research](docs/rift-atlas/AUDIT.md).
 
-- **Choose, reveal, inspect, keep:** the homepage opens on a real champion change,
+- **A connected world:** travel around one Rift object with five camera positions.
+  Drag, use the destination range, or follow any native destination link. The
+  same spatial instrument opens from every champion, patch, game, and saved record;
+  a persistent path keeps the five places reachable.
+- **One visual journey:** the Beacon, Echoes, Archive, Fracture and Sanctuary
+  connect briefings, games, champions, patches and saved material.
+
+- **Choose, reveal, inspect, keep:** the champion-signal path opens on a real archived change,
   moves into its exact evidence, and carries the selected record forward. Featured
   choices change the evidence itself; source dates distinguish archive examples
   from the visitor's games.
@@ -38,7 +44,7 @@ history. The experience connects those paths across the whole site.
   scenarios, with formulas and sources. No build entry is needed. Standard
   Summoner's Rift calculations are distinct from other modes' archived changes.
 - **Recent games and builds:** exact-mode history, automatically grouped observed
-  loadouts, match facts, and optional timeline or AI-assisted review. Keep loadout
+  loadouts, match facts, and optional timeline or AI-assisted review directly from the match overview. Keep loadout
   saves the actual record in one click and opens its notebook destination. The
   bounded sample is not a complete season history or a global build recommendation.
 - **Champion archive:** structured changes, your optional champion pool, comparisons,
@@ -56,9 +62,11 @@ results require exposed match history; checked Mayhem availability metadata expl
 empty imports without inventing a report or substituting ordinary ARAM. Exact mode
 capabilities and source references live in [modes.ts](src/lib/player/modes.ts).
 
-Verification of the signal journey is in progress. Current browser results and visual
-evidence belong to the pull request and its CI artifacts. Earlier screenshots remain
-in the historical release documentation and are not presented as the current UI.
+Current validation and the complete route inventory are recorded in the
+[platform audit](docs/rift-atlas/AUDIT.md). Automated checks cover the camera,
+image races, scene registration and explicit AI request flow. Browser visual QA
+remains pending because the managed preview service is unavailable and the
+Vercel preview requires access. Historical screenshots do not represent this UI.
 
 ## Run it
 

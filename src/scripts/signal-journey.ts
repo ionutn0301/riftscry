@@ -3,7 +3,8 @@ import type { Evidence } from '../lib/investigation';
 import { readFindings, writeFindings, FINDINGS_EVENT, FINDINGS_KEY, FINDINGS_LIMIT } from '../lib/kept-findings';
 import { parseSignalContext, readSignalContext, rememberSignal, SIGNAL_CONTEXT_EVENT, SIGNAL_CONTEXT_KEY } from '../lib/signal-context';
 import { readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
-import { rememberReading } from '../lib/return-briefing';
+import { rememberReading, readReturnState, RETURN_STATE_EVENT, RESUME_KEY } from '../lib/return-briefing';
+import { swapArtwork } from './artwork';
 
 type OpeningSignal = HomeSignal & { artwork: { splash: string; portrait: string }; record: Evidence; explore: string };
 const host = document.querySelector<HTMLElement>('[data-home-signals]');
@@ -24,6 +25,14 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   const href = (selector: string, value: string) => host.querySelectorAll<HTMLAnchorElement>(selector).forEach(element => { element.href = value; });
 
   function resume() {
+    const reading=readReturnState().resume;
+    const trail=host.querySelector<HTMLAnchorElement>('[data-home-reading]');
+    if(trail){
+      trail.hidden=!reading;trail.href=reading?.href??'/explore#change';
+      const label=trail.querySelector('[data-home-reading-label]');
+      if(label)label.textContent=reading?.label??'Resume exploring';
+      if(reading)trail.setAttribute('aria-label',`Resume ${reading.label}`);else trail.removeAttribute('aria-label');
+    }
     const link = host.querySelector<HTMLAnchorElement>('[data-home-context]')!;
     const context = retained?.href === current.explore ? null : retained;
     link.hidden = !context;
@@ -65,13 +74,8 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     href('[data-home-trace]', current.explore.replace('#change', '#history'));
     href('[data-home-explore]', current.explore);
     host.querySelector('[data-home-beacon]')?.setAttribute('aria-label', `Reveal ${current.championName}'s archived change`);
-    image.alt = `${current.championName} — official Riot Games artwork`;
-    if (image.getAttribute('src') !== current.artwork.splash) {
-      fallback.hidden = true;
-      image.hidden = false;
-      host.querySelector<HTMLSourceElement>('[data-home-portrait]')!.srcset = current.artwork.portrait;
-      image.src = current.artwork.splash;
-    }
+    void swapArtwork(image,{src:current.artwork.splash,alt:`${current.championName} — official Riot Games artwork`,fallback,
+      portrait:{source:host.querySelector<HTMLSourceElement>('[data-home-portrait]')!,src:current.artwork.portrait}},abort.signal);
     if (push) {
       const url = new URL(location.href); url.searchParams.set('signal', current.championId);
       history.pushState(null, '', url.pathname + url.search + url.hash);
@@ -102,6 +106,13 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   }, options);
   function player() {
     const selected = readRecentPlayer();
+    const briefing=host.querySelector<HTMLAnchorElement>('[data-home-briefing]');
+    if(briefing){
+      briefing.href=selected?briefingLink(selected):'/next-game';
+      briefing.setAttribute('aria-label',selected?`Continue briefing for ${selected.name||'your player'}`:'Find my next move from my games');
+      text('[data-home-briefing-label]',selected?'Continue briefing':'Find my next move');
+      text('[data-home-briefing-caption]',selected?.name||'FROM YOUR GAMES');
+    }
     const hint = host.querySelector<HTMLElement>('[data-home-return]')!;
     hint.hidden = !selected;
     href('[data-home-personal]', selected ? briefingLink(selected) : '/next-game');
@@ -120,6 +131,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     resume();
   }, options);
   window.addEventListener(FINDINGS_EVENT, saved, options);
+  window.addEventListener(RETURN_STATE_EVENT,resume,options);
   window.addEventListener('riftscry:journey-change', event => {
     if (['reveal', 'carry'].includes((event as CustomEvent<{ id: string }>).detail?.id)) rememberCurrent();
   }, options);
@@ -128,6 +140,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     if ([RECENT_PLAYER_KEY, 'riftscry:remembered-player:v1', null].includes(event.key)) player();
     if (event.key === FINDINGS_KEY || event.key === null) saved();
     if (event.key === SIGNAL_CONTEXT_KEY || event.key === null) { retained = readSignalContext(); resume(); }
+    if(event.key===RESUME_KEY)resume();
   }, options);
   window.addEventListener('pageshow', () => { retained = readSignalContext(); player(); saved(); resume(); }, options);
   window.addEventListener('pagehide', event => { if (!event.persisted) abort.abort(); }, options);
@@ -138,6 +151,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   // A URL records the actual opening subject so Back restores it exactly.
   const initialUrl = new URL(location.href);
   initialUrl.searchParams.set('signal', current.championId);
+  if (!initialUrl.hash && !requested) initialUrl.hash = 'atlas';
   history.replaceState(history.state, '', initialUrl.pathname + initialUrl.search + initialUrl.hash);
   player(); artworkState();
 }

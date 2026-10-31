@@ -84,11 +84,11 @@
 .profile-hub .player-section-caption { font-size: 11px; }
 
 .profile-hub .match-chronology { display: grid; gap: 9px; }
-.profile-hub .match-row { grid-template-columns: minmax(190px, 1.25fr) minmax(105px, .65fr) minmax(140px, 1.2fr) 135px 65px; align-items: center; gap: 16px; padding: 16px 18px; border: 1px solid #91b5ab27; border-left: 3px solid #67938a; border-radius: 12px; background: linear-gradient(100deg, #132a31, #102027 56%, #102027aa); box-shadow: 0 2px 8px #00000012; transition: border-color 160ms, background 160ms; }
+.profile-hub .match-row { align-items: center; gap: 16px; padding: 16px 18px; border: 1px solid #91b5ab27; border-left: 3px solid #67938a; border-radius: 12px; background: linear-gradient(100deg, #132a31, #102027 56%, #102027aa); box-shadow: 0 2px 8px #00000012; transition: border-color 160ms, background 160ms; }
 .profile-hub .match-row[data-outcome="win"] { border-left-color: #7ccdb5; }
 .profile-hub .match-row[data-outcome="loss"] { border-left-color: #bf8d82; background: linear-gradient(100deg, #29272c, #152228 50%, #102027aa); }
 .profile-hub .match-row:hover { border-top-color: #8fc2b878; border-right-color: #8fc2b878; border-bottom-color: #8fc2b878; background: #183039; }
-.profile-hub .match-identity { display: flex; align-items: center; gap: 12px; grid-row: auto; min-width: 0; }
+.profile-hub .match-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .profile-hub .match-identity > div { min-width: 0; }
 .profile-hub .match-identity h3 { font: 600 17px/1.3 var(--font-ui); letter-spacing: -.02em; }
 .profile-hub .match-champion { border-radius: 9px; }
@@ -96,7 +96,7 @@
 .profile-hub .mode-badge[data-mode-family="aram"] { color: #a1cdf7; }
 .profile-hub .mode-badge[data-ranked="true"] { color: #e1c38f; }
 .profile-hub .mode-badge[data-mode-family="arena"], .profile-hub .mode-badge[data-mode-family="rotating"] { color: #ccb4e9; }
-.profile-hub .match-score { display: block; text-align: left; grid-column: auto; padding: 0; border: 0; }
+.profile-hub .match-score { display: block; text-align: left; padding: 0; border: 0; }
 .profile-hub .match-score > strong { white-space: nowrap; font: 500 17px/1.3 var(--font-ui); font-variant-numeric: tabular-nums; }
 .profile-hub .match-score small { display: block; margin-top: 5px; font-size: 9px; letter-spacing: .06em; color: #8eaaa2; }
 .profile-hub .match-record { min-width: 0; padding: 0; }
@@ -118,7 +118,7 @@
 .profile-hub .memory-panel > .player-section-heading > div > p, .profile-hub .personal-builds > .player-section-heading > div > p { margin-top: 6px; }
 
 @media (max-width: 1000px) {
-  .profile-hub .match-row { grid-template-columns: minmax(190px, 1.2fr) 110px minmax(120px, 1fr) 112px 18px; gap: 12px; padding-inline: 14px; }
+  .profile-hub .match-row { gap: 12px; padding-inline: 14px; }
   .profile-hub .match-open { font-size: 0; gap: 0; }
   .profile-hub .mode-families button { padding-inline: 12px; }
 }
@@ -168,18 +168,16 @@
   .profile-hub .player-section-heading { gap: 10px; margin-bottom: 12px; }
   .profile-hub .player-section-heading h2 { font-size: 22px; }
   .profile-hub .player-section-caption { font-size: 10px; }
-  .profile-hub .match-row { grid-template-columns: minmax(0, 1fr) 100px 16px; gap: 12px 9px; padding: 14px 12px; border-radius: 10px; }
-  .profile-hub .match-identity { grid-column: 1 / 3; grid-row: 1; gap: 10px; }
+  .profile-hub .match-row { gap: 12px 9px; padding: 14px 12px; border-radius: 10px; }
+  .profile-hub .match-identity { gap: 10px; }
   .profile-hub .match-identity h3 { font-size: 16px; }
-  .profile-hub .match-status { grid-column: 2 / 4; grid-row: 1; justify-self: end; align-items: end; gap: 4px; width: 90px; }
+  .profile-hub .match-status { justify-self: end; align-items: end; gap: 4px; width: 90px; }
   .profile-hub .match-time { flex-direction: column; align-items: end; font-size: 9px; gap: 2px; }
   .profile-hub .mode-badge { font-size: 10px; }
   .profile-hub .mode-badge .player-icon { width: 11px; height: 11px; }
-  .profile-hub .match-record { grid-column: 1; grid-row: 2; }
-  .profile-hub .match-score { grid-column: 2; grid-row: 2; text-align: right; }
+  .profile-hub .match-score { text-align: right; }
   .profile-hub .match-score > strong { font-size: 14px; }
   .profile-hub .match-score small { font-size: 8px; margin-top: 3px; }
-  .profile-hub .match-open { grid-column: 3; grid-row: 2; }
   .profile-hub .match-inventory .item-label img { width: 24px; height: 24px; border-radius: 4px; }
   .profile-hub .match-inventory .loadout-items { gap: 3px; }
 }
@@ -188,7 +186,7 @@
   .profile-hub .profile-identity-copy h1 { font-size: 25px; }
   .profile-hub .player-tabs { gap: 12px; }
   .profile-hub .player-tabs button { font-size: 11px; gap: 5px; }
-  .profile-hub .match-row { grid-template-columns: minmax(0, 1fr) 89px 16px; gap: 10px 7px; padding-inline: 10px; }
+  .profile-hub .match-row { gap: 10px 7px; padding-inline: 10px; }
   .profile-hub .match-identity { gap: 8px; }
   .profile-hub .match-status { width: 82px; }
   .profile-hub .match-score > strong { font-size: 13px; }
@@ -196,4 +194,38 @@
 @media (max-width: 900px), (pointer: coarse) {
   .profile-hub .mode-queue-choice select,
   .profile-hub .profile-filter-fields select { font-size: 16px; min-height: 44px; }
+}
+
+/* One grid owns match geometry at every width; no legacy implicit tracks. */
+.rift-shell .profile-hub .match-chronology { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(400px,100%),1fr)); gap:14px; }
+.rift-shell .profile-hub .match-row { display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"identity status" "record record" "score open"; gap:14px; padding:18px; min-width:0; }
+.rift-shell .profile-hub .match-row > * { min-width:0; max-width:100%; }
+.rift-shell .profile-hub .match-identity { grid-area:identity; display:flex; align-items:center; gap:10px; }
+.rift-shell .profile-hub .match-identity h3 { overflow-wrap:anywhere; white-space:normal; line-height:1.35; }
+.rift-shell .profile-hub .match-status { grid-area:status; justify-self:end; align-items:flex-end; width:auto; max-width:110px; text-align:right; }
+.rift-shell .profile-hub .match-record { grid-area:record; }
+.rift-shell .profile-hub .match-score { grid-area:score; text-align:left; }
+.rift-shell .profile-hub .match-open { grid-area:open; justify-self:end; width:auto; min-width:44px; min-height:44px; font-size:11px; }
+.rift-shell .profile-hub .match-time { display:grid; line-height:1.5; }
+.rift-shell .profile-hub .loadout-items { display:flex; flex-wrap:wrap; gap:4px; }
+.rift-shell .profile-hub .player-identity-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:18px; }
+.rift-shell .profile-hub .player-identity-person { min-width:0; }
+.rift-shell .profile-hub .profile-identity-copy { min-width:0; max-width:100%; }
+.rift-shell .profile-hub .profile-identity-copy h1 { display:flex; flex-wrap:wrap; align-items:baseline; gap:5px 10px; overflow-wrap:anywhere; line-height:1.18; }
+.rift-shell .profile-hub .profile-identity-copy h1 em { margin:0; line-height:1.5; max-width:100%; }
+.rift-shell .profile-hub .identity-topline { flex-wrap:wrap; gap:6px 18px; }
+.rift-shell .profile-hub .player-identity-tools { min-width:0; max-width:100%; }
+.rift-shell .profile-hub .identity-region { display:block; line-height:1.6; margin-top:5px; }
+.rift-shell .profile-hub .identity-ranks { line-height:1.6; margin-top:14px; }
+@media (max-width:760px) {
+ .rift-shell .profile-hub .player-identity-row { grid-template-columns:minmax(0,1fr); gap:14px; }
+ .rift-shell .profile-hub .identity-actions { flex-wrap:wrap; }
+ .rift-shell .profile-hub .match-row { padding:14px; gap:12px; }
+ .rift-shell .profile-hub .match-score strong { font-size:17px; }
+ .rift-shell .profile-hub .match-inventory .item-label img { width:26px; height:26px; }
+}
+@media (max-width:380px) {
+ .rift-shell .profile-hub .match-row { grid-template-areas:"identity identity" "status status" "record record" "score open"; }
+ .rift-shell .profile-hub .match-status { justify-self:start; align-items:flex-start; text-align:left; max-width:100%; }
+ .rift-shell .profile-hub .match-time { display:flex; flex-wrap:wrap; gap:6px 12px; }
 }

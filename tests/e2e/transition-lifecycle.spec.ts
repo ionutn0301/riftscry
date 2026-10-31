@@ -56,7 +56,7 @@ test('cancelling native document transitions preserves links and browser Back wi
   const save = page.locator('[data-direct-save="Ahri"]');
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
-  const briefingLink = page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Saved', exact: true });
+  const briefingLink = page.locator('.journey-spine [data-spine-station="pool"]');
   await briefingLink.click();
   await expect(page).toHaveURL(url => url.pathname === '/pool');
   await readyWorld(page);

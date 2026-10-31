@@ -66,14 +66,15 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       // their panel still has an accessible name and the same main navigation.
       await expect(panel).toHaveAttribute('role', 'tabpanel');
       await expect(panel).toHaveAccessibleName(/\S/);
-      const navigation = page.getByRole('navigation', { name: 'Main navigation', exact: true });
-      await expect(navigation.getByRole('link')).toHaveCount(3);
-      for (const name of ['Discover', 'My game', 'Saved']) {
-        const destination = navigation.getByRole('link', { name, exact: true });
+      const mobile=viewport.width<=700;
+      const navigation = page.getByRole('navigation', { name: mobile?'Journey destinations':'Main navigation', exact: true });
+      await expect(navigation.getByRole('link')).toHaveCount(mobile?6:3);
+      for (const name of mobile?['next-game','players','champions','patches','pool']:['Discover','My game','Saved']) {
+        const destination = mobile?navigation.locator('[data-spine-station="'+name+'"]'):navigation.getByRole('link', { name, exact: true });
         await reachable(destination);
         expect((await destination.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       }
-      await reachable(page.locator(route.action).first());
+      await reachable(page.locator(mobile&&route.surface==='home'?'.atlas-personal-link':route.action).first());
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
       // A route may be longer than the screen, but the document is the only
       // vertical scroll surface. Never trap content inside another scrollport.

@@ -197,7 +197,7 @@ test('the destination menu keeps native links and restores the filtered return',
   await ready(page);
   const open = page.getByRole('button', { name: 'Open the Rift map', exact: true });
   await open.click();
-  const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
+  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   await expect(map).toBeVisible();
   await expect(map).toHaveJSProperty('open', true);
   const current = map.locator('a[aria-current="page"]');
