@@ -42,6 +42,8 @@
 .journey-roster-lens figcaption strong { display:block; font:400 clamp(32px,4vw,64px)/1 'Clash Display',sans-serif; letter-spacing:-.05em; }
 .journey-roster-lens figcaption span:not([aria-hidden]) { display:block; font-size:12px; color:var(--reader-muted); margin-top:8px; }
 .reader-lens-open { display:inline-flex; align-items:center; gap:18px; min-height:44px; color:var(--reader-signal); font-size:12px; flex-shrink:0; }
+/* Filled action, not ghost link: keep text contrast against the pale CTA. */
+.reader-lens-open.journey-primary-link, .reader-lens-open.journey-primary-link:hover { color:#102029; }
 .reader-lens-record { font-size:11px; color:var(--reader-muted); margin-top:18px; }
 .journey-art-credit { font:8px/1.5 'Spline Sans Mono',monospace; letter-spacing:.1em; color:#8ca0ad; margin-top:12px; }
 .journey-roster-results { display:flex; flex-direction:column; min-height:0; min-width:0; }

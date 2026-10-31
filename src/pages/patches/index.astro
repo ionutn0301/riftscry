@@ -19,6 +19,7 @@ function fmt(date: string) { return new Date(date + "T00:00:00Z").toLocaleDateSt
       <figure class="archive-instrument" data-archive-instrument data-reader-key={latest.id} aria-label={"Archive from patch " + earliest.id + " through " + latest.id}>
         <figcaption><span>PATCH IN FOCUS</span><span data-archive-gesture>THE ARCHIVE</span></figcaption>
         <div class="archive-instrument-current"><strong data-archive-focus-id>{latest.id}</strong><time data-archive-focus-date datetime={latest.releaseDate}>{fmt(latest.releaseDate)}</time></div>
+        <a class="reader-lens-open journey-primary-link" data-archive-focus-link href={"/patch/" + latest.id}>Enter patch <span data-archive-link-id>{latest.id}</span><span aria-hidden="true">↗</span></a>
         <div class="archive-timeline" data-archive-timeline>
         <svg data-archive-timeline-chart viewBox="0 0 560 150" preserveAspectRatio="none" role="img" aria-label="Archived patches positioned by release date. Column height counts champion, item, and system entries."><line class="archive-baseline" x1="10" y1="140" x2="550" y2="140" />{chronological.map(patch => {
           const x = 14 + ((Date.parse(patch.releaseDate + "T00:00:00Z") - firstDate) / dateSpan) * 532;
@@ -29,8 +30,7 @@ function fmt(date: string) { return new Date(date + "T00:00:00Z").toLocaleDateSt
         </div>
         <div class="archive-instrument-axis"><time datetime={earliest.releaseDate}>{earliest.releaseDate}</time><time datetime={latest.releaseDate}>{latest.releaseDate}</time></div>
         <dl class="archive-instrument-counts"><div><dt>Champions</dt><dd data-archive-count="champions">{latest.champions.length}</dd></div><div><dt>Items</dt><dd data-archive-count="items">{latest.items.length}</dd></div><div><dt>Systems</dt><dd data-archive-count="systems">{latest.systems.length}</dd></div></dl>
-        <a class="reader-lens-open journey-primary-link" data-archive-focus-link href={"/patch/" + latest.id}>Enter patch <span data-archive-link-id>{latest.id}</span><span aria-hidden="true">↗</span></a>
-        <p class="archive-instrument-note" id="archive-count-meaning">Columns count entries, not impact. Archive dates are shown above.</p>
+                <p class="archive-instrument-note" id="archive-count-meaning">Columns count entries, not impact. Archive dates are shown above.</p>
       </figure>
       <ol class="patch-list patch-chronology journey-patch-stops" reversed aria-label="Choose a recorded patch">
         {patches.map((patch,index) => <li data-reader-patch-key={patch.id} data-patch-date={patch.releaseDate} data-champions={patch.champions.length} data-items={patch.items.length} data-systems={patch.systems.length} data-reader-active={index === 0 ? "true" : undefined}><a href={"/patch/" + patch.id}><span><span class="pid">{patch.id}</span><time class="date" datetime={patch.releaseDate}>{fmt(patch.releaseDate)}</time></span><span class="journey-patch-stop-meta">{index === 0 ? "NEWEST ARCHIVED" : `${entryCount(patch)} ENTRIES`}</span><span class="patch-enter" aria-hidden="true">↗</span></a></li>)}

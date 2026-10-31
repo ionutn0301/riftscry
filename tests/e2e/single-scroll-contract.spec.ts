@@ -181,3 +181,28 @@ test('phone chapter controls have no overlapping or horizontally scrolling tab s
     }
   }
 });
+
+test('archive entry is immediately reachable and has readable text contrast', async ({ page }) => {
+  for (const { width, height } of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/patches');
+    await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+    const entry = page.locator('[data-archive-focus-link]');
+    await expect(entry).toBeInViewport({ ratio: 1 });
+    const contrast = await entry.evaluate(element => {
+      const rgb = (value: string) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      const luminance = (value: string) => {
+        const [r, g, b] = rgb(value).map(channel => {
+          const normalized = channel / 255;
+          return normalized <= .04045 ? normalized / 12.92 : ((normalized + .055) / 1.055) ** 2.4;
+        });
+        return .2126 * (r ?? 0) + .7152 * (g ?? 0) + .0722 * (b ?? 0);
+      };
+      const styles = getComputedStyle(element);
+      const foreground = luminance(styles.color);
+      const background = luminance(styles.backgroundColor);
+      return (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05);
+    });
+    expect(contrast, 'Primary archive action must have WCAG AA text contrast').toBeGreaterThanOrEqual(4.5);
+  }
+});
