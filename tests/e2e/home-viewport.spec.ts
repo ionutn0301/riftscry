@@ -28,7 +28,7 @@ async function sceneFits(page: Page) {
     await chrome.scrollIntoViewIfNeeded();
     await expect(chrome).toBeInViewport({ ratio: 0.99 });
   }
-  expect((await page.locator('[data-journey-panel][hidden]').count())).toBe(2);
+  expect((await page.locator('[data-journey-panel][hidden]').count())).toBe(3);
   for (const inactive of await page.locator('[data-journey-panel][hidden]').all()) await expect(inactive).toHaveJSProperty('inert', true);
   await stationaryWorld(page);
 }
@@ -41,8 +41,8 @@ for (const [width, height] of sizes) for (const state of ['new', 'returning'] as
   const arrival = await openScene(page, 'signal');
   if (state === 'returning') await expect(page.locator('[data-home-return]')).toContainText(player.name);
   else await expect(page.locator('[data-home-return]')).toBeHidden();
-  await arrival.locator('h1').scrollIntoViewIfNeeded();
-  await expect(arrival.locator('h1')).toBeInViewport({ ratio: 0.99 });
+  await arrival.locator('h2').scrollIntoViewIfNeeded();
+  await expect(arrival.locator('h2')).toBeInViewport({ ratio: 0.99 });
   for (const selector of ['[data-home-reveal]', '[data-home-personal]', '[data-home-beacon]']) await reachableTarget(arrival.locator(selector), page);
   if (await arrival.locator('[data-home-context]').isVisible()) await reachableTarget(arrival.locator('[data-home-context]'), page);
   for (const choice of await page.locator('[data-home-choice]').all()) await reachableTarget(choice, page);

@@ -9,11 +9,16 @@ something useful into the next game. Choose a champion, reveal an exact archive
 record, or enter a Riot ID once for an automatic briefing from available match
 history. The experience connects those paths across the whole site.
 
-**Current experience: the signal journey.** Read the
-[platform audit](docs/signal-journey/AUDIT.md) and
-[research behind the direction](docs/signal-journey/RESEARCH.md).
+**Current experience: the Rift atlas.** Read the
+[platform audit and research](docs/rift-atlas/AUDIT.md).
 
-- **Choose, reveal, inspect, keep:** the homepage opens on a real champion change,
+- **A connected world:** five spatial destinations form the entrance. Preview a
+  setting, enter it, and retain your bearings through the persistent route path.
+  The same atlas opens from every champion, patch, game, and saved record.
+- **One visual journey:** the Beacon, Echoes, Archive, Fracture and Sanctuary
+  connect briefings, games, champions, patches and saved material.
+
+- **Choose, reveal, inspect, keep:** the champion-signal path opens on a real archived change,
   moves into its exact evidence, and carries the selected record forward. Featured
   choices change the evidence itself; source dates distinguish archive examples
   from the visitor's games.
@@ -56,8 +61,11 @@ results require exposed match history; checked Mayhem availability metadata expl
 empty imports without inventing a report or substituting ordinary ARAM. Exact mode
 capabilities and source references live in [modes.ts](src/lib/player/modes.ts).
 
-Verification of the signal journey is in progress. Current browser results and visual
-evidence belong to the pull request and its CI artifacts. Earlier screenshots remain
+The first implementation passed typecheck, the production build, and 519 unit/integration
+tests. Five new atlas DOM cases passed separately, and the production atlas contract
+checked 622 generated content pages. Browser QA is pending: the managed preview daemon
+was unavailable, the Vercel preview is protected, and the workspace later became unavailable.
+Current verification and remaining limits are recorded in the pull request. Earlier screenshots remain
 in the historical release documentation and are not presented as the current UI.
 
 ## Run it

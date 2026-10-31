@@ -46,7 +46,7 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] 
   await page.goto('/'); await readySignal(page);
   const opener = page.getByRole('button', { name: 'Open the Rift map', exact: true });
   await reachableTarget(opener, page); await opener.click();
-  const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
+  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   const links = map.locator('.signal-destinations [data-station-link]');
   await expect(links).toHaveCount(5);
   expect(await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')))).toEqual(destinations);

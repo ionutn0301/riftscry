@@ -22,7 +22,7 @@ test('continue restores the selected champion record and exact query after anoth
   await readyWorld(page);
   await expect(page).toHaveURL(url => url.pathname === '/patches');
   await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
-  const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
+  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   const resume = map.getByRole('link', { name: 'Continue Ahri Patch History', exact: true });
   await expect(resume).toBeVisible();
   await expect(resume).toHaveAttribute('href', exactReading);
@@ -73,7 +73,7 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   await page.goto('/champions');
   await readyWorld(page);
   await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
-  const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
+  const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   await expect(map).toBeVisible();
   const destinations = map.locator('[data-world-link], .journey-map-footer a');
   const shortcut = map.locator('[data-reading-shortcut]');
