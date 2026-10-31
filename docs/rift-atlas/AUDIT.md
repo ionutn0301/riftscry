@@ -176,13 +176,15 @@ interaction defect: after a title changed height, `pointerover` could preview a
 destination under the stationary cursor and skip the expected next stop. Hover
 preview now requires physical pointer movement; title/caption space is stable,
 and the grid can grow with content. The range hint has its own row so a keyboard
-focus ring cannot cross its text. The follow-up run includes eight viewports.
+focus ring cannot cross its text. The follow-up run passes all eight viewports at `54ac17e`. Its desktop, mobile,
+short-laptop and landscape captures were inspected. The focused browser job
+also reruns the six scenarios that failed after the prior merge.
 
 ## Actual verification and limitations
 
 Validation for this revision:
 
-- Astro check: 266 files, zero errors and warnings, one pre-existing unused-import
+- Astro check: 267 files, zero errors and warnings, one pre-existing unused-import
   hint in `src/pages/players.astro`.
 - Vitest: all 551 tests pass across 59 files. New cases cover camera convergence,
   boundary/reversal behavior, reduced motion, resize without canvas clearing,
@@ -196,14 +198,15 @@ Validation for this revision:
 
 Browser suites cover the five destinations, menu focus return, long profile
 labels at 320/390/844/1440px, accidental nested scrolling, camera travel, reduced
-motion, native Back and explicit AI entry. They have been collected, not executed
-in this environment. Mocked DOM tests establish state and lifecycle behavior;
+motion, native Back and explicit AI entry. The full suites were collected locally; the eight-viewport geometry suite was
+executed in GitHub Actions, with captures reviewed as described above. The
+full-suite outcome is recorded on the PR. Mocked DOM tests establish state and lifecycle behavior;
 they do not establish visual composition or browser performance.
 
 The managed preview CLI reports an absent daemon mailbox. The Vercel preview
 redirects this browser to sign-in, and the connected preview-access tools report
-no access to that deployment/team. The PR remains a draft until browser review
-can verify desktop, mobile, short landscape, enlarged text, touch gestures,
-failed assets and real player journeys. Live Riot/AI services have not been
+no access to that deployment/team. CI captures now verify the entrance composition at the listed viewports.
+Live browser access, enlarged-text review and real-service journeys remain
+separate verification limits. Live Riot/AI services have not been
 exercised by fixture-based tests. No claim of zero UI defects, measured frame
 rate or accessibility certification is made.

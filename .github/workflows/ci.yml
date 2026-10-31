@@ -20,8 +20,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      - name: Verify homepage composition at eight viewport sizes
-        run: pnpm exec playwright test --config=playwright.player.config.ts tests/player-e2e/home-composition.spec.ts
+      - name: Verify homepage composition and reported browser regressions
+        run: >
+          pnpm exec playwright test --config=playwright.player.config.ts
+          --grep 'one homepage|homepage My game|one shared scene frames|every route family|390px pool:'
         env:
           CI: "true"
       - name: Retain homepage geometry and visual evidence
@@ -31,7 +33,7 @@ jobs:
           name: homepage-composition
           path: |
             player-visuals/home-*.png
-            test-results/home-composition*/
+            test-results/
           if-no-files-found: ignore
           retention-days: 7
 
