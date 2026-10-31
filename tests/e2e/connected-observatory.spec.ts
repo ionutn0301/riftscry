@@ -26,7 +26,6 @@ async function activeScene(page: Page, id: string) {
   await expect(panel).toBeVisible();
   await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
   await expect(page.locator(`[data-journey-tab="${id}"]`)).toHaveAttribute('aria-selected', 'true');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   await stationaryWorld(page);
   return panel;
 }

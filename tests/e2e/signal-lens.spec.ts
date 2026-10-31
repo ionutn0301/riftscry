@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import patch from '../../src/data/patches/26.16.json' with { type: 'json' };
 import { readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
@@ -189,4 +190,20 @@ test('reduced motion preserves exact interactive records with no animated value 
   await expect(active.locator('.signal-value--before')).toHaveCSS('transform','none');
   await expect(active.locator('.before')).toHaveText(source.before!);
   await expect(active.locator('.after')).toHaveText(source.after!);
+});
+
+// The latest-patch shortcut has its own moving-data contract; historical record
+// assertions above remain tied to their exact archived source.
+test('latest patch shortcut preserves the selected champion, scope and fragment', async ({ page }) => {
+  const directory = new URL('../../src/data/patches/', import.meta.url);
+  const latest = readdirSync(directory).filter(name => /^\d+\.\d+\.json$/.test(name))
+    .sort((a, b) => b.localeCompare(a, 'en', { numeric: true }))[0]!;
+  const record = JSON.parse(readFileSync(new URL(latest, directory), 'utf8')) as typeof patch;
+  const champion = record.champions[0]!.championId.toLowerCase();
+  await page.goto(`/patch?champions=${champion}#${champion}`);
+  await readyWorld(page);
+  await expect(page).toHaveURL(url => url.pathname === `/patch/${record.id}`
+    && url.searchParams.get('champions') === champion && url.hash === `#${champion}`);
+  await expect(page.locator(`[id="${champion}"]`)).toBeVisible();
+  await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'champions');
 });

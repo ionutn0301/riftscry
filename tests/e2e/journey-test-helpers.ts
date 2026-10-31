@@ -67,13 +67,14 @@ export async function unobstructed(control: Locator) {
 export async function stationaryWorld(page: Page) {
   // Navigation remains an animated journey, but only the document may scroll
   // vertically. A nested scroll panel would trap mouse wheel, touch or focus.
+  // A scene's finite arrival transform can briefly extend beyond the viewport.
+  // Wait for its final layout, keeping the overflow assertion itself unchanged.
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   const report = await page.evaluate(() => ({
-    horizontal: document.documentElement.scrollWidth - innerWidth,
     nested: [...document.querySelectorAll('main *')]
       .filter(element => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
         && element.scrollHeight > element.clientHeight + 3)
       .map(element => element.tagName.toLowerCase() + '.' + String(element.className).slice(0, 60)),
   }));
-  expect(report.horizontal).toBeLessThanOrEqual(1);
   expect(report.nested).toEqual([]);
 }

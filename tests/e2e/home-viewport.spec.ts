@@ -29,10 +29,9 @@ async function sceneFits(page: Page) {
   await stationaryWorld(page);
 }
 
-for (const [width, height] of sizes) test(`all three signal acts stay reachable at ${width}×${height} for new and returning players`, async ({ page }) => {
+for (const [width, height] of sizes) for (const state of ['new', 'returning'] as const) test(`all three signal acts stay reachable at ${width}×${height} for ${state} players`, async ({ page }) => {
   await page.setViewportSize({ width, height });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const state of ['new', 'returning'] as const) {
     if (state === 'returning') await page.addInitScript(selected => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected)), player);
     await page.goto('/'); await readySignal(page);
     const arrival = await openScene(page, 'signal');
@@ -59,7 +58,6 @@ for (const [width, height] of sizes) test(`all three signal acts stay reachable 
     const carry = await openScene(page, 'carry');
     for (const link of await carry.getByRole('link').all()) await reachableTarget(link, page);
     await sceneFits(page);
-  }
 });
 
 test('the active signal refits after a returning player rotates portrait and landscape', async ({ page }) => {
