@@ -97,7 +97,7 @@ test('remembering a player does not move the opening heading or scene controls',
     }, player);
     await expect(page.locator('[data-home-return]')).toContainText(player.name);
     const after = await position();
-    for (const key of ['heading', 'footer', 'scroll'] as const) expect(Math.abs(after[key] - before[key])).toBeLessThanOrEqual(1);
+    for (const key of ['heading', 'footer', 'scroll'] as const) expect(Math.abs(after[key] - before[key]), `${key} at ${viewport.width}×${viewport.height}: ${JSON.stringify({ before, after })}`).toBeLessThanOrEqual(1);
     await page.evaluate(() => localStorage.clear());
   }
 });
@@ -115,6 +115,10 @@ test('arrival, reveal and carry retain their composition for visual review', asy
     for (const scene of ['signal', 'reveal', 'carry']) {
       await openScene(page, scene); await sceneFits(page);
       if (capture) {
+        // Reachability checks may finish at the footer. Capture the chapter's
+        // entrance so short-screen review images show the actual first screen.
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+        await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
         const name = `${testInfo.project.name}-${scene}-${viewport.width}x${viewport.height}`;
         const screenshot = await page.screenshot({ animations: 'disabled', path: `signal-visuals/${name}.png` });
         await testInfo.attach(name, { body: screenshot, contentType: 'image/png' });

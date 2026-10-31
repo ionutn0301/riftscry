@@ -226,7 +226,13 @@ body.rift-shell[data-journey-ready] #main :is(a,button,input,select,summary) {
 
 /* The contextual return hint is a quiet overlay, not a reflow event: saving
    a player must not move the hero or the navigation under the user's finger. */
-body.rift-shell[data-journey-ready] .signal-opening-copy { position: relative; }
+/* WebKit must retain authored type sizes when the returning-player copy
+   changes; its mobile text inflation otherwise moves the heading. */
+body.rift-shell[data-journey-ready] .signal-opening-copy {
+  position: relative;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 body.rift-shell[data-journey-ready] .signal-opening-copy .signal-return-hint {
   position: absolute; top: calc(100% + 4px); left: 0; width: min(100%, 40ch);
   margin: 0; max-height: 3.4em; overflow: hidden; display: -webkit-box;
