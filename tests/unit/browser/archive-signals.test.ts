@@ -17,6 +17,7 @@ afterEach(() => {
   window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: false }));
   document.body.innerHTML = '';
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 function comparison() {
@@ -88,12 +89,20 @@ it('preserves an explicitly empty scope and restores changed filters from browse
 });
 
 it('keeps named records actionable when comparison artwork fails and recovers for a new subject', async () => {
+  const probes: HTMLImageElement[] = [];
+  vi.stubGlobal('Image', function () {
+    const probe = document.createElement('img');
+    Object.defineProperty(probe,'naturalWidth',{value:1215});
+    Object.defineProperty(probe,'decode',{value:()=>Promise.resolve()});
+    probes.push(probe); return probe;
+  });
   history.replaceState(null, '', '/compare/26.16/26.15');
   comparison();
   await import('../../../src/scripts/signal-comparison');
   const art = query<HTMLImageElement>('[data-comparison-art]');
   Object.defineProperty(art, 'naturalWidth', { configurable: true, value: 0 });
-  art.dispatchEvent(new Event('error'));
+  probes[0]!.dispatchEvent(new Event('error'));
+  await vi.waitFor(() => expect(art.hidden).toBe(true));
   expect(art.hidden).toBe(true);
   expect(query<HTMLElement>('[data-comparison-art-fallback]').hidden).toBe(false);
   expect(query('[data-comparison-name]').textContent).toBe('Azir');
@@ -102,8 +111,8 @@ it('keeps named records actionable when comparison artwork fails and recovers fo
 
   query<HTMLButtonElement>('#compare-belveth button').click();
   Object.defineProperty(art, 'naturalWidth', { configurable: true, value: 1215 });
-  art.dispatchEvent(new Event('load'));
-  expect(art.hidden).toBe(false);
+  probes[1]!.dispatchEvent(new Event('load'));
+  await vi.waitFor(() => expect(art.hidden).toBe(false));
   expect(query<HTMLElement>('[data-comparison-art-fallback]').hidden).toBe(true);
   expect(art.src).toContain('/Belveth_0.jpg');
 });

@@ -42,6 +42,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   const [timelineRequested, setTimelineRequested] = useState(false);
   const [report, setReport] = useState<Review>();
   const [busy, setBusy] = useState(false);
+  const reviewInFlight = useRef(false);
   const [message, setMessage] = useState('');
   const [draft, setDraft] = useState<AdjustmentDraft>();
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -93,7 +94,8 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   }, [shown.facts]);
 
   async function generate() {
-    if (busy || reviewRetrySeconds) return;
+    if (busy || reviewRetrySeconds || reviewInFlight.current) return;
+    reviewInFlight.current = true;
     setBusy(true);
     setMessage('');
     try {
@@ -104,6 +106,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     } catch (failure) {
       setMessage(`${failure instanceof Error ? failure.message : 'Review unavailable.'} ${report ? 'Your previous review remains available.' : 'Deterministic summary remains available.'}`);
     } finally {
+      reviewInFlight.current = false;
       setBusy(false);
     }
   }
@@ -122,6 +125,10 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     </section>}
     {match && p && <>
       <section id="match-overview" className="match-overview-scene" data-journey-panel data-journey-label="Match" data-journey-world="match">
+      <div className="match-primary-actions"><button type="button" data-match-ai-entry aria-controls="match-review" disabled={busy || reviewRetrySeconds > 0} onClick={() => {
+        window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id:'match-review' } }));
+        void generate();
+      }}><PlayerIcon name="sparkles" />{reviewRetrySeconds ? `AI review ready in ${reviewRetrySeconds}s` : busy ? 'Reviewing…' : 'Review with AI'}<PlayerIcon name="arrow-right" size={17} /></button><a href="#match-evidence">Inspect match evidence <PlayerIcon name="arrow-right" size={15} /></a></div>
       {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
       <section className="profile-stats review-summary" aria-label="Match overview">
         <div>
@@ -146,7 +153,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       <details className="player-explainer"><summary><PlayerIcon name="info" /> Match details</summary><p>{new Date(match.info.gameCreation).toLocaleString()} · {comparisonRoleLabel(comparisonRole(match, puuid))} · {id}</p>{mode && <p>{mode.context}</p>}<p>{items?.notice} Final loadout shows the end of the game; open the timeline for purchase order. Damage is champion damage across the whole match.</p></details>
       </section>
 
-      <section id="match-review" className="match-review-scene" data-journey-panel data-journey-label="Review" data-journey-world="next-game">
+      <section id="match-review" className="match-review-scene" data-journey-panel data-journey-label="AI review" data-journey-world="next-game">
       <section className="review-reading-section" aria-labelledby="short-review-heading">
         <div className="player-actions review-actions">
           <h2 id="short-review-heading">One thing to revisit</h2>

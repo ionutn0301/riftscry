@@ -1,4 +1,5 @@
 import { rememberSignal } from '../lib/signal-context';
+import { swapArtwork } from './artwork';
 
 const workspace = document.querySelector<HTMLElement>('[data-comparison-workspace]');
 if (workspace) {
@@ -40,13 +41,9 @@ if (workspace) {
     selected = id;
     if (name) name.textContent = label;
     if (art) {
-      art.hidden = true;
-      if (artFallback) artFallback.hidden = true;
-      art.alt = `${label} — official Riot Games artwork`;
       const source = row.dataset.compareArt;
       if (source) {
-        art.src = source;
-        if (art.complete) updateArtworkAvailability();
+        void swapArtwork(art,{src:source,alt:`${label} — official Riot Games artwork`,fallback:artFallback},abort.signal);
       } else {
         art.removeAttribute('src');
         if (artFallback) artFallback.hidden = false;

@@ -88,7 +88,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await settled(page);
     const open = page.getByRole('button', { name: 'Open the Rift map', exact: true });
     await open.click();
-    const map = page.getByRole('dialog', { name: 'Follow a signal.', exact: true });
+    const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
     await expect(map).toBeVisible();
     await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/champions');
     await map.getByRole('link', { name: /Notebook/ }).click();

@@ -1,523 +1,92 @@
-/* One document, one vertical scroll. Scenes remain discrete destinations,
-   but their content grows with the page instead of trapping touch, wheel,
-   keyboard and screen reader navigation inside nested scrollports. */
+/* A chapter changes the destination. Its evidence keeps ordinary document flow.
+   There is one vertical scroll, including on short screens and at enlarged text. */
 html:has(body.rift-shell[data-journey-ready]) {
   scroll-padding-top: calc(var(--world-header-height) + 16px);
-  scroll-padding-bottom: 100px;
+  scroll-padding-bottom: 146px;
 }
 body.rift-shell[data-journey-ready] {
-  height: auto !important;
-  min-height: 100svh;
-  overflow-x: clip;
-  overflow-y: visible !important;
+  height: auto; min-height: 100svh; overflow-x: clip; overflow-y: visible;
 }
 body.rift-shell[data-journey-ready] .rift-site-shell {
-  height: auto !important;
-  min-height: 100svh;
-  overflow: visible !important;
+  height: auto; min-height: 100svh; overflow: visible;
 }
 body.rift-shell[data-journey-ready] #main {
-  display: block;
-  flex: 1 0 auto;
-  min-height: 0;
-  overflow: visible !important;
-  padding-block: clamp(8px, 1.5vh, 18px) 32px;
+  display: block; flex: 1 0 auto; min-height: 0; overflow: visible;
+  padding-block: clamp(8px,1.5vh,18px) 36px;
 }
 body.rift-shell[data-journey-ready] #main [data-journey-deck] {
-  display: flex;
-  flex-direction: column;
-  height: auto !important;
-  min-height: 0 !important;
-  overflow: visible !important;
+  display: flex; flex-direction: column; height: auto; min-height: 0; overflow: visible;
 }
 body.rift-shell[data-journey-ready] #main [data-journey-panel] {
-  flex: 0 0 auto;
-  height: auto !important;
-  min-height: 0;
-  max-height: none !important;
-  overflow: visible !important;
-  overscroll-behavior: auto;
+  flex: 0 0 auto; height: auto; min-height: 0; max-height: none; overflow: visible;
+  overscroll-behavior: auto; min-width: 0;
 }
+/* Newly committed React chapters wait for one atomic registration. They must
+   never flash together while the scene observer catches up. */
+body.rift-shell[data-journey-ready] #main [data-journey-panel]:not([data-journey-visible]) { display:none; }
 body.rift-shell[data-journey-ready] .journey-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: linear-gradient(#071016f5, #071016e8);
-  backdrop-filter: blur(14px);
+  position: sticky; top: 0; z-index: 50;
+  background: linear-gradient(#071016f0,#071016c9); backdrop-filter: blur(14px);
 }
 body.rift-shell[data-journey-ready] .journey-chrome {
-  position: sticky;
-  bottom: 0;
-  z-index: 50;
-  background: linear-gradient(#071016ee, #071016fa);
-  backdrop-filter: blur(16px);
+  position: sticky; bottom: 0; z-index: 50;
+  background: linear-gradient(#071016ec,#071016fa); backdrop-filter: blur(16px);
 }
-/* This is not a scrollable gallery within a scrollable page: every record,
-   roster and player task participates in the document's normal flow. */
 body.rift-shell[data-journey-ready] #main :is(
-  .journey-record-canvas, .journey-record-selector, .journey-patch-stops,
-  .journey-history-records, .roster-wall, .patch-list, .journey-patch-browser,
-  .voyage-station-scene, .voyage-evidence-desk, .player-records, .player-view,
-  .automatic-workspace, .recall-workspace, .recall-library-section,
-  .gateway-composition, .player-gateway, .player-profile, .player-match,
-  .purchase-timeline
-) {
-  max-height: none !important;
-  height: auto !important;
-  overflow-y: visible !important;
-  overscroll-behavior-y: auto;
-}
-/* Allow wrapping rather than a sideways scrolling roster/record rail. */
-body.rift-shell[data-journey-ready] :is(.journey-record-selector, .journey-patch-stops) {
-  overflow-x: visible !important;
-  flex-wrap: wrap;
-}
-body.rift-shell[data-journey-ready] .journey-record-selector {
-  align-content: start;
-}
-/* The scene artwork is a viewport-sized cinematic layer, never a giant
-   hero stretched to the height of a long document. */
-body.rift-shell[data-journey-ready] .signal-journey {
-  min-height: clamp(270px, calc(100dvh - var(--world-header-height) - 115px), 870px);
-}
-body.rift-shell[data-journey-ready] .signal-journey .signal-act {
-  height: auto !important;
-  min-height: clamp(260px, calc(100dvh - var(--world-header-height) - 132px), 850px);
-  padding-block: clamp(8px, 1.8vh, 24px);
-}
-body.rift-shell[data-journey-ready] .signal-subject-visual {
-  max-height: min(80dvh, 760px);
-}
-body.rift-shell[data-journey-ready] :is(input, select, textarea) {
-  font-size: max(16px, 1em);
-}
-@media (max-width: 700px) {
-  body.rift-shell[data-journey-ready] #main { padding-bottom: 20px; }
-  body.rift-shell[data-journey-ready] .signal-journey .signal-act {
-    min-height: clamp(230px, calc(100dvh - var(--world-header-height) - 98px), 690px);
-  }
-  body.rift-shell[data-journey-ready] .journey-record-selector { display: flex; flex-wrap: wrap; max-height: none; }
-}
-@media (max-height: 480px) {
-  body.rift-shell[data-journey-ready] .signal-journey .signal-act {
-    min-height: max(210px, calc(100dvh - var(--world-header-height) - 72px));
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  body.rift-shell[data-journey-ready] .journey-header,
-  body.rift-shell[data-journey-ready] .journey-chrome { backdrop-filter: none; }
-}
-
-/* A short, curated roster creates a starting point; search or the explicit
-   full-roster control reveals every champion without a second scrollbar. */
-body.rift-shell[data-journey-ready] .journey-casting-wall { overflow: visible !important; max-height: none !important; }
-body.rift-shell[data-journey-ready] .roster-results-bar [data-roster-expand] {
-  color: var(--world-signal); font-size: 12px; min-height: 44px; text-align: right;
-}
-@media (max-width: 700px) {
-  body.rift-shell[data-journey-ready] .rift-scene__object { left: 56%; width: min(65vw, 280px); }
-  body.rift-shell[data-journey-ready] .roster-results-bar [data-roster-expand] { font-size: 11px; }
-}
-/* The jump map is a single viewport with no nested scroll rail. */
-.world-map-dialog .signal-destinations { flex: 0 1 auto; overflow: visible !important; }
-.world-map-dialog .journey-map-inner { justify-content: center; padding-block: clamp(8px, 2vh, 22px); }
-.world-map-dialog .journey-map-heading { padding-bottom: 8px; }
-.world-map-dialog .journey-map-heading h2 { font-size: clamp(28px, 3.5vw, 50px); margin-top: 5px; }
-.world-map-dialog .signal-destinations > a { padding-block: clamp(8px, 1.1vh, 14px); min-height: 56px; }
-.world-map-dialog .signal-destinations strong { font-size: clamp(22px, 2.7vw, 36px); }
-.world-map-dialog .signal-destinations div > span { margin-top: 3px; }
-.world-map-dialog .journey-map-footer { padding-top: 8px; }
-@media (max-width: 700px) {
- body.rift-shell[data-journey-ready] .rift-scene .rift-scene__object {
-   left: 56% !important;
-   width: min(65vw, 280px) !important;
- }
- .world-map-dialog .journey-map-inner { padding: 8px 15px max(8px,env(safe-area-inset-bottom)); }
- .world-map-dialog .journey-map-heading { padding-bottom: 3px; }
- .world-map-dialog .journey-map-heading h2 { font-size: clamp(23px, 6vw, 31px); margin-top: 2px; }
- .world-map-dialog .signal-destinations > a { gap: 8px; padding: 5px 0; min-height: 58px; }
- .world-map-dialog .signal-destinations strong { font-size: 21px; }
- .world-map-dialog .signal-destinations div > span { font-size: 10px; margin-top: 0; }
- .world-map-dialog .journey-map-footer { padding-top: 4px; gap: 4px 12px; }
-}
-@media (max-height: 480px) and (orientation: landscape) {
- .world-map-dialog .journey-map-inner { justify-content: center; gap: 4px; padding: 4px max(10px,env(safe-area-inset-left)) 4px max(10px,env(safe-area-inset-right)); }
- .world-map-dialog .journey-map-heading { align-items:center; padding: 0; }
- .world-map-dialog .journey-map-heading h2 { font-size: 22px; margin:0; }
- .world-map-dialog .journey-eyebrow { display:none; }
- .world-map-dialog .signal-destinations { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:5px; }
- .world-map-dialog .signal-destinations > a { display:flex; align-items:center; min-width:0; gap:3px; min-height:64px; padding:5px 7px; border:1px solid var(--line); }
- .world-map-dialog .signal-destination-number,.world-map-dialog .signal-destinations svg,.world-map-dialog .signal-destinations b { display:none; }
- .world-map-dialog .signal-destinations strong { font-size:clamp(14px, 2.7vw, 20px); }
- .world-map-dialog .signal-destinations div > span { display:none; }
- .world-map-dialog .journey-map-footer { display:grid; grid-template-columns:minmax(0,1fr) auto auto auto auto; gap:2px 10px; padding:0; }
- .world-map-dialog .journey-map-footer :is(a,button) { min-height:44px; font-size:10px; }
- .world-map-dialog .journey-map-footer [data-reading-shortcut] { min-width:0; max-width:100%; }
-}
-@media (max-width:700px) {
-  body.rift-shell[data-journey-ready] .signal-journey .signal-subject-visual {
-    right: 0 !important;
-    width: min(75%, 265px) !important;
-  }
-}
-/* The opening is a self-contained, viewport-sized chapter, rather than a
-   short composition followed by empty space. The three scenes still replace
-   each other in the same stage. */
-body.rift-shell[data-journey-ready] #main .signal-journey {
-  min-height: clamp(300px, calc(100dvh - var(--world-header-height) - 110px), 850px) !important;
-}
-body.rift-shell[data-journey-ready] #main .signal-journey .signal-act {
-  flex: 1 0 auto !important;
-  min-height: 0 !important;
-}
-@media (max-width:700px) and (max-height:620px) {
-  body.rift-shell[data-journey-ready] #main .signal-journey { min-height: 0 !important; }
-  body.rift-shell[data-journey-ready] #main .signal-journey .signal-act {
-    flex: 0 0 auto !important;
-    min-height: 0 !important;
-  }
-  .signal-journey .signal-opening-copy { padding-top: 0; }
-  .signal-journey .signal-opening-copy h1 { font-size: clamp(25px, 7.5vw, 34px); margin: 6px 0 8px; }
-  .signal-journey .signal-opening-actions { margin-top: 7px; gap: 5px 10px; }
-  .signal-journey .signal-cast { display: grid; grid-template-columns: minmax(0,1fr) 44px; gap: 5px; padding-top: 4px; }
-  .signal-journey .signal-cast-label { display:none; }
-  .signal-journey .signal-cast > div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px; min-width:0; }
-  .signal-journey .signal-cast > div > a { min-height:44px; padding: 4px 2px; gap:3px; justify-content:center; }
-  .signal-journey .signal-cast img { width:22px; height:22px; }
-  .signal-journey .signal-cast small { display:none; }
-  .signal-journey .signal-cast strong { font-size:10px; }
-  .signal-journey .signal-cast-all { min-width:44px; max-width:44px; font-size:0; gap:0; justify-content:center; }
-  .signal-journey .signal-cast-all > span { font-size:22px; }
-}
-@media (max-width:700px) and (max-height:620px) and (orientation:portrait) {
-  body.rift-shell[data-journey-ready] #main .signal-journey .signal-act { height: min(235px, calc(100dvh - var(--world-header-height) - 105px)) !important; }
-  .signal-journey .signal-beacon { position:absolute; inset:auto auto 3% 0; margin:0; max-width:70%; padding: 7px 10px; min-width: 0; gap: 8px; }
-  .signal-journey .signal-beacon strong { font-size: 18px; }
-  .signal-journey .signal-beacon > span:nth-child(2) > span { font-size:9px; }
-}
-@media (max-width:700px) and (max-height:480px) and (orientation:landscape) {
-  body.rift-shell[data-journey-ready] #main .signal-journey .signal-act { height: min(150px, calc(100dvh - var(--world-header-height) - 100px)) !important; }
-  .signal-journey .signal-opening-copy { width:56%; }
-  .signal-journey .signal-opening-copy h1 { font-size: 23px; line-height:1; margin:6px 0; }
-  .signal-journey .signal-beacon { position:absolute; inset:50% 0 auto auto; transform:translateY(-50%); min-width:0; width:38%; max-width:38%; margin:0; padding:7px 9px; gap:6px; }
-  .signal-journey .signal-beacon strong { font-size:16px; }
-  .signal-journey .signal-beacon > span:nth-child(2) > span { font-size:8px; }
-}
-@media (min-width:701px) and (max-height:480px) and (orientation:landscape) {
-  body.rift-shell[data-journey-ready] #main .signal-journey { min-height:0 !important; }
-  body.rift-shell[data-journey-ready] #main .signal-journey .signal-act {
-    flex:0 0 auto !important;
-    height: calc(100dvh - var(--world-header-height) - 130px) !important;
-  }
-}
-@media (max-width:520px) and (max-height:480px) and (orientation:landscape) {
-  .signal-journey .signal-opening-actions .signal-primary-action { padding-inline:8px; }
-  .signal-journey .signal-opening-actions .signal-secondary-action { font-size:9px; gap:5px; }
-}
-
-/* Give native scrollIntoView enough travel to bring the final action above
-   the persistent chapter controls, without inventing another scroll region. */
-body.rift-shell[data-journey-ready]:not([data-surface='home']) #main {
-  padding-bottom: max(106px, 12vh);
+  .journey-record-canvas,.journey-record-selector,.journey-patch-stops,
+  .journey-history-records,.roster-wall,.patch-list,.journey-patch-browser,
+  .voyage-station-scene,.voyage-evidence-desk,.player-records,.player-view,
+  .automatic-workspace,.recall-workspace,.recall-library-section,
+  .gateway-composition,.player-gateway,.player-profile,.player-match,.purchase-timeline
+) { max-height: none; height: auto; overflow: visible; overscroll-behavior: auto; }
+body.rift-shell[data-journey-ready] :is(.journey-record-selector,.journey-patch-stops) {
+  overflow-x: visible; flex-wrap: wrap; align-content: start;
 }
 body.rift-shell[data-journey-ready] #main :is(a,button,input,select,summary) {
-  scroll-margin-block: calc(var(--world-header-height) + 14px) 102px;
+  scroll-margin-block: calc(var(--world-header-height) + 14px) 146px;
 }
-
-/* The contextual return hint is a quiet overlay, not a reflow event: saving
-   a player must not move the hero or the navigation under the user's finger. */
-/* WebKit must retain authored type sizes when the returning-player copy
-   changes; its mobile text inflation otherwise moves the heading. */
-body.rift-shell[data-journey-ready] .signal-opening-copy {
-  position: relative;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+body.rift-shell[data-journey-ready] :is(input,select,textarea) { font-size: max(16px,1em); }
+body.rift-shell[data-journey-ready] .signal-journey {
+  min-height: max(460px,calc(100svh - var(--world-header-height) - 160px));
 }
-body.rift-shell[data-journey-ready] .signal-opening-copy .signal-return-hint {
-  position: absolute; top: calc(100% + 4px); left: 0; width: min(100%, 40ch);
-  margin: 0; max-height: 3.4em; overflow: hidden; display: -webkit-box;
-  -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+body.rift-shell[data-journey-ready] #main .signal-journey .signal-act {
+  min-height: max(390px,calc(100svh - var(--world-header-height) - 235px));
+  height: auto; padding-block: 12px 24px;
 }
-body.rift-shell[data-journey-ready] .signal-opening-copy .signal-return-hint[hidden] { display:none!important; }
-/* Background artwork may pass outside the viewport during a crossing.
-   Clip its paint without introducing any horizontal scrolling region. */
-html:has(body.rift-shell[data-journey-ready]) { overflow-x: clip; }
-body.rift-shell[data-journey-ready] .signal-journey { overflow-x: clip; }
-
-/* On the shortest portrait phones, the carry-forward action stays entirely
-   above the chapter controls rather than being covered by the cast. */
-@media (max-width:700px) and (max-height:620px) and (orientation:portrait) {
-  body.rift-shell[data-journey-ready] .signal-carry-desk { width:100%; padding:0 0 8px; }
-  body.rift-shell[data-journey-ready] .signal-carry-desk h2 { font-size:clamp(21px,6.5vw,28px); margin:2px 0; }
-  body.rift-shell[data-journey-ready] .signal-carried-record { gap:10px; margin-top:0; padding:3px 0; }
-  body.rift-shell[data-journey-ready] .signal-carried-mark { font-size:28px; }
-  body.rift-shell[data-journey-ready] .signal-carried-record > div { gap:3px; }
-  body.rift-shell[data-journey-ready] .signal-carried-record strong { font-size:clamp(17px,5vw,22px); }
-  body.rift-shell[data-journey-ready] .signal-carried-record div > span { display:none; }
-  body.rift-shell[data-journey-ready] .signal-carry-explore { margin-top:0; }
-  body.rift-shell[data-journey-ready] .signal-carry-desk .signal-opening-actions { margin-top:0; }
-}
-
-/* Search-first champion picker: a handful of choices, never a 6,000px dialog
-   scroll well. The full accessible roster remains a normal page link. */
-body.rift-shell .voyage-roster-dialog {
-  width: min(calc(100vw - 24px), 960px);
-  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  overflow: hidden !important;
-}
-body.rift-shell .voyage-roster-shell {
-  display: grid; grid-template-rows: auto auto auto auto auto;
-  gap: clamp(5px, 1vh, 12px);
-  padding: clamp(12px,2.4vh,24px) clamp(12px,2.8vw,30px);
-  max-height: none;
-}
-body.rift-shell .voyage-roster-shell > header {
-  position: static; padding: 0; align-items: center; gap: 12px;
-}
-body.rift-shell .voyage-roster-shell h2 {
-  margin: 4px 0 0; font-size: clamp(22px,3vw,38px);
-}
+.signal-subject-visual { max-height: min(80dvh,760px); }
+.signal-opening-copy { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+.signal-return-hint { pointer-events: auto; }
+body.rift-shell[data-journey-ready] .journey-casting-wall { overflow: visible; max-height: none; }
+.roster-results-bar [data-roster-expand] { color: var(--world-signal); font-size: 12px; min-height: 44px; text-align: right; }
+.journey-patch-directory .archive-instrument { align-self: start; }
+/* Bounded chooser: search, up to eight results, and a full-roster link. */
+body.rift-shell .voyage-roster-dialog { width: min(calc(100vw - 24px),960px); max-height: calc(100dvh - 24px); overflow: auto; }
+body.rift-shell .voyage-roster-shell { display: grid; gap: 10px; padding: 20px; max-height: none; }
+body.rift-shell .voyage-roster-shell > header { position: static; padding: 0; align-items: center; gap: 12px; }
+body.rift-shell .voyage-roster-shell h2 { margin: 4px 0 0; font-size: clamp(22px,3vw,38px); }
 body.rift-shell .roster-search-row { margin: 0; gap: 10px; }
-body.rift-shell .roster-search-row label { gap: 3px; }
 body.rift-shell .roster-search-row :is(input,select) { min-height: 44px; padding-block: 7px; }
-body.rift-shell [data-roster-status] { min-height: 15px; margin: 0; font-size: 11px; }
-body.rift-shell .voyage-roster-results { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 3px 9px; }
+body.rift-shell .voyage-roster-results { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
 body.rift-shell .voyage-roster-results button { min-height: 48px; padding: 4px 5px; gap: 7px; }
 body.rift-shell .voyage-roster-results img { width: 30px; height: 30px; }
-body.rift-shell .voyage-roster-results small { font-size: 10px; margin-top: 1px; }
-body.rift-shell .voyage-roster-shell > footer { margin: 0; padding-top: 4px; gap: 8px; align-items: center; }
-@media (max-width: 700px) {
-  body.rift-shell .voyage-roster-shell { padding: 12px; gap: 6px; }
-  body.rift-shell .voyage-roster-results { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 3px 7px; }
-  body.rift-shell .voyage-roster-results button { min-height: 48px; }
-  body.rift-shell .voyage-roster-shell h2 { font-size: 23px; }
-  body.rift-shell .roster-search-row { grid-template-columns: minmax(0,1fr); gap: 6px; }
-  body.rift-shell .roster-search-row label { font-size: 10px; }
-  body.rift-shell .roster-search-row :is(input,select) { min-height: 44px; }
-  body.rift-shell .voyage-roster-results small { display: none; }
-  body.rift-shell .voyage-roster-shell > footer { padding-top: 2px; font-size: 10px; }
-}
-@media (max-height: 420px) and (orientation:landscape) {
-  body.rift-shell .voyage-roster-shell { padding: 7px 11px; gap: 4px; }
-  body.rift-shell .voyage-roster-shell h2 { font-size: 20px; margin: 0; }
-  body.rift-shell .voyage-roster-shell .journey-eyebrow { display: none; }
-  body.rift-shell .roster-search-row { grid-template-columns: minmax(0,1fr) 112px; gap: 8px; }
-  body.rift-shell .roster-search-row label { font-size: 9px; }
-  body.rift-shell .roster-search-row :is(input,select) { min-height: 44px; padding: 4px 6px; }
-  body.rift-shell .voyage-roster-results { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 3px; }
-  body.rift-shell .voyage-roster-results button { min-height: 44px; padding: 2px; }
-  body.rift-shell .voyage-roster-results img { width: 24px; height: 24px; }
-  body.rift-shell .voyage-roster-results strong { font-size: 10px; }
-  body.rift-shell [data-roster-status] { font-size: 10px; }
-  body.rift-shell .voyage-roster-shell > footer { padding-top: 0; }
-  body.rift-shell .voyage-roster-shell > footer a { min-height: 34px; }
-}
-/* WebKit's font metrics were making the second and third cinematic acts
-   taller than the viewport. Keep the actual before/after evidence and its
-   44px actions, but cut decorative vertical space rather than clipping it. */
-@media (min-width:701px) and (max-height:900px) {
-  body.rift-shell[data-journey-ready] .signal-reveal-desk {
-    padding:8px 0 10px 20px;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk > header { margin-bottom:10px; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk h2 {
-    font-size:clamp(27px,2.6vw,39px); line-height:1.03; margin-top:7px;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record { padding:8px 0 4px; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-coordinate { margin-bottom:5px; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-heading h3 { font-size:20px; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-aperture.delta-row {
-    min-height:100px; padding:12px 0 10px;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value { gap:6px; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value > strong {
-    font-size:clamp(29px,2.8vw,45px);
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-footer {
-    padding-top:4px; margin-top:4px;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-actions { margin-top:8px; }
-  body.rift-shell[data-journey-ready] .signal-carry-desk { padding:clamp(12px,3vh,24px) 0 10px; }
-  body.rift-shell[data-journey-ready] .signal-carry-desk h2 {
-    font-size:clamp(32px,3.8vw,54px); margin-top:10px;
-  }
-  body.rift-shell[data-journey-ready] .signal-carried-record {
-    margin-top:15px; padding:12px 0; gap:15px;
-  }
-  body.rift-shell[data-journey-ready] .signal-carried-record strong {
-    font-size:clamp(20px,2.5vw,34px);
-  }
-  body.rift-shell[data-journey-ready] .signal-carried-mark { font-size:40px; }
-  body.rift-shell[data-journey-ready] .signal-carry-explore { margin-top:6px; }
-}
-@media (min-width:701px) and (max-height:520px) and (orientation:landscape) {
-  body.rift-shell[data-journey-ready] .signal-reveal-desk {
-    width:70%; padding:0 0 0 12px;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk h2 { font-size:24px; margin:3px 0; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk > header { margin-bottom:3px; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-coordinate { margin-bottom:0; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-aperture.delta-row {
-    min-height:58px; padding:4px 0;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value > strong { font-size:24px; }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-footer { margin:0; padding:0; }
-  body.rift-shell[data-journey-ready] .signal-reveal-actions { margin-top:0; }
-  body.rift-shell[data-journey-ready] .signal-carry-desk { padding:0; width:70%; }
-  body.rift-shell[data-journey-ready] .signal-carry-desk h2 { font-size:25px; margin:3px 0; }
-  body.rift-shell[data-journey-ready] .signal-carried-record { margin-top:4px; padding:4px 0; gap:8px; }
-  body.rift-shell[data-journey-ready] .signal-carried-record > div { gap:3px; }
-  body.rift-shell[data-journey-ready] .signal-carried-mark { font-size:24px; }
-  body.rift-shell[data-journey-ready] .signal-carried-record strong { font-size:18px; }
-  body.rift-shell[data-journey-ready] .signal-carried-record div > span { display:none; }
-  body.rift-shell[data-journey-ready] .signal-carry-explore { margin-top:0; }
-  body.rift-shell[data-journey-ready] .signal-carry-desk .signal-opening-actions { margin-top:0; }
-}
-/* Reveal is a compact inspection instrument on phones, not a tall article.
-   Exact source and actions remain 44px targets; ornament gives way to data. */
+body.rift-shell .voyage-roster-shell > footer { margin: 0; padding-top: 4px; gap: 8px; }
 @media (max-width:700px) {
- body.rift-shell[data-journey-ready] .signal-reveal-desk { padding:0 0 4px; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk > header { margin-bottom:4px; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk h2 { font-size:clamp(21px,6vw,27px); margin:4px 0; line-height:1; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record { padding:4px 0; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-coordinate { margin-bottom:3px; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-heading h3 { font-size:17px; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-aperture.delta-row { min-height:64px; padding:6px 0; gap:6px; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value { gap:3px; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value > strong { font-size:clamp(21px,6vw,28px); }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-reading { padding-bottom:0; }
- body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-footer { padding-top:0; margin-top:0; }
- body.rift-shell[data-journey-ready] .signal-reveal-actions { margin-top:4px; gap:2px 8px; }
- body.rift-shell[data-journey-ready] .signal-reveal-actions .signal-secondary-action { min-height:44px; }
-}
-@media (max-width:700px) and (min-height:530px) and (max-height:620px) and (orientation:portrait) {
- body.rift-shell[data-journey-ready] #main .signal-journey .signal-act {
-   height: min(306px, calc(100dvh - var(--world-header-height) - 150px)) !important;
- }
-}
-/* Very short screens cannot display cinematic evidence plus two toolbars
-   simultaneously. The chapter control follows the content here, so it
-   never sits over a source link or a touch target. */
-@media (max-height:620px) {
-  body.rift-shell[data-surface='home'][data-journey-ready] .journey-chrome {
-    position: relative !important;
-    bottom: auto !important;
-  }
-  body.rift-shell[data-surface='home'][data-journey-ready] #main {
-    padding-bottom: max(110px, 22vh);
-  }
-  body.rift-shell[data-surface='home'][data-journey-ready]
-  .signal-journey[data-journey-active='reveal'] .signal-cast,
-  body.rift-shell[data-surface='home'][data-journey-ready]
-  .signal-journey[data-journey-active='carry'] .signal-cast {
-    display: none;
-  }
+  body.rift-shell[data-journey-ready] .journey-record-selector { display: flex; }
+  body.rift-shell .voyage-roster-shell { padding: 12px; gap: 6px; }
+  body.rift-shell .voyage-roster-results { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  body.rift-shell .voyage-roster-results small { display: none; }
+  body.rift-shell .roster-search-row { grid-template-columns: minmax(0,1fr); }
+  .signal-reveal-desk { width: 100%; padding: 8px 0; }
+  .signal-reveal-desk h2 { font-size: 30px; margin: 4px 0; }
+  .signal-reveal-desk > header { margin-bottom: 8px; }
+  .signal-carry-desk { width: 100%; padding: 16px 0; }
 }
 @media (max-height:620px) {
-  body.rift-shell[data-surface='home'][data-journey-ready] #main {
-    padding-bottom: max(180px, 35vh);
-  }
+  body.rift-shell[data-journey-ready] .journey-chrome { position: relative; bottom: auto; }
+  body.rift-shell[data-journey-ready] #main .signal-journey .signal-act { min-height: 250px; }
+  .signal-reveal-desk { padding-block: 4px; }
+  .signal-reveal-desk > header { margin-bottom: 8px; }
 }
-
-/* Archive chronology may contain hundreds of records. Keep the selected
-   patch and its primary entry action at the top of the first screen rather
-   than vertically centering it against the entire long chronology. */
-@media (min-width: 701px) {
-  body.rift-shell[data-journey-ready] .journey-patch-directory .archive-instrument {
-    align-self: start;
-  }
+@media (prefers-reduced-motion:reduce) {
+  body.rift-shell[data-journey-ready] :is(.journey-header,.journey-chrome) { backdrop-filter: none; }
 }
-
-/* A single row of accessible scene markers, not a sideways-scrollable tab
-   strip that can slide underneath the previous/next buttons. */
-@media (max-width: 700px) {
-  body.rift-shell[data-journey-ready] .journey-scene-controls {
-    gap: 3px;
-  }
-  body.rift-shell[data-journey-ready] .journey-scene-tabs {
-    width: auto;
-    flex: 0 0 auto;
-    max-width: none;
-    min-width: 0;
-    gap: 0;
-    overflow: visible;
-  }
-  body.rift-shell[data-journey-ready] .journey-scene-tabs button {
-    display: grid;
-    place-items: center;
-    flex: 0 0 44px;
-    width: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0;
-    font-size: 0;
-  }
-  body.rift-shell[data-journey-ready] .journey-scene-tabs button::before {
-    content: attr(data-scene-number);
-    font: 11px/1 'Spline Sans Mono', monospace;
-    letter-spacing: .04em;
-  }
-}
-@media (max-width: 310px) {
-  body.rift-shell[data-journey-ready] [data-journey-prev] { display: none; }
-}
-
-/* Short landscape phones put the reveal's keep/continue actions beside the
-   headline instead of underneath the evidence and behind the chapter dock. */
-@media (max-width: 700px) and (max-height: 480px) and (orientation: landscape) {
-  body.rift-shell[data-journey-ready] .signal-reveal-desk {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(170px, .9fr);
-    gap: 5px 10px;
-    align-items: start;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk > header {
-    grid-column: 1; grid-row: 1;
-    min-width: 0;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-actions {
-    grid-column: 2; grid-row: 1;
-    display: flex; flex-direction: column; align-items: stretch;
-    gap: 2px;
-    margin: 0;
-    min-width: 0;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-actions :is(a,button) {
-    min-height: 44px;
-    justify-content: center;
-  }
-  body.rift-shell[data-journey-ready] .signal-reveal-desk [data-home-record] {
-    grid-column: 1 / -1; grid-row: 2;
-    min-width: 0;
-  }
-  body.rift-shell[data-journey-ready] .signal-keep-status { grid-column: 1 / -1; }
-}
-
-/* Evidence and source links determine chapter height, including short landscape. */
-body.rift-shell[data-journey-ready] #main .signal-journey :is(#reveal, #carry) {
-  height: auto !important;
-  min-width: 0;
-}
-body.rift-shell[data-journey-ready] #main,
-body.rift-shell[data-journey-ready] #main [data-journey-panel] {
-  min-width: 0;
-  max-width: 100%;
-}
-
-/* A longer returning-player label must not create another action row. */
-body.rift-shell[data-journey-ready] .signal-opening-copy .signal-opening-actions {
-  display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center;
-}
-/* Returning labels use the same two action rows as the first visit. Let that
-   copy determine the chapter height instead of painting it over the cast. */
-@media (max-width: 700px) and (max-height: 480px) and (orientation: landscape) {
-  body.rift-shell[data-journey-ready] #main .signal-journey #signal {
-    height: auto !important;
-    min-height: 150px !important;
-  }
-  body.rift-shell[data-journey-ready] .signal-opening-copy .signal-opening-actions {
-    display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 0;
-  }
-  body.rift-shell[data-journey-ready] .signal-opening-copy p[data-home-return] { display: none; }
-}
-body.rift-shell[data-journey-ready] .signal-opening-copy p[data-home-return] { pointer-events: none; }

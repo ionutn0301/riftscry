@@ -21,7 +21,7 @@ test('homepage My game prepares the briefing and continues into matches after on
   const requests = await installFixtures(page, { matches: [recentAramWin] });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('stands still.');
-  await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'My game', exact: true }).click();
+  await page.locator('.journey-spine [data-spine-station="next-game"]').click();
   await expect(page).toHaveURL(url => url.pathname === '/next-game');
   const lookup = page.getByRole('form', { name: 'Get an automatic player briefing', exact: true });
   await expect(lookup).toBeVisible();

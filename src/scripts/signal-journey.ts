@@ -4,6 +4,7 @@ import { readFindings, writeFindings, FINDINGS_EVENT, FINDINGS_KEY, FINDINGS_LIM
 import { parseSignalContext, readSignalContext, rememberSignal, SIGNAL_CONTEXT_EVENT, SIGNAL_CONTEXT_KEY } from '../lib/signal-context';
 import { readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
 import { rememberReading } from '../lib/return-briefing';
+import { swapArtwork } from './artwork';
 
 type OpeningSignal = HomeSignal & { artwork: { splash: string; portrait: string }; record: Evidence; explore: string };
 const host = document.querySelector<HTMLElement>('[data-home-signals]');
@@ -65,13 +66,8 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     href('[data-home-trace]', current.explore.replace('#change', '#history'));
     href('[data-home-explore]', current.explore);
     host.querySelector('[data-home-beacon]')?.setAttribute('aria-label', `Reveal ${current.championName}'s archived change`);
-    image.alt = `${current.championName} — official Riot Games artwork`;
-    if (image.getAttribute('src') !== current.artwork.splash) {
-      fallback.hidden = true;
-      image.hidden = false;
-      host.querySelector<HTMLSourceElement>('[data-home-portrait]')!.srcset = current.artwork.portrait;
-      image.src = current.artwork.splash;
-    }
+    void swapArtwork(image,{src:current.artwork.splash,alt:`${current.championName} — official Riot Games artwork`,fallback,
+      portrait:{source:host.querySelector<HTMLSourceElement>('[data-home-portrait]')!,src:current.artwork.portrait}},abort.signal);
     if (push) {
       const url = new URL(location.href); url.searchParams.set('signal', current.championId);
       history.pushState(null, '', url.pathname + url.search + url.hash);
@@ -138,6 +134,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   // A URL records the actual opening subject so Back restores it exactly.
   const initialUrl = new URL(location.href);
   initialUrl.searchParams.set('signal', current.championId);
+  if (!initialUrl.hash && !requested) initialUrl.hash = 'atlas';
   history.replaceState(history.state, '', initialUrl.pathname + initialUrl.search + initialUrl.hash);
   player(); artworkState();
 }

@@ -1,0 +1,42 @@
+---
+import { journeyStations, stationForSurface } from '../../lib/journey-stations';
+import { getRiftPreset, projectRift } from '../../lib/rift-geometry';
+import { passagePose } from '../../lib/passage-camera';
+interface Props { surface?: string; entrance?: boolean }
+const { surface = 'home', entrance = false } = Astro.props;
+const active = stationForSurface(surface);
+const index = Math.max(0,journeyStations.findIndex(station => station.id === active));
+const first = journeyStations[index]!;
+const id = entrance ? 'entrance-passage' : 'menu-passage';
+const pose = passagePose(index);
+const faces = projectRift({...getRiftPreset('home'),...pose,accent:first.color});
+---
+<div class:list={['rift-atlas','rift-passage',entrance && 'rift-atlas--entrance']} data-rift-atlas data-passage data-passage-initial={index} style={`--passage-color:${first.color};--passage-offset-x:${pose.x*100}%;--passage-offset-y:${pose.y*100}%`}>
+  <div class="passage-viewport" data-passage-gesture tabindex="-1" role="group" aria-label="Explore the Rift in depth" aria-describedby={`${id}-hint`}>
+    <div class="passage-horizon" aria-hidden="true"></div>
+    <svg class="passage-still" data-passage-still viewBox="0 0 1000 1000" fill="none" aria-hidden="true">
+      <defs>{faces.filter(face=>!face.luminous).map(face=><linearGradient id={`${id}-facet-${face.index}`} x1="0" y1="0" x2="0" y2="1">
+        {face.gradient.map((color,i)=><stop offset={i/4} stop-color={color}/>)}
+      </linearGradient>)}</defs>
+      {faces.map(face => <polygon points={face.points} fill={face.luminous?face.fill:`url(#${id}-facet-${face.index})`} stroke={face.luminous?first.color:'#88b6b52b'} stroke-width={face.luminous?1.15:.55} />)}
+    </svg>
+    <canvas data-passage-canvas aria-hidden="true" hidden></canvas>
+    <span class="passage-axis" aria-hidden="true">R / S — BETWEEN GAMES</span>
+    <span class="passage-coordinate" aria-hidden="true" data-passage-coordinate>{first.number} / 05</span>
+  </div>
+  <div class="passage-reading">
+    <p class="journey-eyebrow" data-passage-place>{first.number} / {first.place}</p>
+    <h2 data-passage-title>{first.title}</h2>
+    <p data-passage-description>{first.description}</p>
+    <a class="passage-enter" href={first.href} data-passage-enter>Enter {first.label}<span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="passage-instrument" data-passage-instrument hidden>
+    <button type="button" data-passage-step="-1" aria-label="Previous destination">←</button>
+    <label><span id={`${id}-hint`}>Drag the Rift or choose a destination</span><input type="range" min="0" max="4" step="1" value={index} aria-label="Rift destination" aria-valuetext={first.label} data-passage-range /></label>
+    <button type="button" data-passage-step="1" aria-label="Next destination">→</button>
+  </div>
+  <nav class:list={['passage-stops', !entrance && 'signal-destinations']} aria-label="RiftScry destinations">
+    {journeyStations.map((station,i) => <a href={station.href} data-passage-stop={i} data-station-link={station.id} data-world-link={station.id} data-rift-destination={station.id} data-atlas-portal={station.id} aria-current={active === station.id ? 'page' : undefined} data-passage-selected={i === index ? 'true' : undefined} style={`--station-color:${station.color}`}><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={station.glyph}/></svg><span>{station.label}</span></a>)}
+  </nav>
+</div>
+<script>import '../../scripts/rift-passage';</script>

@@ -37,6 +37,7 @@ test('the opening reveals a real signal and its menu supports a useful champion 
   await page.goto('/');
   await ready(page);
   await expect(page.locator('[data-home-signals]')).toBeVisible();
+  await page.locator('.atlas-follow-signal').click();
   await page.locator('[data-home-reveal]').click();
   const reveal = await activeScene(page, 'reveal');
   await expect(reveal.locator('[data-home-record]:not([hidden]) .before')).not.toBeEmpty();
@@ -128,7 +129,7 @@ test('a deep record reveals its containing scene and keeps a saved champion thro
   await reachable(save);
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
-  const pool = page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Saved', exact: true });
+  const pool = page.locator('.journey-spine [data-spine-station="pool"]');
   await reachable(pool);
   await pool.click();
   await expect(page).toHaveURL(url => url.pathname === '/pool');

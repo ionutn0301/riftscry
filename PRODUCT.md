@@ -1,6 +1,6 @@
 # RiftScry product contract
 
-Current contract for the signal journey, 30 October 2026. This document and
+Current contract for the Rift atlas, 31 October 2026. This document and
 [DESIGN.md](DESIGN.md) supersede earlier presentation storyboards. The
 [platform audit](docs/signal-journey/AUDIT.md) records the scope and cleanup;
 [the research](docs/signal-journey/RESEARCH.md) explains the design decisions.
@@ -12,7 +12,8 @@ match history. A visitor can follow a champion's change, discover what moved
 since a recorded game, inspect the evidence, and keep something useful for the
 next visit. The shared interaction is **choose → reveal → inspect → keep**.
 
-The homepage begins with a real, identified archive signal. Returning visitors
+The homepage begins with five connected spatial destinations and a direct briefing
+action. Its champion-signal branch reveals a real, identified archive record. Returning visitors
 can resume a selected player or public archive context. Personal briefings build
 from available records without requiring a note, build entry, preparation card,
 or reflection. Each route supports the same journey and remains a direct entry.
@@ -24,15 +25,16 @@ account does not verify ownership or create a synchronized RiftScry account.
 
 ## One journey, distinct useful destinations
 
-With JavaScript, a shared viewport shell keeps one task scene active. Named scene
-controls move between tasks; longer evidence scrolls within its active scene.
+With JavaScript, the shared shell keeps one task chapter active. Named scene
+controls move between tasks; longer evidence grows in the ordinary document. A
+spatial atlas and persistent destination path keep every chapter connected.
 The header provides **Discover, My game, and Saved**. The map exposes Briefing,
 Games, Champions, Patches, and Saved, with comparison and notebook shortcuts.
 Direct links, URL scope, browser Back, search, and reduced motion remain integral.
 
 | Route | Product job |
 | --- | --- |
-| `/` | Find a signal, reveal an exact change, and take it forward; resume remembered context. |
+| `/` | Enter the spatial atlas or follow a champion signal; resume remembered context. |
 | `/explore` | Follow a selected champion and field through exact changes, an explicit interval, and kept findings. |
 | `/next-game` | Assemble a focus, patch catch-up, supported patch-impact calculations, and the recorded final loadout from imported games. |
 | `/players` | Look up a player or resume the remembered player with the selected task and filters. |
