@@ -411,3 +411,46 @@ body.rift-shell .voyage-roster-shell > footer { margin: 0; padding-top: 4px; gap
     padding-bottom: max(180px, 35vh);
   }
 }
+
+/* Archive chronology may contain hundreds of records. Keep the selected
+   patch and its primary entry action at the top of the first screen rather
+   than vertically centering it against the entire long chronology. */
+@media (min-width: 701px) {
+  body.rift-shell[data-journey-ready] .journey-patch-directory .archive-instrument {
+    align-self: start;
+  }
+}
+
+/* A single row of accessible scene markers, not a sideways-scrollable tab
+   strip that can slide underneath the previous/next buttons. */
+@media (max-width: 700px) {
+  body.rift-shell[data-journey-ready] .journey-scene-controls {
+    gap: 3px;
+  }
+  body.rift-shell[data-journey-ready] .journey-scene-tabs {
+    width: auto;
+    flex: 0 0 auto;
+    max-width: none;
+    min-width: 0;
+    gap: 0;
+    overflow: visible;
+  }
+  body.rift-shell[data-journey-ready] .journey-scene-tabs button {
+    display: grid;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    font-size: 0;
+  }
+  body.rift-shell[data-journey-ready] .journey-scene-tabs button::before {
+    content: attr(data-scene-number);
+    font: 11px/1 'Spline Sans Mono', monospace;
+    letter-spacing: .04em;
+  }
+}
+@media (max-width: 310px) {
+  body.rift-shell[data-journey-ready] [data-journey-prev] { display: none; }
+}

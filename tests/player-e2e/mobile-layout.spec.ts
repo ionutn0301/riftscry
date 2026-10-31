@@ -83,7 +83,9 @@ for (const width of [320, 768]) {
     await page.mouse.wheel(0, 250);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(scrollBefore);
     expect(await events.evaluate(element => element.scrollTop)).toBe(0);
-  expect(await page.evaluate(() => scrollY)).toBe(0);
+    // Native wheel events move the document, not an inner evidence scroller.
+    // The assertion above already verifies that page scroll increased.
+    expect(await page.evaluate(() => scrollY)).toBeGreaterThan(scrollBefore);
 
     await openScene(page, 'match-memory');
     await page.getByText('Save an adjustment from this match', { exact: true }).click();
