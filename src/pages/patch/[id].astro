@@ -1,9 +1,9 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import "../../styles/journey-readers.css";
+import "../../styles/signal-readers.css";
 import ChangeCard from "../../components/ChangeCard.astro";
 import ClassificationBadge from "../../components/ClassificationBadge.astro";
-import DeltaRow from "../../components/DeltaRow.astro";
+import SignalRecord from "../../components/experience/SignalRecord.astro";
 import PatchFilterBar, { type FilterEntry } from "../../components/islands/PatchFilterBar";
 import PoolStrip from "../../components/islands/PoolStrip";
 import { getAllPatches, getChampionMeta, getRoles, getLatestPatch } from "../../lib/data";
@@ -41,21 +41,23 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
       <p class="journey-empty" data-filter-empty hidden>No matching champions. Change a filter or select Clear filters.</p>
       <div class="journey-patch-browser" data-patch-browser>
         <nav class="journey-record-selector" aria-label="Choose a champion record">{patch.champions.map((champion, index) => <a href={"#" + champion.championId.toLowerCase()} data-patch-select={champion.championId.toLowerCase()} aria-current={index === 0 ? 'true' : undefined}><img src={"https://ddragon.leagueoflegends.com/cdn/" + patch.assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="40" height="40" loading="lazy" decoding="async"/><span>{meta[champion.championId]?.name ?? champion.championId}</span><span aria-hidden="true">→</span></a>)}</nav>
-        <div class="cards journey-record-canvas" aria-label="Selected champion record">{patch.champions.map((champion) => <ChangeCard change={champion} meta={meta[champion.championId]} roles={roles[champion.championId] ?? []} assetVersion={patch.assetVersion}/>)}</div>
+        <div class="cards journey-record-canvas" aria-label="Selected champion record">{patch.champions.map((champion) => <ChangeCard change={champion} meta={meta[champion.championId]} roles={roles[champion.championId] ?? []} assetVersion={patch.assetVersion} patchId={patch.id} sourceUrl={patch.sourceUrl}/>)}</div>
       </div>
     </section>
     {patch.items.length > 0 && <section id="items" class="journey-panel journey-record-list" data-journey-panel data-journey-label="Items" data-journey-world="patch" aria-label={"Item records in patch " + patch.id}>
       <div class="journey-panel-heading"><p class="journey-reader-kicker">{patch.items.length} ITEM RECORDS</p><h2>Inspect the loadout.</h2></div>
-      {patch.items.map((item, index) => <details class="journey-record-fold" name="patch-items" open={index === 0}><summary><span>{item.name}</span><ClassificationBadge classification={item.classification}/><span class="journey-fold-plus" aria-hidden="true">+</span></summary><div>{item.changes.map(change => <DeltaRow change={change}/>)}</div></details>)}
+      {patch.items.map((item, index) => <details class="journey-record-fold" name="patch-items" open={index === 0}><summary><span>{item.name}</span><ClassificationBadge classification={item.classification}/><span class="journey-fold-plus" aria-hidden="true">+</span></summary><div><SignalRecord label={item.name} patchId={patch.id} sourceUrl={patch.sourceUrl} entries={item.changes.map(change => ({change}))}/></div></details>)}
     </section>}
     {(patch.systems.length > 0 || hotfixes.length > 0) && <section id="systems" class="journey-panel journey-record-list" data-journey-panel data-journey-label={patch.systems.length ? "Systems & fixes" : "Hotfixes"} data-journey-world="compare" aria-label="System records and hotfixes">
       <div class="journey-panel-heading"><p class="journey-reader-kicker">THE WIDER GAME</p><h2>Rules of the Rift.</h2></div>
-      {patch.systems.map((system, index) => <details class="journey-record-fold" name="patch-systems" open={index === 0}><summary><span>{system.name}</span><ClassificationBadge classification={system.classification}/><span class="journey-fold-plus" aria-hidden="true">+</span></summary><div>{system.changes.map(change => <DeltaRow change={change}/>)}</div></details>)}
+      {patch.systems.map((system, index) => <details class="journey-record-fold" name="patch-systems" open={index === 0}><summary><span>{system.name}</span><ClassificationBadge classification={system.classification}/><span class="journey-fold-plus" aria-hidden="true">+</span></summary><div><SignalRecord label={system.name} patchId={patch.id} sourceUrl={patch.sourceUrl} entries={system.changes.map(change => ({change}))}/></div></details>)}
       {hotfixes.length > 0 && <section id="hotfixes" class="journey-hotfixes"><h2>Hotfixes</h2>{hotfixes.map(hotfix => <article><time datetime={hotfix.date}>{hotfix.date}</time><p>{hotfix.description}</p></article>)}</section>}
     </section>}
   </div>
 </Layout>
 <script>
+  import { rememberSignal } from '../../lib/signal-context';
+
   const browser = document.querySelector<HTMLElement>('[data-patch-browser]');
   if (browser) {
     const cards = [...browser.querySelectorAll<HTMLElement>('[data-champion-id]')];
@@ -65,7 +67,7 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
     function selectRecord(id = '') {
       const visible = cards.filter(card => card.dataset.filtered !== 'out');
       const current = visible.find(card => card.id === id) ?? visible.find(card => card.id === selected) ?? visible[0];
-      if (current && selected !== current.id) window.dispatchEvent(new CustomEvent('riftscry:focus-change', { detail: { kind: 'champion', key: current.dataset.championId ?? current.id } }));
+      const changed = current && selected !== current.id;
       selected = current?.id ?? '';
       cards.forEach(card => { card.hidden = card !== current; card.inert = card !== current; });
       links.forEach(link => {
@@ -74,6 +76,11 @@ const changed = Object.fromEntries(patch.champions.map((c) => [c.championId,{
         if (link.dataset.patchSelect === selected) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
       });
       browser!.dataset.recordBrowserReady = 'true';
+      if (current?.dataset.signalSubject) {
+        const key = current.dataset.signalSubject;
+        rememberSignal({ championId: key, name: current.dataset.signalName ?? key, patch: current.dataset.signalPatch, href: location.pathname + location.search + '#' + current.id });
+        if (changed) window.dispatchEvent(new CustomEvent('riftscry:focus-change', { detail: { kind: 'champion', key } }));
+      }
     }
     selectRecord(fromHash());
     const observer = new MutationObserver(() => selectRecord(fromHash()));

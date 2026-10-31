@@ -2,7 +2,8 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 import type { Match } from '../../src/lib/player/contracts';
 import type { PatchImpactReport } from '../../src/lib/player/patch-impact';
 import { installFixtures, makeMatch, platform, puuid, type FixtureRequest } from '../player-e2e/fixtures';
-import { openScene, readyWorld } from './journey-test-helpers';
+import { openBriefingSettings } from '../player-e2e/briefing-controls';
+import { stationaryWorld, openScene, readyWorld } from './journey-test-helpers';
 
 // These are browser-only response fixtures. Engine reference calculations have
 // separate unit tests; these figures are not claims about live champion balance.
@@ -187,9 +188,9 @@ test('switching champions keeps the viewport and context controls still through 
     await page.evaluate(() => document.fonts.ready);
     const choices = impact.locator('.patch-impact-contexts');
     const secondChoice = impact.getByRole('button', { name: /Ahri/ });
-    // Records can scroll within their active scene; the shared world stays put.
+    // Scroll the document to the choices before measuring selection stability.
     await choices.scrollIntoViewIfNeeded();
-    expect(await page.evaluate(() => scrollY)).toBe(0);
+    await stationaryWorld(page);
     const position = async () => {
       await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
       return choices.evaluate(element => ({
@@ -281,6 +282,7 @@ test('changing exact game mode clears the old result when there are no imported 
   const requests = await fixtures(page);
   const impact = await open(page);
   await settled(impact);
+  await openBriefingSettings(page);
   await page.getByLabel('Game mode', { exact: true }).selectOption('2400');
   await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy', 'false');
   await expect(page.getByRole('heading', { name: 'Mayhem history is not available from Riot.', exact: true })).toBeVisible();
@@ -363,9 +365,9 @@ for (const [width, height] of [[320, 568], [1440, 900]] as const) {
       { platform, puuid, name: 'Reference Fixture#TEST' });
     await page.goto('/');
     await readyWorld(page);
-    const cta = page.locator('[data-observatory] a[data-world-link="next-game"]');
+    const cta = page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'My game', exact: true });
     await expect(cta).toHaveAttribute('href', new RegExp(`/next-game\\?platform=${platform}&puuid=${puuid}`));
-    expect(requests, 'The observatory must not import player data before entering the destination').toEqual([]);
+    expect(requests, 'The homepage must not import player data before entering the destination').toEqual([]);
     await cta.scrollIntoViewIfNeeded();
     const bounds = await cta.boundingBox();
     expect(bounds!.height).toBeGreaterThanOrEqual(44);
@@ -389,7 +391,7 @@ for (const [width, height] of [[320, 568], [1440, 900]] as const) {
       await expect(details.locator(`a[href="https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json"]`)).toBeVisible();
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    expect(await page.evaluate(() => scrollY)).toBe(0);
+    await stationaryWorld(page);
     await expect(page).toHaveURL(url => url.hash === '#impact');
     expect(impactRequests(requests)).toHaveLength(1);
     expect(new URL(impactRequests(requests)[0]!.url).searchParams.get('id')).toBe(referenceMatch.metadata.matchId);

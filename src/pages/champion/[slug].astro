@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import "../../styles/journey-readers.css";
-import DeltaRow from "../../components/DeltaRow.astro";
+import "../../styles/signal-readers.css";
+import SignalRecord from "../../components/experience/SignalRecord.astro";
 import ClassificationBadge from "../../components/ClassificationBadge.astro";
 import SaveChampion from "../../components/experience/SaveChampion.astro";
 import { getAllPatches, getChampionHistory, getChampionMeta, getRoles, getLatestPatch } from "../../lib/data";
@@ -30,11 +30,17 @@ const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#cha
     <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">CHAMPION / {roles.map(role => roleLabels[role]).join(" · ")}</p><h1>{meta.name}<span class="journey-reader-subtitle">{meta.title}</span></h1></div><div class="journey-header-actions"><SaveChampion id={championId} name={meta.name} /><a class="journey-quiet-link" href="/champions">Change champion <span aria-hidden="true">↗</span></a></div></header>
     <section id="history" class="journey-panel journey-champion-panel" data-journey-panel data-journey-label="Patch history" data-journey-world="champion" aria-label={meta.name + " patch history"}>
       <figure class="journey-champion-art" data-champion-art><picture><img data-champion-art-image src={artwork.splash || artwork.portrait} alt={meta.name + ", official Riot Games champion artwork"} width="1215" height="717" loading="eager" decoding="async" /></picture><div class="journey-champion-art-fallback" data-champion-art-fallback hidden><strong>{meta.name}</strong><span>Artwork unavailable</span></div><figcaption data-champion-art-credit>RIOT GAMES / ORIGINAL ARTWORK</figcaption></figure>
-      <div class="journey-history-stage" data-history-stage>
+      <div class="journey-history-stage" data-history-stage data-signal-subject={championId} data-signal-name={meta.name}>
         {history.length ? <>
           <nav class="journey-history-stops" aria-label={meta.name + " recorded patches"}>{history.map((entry, index) => <a href={"#record-" + entry.patchId.replaceAll(".", "-")} data-history-select={entry.patchId} aria-current={index === 0 ? 'true' : undefined}><span>{entry.patchId}</span><time datetime={entry.releaseDate}>{new Date(entry.releaseDate + "T00:00:00Z").toLocaleDateString('en', { month:'short', day:'numeric', timeZone:'UTC' })}</time></a>)}</nav>
           <div class="journey-history-records">
-            {history.map(entry => <article id={"record-" + entry.patchId.replaceAll(".", "-")} class="journey-history-record" data-history-record={entry.patchId} tabindex="-1"><header class="journey-record-heading"><div><p class="journey-reader-kicker">PATCH {entry.patchId}</p><h2>The recorded change.</h2></div><ClassificationBadge classification={entry.change.classification} /></header>{entry.change.summary && <details class="journey-source-context"><summary>Riot’s context</summary><p class="journey-record-summary">{entry.change.summary}</p></details>}{entry.change.abilities.map(ability => <section class="journey-ability"><h3><span>{ability.ability === 'base' ? 'BASE' : ability.ability === 'passive' ? 'P' : ability.ability === 'other' ? '·' : ability.ability}</span>{ability.name}</h3>{ability.changes.map(change => <DeltaRow change={change} />)}</section>)}<div class="journey-record-links"><a href={"/patch/" + entry.patchId + "#" + championId.toLowerCase()}>Open in patch {entry.patchId} ↗</a><a href={patches.find(patch => patch.id === entry.patchId)?.sourceUrl} target="_blank" rel="noreferrer">Riot’s notes ↗</a></div></article>)}
+            {history.map(entry => <article id={"record-" + entry.patchId.replaceAll(".", "-")} class="journey-history-record" data-history-record={entry.patchId} data-signal-subject={championId} data-signal-name={meta.name} data-signal-patch={entry.patchId} tabindex="-1">
+              <header class="journey-record-heading"><div><p class="journey-reader-kicker">{entry.releaseDate}</p><h2>Patch {entry.patchId}</h2></div><ClassificationBadge classification={entry.change.classification} /></header>
+              <SignalRecord label={meta.name} championId={championId} patchId={entry.patchId} sourceUrl={patches.find(patch => patch.id === entry.patchId)?.sourceUrl} inspectHref={journeyUrl}
+                entries={entry.change.abilities.flatMap(ability => ability.changes.map(change => ({change, ability:ability.ability, abilityName:ability.name})))} />
+              {entry.change.summary && <details class="journey-source-context"><summary>Riot’s context</summary><p class="journey-record-summary">{entry.change.summary}</p></details>}
+              <div class="journey-record-links"><a href={"/patch/" + entry.patchId + "#" + championId.toLowerCase()}>Open in patch {entry.patchId} ↗</a></div>
+            </article>)}
           </div>
         </> : <div class="journey-empty"><h2>No direct records yet.</h2><p>{meta.name} has no direct champion changes in this archive. Items and systems can still affect the game.</p><a class="journey-primary-link" href={"/patch/" + latest.id}>Explore patch {latest.id} ↗</a></div>}
       </div>
@@ -43,6 +49,8 @@ const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#cha
   </div>
 </Layout>
 <script>
+  import { rememberSignal } from '../../lib/signal-context';
+
   const art = document.querySelector<HTMLImageElement>('[data-champion-art-image]');
   const artFallback = document.querySelector<HTMLElement>('[data-champion-art-fallback]');
   const artCredit = document.querySelector<HTMLElement>('[data-champion-art-credit]');
@@ -65,15 +73,23 @@ const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#cha
     function selectRecord(id: string) {
       const current = records.find(record => record.id === id) ?? records.find(record => record.dataset.historyRecord === id);
       if (!current) return;
-      if (selectedRecord !== current.id) window.dispatchEvent(new CustomEvent('riftscry:focus-change', { detail: { kind: 'patch', key: current.dataset.historyRecord ?? current.id } }));
+      const changed = selectedRecord !== current.id;
       selectedRecord = current.id;
       records.forEach(record => { record.hidden = record !== current; record.inert = record !== current; });
       links.forEach(link => { if (link.dataset.historySelect === current.dataset.historyRecord) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current'); });
+      const key = current.dataset.signalSubject;
+      if (key) rememberSignal({ championId: key, name: current.dataset.signalName ?? key, patch: current.dataset.signalPatch, href: location.pathname + location.search + '#' + current.id });
+      if (changed) window.dispatchEvent(new CustomEvent('riftscry:focus-change', { detail: { kind: 'patch', key: current.dataset.historyRecord ?? current.id } }));
     }
-    function restore() { let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch {} selectRecord(id || records[0]?.id || ''); }
+    function restore() {
+      let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch {}
+      // Other scene fragments retain the current patch. On first arrival an
+      // exact record fragment wins before any default record is announced.
+      const requested = records.find(record => record.id === id || record.dataset.historyRecord === id);
+      selectRecord(requested?.id || selectedRecord || records[0]?.id || '');
+    }
     if (records.length) {
       stage.dataset.historyReady = 'true';
-      selectRecord(records[0]!.id);
       restore();
       stage.addEventListener('click', event => {
         const link = (event.target as Element).closest<HTMLAnchorElement>('[data-history-select]');
@@ -82,6 +98,9 @@ const journeyUrl = "/explore?champion=" + encodeURIComponent(championId) + "#cha
       window.addEventListener('hashchange', restore);
       window.addEventListener('popstate', restore);
       window.addEventListener('riftscry:journey-change', restore);
+    } else {
+      const key = stage.dataset.signalSubject;
+      if (key) rememberSignal({ championId: key, name: stage.dataset.signalName ?? key, href: location.pathname + location.search });
     }
   }
 </script>

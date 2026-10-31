@@ -1,0 +1,50 @@
+---
+import type { Change } from '../../lib/schema';
+import { describeDelta } from '../../lib/deltas';
+import '../../styles/signal-readers.css';
+
+export interface SignalEntry { change: Change; ability?: string; abilityName?: string; }
+interface Props {
+  entries: SignalEntry[];
+  label: string;
+  patchId?: string;
+  sourceUrl?: string;
+  championId?: string;
+  inspectHref?: string;
+}
+const { entries, label, patchId, sourceUrl, championId, inspectHref } = Astro.props;
+---
+<div class="signal-lens" data-signal-lens data-signal-subject={championId} data-signal-name={label} data-signal-patch={patchId}>
+  <div class="signal-field-rail" data-signal-options hidden role="group" aria-label={`Choose a ${label} change`}>
+    {entries.map((entry, index) => <button type="button" data-signal-choice={index} aria-pressed={index === 0}><span>{entry.ability === 'base' ? 'BASE' : entry.ability === 'passive' ? 'P' : entry.ability || String(index + 1).padStart(2, '0')}</span>{entry.change.label}</button>)}
+  </div>
+  <div class="signal-records">
+    {entries.map((entry, index) => {
+      const change = entry.change;
+      const delta = change.kind === 'numeric' ? describeDelta(change.before, change.after) : null;
+      const long = change.kind === 'numeric' && Math.max(change.before.length, change.after.length) > 16;
+      const veryLong = change.kind === 'numeric' && Math.max(change.before.length, change.after.length) > 36;
+      return <article class:list={['signal-record', { 'signal-record--long': long, 'signal-record--very-long': veryLong }]} data-signal-record={index} data-signal-side="after" style="--signal-focus:1" tabindex="-1">
+        <header class="signal-record-heading"><div><p class="signal-coordinate">{entry.abilityName || label}{patchId && <span>PATCH {patchId}</span>}</p><h3>{change.label}</h3></div><span class="signal-record-count" aria-label={`Change ${index + 1} of ${entries.length}`}>{String(index + 1).padStart(2, '0')}<i aria-hidden="true"> / </i>{String(entries.length).padStart(2, '0')}</span></header>
+        {change.kind === 'numeric' ? <>
+          <div class="signal-aperture delta-row" data-signal-aperture>
+            <div class="signal-value signal-value--before"><span>Before</span><strong class="before num">{change.before}</strong></div>
+            <span class="signal-crossing" aria-hidden="true"><i></i><b>→</b><i></i></span>
+            <div class="signal-value signal-value--after"><span>After</span><strong class="after num">{change.after}</strong></div>
+          </div>
+          <div class="signal-reading"><span>{change.unit || 'Exact archived values'}</span>{delta && <strong>{delta}</strong>}{(change.direction === 'buff' || change.direction === 'nerf') && <span class={`signal-direction signal-direction--${change.direction}`}>{change.direction === 'buff' ? '▲ Buff' : '▼ Nerf'}</span>}</div>
+          <div class="signal-scrub" data-signal-scrub hidden>
+            <button type="button" data-signal-set="0" aria-pressed="false">Before</button>
+            <input type="range" min="0" max="100" value="100" data-signal-range aria-label={`Focus before or after: ${change.label}`} aria-valuetext={`After: ${change.after}`} data-before-value={change.before} data-after-value={change.after} />
+            <button type="button" data-signal-set="100" aria-pressed="true">After</button>
+          </div>
+        </> : <div class="signal-rule"><span aria-hidden="true">↳</span><p class="prose-text">{change.text}</p></div>}
+      </article>;
+    })}
+  </div>
+  {(sourceUrl || inspectHref) && <footer class="signal-record-footer">{inspectHref && <a href={inspectHref}>Follow this signal <span aria-hidden="true">↗</span></a>}{sourceUrl && <a href={sourceUrl} target="_blank" rel="noreferrer">Original source · Riot’s notes <span aria-hidden="true">↗</span></a>}</footer>}
+  <p class="visually-hidden" data-signal-status role="status" aria-live="polite"></p>
+</div>
+<script>
+  import '../../scripts/signal-record';
+</script>

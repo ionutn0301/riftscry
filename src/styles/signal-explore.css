@@ -1,0 +1,212 @@
+/* The signal lens, expanded into exact field history. One active route style. */
+.rift-voyage { --voyage-cyan:var(--world-signal); --voyage-paper:var(--cream); --voyage-quiet:var(--cream-dim); --voyage-line:var(--line); }
+.voyage-action { display:inline-flex; align-items:center; justify-content:space-between; gap:24px; background:var(--world-signal); color:#092623; border:1px solid var(--world-signal); }
+.voyage-action--outline { background:transparent; color:var(--world-signal); border-color:var(--line-strong); }
+.voyage-action:hover { background:#c3e9d418; color:var(--world-signal); }
+.voyage-action > span { font-size:20px; }
+.voyage-text-link { color:var(--world-signal); }
+.change-choice select,.history-controls select,.roster-search-row select { min-width:0; min-height:44px; border:1px solid var(--line); padding:10px 12px; color:var(--cream); background:#0b1b23; border-radius:0; width:100%; }
+.champion-art-fallback { display:grid; place-items:center; min-height:180px; padding:30px; color:var(--cream-dim); font-size:13px; }
+.record-quiet { padding:25px 0; }
+.record-quiet p { font-size:13px; line-height:1.7; color:var(--cream-dim); margin-top:14px; }
+.record-quiet a { display:flex; margin-top:12px; }
+.history-stop { position:relative; text-align:left; }
+.history-pin { position:absolute; top:-5px; left:0; width:9px; height:9px; background:#284847; border:1px solid #8fbdb4; border-radius:50%; }
+.history-stop[aria-pressed=true] .history-pin { background:var(--world-signal); }
+.history-stop > time { display:block; color:var(--cream-dim); font-size:11px; }
+.history-stop > strong { font:400 42px/1.1 var(--font-display); display:block; margin-top:10px; color:var(--cream); }
+.history-stop > span:last-child { display:block; font-size:12px; line-height:1.7; color:var(--cream-dim); margin-top:12px; overflow-wrap:anywhere; }
+.voyage-roster-dialog { width: min(calc(100% - 24px),1100px); max-width: none; max-height: min(calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),920px); margin: auto; padding: 0; border: 1px solid #557f7a80; background: #08171e; color: #e6ece5; overflow-y: auto; overscroll-behavior: contain; }
+.voyage-roster-dialog::backdrop { background: #02080dd9; }
+.voyage-roster-dialog[open] { animation: map-arrive 350ms var(--world-ease) both; }
+.voyage-roster-shell { padding: clamp(23px,4vw,50px) max(clamp(23px,4vw,50px),env(safe-area-inset-right)) clamp(23px,4vw,50px) max(clamp(23px,4vw,50px),env(safe-area-inset-left)); }
+.voyage-roster-shell > header { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: start; gap: 20px; padding-block: 12px; background: #08171e; }
+.voyage-roster-shell > header > div { min-width: 0; }
+.voyage-roster-shell .world-close { flex: none; }
+.voyage-roster-shell h2 { margin-top: 18px; font-size: clamp(35px,4.3vw,61px); line-height: 1; }
+.roster-search-row { display: grid; grid-template-columns: minmax(0,1fr) 165px; gap: 20px; margin-top: 35px; }
+.roster-search-row label { display: flex; min-width: 0; flex-direction: column; gap: 8px; font-size: 12px; color: #a7c2ba; }
+.roster-search-row input { min-width: 0; width: 100%; min-height: 49px; background: #10262d; border: 1px solid #5c898269; border-radius: 0; padding: 12px 15px; color: #e6ece5; font-size: 16px; }
+.roster-search-row select { min-height: 49px; }
+[data-roster-status] { margin-block: 16px; min-height: 22px; font-size: 12px; color: #9ebbb1; }
+.voyage-roster-results { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px 15px; }
+.voyage-roster-results li,.voyage-roster-results button > span { min-width: 0; overflow-wrap: anywhere; }
+.voyage-roster-results button { min-height: 66px; width: 100%; min-width: 0; display: flex; gap: 12px; align-items: center; text-align: left; padding: 10px 6px; border-bottom: 1px solid #5c898229; }
+.voyage-roster-results button[aria-pressed="true"] { color: var(--voyage-cyan); }
+.voyage-roster-results img { width: 40px; height: 40px; object-fit: contain; flex: 0 0 auto; }
+.voyage-roster-results strong { display: block; font-size: 12px; font-weight: 500; line-height: 1.3; }
+.voyage-roster-results small { display: block; font-size: 12px; line-height: 1.5; color: #a3bcb5; margin-top: 4px; }
+.voyage-roster-shell > footer { border-top: 1px solid var(--voyage-line); padding-top: 22px; margin-top: 28px; display: flex; justify-content: space-between; gap: 20px; font-size: 12px; color: #a3bcb5; }
+.voyage-roster-shell > footer a { display: inline-flex; align-items: center; min-height: 44px; color: var(--voyage-cyan); }
+.voyage-nojs { padding: 30px clamp(24px,7vw,130px); background: #081319; }
+.voyage-nojs a { color: var(--voyage-cyan); text-decoration: underline; }
+.voyage-station { position: relative; color: #dfebe7; background: transparent; }
+.voyage-station-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 18px 0 20px; flex: 0 0 auto; position: relative; }
+.voyage-station-heading h1 { font: 400 clamp(32px,3.5vw,51px)/1.05 'Clash Display',sans-serif; letter-spacing: -.045em; margin: 8px 0 0; color: #e5efeb; }
+.voyage-perspective-controls { display: flex; gap: 16px; align-items: center; }
+.voyage-station .quick-perspectives { display: flex; gap: 7px; flex-wrap: nowrap; margin: 0; }
+.voyage-station .quick-perspectives button { display: flex; align-items: center; gap: 8px; padding: 5px 8px; min-height: 44px; border: 1px solid #accfda2e; background: #10232c80; border-radius: 0; color: #b3cdd4; }
+.voyage-station .quick-perspectives button img { width: 30px; height: 30px; border-radius: 50%; }
+.voyage-station .quick-perspectives button span { font-size: 10px; }
+.voyage-station .quick-perspectives button[aria-pressed="true"] { border-color: #b0e4cb8c; color: #d1f4e0; }
+.voyage-station-heading .perspective-status { position: absolute; right: 0; bottom: 2px; font-size: 10px; color: #819da7; min-height: 0; margin: 0; }
+.voyage-station .voyage-action { min-height: 44px; font-size: 11px; padding: 10px 16px; }
+.voyage-station .voyage-text-link { min-height: 44px; font-size: 11px; display: inline-flex; align-items: center; gap: 10px; }
+.voyage-station-scene { padding: 14px 0 20px; }
+.voyage-legacy-anchor { position: absolute; width: 1px; height: 1px; overflow: hidden; }
+.voyage-inspection { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,.9fr); height: 100%; min-height: 470px; gap: clamp(24px,4vw,70px); align-items: center; }
+.voyage-station .perspective-identity { position: relative; display: flex; flex-direction: column; margin: 0; min-width: 0; height: 100%; max-height: 590px; min-height: 0; transform: none; }
+.voyage-station .perspective-identity::before,.voyage-station .perspective-identity::after { display: none; }
+.voyage-station .perspective-identity picture { flex: 1; min-height: 0; display: block; position: relative; background: radial-gradient(ellipse at 50% 50%,#addbd615,transparent 65%); }
+.voyage-station .perspective-identity img { display: block; width: 100%; height: 100%; max-height: 460px; object-fit: contain; object-position: center; opacity: 1; filter: none; mask: none; }
+.voyage-station .perspective-identity figcaption { position: relative; display: flex; gap: 15px; justify-content: space-between; align-items: flex-end; padding: 20px 0 15px; background: none; }
+.voyage-station .perspective-identity h2 { font: 400 clamp(34px,4vw,60px)/1 'Clash Display',sans-serif; margin: 9px 0 7px; letter-spacing: -.045em; }
+.voyage-station .perspective-identity figcaption p:last-child { color: #9bb4bf; font-size: 12px; margin: 0; }
+.voyage-station .champion-save { background: #10242cc2; color: #c1e4d7; min-height: 44px; border: 1px solid #a8d6cb44; padding: 9px 14px; font-size: 10px; }
+.voyage-art-credit { position: absolute; left: 0; top: 0; color: #829da9; font: 6px 'Spline Sans Mono',monospace; letter-spacing: .1em; }
+.voyage-evidence-desk { width: 100%; max-width: 650px; min-width: 0; }
+.voyage-station .change-choice { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 100%; margin-bottom: 23px; }
+.voyage-station .change-choice label { color: #9fbec2; font-size: 10px; }
+.voyage-station .change-choice select { width: 100%; min-height: 44px; font-size: 12px; padding: 10px 12px; background: #0d202bdb; color: #deece7; border-color: #b2d4d641; }
+.voyage-station .voyage-record { position: relative; background: linear-gradient(100deg,#071522f2,#071522d9 70%,#07152280); padding: clamp(18px,2.6vw,38px); border: 1px solid transparent; border-left: 2px solid #b6e6d766; min-height: 0; max-width: none; margin: 0; box-shadow: none; }
+.voyage-station .voyage-record::before,.voyage-station .voyage-record::after { display: none; }
+.voyage-station .record-context { display: flex; flex-wrap: wrap; gap: 7px 14px; color: #9fbdc6; font-size: 8px; margin: 0 0 17px; }
+.rift-voyage.voyage-station .record-context { position: static; z-index: auto; padding: 0; background: none; }
+.voyage-station .voyage-record h3 { font: 400 clamp(25px,2.7vw,40px)/1.1 'Clash Display',sans-serif; margin: 0; letter-spacing: -.025em; }
+.voyage-station .record-values { display: flex; align-items: center; gap: clamp(20px,3vw,45px); padding: 28px 0 16px; margin: 0; }
+.voyage-station .record-values[hidden] { display: none; }
+.voyage-station .record-values > div { min-width: 0; flex: 1; }
+.voyage-station .record-values span { display: block; font-size: 8px; margin-bottom: 9px; color: #88a5b2; }
+.voyage-station .record-values strong { display: block; font: 400 clamp(37px,4.5vw,76px)/1.1 'Clash Display',sans-serif; color: #c6ede0; overflow-wrap: anywhere; }
+.voyage-station .record-before strong { color: #879da7; }
+.voyage-station .record-values .record-crossing { font-size: 26px; margin: 0; color: #a1bdc3; }
+.voyage-station .record-values[data-long="true"] strong { font-size: clamp(21px,2.2vw,36px); }
+.voyage-station .record-reading,.voyage-station .record-rule { color: #aec4cb; font-size: 12px; max-width: none; margin: 12px 0; line-height: 1.6; }
+.voyage-station .record-unit { font-size: 9px; color: #9ab3be; margin: 0 0 8px; }
+.voyage-station .voyage-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px 18px; margin-top: 18px; }
+.voyage-station .finding-explanation { min-height: 0; margin: 10px 0 0; font-size: 10px; }
+.voyage-station .finding-explanation:empty { display: none; }
+.voyage-station-continue { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 52px; border-bottom: 1px solid #b3d8d42e; font-size: 11px; color: #bce5d9; margin-top: 16px; }
+.voyage-time-desk { max-width: 1200px; margin: auto; padding: 15px 0; }
+.voyage-time-desk header h2,.voyage-kept-desk h2 { color: #e1eae6; font: 400 clamp(37px,4.6vw,68px)/1.02 'Clash Display',sans-serif; letter-spacing: -.045em; margin: 14px 0 24px; }
+.voyage-time-desk header h2 em,.voyage-kept-desk h2 em { font-style: normal; color: #b2cbd0; }
+.voyage-station .history-controls { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin: 0; }
+.voyage-station .history-controls label { display: flex; flex-direction: column; gap: 7px; font-size: 10px; color: #a5bbc7; }
+.voyage-station .history-controls select { min-height: 44px; min-width: 135px; font-size: 13px; background: #0e222dd9; }
+.voyage-station .history-controls > span { align-self: center; }
+.voyage-station .history-validation { font-size: 10px; color: #92acb7; margin: 13px 0 22px; }
+.voyage-station .history-trace { display: flex; gap: 15px; overflow-x: auto; padding: 15px 0 22px; margin: 0; }
+.voyage-station .history-stop { flex: 1 0 200px; max-width: 400px; min-height: 150px; padding: 18px; background: linear-gradient(180deg,#08152252,#081522cc); border: 1px solid transparent; border-bottom-color: #a6c3d247; }
+.voyage-station .history-stop[aria-pressed="true"] { border-bottom-color: #c5e8d4; background: linear-gradient(180deg,#102b2c99,#102b2cdb); }
+.voyage-station .trace-reading { border: 0; background: none; padding: 15px 0; margin: 0; }
+.voyage-station .trace-connection { font-size: 21px; color: #d6e4dc; }
+.voyage-station [data-trace-description] { color: #adc3cc; font-size: 13px; max-width: 80ch; }
+.voyage-kept-desk { max-width: 940px; margin: auto; padding: 25px 0; }
+.voyage-kept-desk > p[data-return-perspective] { color: #a8c0cc; font-size: 13px; }
+.voyage-station .journey-findings { margin-top: 24px; padding: 20px 0; border-top: 1px solid #abcbd52e; }
+.voyage-station .journey-findings h3 { font-size: 15px; font-weight: 400; }
+.voyage-station .journey-findings ul { list-style: none; margin: 15px 0 0; padding: 0; }
+.voyage-station .journey-findings li { display: flex; gap: 18px; padding: 15px 0; font-size: 12px; border-bottom: 1px solid #abcbd52e; }
+.voyage-station .journey-findings li > span { flex: 1; }
+.voyage-station .voyage-roster-dialog { max-height: 88dvh; background: #0a1721; border-color: #a4cfd547; }
+@media (min-width: 701px) and (min-height: 701px) {
+  body[data-journey-ready] .voyage-inspection { grid-template-rows: minmax(0,1fr); align-items: stretch; }
+  body[data-journey-ready] .voyage-evidence-desk { max-height: 100%; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  body[data-journey-ready] .voyage-station .perspective-identity { max-height: 100%; }
+}
+@media (max-width: 1000px) {
+  .voyage-station .quick-perspectives button span { display: none; }
+  .voyage-inspection { gap: 22px; grid-template-columns: minmax(0,.85fr) minmax(0,1fr); }
+  .voyage-station .perspective-identity figcaption { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 700px) {
+  .voyage-station-heading { flex-wrap: wrap; padding: 12px 0 17px; gap: 10px; }
+  .voyage-station-heading h1 { font-size: 31px; margin-top: 6px; }
+  .voyage-station-heading .journey-eyebrow { font-size: 7px; }
+  .voyage-perspective-controls { width: 100%; justify-content: space-between; gap: 8px; }
+  .voyage-station .quick-perspectives { gap: 5px; }
+  .voyage-station .quick-perspectives button { padding: 3px; width: 44px; height: 44px; }
+  .voyage-station .quick-perspectives button img { width: 31px; height: 31px; }
+  .voyage-station .voyage-action { padding: 9px 12px; font-size: 10px; }
+  .voyage-station-heading .perspective-status { font-size: 8px; bottom: 0; }
+  .voyage-station-scene { padding: 8px 0 18px; }
+  .voyage-inspection { display: flex; flex-direction: column; height: auto; min-height: 0; gap: 15px; align-items: stretch; }
+  .voyage-station .perspective-identity { height: 140px; min-height: 140px; display: grid; grid-template-columns: 95px 1fr; gap: 15px; align-items: center; max-height: none; }
+  .voyage-station .perspective-identity picture { height: 135px; }
+  .voyage-station .perspective-identity img { width: 95px; height: 135px; max-height: none; }
+  .voyage-station .perspective-identity figcaption { padding: 0; gap: 9px; }
+  .voyage-station .perspective-identity h2 { font-size: 35px; margin: 4px 0; }
+  .voyage-station .perspective-identity .journey-eyebrow { font-size: 7px; }
+  .voyage-station .perspective-identity figcaption p:last-child { font-size: 10px; }
+  .voyage-station .champion-save { min-height: 44px; font-size: 9px; padding: 7px 12px; }
+  .voyage-art-credit { top: auto; bottom: 0; font-size: 5px; }
+  .voyage-station .change-choice { margin-bottom: 12px; }
+  .voyage-station .change-choice label { font-size: 9px; }
+  .voyage-station .voyage-record { padding: 17px; }
+  .voyage-station .record-context { font-size: 7px; gap: 5px 10px; margin-bottom: 13px; }
+  .voyage-station .voyage-record h3 { font-size: 25px; }
+  .voyage-station .record-values { padding: 20px 0 12px; gap: 20px; }
+  .voyage-station .record-values strong { font-size: 44px; }
+  .voyage-station .record-values[data-long="true"] strong { font-size: 23px; }
+  .voyage-station .record-reading { font-size: 11px; }
+  .voyage-station .voyage-actions { margin-top: 12px; gap: 4px 10px; }
+  .voyage-time-desk header h2,.voyage-kept-desk h2 { font-size: 38px; }
+  .voyage-station .history-controls { gap: 10px; }
+  .voyage-station .history-controls select { min-width: 115px; }
+  .voyage-station .history-stop { flex-basis: 175px; min-height: 130px; }
+  .voyage-station .journey-findings li { flex-wrap: wrap; gap: 8px; }
+  .voyage-station .journey-findings li > span { flex-basis: 100%; order: -1; }
+}
+@media (max-height: 700px) and (min-width: 701px) {
+  .voyage-station-heading { padding: 6px 0 15px; }
+  .voyage-station-heading h1 { font-size: 34px; }
+  .voyage-inspection { min-height: 0; height: auto; align-items: start; }
+  .voyage-station .perspective-identity { max-height: 380px; }
+  .voyage-station .perspective-identity img { max-height: 240px; }
+  .voyage-station .perspective-identity h2 { font-size: 37px; }
+  .voyage-station .voyage-record { padding: 18px; }
+  .voyage-station .record-values strong { font-size: 47px; }
+  .voyage-station .record-values { padding-block: 14px; }
+}
+@media (max-height: 450px) and (min-width: 480px) {
+  .voyage-station-heading { flex-wrap: nowrap; padding: 4px 0 12px; gap: 12px; }
+  .voyage-station-heading h1 { font-size: 28px; margin: 0; white-space: nowrap; }
+  .voyage-station-heading > div > .journey-eyebrow { display: none; }
+  .voyage-perspective-controls { width: auto; }
+  .voyage-station-heading .perspective-status { bottom: 0; font-size: 7px; }
+  .voyage-station-scene { padding-block: 8px 20px; }
+  .voyage-station-continue { min-height: 44px; }
+}
+@media (max-height: 450px) and (max-width: 700px) {
+  .voyage-station .quick-perspectives { display: none; }
+}
+
+
+/* Evidence occupies the same lens used by every archive record. */
+.voyage-station .voyage-record { background:transparent; padding:20px 0 5px; border:0; border-top:1px solid var(--line); }
+.voyage-station .record-values { display:grid; grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr); min-height:145px; }
+.voyage-station .record-values .record-crossing { display:flex; flex-direction:column; align-self:stretch; gap:12px; }
+.voyage-station .record-values .record-crossing i { min-height:20px; }
+.voyage-station .record-values .record-crossing b { font:300 24px var(--font-ui); }
+.voyage-reading-detail { border-bottom:1px solid var(--line); }
+.voyage-reading-detail summary { display:flex; align-items:center; min-height:44px; color:var(--cream-dim); font-size:11px; cursor:pointer; }
+.voyage-station .change-choice { margin-bottom:12px; }
+.voyage-station .signal-scrub { margin-block:0 12px; }
+.voyage-station .perspective-identity picture { border:1px solid #b9d9c51a; }
+.voyage-station .voyage-record.is-focused { border-top-color:var(--world-signal); }
+.voyage-station .history-stop { border-bottom:1px solid var(--line-strong); }
+.voyage-station .history-stop > strong { font-size:40px; }
+@media(max-width:900px) { .voyage-roster-results { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(max-width:700px) {
+ .voyage-roster-shell { padding:20px; }
+ .voyage-roster-shell h2 { font-size:29px; }
+ .roster-search-row { grid-template-columns:minmax(0,1fr) 110px; gap:10px; margin-top:18px; }
+ .voyage-roster-results { grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 12px; }
+ .voyage-roster-results img { width:32px; height:32px; }
+ .voyage-roster-results button { gap:9px; padding-inline:0; }
+ .voyage-roster-results small { font-size:10px; }
+ .voyage-roster-shell > footer { flex-wrap:wrap; }
+ .voyage-station .record-values { min-height:125px; gap:12px; }
+ .voyage-station .voyage-record { padding:15px 0 0; }
+}
+@media(max-width:360px) { .roster-search-row { grid-template-columns:1fr; } }

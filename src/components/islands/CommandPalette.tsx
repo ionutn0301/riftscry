@@ -12,6 +12,7 @@ export default function CommandPalette() {
   const handoffFrame = useRef<number | null>(null);
   const removeCloseListener = useRef<(() => void) | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
+  const returnPosition = useRef<{ href: string; x: number; y: number } | null>(null);
   const wasOpen = useRef(false);
 
   const cancelHandoff = useCallback(() => {
@@ -43,6 +44,7 @@ export default function CommandPalette() {
       returnFocus.current = origin && origin !== document.body
         ? origin
         : document.querySelector<HTMLElement>(".world-utilities [data-palette-trigger]");
+      returnPosition.current = { href: location.href, x: scrollX, y: scrollY };
       setEverOpened(true);
       setOpen(true);
     };
@@ -94,12 +96,15 @@ export default function CommandPalette() {
     if (!didClose) return;
     const target = returnFocus.current;
     returnFocus.current = null;
+    const position = returnPosition.current;
+    returnPosition.current = null;
     // cmdk's Dialog has no registered Trigger or close-autofocus prop. Restore
     // after its portal and focus trap unmount, without scrolling the document.
     const frame = requestAnimationFrame(() => {
       if (!target?.isConnected || target.closest('dialog:not([open]), [inert]')
         || !target.getClientRects().length || document.querySelector('dialog[open], [cmdk-dialog]')) return;
       target.focus({ preventScroll: true });
+      if (position?.href === location.href) window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' });
     });
     return () => cancelAnimationFrame(frame);
   }, [open]);

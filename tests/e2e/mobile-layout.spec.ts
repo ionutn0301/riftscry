@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { openScene, readyWorld } from "./journey-test-helpers";
+import { openScene, readyWorld, stationaryWorld } from "./journey-test-helpers";
 import championData from "../../src/data/champions.json" with { type: "json" };
 import roleData from "../../src/data/roles.json" with { type: "json" };
 
@@ -54,10 +54,12 @@ async function readyJourneyMap(page: Page, width: number, height: number) {
   await expect(paletteIsland).not.toHaveAttribute("ssr", "");
   const opener = page.locator("[data-map-open]");
   await opener.focus();
+  await expectUncovered(opener);
   const scrollBefore = await page.evaluate(() => scrollY);
-  expect(scrollBefore).toBe(0);
+  await stationaryWorld(page);
   const reading = page.locator('.voyage-evidence-desk');
-  const panelScroll = await reading.evaluate(element => { element.scrollTop = Math.min(100, element.scrollHeight - element.clientHeight); return element.scrollTop; });
+  const panelScroll = await reading.evaluate(element => element.scrollTop);
+  expect(panelScroll).toBe(0);
   return { opener, scrollBefore, reading, panelScroll };
 }
 
@@ -67,7 +69,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await page.goto("/explore", { waitUntil: "domcontentloaded" });
     await readyJourney(page);
 
-    const headerControls = page.locator(".world-brand, .world-utilities > a, [data-map-open], .world-utilities > [data-palette-trigger], [data-motion-toggle]");
+    const headerControls = page.locator(".world-brand:visible, .world-utilities > a:visible, [data-map-open]:visible, .world-utilities > [data-palette-trigger]:visible, [data-motion-toggle]:visible");
     const controlBounds = await Promise.all((await headerControls.all()).map(bounds));
     for (let index = 0; index < controlBounds.length; index++) {
       const rect = controlBounds[index]!;
@@ -93,7 +95,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 
-  test(`all five primary and three specialist destinations fit and close restores the journey at ${width}×${height}`, async ({ page }) => {
+  test(`all five primary and three specialist destinations are reachable and close restores the journey at ${width}×${height}`, async ({ page }) => {
     const { opener, scrollBefore, reading, panelScroll } = await readyJourneyMap(page, width, height);
     await opener.click();
     const map = page.locator("#rift-map-dialog");
@@ -101,12 +103,16 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     const destinations = map.locator("[data-world-link], .journey-map-footer a");
     await expect(destinations).toHaveCount(8);
     for (const destination of await destinations.all()) {
-      await expect(destination).toBeInViewport({ ratio: 0.99 });
+      await expectUncovered(destination);
     }
     const scrollableRegions = await map.evaluate((dialog) => [dialog, ...dialog.querySelectorAll("*")]
       .filter((element) => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
-        && element.scrollHeight > element.clientHeight + 1).length);
-    expect(scrollableRegions, "A fitting destination menu must not need scrolling").toBe(0);
+        && element.scrollHeight > element.clientHeight + 1)
+      .map(element => element.className));
+    // The direct destination list can scroll on short screens. Its header,
+    // search, specialist links and the page behind it remain stationary.
+    expect(scrollableRegions.length).toBeLessThanOrEqual(1);
+    if (scrollableRegions.length) expect(scrollableRegions[0]).toContain('signal-destinations');
     const closeMap = map.getByRole("button", { name: "Close the Rift map" });
     const searchMap = map.locator("[data-palette-trigger]");
     await expectUncovered(closeMap);
@@ -114,7 +120,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await closeMap.click();
     await expect(map).not.toBeVisible();
     await expect(opener).toBeFocused();
-    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
     expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
     await expect(page.locator("#change")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
@@ -130,7 +136,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await map.getByRole("button", { name: "Close the Rift map" }).click();
     await expect(map).not.toBeVisible();
     await expect(opener).toBeFocused();
-    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
     expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
     await expect(page.locator("#change")).toBeVisible();
     await opener.click();
@@ -141,7 +147,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await page.getByRole("button", { name: "Close search", exact: true }).click();
     await expect(page.locator("[cmdk-input]")).not.toBeVisible();
     await expect(opener).toBeFocused();
-    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
     expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
     await expect(page.locator("#change")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
@@ -149,7 +155,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
 }
 
 for (const [width, height] of [[320, 568], [390, 844]] as const) {
-  test(`champion selection has one usable scroll surface at ${width}px`, async ({ page }) => {
+  test(`champion selection is searchable without an internal scroll surface at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/explore#perspective", { waitUntil: "domcontentloaded" });
     await readyJourney(page);
@@ -159,17 +165,17 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     await opener.click();
     const roster = page.locator("#voyage-roster");
     await expect(roster).toBeVisible();
-    await expect(roster.locator("[data-choose-champion]")).toHaveCount(Object.keys(champions).length);
+    await expect.poll(() => roster.locator("[data-choose-champion]").count()).toBeGreaterThan(0);
+    expect(await roster.locator("[data-choose-champion]").count()).toBeLessThanOrEqual(12);
     const search = roster.getByRole("searchbox", { name: "Find a champion" });
     await expect(search).toBeFocused();
     expect(await search.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
     const scrollRegions = await roster.evaluate((dialog) => {
       const regions = [dialog, ...dialog.querySelectorAll("*")].filter((element) =>
         /^(auto|scroll)$/.test(getComputedStyle(element).overflowY) && element.scrollHeight > element.clientHeight + 1);
-      for (const element of regions) element.scrollTop = element.scrollHeight;
       return regions.length;
     });
-    expect(scrollRegions).toBe(1);
+    expect(scrollRegions).toBe(0);
     const close = roster.getByRole("button", { name: "Close champion selection" });
     await expectUncovered(close);
     await close.click();
@@ -181,7 +187,7 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     const scrollPositions = await roster.evaluate((dialog) => [dialog, ...dialog.querySelectorAll("*")]
       .filter((element) => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
         && element.scrollHeight > element.clientHeight + 1).map((element) => element.scrollTop));
-    expect(scrollPositions).toEqual([0]);
+    expect(scrollPositions).toEqual([]);
     await search.fill("Azir");
     await expect(roster.locator("[data-choose-champion]")).toHaveCount(1);
     const scrollBeforeSelection = await page.evaluate(() => scrollY);
@@ -266,14 +272,43 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
   });
 }
 
-test("the short desktop keeps the next-scene action clear of the destination rail", async ({ page, isMobile }) => {
+test("the short desktop keeps the next-scene action clear of the main navigation", async ({ page, isMobile }) => {
   test.skip(isMobile, "Touch layouts are covered at their own viewport sizes.");
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/explore"); await readyJourney(page);
   const next = page.locator('[data-journey-next]');
   await expectUncovered(next);
-  expect(overlaps(await bounds(next), await bounds(page.locator('.journey-route-controls')))).toBe(false);
+  const navigation = page.getByRole('navigation', { name: 'Main navigation', exact: true });
+  await expect(navigation).toBeInViewport({ ratio: 1 });
+  expect(overlaps(await bounds(next), await bounds(navigation))).toBe(false);
   await next.click();
   await expect(page.locator('#history')).toBeVisible();
   await expect(page.locator('#history')).toBeFocused();
+});
+
+test('map and search return to the same scrolled archive record', async ({ page }) => {
+  await page.goto('/patches');
+  await readyWorld(page);
+  await page.evaluate(() => window.scrollTo({ top: 400, behavior: 'instant' }));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
+  const before = await page.evaluate(() => scrollY);
+  const opener = page.locator('[data-map-open]');
+  // Keyboard activation exercises a visible sticky control without the test
+  // driver first scrolling it to its original document position.
+  await opener.evaluate(element => (element as HTMLElement).focus({ preventScroll: true }));
+  await page.keyboard.press('Enter');
+  const map = page.locator('#rift-map-dialog');
+  await expect(map).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(map).toBeHidden();
+  await expect(opener).toBeFocused();
+  await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - before)).toBeLessThanOrEqual(1);
+  await page.keyboard.press('Enter');
+  await expect(map).toBeVisible();
+  await map.locator('[data-palette-trigger]').click();
+  await expect(page.locator('[cmdk-input]')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[cmdk-input]')).toBeHidden();
+  await expect(opener).toBeFocused();
+  await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - before)).toBeLessThanOrEqual(1);
 });

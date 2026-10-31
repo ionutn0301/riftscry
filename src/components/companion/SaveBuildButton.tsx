@@ -17,7 +17,7 @@ export default function SaveBuildButton({ match, platform, puuid, metadata }: Pr
   const [failure, setFailure] = useState('');
   const player = participant(match, puuid);
   const saved = state.builds.some(build => build.platform === platform && build.puuid === puuid && build.source === match.metadata.matchId);
-  const nextGameHref = `/next-game?${new URLSearchParams({ champion: player?.championName ?? '', queue: String(match.info.queueId) })}`;
+  const notebookHref = `/notebook?${new URLSearchParams({ champion: player?.championName ?? '', queue: String(match.info.queueId) })}#loadouts`;
 
   function save() {
     if (!ready || saved) return;
@@ -36,9 +36,9 @@ export default function SaveBuildButton({ match, platform, puuid, metadata }: Pr
   return <div className="player-build-save">
     <div className="player-build-save-actions">
       <button type="button" className="player-button-secondary" disabled={!ready || saved || !player} onClick={save}>
-        <PlayerIcon name={saved ? 'check' : 'bookmark'} />{saved ? 'Saved for next game' : 'Save for next game'}
+        <PlayerIcon name={saved ? 'check' : 'bookmark'} />{saved ? 'Loadout kept' : 'Keep loadout'}
       </button>
-      {player && <a className="player-text-link" href={nextGameHref}>Next game<PlayerIcon name="arrow-right" size={16} /></a>}
+      {saved && <a className="player-text-link" href={notebookHref}>Open notebook<PlayerIcon name="arrow-right" size={16} /></a>}
     </div>
     {(failure || problem) ? <p className="player-help" role="alert">{failure || problem}</p> :
       <p className="player-help player-capture-status" role="status" aria-live="polite">{message}</p>}

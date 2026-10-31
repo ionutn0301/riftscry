@@ -1,306 +1,166 @@
 # RiftScry design
 
-## Player hub — current presentation
+## Current direction: the signal journey
 
-The profile is a practical daily destination. This supersedes the large arrival,
-duplicate match path and default statistics wall described in earlier amendments.
-The first screen should identify the player and expose actual recent matches.
+This is the design contract implemented in the 30 October 2026 refactor. It
+supersedes earlier scrolling-homepage, observatory, and disconnected player
+presentation amendments. See the [platform audit](docs/signal-journey/AUDIT.md)
+and [research](docs/signal-journey/RESEARCH.md) for the rationale, and
+[PRODUCT.md](PRODUCT.md) for evidence, queue, privacy, and storage contracts.
 
-- A compact header groups the verified Riot ID, region, current rank, actual
-  League account icon and optional level. The icon comes from the platform's
-  Summoner-v4 response; a neutral fallback keeps the page usable when that
-  optional request or image fails. Query-string names are still untrusted.
-- All games, Ranked, ARAM, Normal and More are recognizable category controls.
-  A selected category shows its exact queue selector. Ranked starts at Solo/Duo,
-  ARAM at classic ARAM, Normal at Draft, and More at Arena. Returning to a category
-  restores the last queue chosen during this visit. The visible subtype, URL,
-  upstream request, match badge and statistics always refer to the exact
-  selected queue. Categories never introduce blended performance statistics.
-- Recent matches are compact whole-row links: champion portrait and name,
-  precise mode, result, KDA, final items, date and duration. Secondary metrics and
-  runes remain on match review. Unknown values are never fabricated as losses.
-- Champion/result filters and mode statistics are optional disclosures. Import
-  progress, partial samples, errors and cooldowns remain visible. Builds and
-  Build Memory retain separate views and the same saved-data contracts.
-- The profile keeps the original scenic setting and restrained motion without
-  a viewport-sized introduction or a second navigation path to the same games.
-  Check actual first-match visibility at 1280×720 and 390×844, with useful
-  progress on a 359×603 screen. Keep keyboard access and reduced motion.
-- Optional summoner metadata uses the same access gate, fill quotas, provider
-  budget and coalescing as other Riot reads, with five-minute server and tab
-  caches. A failed icon request is retried only through explicit Refresh.
+The organizing idea is the space between games: where the visitor left off,
+what changed, and what they take forward. A champion, player, recorded match, or
+patch pair gives the scene a subject. **Choose → reveal → inspect → keep** is the
+shared interaction grammar. The important moment is an understandable change or
+useful recorded fact; scenery and movement frame that moment.
 
-Primary design references are recognition-based controls and progressive
-disclosure from Nielsen Norman Group; account icons use Riot's documented
-Summoner-v4 and Data Dragon profile assets. Release evidence belongs in the PR.
+## One shell across the platform
 
-## Earlier player clarity follow-up
+The header offers Discover, My game, and Saved. The map provides direct links to
+the five established destinations, with comparison, exploration, and notebook
+shortcuts. A lower continuation link follows the selected archive subject or
+player; named scene tabs and previous/next controls belong to the active route.
+No destination requires completing the homepage first.
 
-The player experience now leads with recognizable League imagery and short,
-plain labels. Preserve the cinematic environments and connected routes while
-reducing repeated explanation between the player and their next action.
+After enhancement, the shell fits the viewport and exposes one active scene.
+Long evidence grows in the document; the page has one vertical scroll and no nested reading panels. Hidden scenes are
+inert and removed from the focus order. Headers and route controls stay reachable;
+short screens must not hide the action or create a second document-sized page
+inside the shell. Ordinary document flow and source records remain the archive
+fallback without JavaScript.
 
-- Champion portraits identify the recent-game path, match rows, builds and saved
-  adjustments. The existing official catalogue resolves artwork aliases and
-  readable names; raw match, filter and saved-comparison identifiers stay intact.
-  Failed images retain names, initials and a stable footprint.
-- Every primary icon has a short visible label. Navigation says Matches, Builds
-  and Build Memory. Controls retain keyboard access and accessible names that
-  include their visible text. Icons are decorative, not unexplained navigation.
-- The profile arrival is shorter. Repeated slogans and the promotional closing
-  section are removed. A real selected-match link makes the portrait path useful.
-- Per-mode tiles lead with match count, win rate, known-result denominator, KDA
-  and champion portraits. Date ranges, mode context and secondary metrics remain
-  available in native disclosures. A partial sample and actual failures remain
-  visible; no combined all-mode performance score is introduced.
-- Match review shows a useful takeaway immediately. The remaining full result,
-  supporting evidence and methodology are optional disclosures. Requesting AI
-  opens the result automatically and keeps its AI label visible. User-authored
-  notes and generated findings are not arbitrarily shortened or discarded.
-- Items use artwork alongside readable names where decisions are made. Concise
-  match rows can use icons with accessible names; the match detail keeps readable
-  inventory labels. Missing artwork falls back to text.
-- Storage, condition confirmation, timing, mode eligibility, request caching and
-  cooldown behavior are unchanged. The lighter presentation must not erase facts
-  that explain a failed request or prevent a misleading comparison.
+URL queries and fragments carry actual subject, scope, and scene state. Direct
+links, reload, modified clicks, and Back/Forward remain native browser behaviors.
+A transition expresses navigation after the selection is committed; it must not
+delay a request, block a record, or require an animation to finish.
 
-The player browser suite retains its thirty workflow scenarios and captures the
-gateway, profile, builds, Memory and match-review layouts. Current rendered and
-deployment evidence belongs in the pull request; discovery is not a browser pass.
+## The opening and its continuations
 
-## October 28 player experience amendment — current implementation
+The homepage is `SignalJourney.astro`. It has three focused scenes:
 
-The player area extends the homepage's environment, typography and Rift map into
-a useful loop: **find a player → enter their profile → inspect a recorded game →
-keep an adjustment → return with later evidence**. It does not embed a full profile
-under the lookup form or turn the records into a horizontal slide deck.
-
-- `/players` is the search gateway. Its first-screen arrival uses the original
-  RiftScry environment, a readable Riot ID/server instrument, and an optional
-  browser-local remembered-player destination.
-- `/players/:platform/:puuid` is a separate, bookmarkable profile. The account API
-  resolves its displayed Riot identity; a query-string name is not proof of that
-  identity. Old query-based profile links redirect to the canonical route.
-- The profile arrival connects to a real chronology of imported games. Match
-  history, personal builds and Build Memory have named controls and URL state.
-  Game rows are normal links; match review returns to the same profile context.
-  The gateway uses the return-basin environment; the profile uses history-strata
-  so entering the recorded-match destination has its own setting. Detailed queue
-  statistics belong to Match history. Builds and Memory lead to their own content
-  while retaining import/error status, and Memory does not show unrelated history
-  champion/result filters.
-- The shared Rift map includes Players. The player gateway, profile and match
-  review use a compact map control instead of the desktop archive navigation
-  lane. Archive search is labeled separately from the Riot ID lookup.
-- Named route transitions and restrained arrival motion connect these surfaces.
-  Required controls and records remain available immediately. Reduced motion,
-  keyboard operation, short screens and ordinary browser Back remain supported.
-
-Recent history defaults to **all recent games**, with no upstream queue or type
-filter. Exact mode selections request the exact Riot queue, rather than filtering
-an already ranked-only sample. Imports remain bounded at 20 IDs in batches of four.
-Failed or excluded records are reported explicitly; they never become losses.
-
-Statistics, personal loadout groups and prospective Build Memory comparisons keep
-actual queues separate. There is no all-mode performance average. ARAM, ARAM:
-Mayhem, ranked Solo/Duo, ranked Flex, normal Draft, Swiftplay and Quickplay are
-distinct contexts. ARAM and other non-lane modes do not inherit Summoner's Rift
-lane, farming, vision or standard item advice. Current official rank is a separate
-record. The queue catalogue source and capability rules live in
-`src/lib/player/modes.ts`; sample calculations live in `stats.ts`.
-
-New non-lane Build Memory notes store an explicit comparison context without
-inventing a lane. Existing notes with unknown roles remain unknown. Same queue,
-champion, patch, player and prospective time constraints still apply.
-
-The current player refactor's validation is recorded in `docs/player-release.md`
-and the pull request's checks. CI captures desktop, portrait and short-phone
-screens into the `player-experience` artifact. Controlled fixture screenshots are
-visual evidence; they are not proof of a successful live Riot lookup.
-
-## Earlier October 28 connected-story amendment
-
-`docs/CONNECTED_STORYBOARD.md` specifies the connected observation sequence.
-`src/styles/connected.css` now shortens task-route arrivals, reserves a desktop
-navigation lane, raises metadata readability, and replaces history/return
-landscapes with quiet lit planes. Full-page route wipes are removed. The opening
-example derives from a real record in the latest archived patch.
-
-Findings persist across champions and intervals in a bounded device-local collection,
-with removal/restoration in the briefing. Quiet intervals link to the champion’s
-latest archived change without changing the selected dates. Champion pages expose
-a direct pool-save control. Comparisons retain champion/pool context and endpoint
-changes preserve query state. Numerical interpretation is conservative and exact.
-
-At that checkpoint, production build, typecheck, and 241 unit/integration tests passed.
-Rendered review is blocked by preview routing and missing Chromium system libraries;
-see `docs/RELEASE_EVIDENCE.md`. The verification narrative below records the previous
-refactor handoff and is historical, not the current check result. No new visual
-baseline or motion sign-off is claimed.
-
-## Current direction: a journey through a changing game
-
-This is the active design contract for the complete October 2026 refactor. It
-replaces the previous Delta Loom, viewport investigation, and spatial-history
-homepage directions. Historical components and specs may remain in the repository;
-they do not define the current experience.
-
-RiftScry takes the visitor from an unfamiliar landscape to a useful understanding
-of their own champions. The environment changes because the task changes: arrive,
-choose a perspective, inspect a record, trace its history, and carry that knowledge
-into a future visit. The evidence and the visitor's choices give the journey its
-structure. Decorative movement alone does not satisfy this direction.
-
-## Five connected chapters
-
-The active homepage is `src/components/experience/HomeVoyage.astro`, with
-`src/scripts/voyage.ts` and `src/styles/voyage.css`. It renders five real sections
-in document order, with named chapter links and ordinary browser scrolling.
-
-| Chapter | Visitor's purpose | Composition and interaction |
-| --- | --- | --- |
-| Arrival — `#arrival` | Understand the place and begin | A complete first-screen overlook, a large editorial title, an explicit entry action, and the newest **archived** patch and date. |
-| Perspective — `#perspective` | Choose who matters | A full, uncropped champion artwork and a native roster dialog. Featured choices are shortcuts; every champion can supply the journey. |
-| Change — `#change` | Read one change accurately | Exact before/after values or prose become the principal composition. A field selector, explicit “Keep this finding” action, date, ability, unit, and Riot source keep the scene useful. |
-| History — `#history` | Put that record in context | A trail of records for the same field, an evidence-based reading of their connection, real interval controls, and routes to complete champion history and comparison. |
-| Return — `#return` | Save a perspective and know what to do next | The findings explicitly kept in this journey, My Pool, an explicit reviewed baseline, reading resume, and a dated selection from the archive. |
-
-The arrival fits a normal desktop or portrait-phone viewport. The **homepage as a
-whole must scroll**. Later chapters may grow to fit exact rank arrays, prose,
-history, or a personalized briefing. Short viewports and enlarged text must retain
-reachable content. Do not restore a full-page `overflow: hidden` shell, a slide
-deck, forced snap points, or a very tall pinned timeline that simulates sections.
-
-## Visual world and asset roles
-
-`src/styles/experience.css` supplies the current shared palette and display font
-over the compatibility tokens used by older components:
-
-- Ink `#081319`, pale paper `#e6ece5`, cyan `#8ed8d0`, and restrained brass `#c7a56d`.
-- Clash Display for spatial headlines; General Sans for reading and controls.
-- Quiet rules, open compositions, and generous changes of scale. Semantic buff,
-  nerf, and adjustment labels retain text/glyphs as well as color.
-
-Three original environmental illustrations establish distinct places:
-`rift-overlook.webp`, `history-strata.webp`, and `return-basin.webp`. The opening
-also has a separately composed portrait asset, `rift-overlook-mobile.webp`. Their
-purpose, provenance, dimensions, and encoded sizes are recorded in
-`public/images/voyage/README.md`. They are abstract RiftScry environments, not
-official or canonical League locations.
-
-Official champion icons, loading portraits, and splash art remain separate from
-these environments. Full champion artwork uses `object-fit: contain`; mobile
-uses the official portrait when available. Do not cut out a champion, mask away
-their composition, reuse one identity for the whole roster, or put an opaque UI
-panel across the artwork. Source records are real text, not baked into an image.
-Asset provenance does not amount to a blanket legal clearance; Riot assets remain
-subject to applicable Riot policies and an appropriate release review.
-
-## Navigation and motion
-
-`Wayfinder.astro` replaces the conventional destination navbar with a persistent
-Rift map control. Its native dialog has six clearly named, ordinary links: the
-journey, champions, patch archive, compare, My Pool, and Players. The current destination
-is marked. On mobile the same destinations become a readable ordered path. Search,
-the motion preference, the brand link, and the briefing shortcut remain direct
-utilities. The map is an orientation device, not a puzzle users must solve.
-Its labeled keyboard shortcut is Alt+M (Option+M on Mac), using the `KeyM` code
-so Option's character mapping does not break it. Single letters remain available
-to assistive input. Editable fields, composition, repeated keys, already-handled
-events, and an open dialog keep the shortcut inactive.
-
-`src/scripts/experience.ts` owns shared map behavior, focus return, named chapter
-navigation, motion preference, and small reader-route enhancements. Native routes
-remain bookmarkable and work with browser Back. Same-page links retain meaningful
-fragments. Search is available from the controls, from the map, and with Cmd/Ctrl+K.
-
-The homepage director changes the environmental framing and crossings around
-the real sections. CSS cross-document view transitions connect route changes on
-supporting browsers; unsupported browsers retain ordinary navigation. Do not delay
-a click for an animation, block a record until a reveal completes, or make a
-loading screen part of the story. `prefers-reduced-motion` and the visible motion
-control preserve the same information and choices with motion reduced. No sound
-or WebGL is required by the active presentation.
-
-## All route families belong to the same experience
-
-`RouteArrival.astro` and `reader-experience.css` provide a shared arrival, named
-chapter links, and legible reading compositions. Each route has its own purpose:
-
-| Route | Arrival and reading sequence |
+| Scene | Experience |
 | --- | --- |
-| `/champions` | Roster overview → searchable/filterable complete roster → champion history. |
-| `/champion/:slug` | Intact champion identity → exact dated records → archive context and a focused homepage interval. |
-| `/patches` | Archive scope → chronological patch destinations with real totals and dates. |
-| `/patch/:id` | Patch identity → personal perspective → champion records → available item, system, and hotfix chapters. |
-| `/compare/:newer/:older` | Two endpoints → interval controls → champion classifications and linked item/system records. |
-| `/pool` | Personal return → useful briefing → saved-champion editor. |
-| `/players` | Riot ID/server search → verified identity → a separate player profile. |
-| `/players/:platform/:puuid` | Player arrival → mode-separated recent sample → match history, personal builds and Build Memory. |
-| `/matches/:id` | Recorded match context → evidence and timeline → an editable prospective adjustment → return to the profile. |
-| Missing route | A clear recovery arrival with real destinations. |
+| Find a signal — `#signal` | Recognizable champion art, a real archive example, a reveal action, and a direct route to the visitor's games. Featured subjects change the actual record. |
+| Reveal the change — `#reveal` | An exact before/after record or rule is the focal object. The field, patch, and source remain identifiable; keeping the finding is explicit. |
+| Take it forward — `#carry` | The selected record remains recognizable. Continue to the briefing, reopen kept findings, or trace the same subject in `/explore`. |
 
-Presentation changes must preserve existing patch filter selectors and URL state,
-comparison logic, timeline disclosures, source links, shared-pool URLs, and the
-`riftscry:pool` storage contract. The champion directory is server-rendered and
-enhanced by a small search/role script; it does not hydrate the full archive in a
-React homepage. `[data-scene]` and `[data-reveal]` are enhancement hooks, never
-permission to hide required content by default.
+The homepage does not fetch player records. A validated remembered player
+personalizes its briefing link; public archive context can offer a continuation.
+Neither behavior invents a personal result from the archive example.
 
-## Data and performance boundaries
+`/explore` continues through the selected change, its history, and the return
+scene. It retains the existing canonical champion model, field and interval
+controls, exact records, and URL compatibility. Full champion, patch, and
+comparison routes are alternate entry points into the same evidence.
 
-`src/lib/voyage-data.ts` builds compact champion models. Static endpoints
-`/journey/roster.json` and `/journey/:canonicalId.json` support every champion in
-the committed roster (173 at this refactor). The browser starts with one embedded
-model and requests another champion as needed. Importing the full archive into
-the homepage client is outside this contract.
+## A record as an interaction
 
-Kept findings travel in `seen=` as validated record IDs and survive direct links,
-reload, and browser Back. Legacy `beat=` chapters, `patch=` ending dates, and
-champion display names resolve into the current journey. A geometric focus
-effect must never be the unexplained prerequisite for collecting a finding.
+`SignalRecord.astro` is the shared record presentation. The selected field is
+prominent, before/after strings are real text, and a source link stays nearby.
+A native range input and Before/After buttons change visual emphasis; they do
+not interpolate a stat, alter source values, or imply a game simulation. Long
+rank arrays, scaling expressions, units, and prose stay complete.
 
-The exact recorded strings, including rank arrays, scaling, conditions, units,
-and prose, are authoritative. An interval is `(older, newer]`: the starting patch
-is excluded and the ending patch is included. Do not turn classifications into a
-strength score, add unrelated changes into one percentage, or infer “unchanged in
-the game” from an absence of direct records. A missing image or a failed champion
-request must leave a readable state and a useful next action.
+Champion histories focus one dated record while retaining the rest as ordinary
+links or disclosures. Patch pages focus one champion record with filters and
+native hash navigation. The patch directory's timeline selects a real dated
+patch. Comparison selects a champion within the explicit `(older, newer]`
+interval and opens its underlying records. Classification labels keep text and
+glyph semantics; color alone never carries the conclusion.
 
-Prioritize the opening image, defer later environments, and use responsive assets
-without loading both opening compositions. React remains for bounded product
-islands such as the palette, pool controls, and return briefing. Treat performance
-budgets as release criteria that need measurement, not as proof supplied by the
-architecture or the word “static.”
+## Player tasks with less repeated work
 
-## Historical refactor verification and ongoing acceptance criteria
+- **Briefing:** lead with one supported focus. Exact patch deltas or measured
+  comparisons are prominent; the reason and calculation details are disclosures.
+  Player, mode, and refresh settings are grouped under the player summary.
+  Import status, partial samples, failures, and the retry action stay visible.
+- **Gateway and profile:** use a compact identity and a useful first action.
+  Explicit valid player selection supplies continuity. Account data, not a
+  query-string name, identifies the player. Recognizable mode categories expose
+  exact queues; matches are whole-row links with champion, mode, result, KDA,
+  final items, date, and duration. Filters and statistics are optional.
+- **Match:** move between overview, review, evidence, and Build Memory scenes.
+  The recorded summary works before optional timeline or AI requests. A labelled
+  AI result keeps its evidence and full text available. Keep loadout retains the
+  source game and opens the notebook without re-entering items.
+- **Adjustment:** a generated suggestion arrives as a prepared summary with one
+  Save adjustment action. Edit details exposes the complete native form; manual
+  adjustments begin with fields open. Invalid hidden fields reopen for correction.
+  Opening a draft never saves it or starts prospective tracking.
+- **Notebook and Saved:** notes and retained material are useful immediately.
+  A kept loadout can prefill its champion and exact mode for an optional game
+  card. Starting a card, saving a reflection, reviewing a patch, and keeping a
+  finding remain separate deliberate actions.
 
-At the initial refactor handoff, dependency installation was rejected by
-automatic approval review, so the Astro build, type check,
-Playwright suite, browser rendering, performance, and visual quality have **not
-been verified** here. Static parsing and diff checks are narrower checks; they
-must not be reported as a successful build or a premium-experience sign-off.
+These presentation changes retain exact queues, real missing-data states,
+source links, player-scoped comparison eligibility, existing storage keys, and
+all API access and rate-limit boundaries described in PRODUCT.md.
 
-The active regression sources now cover these contracts:
+## Visual world, motion, and access
 
-| Test file | Scope |
+The shared palette is ink, pale paper, and a restrained green signal, defined in
+`experience-shell.css`. Clash Display carries the large subject headings;
+General Sans carries controls and reading; Spline Sans Mono identifies compact
+coordinates and metadata. Use open compositions, quiet borders, and intentional
+changes of scale. Reduce repeated explanation through native disclosures, not
+by truncating a visitor's notes or removing evidence.
+
+Original RiftScry environment illustrations establish continuity. Official Riot
+champion icons, portraits, and splash artwork provide identity. Their provenance
+and roles are distinct; see [the environment asset record](public/images/voyage/README.md).
+Keep source text separate from imagery. Failed art retains readable identity and
+the task's controls. The optional environment renderer has a static fallback;
+no sound or 3D interaction is required to navigate or inspect a record.
+
+Scene and supported cross-document transitions preserve a recognizable subject
+and direction of travel. Operating-system reduced motion and the persistent
+motion control retain all choices with nonessential movement removed. Before/After
+and timeline interactions have click/tap and keyboard alternatives to dragging.
+Preserve the skip link, visible focus, labelled controls, dialog Escape and focus
+return, search with Cmd/Ctrl+K, and the guarded Alt+M map shortcut. Keyboard
+shortcuts must not capture text entry or composition.
+
+## Active implementation map
+
+| Responsibility | Active sources |
 | --- | --- |
-| `tests/e2e/voyage.spec.ts` | Five real chapters, first-screen/document bounds, canonical model loading, URL/Back/reload, complete roster, exact numeric/prose evidence, interval boundaries, request retry, map/search, and every reading route. |
-| `tests/e2e/keyboard.spec.ts` | Skip link, keyboard-only champion choice/evidence/save/history, dialog dismissal/focus return, the Alt+M / Option+M map shortcut without intercepting single letters or form input, and native-dialog-to-palette handoff. |
-| `tests/e2e/spatial-history.spec.ts` | The retained filename now protects artwork failure, normalized direct URLs, unknown/invalid states, reduced motion, and short-view controls. It no longer asserts the removed viewport-only UI. |
-| `tests/e2e/core-flow.spec.ts` | Existing pool persistence/sharing, patch filters, compare results, and champion timelines, now through ordinary routes without a presentation-mode query. |
+| Shared shell and navigation | `src/layouts/Layout.astro`, `src/components/experience/JourneyWayfinder.astro`, `src/components/experience/JourneyChrome.astro`, `src/styles/experience-shell.css` |
+| Scene visibility, history, and focus | `src/scripts/connected-observatory.ts`; shared map/motion behavior in `src/scripts/experience.ts` |
+| Public subject and player continuation | `src/scripts/signal-continuity.ts`, `src/lib/signal-context.ts`, `src/lib/player/identity.ts` |
+| Homepage | `src/components/experience/SignalJourney.astro`, `src/scripts/signal-journey.ts`, `src/styles/signal-journey.css` |
+| Shared exact records and readers | `src/components/experience/SignalRecord.astro`, `src/scripts/signal-record.ts`, `src/styles/signal-readers.css` |
+| Champion exploration | `src/components/experience/HomeVoyage.astro`, `src/scripts/voyage.ts`, `src/styles/signal-explore.css` |
+| Roster/archive preview and comparisons | `src/scripts/reader-lens.ts`, `src/scripts/signal-comparison.ts` |
+| Player, briefing, and notebook presentation | `src/components/player/`, `src/components/companion/`, `src/styles/signal-player.css`, and their retained task styles |
+| Shared environment | `src/components/experience/RiftScene.astro`, `src/scripts/rift-scene.ts`, `src/styles/rift-scene.css` |
 
-These migrations preserve product and accessibility goals instead of ignoring
-the old failures. `playwright.config.ts` keeps the earlier historical presentation
-exclusions; its explanatory comment now names the active presentation.
-`visual.spec.ts` still has old Windows-specific baselines and requires new,
-visually reviewed captures after the design can actually render. No replacement
-baseline has been fabricated. All new and migrated tests remain unexecuted in
-this session; the combined suite must not be described as passing.
+The filename `connected-observatory.ts` remains the scene controller; it does not
+reintroduce the retired observatory homepage. Superseded global style layers and
+unreachable presentation trees were removed. Add shared layout changes to the
+single shell, and task-specific changes to the relevant route styles.
 
-Release review must inspect the actual five-chapter transitions and reader-route
-arrivals at 1440×900, 1280×720, and 390×844, plus short landscape and enlarged text.
-Check keyboard focus, native dialog dismissal, complete artwork, exact long
-records, invalid/quiet intervals, direct URLs, Back, local-storage failures,
-missing imagery, and the reduced-motion path. A screenshot or a green build alone
-does not establish that the journey is coherent, intuitive, or cinematic.
+Build-time archive data supplies `/journey/roster.json` and compact
+`/journey/:canonicalId.json` models. Champion exploration loads another model on
+demand. React islands remain for bounded product tasks; do not hydrate the entire
+archive merely to present the opening scene.
+
+## Verification and historical evidence
+
+Verification of this refactor is still in progress. Record the tested commit and
+actual results in the pull request and CI artifacts. Test collection is not a
+browser pass, historical screenshots are not current baselines, and controlled
+fixtures do not establish successful live Riot or AI access.
+
+Acceptance must follow a complete route: enter or resume, choose a subject,
+reveal evidence, inspect its source, keep a finding/loadout/adjustment, reopen it,
+and return through browser Back. Check desktop, portrait, 320px and short-landscape
+viewports, enlarged text, keyboard-only access, reduced motion, long records,
+empty/partial imports, cooldowns, API failures, and unavailable storage or artwork.
+Measure performance on the actual build; neither the architecture nor a screenshot
+establishes a cinematic, accessible, or fast experience.
+
+Earlier checkpoints and assets remain in [docs](docs/), including the
+[connected-observatory record](docs/connected-observatory/README.md),
+[player release history](docs/player-release.md), and
+[release evidence](docs/RELEASE_EVIDENCE.md). Their presentation descriptions and
+check results apply to their own commits. Git history retains superseded designs.

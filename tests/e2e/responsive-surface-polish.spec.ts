@@ -20,7 +20,11 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1366, 768], 
     await expect(scene).toHaveCount(1);
     await expect(scene).toHaveAttribute('id', 'change');
     const bounds = (await scene.boundingBox())!;
-    expect(bounds.y + bounds.height).toBeLessThanOrEqual(height + 1);
+    expect(bounds.height).toBeGreaterThan(0);
+    const nested = await page.locator('main').evaluate(main => [...main.querySelectorAll('*')]
+      .filter(element => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
+        && element.scrollHeight > element.clientHeight + 3).length);
+    expect(nested, 'The document owns the only vertical scroll').toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
     const actions = page.locator('[data-roster-open], #change [data-focus-record], #change [data-record-source], #change .voyage-station-continue');
     await expect(actions).toHaveCount(4);
@@ -33,7 +37,7 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1366, 768], 
         return hit === element || Boolean(hit && element.contains(hit));
       })).toBe(true);
     }
-    expect(await page.evaluate(() => scrollY)).toBe(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   });
 }
 
@@ -45,7 +49,9 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390]] as const) {
     await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
     const column = (await page.locator('#history').boundingBox())!;
     const figure = (await page.locator('.journey-champion-art').boundingBox())!;
-    for (const art of await page.locator('.journey-champion-art, .journey-champion-art picture, .journey-champion-art img, .journey-champion-art figcaption').all()) {
+    await expect(page.locator('[data-champion-art-image]')).toHaveCSS('object-fit', 'contain');
+    for (const art of await page.locator('.journey-champion-art, .journey-champion-art picture, .journey-champion-art img, .journey-champion-art figcaption, [data-champion-art-fallback]').all()) {
+      if (!await art.isVisible()) continue;
       const bounds = (await art.boundingBox())!;
       expect(bounds.x).toBeGreaterThanOrEqual(column.x - 1);
       expect(bounds.x + bounds.width).toBeLessThanOrEqual(column.x + column.width + 1);
@@ -55,6 +61,27 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390]] as const) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 }
+
+test('failed champion artwork keeps its footprint and leaves exact history usable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route('**/cdn/img/champion/splash/Nunu_0.jpg', route => route.abort());
+  await page.goto('/champion/nunu', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+  await expect(page.locator('[data-champion-art-image]')).toBeHidden();
+  const fallback = page.locator('[data-champion-art-fallback]');
+  await expect(fallback).toBeVisible();
+  await expect(fallback).toContainText('Nunu & Willump');
+  const figure = (await page.locator('[data-champion-art]').boundingBox())!;
+  const bounds = (await fallback.boundingBox())!;
+  expect(bounds.x).toBeGreaterThanOrEqual(figure.x - 1);
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(figure.x + figure.width + 1);
+  expect(bounds.y + bounds.height).toBeLessThanOrEqual(figure.y + figure.height + 1);
+  const active = page.locator('[data-history-record]:not([hidden])');
+  await expect(active).toHaveCount(1);
+  await expect(active.locator('[data-signal-record]:not([hidden])')).toBeVisible();
+  await expect(active.getByRole('link', { name: /^Original source/ })).toHaveAttribute('href', /^https:\/\//);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(391);
+});
 
 for (const [width, height] of [[1366, 768], [1280, 800], [1920, 850], [1440, 900]] as const) {
   test(`the Rift map has no unnecessary scroll at ${width}×${height}`, async ({ page }) => {

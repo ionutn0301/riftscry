@@ -3,6 +3,7 @@ import { voyagePeriod, voyageFields, voyageSelection, voyageConnection, recordTe
 import { $pool, togglePool, inPool } from '../lib/pool';
 import { rememberReading } from '../lib/return-briefing';
 import { readFindings, writeFindings, FINDINGS_LIMIT } from '../lib/kept-findings';
+import { rememberSignal, readSignalContext } from '../lib/signal-context';
 
 const voyage = document.querySelector<HTMLElement>('[data-voyage]');
 const initialData = document.querySelector<HTMLScriptElement>('#voyage-initial-data');
@@ -65,6 +66,8 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     if (selected) params.set('event', selected.id);
     if (seen.size) params.set('seen', [...seen].join('|'));
     rememberReading('/explore?' + params.toString() + '#change', model.identity.name + ' — your explored interval');
+    rememberSignal({ championId: model.identity.id, name: model.identity.name,
+      href: '/explore?' + params.toString() + '#change', patch: selected?.patch, event: selected?.id });
   }
 
   function updateSaved(pool: readonly string[] = $pool.get()) {
@@ -115,6 +118,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     for (const selector of ['[data-record-label]', '[data-record-patch]', '[data-record-date]', '[data-record-ability]', '[data-record-reading]', '[data-record-source]', '[data-focus-record]', '[data-keep-trace]']) setHidden(selector, missing);
     setHidden('[data-record-quiet]', !missing);
     setHidden('[data-record-numeric]', record?.change.kind !== 'numeric');
+    setHidden('[data-signal-scrub]', record?.change.kind !== 'numeric');
     setHidden('[data-record-prose]', record?.change.kind !== 'prose');
     setHidden('[data-record-unit]', record?.change.kind !== 'numeric' || !record.change.unit);
     if (!record) {
@@ -141,6 +145,10 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       setText('[data-record-before]', record.change.before);
       setText('[data-record-after]', record.change.after);
       setText('[data-record-unit]', record.change.unit ?? '');
+      const range = query<HTMLInputElement>('[data-signal-range]');
+      range.dataset.beforeValue = record.change.before;
+      range.dataset.afterValue = record.change.after;
+      range.setAttribute('aria-valuetext', Number(range.value) < 50 ? `Before: ${record.change.before}` : `After: ${record.change.after}`);
       // Compact units such as "40/Level" need reading-sized type as well as long rank arrays.
       query('[data-record-numeric]').dataset.long = String(record.change.before.length > 18 || record.change.after.length > 18
         || /[a-z]/i.test(record.change.before + record.change.after));
@@ -279,9 +287,19 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     const search = normalizeChampionName(rosterInput.value);
     const role = roleInput.value;
     const filtered = roster.filter((champion) => (!search || normalizeChampionName(champion.name).includes(search) || normalizeChampionName(champion.id).includes(search)) && (!role || champion.roles.includes(role)));
+    // Only a useful, viewport-sized selection belongs in this dialog.
+    // Search covers the full roster, and the full champion page is one link away.
+    const featured = (rosterDialog.dataset.rosterFeatured ?? '').split(',').filter(Boolean);
+    const ordered = search || role ? filtered : [...filtered].sort((a, b) => {
+      const priority = (id: string) => id === model.identity.id ? -1 : featured.includes(id) ? featured.indexOf(id) : 999;
+      return priority(a.id) - priority(b.id);
+    });
+    const limit = innerHeight <= 420 ? innerWidth <= 700 ? 4 : 6
+      : innerWidth <= 700 ? innerHeight <= 620 ? 6 : 9 : 12;
+    const preview = ordered.slice(0, limit);
     const list = query('[data-roster-results]');
     const fragment = document.createDocumentFragment();
-    for (const champion of filtered) {
+    for (const champion of preview) {
       const item = document.createElement('li');
       const button = document.createElement('button');
       button.type = 'button';
@@ -305,7 +323,11 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       fragment.append(item);
     }
     list.replaceChildren(fragment);
-    setText('[data-roster-status]', filtered.length ? `${filtered.length} ${filtered.length === 1 ? 'champion' : 'champions'}. Choose one to change your journey.` : 'No champion matches. Try a different name or role.');
+    setText('[data-roster-status]', filtered.length
+      ? preview.length < filtered.length
+        ? `Showing ${preview.length} of ${filtered.length}. Search to find any champion.`
+        : `${filtered.length} ${filtered.length === 1 ? 'champion' : 'champions'} found. Choose your perspective.`
+      : 'No champion matches. Try a different name or role.');
   }
 
   async function openRoster() {
@@ -314,7 +336,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     rosterDialog.showModal();
     rosterDialog.scrollTop = 0;
     rosterInput.focus({ preventScroll: true });
-    setText('[data-roster-status]', 'Opening the full champion roster…');
+    setText('[data-roster-status]', 'Opening champion search…');
     try { await loadRoster(); renderRoster(); }
     catch { setText('[data-roster-status]', 'The roster could not load. Close and reopen to retry, or use the complete roster page below.'); }
   }
@@ -413,12 +435,14 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     const url = new URL(location.href);
     followLatest = !['older', 'newer', 'patch'].some(key => url.searchParams.has(key));
     const requested = url.searchParams.get('champion');
+    // Only a context-free entry resumes a subject. Explicit URL scope always wins.
+    const retained = !requested && !['older', 'newer', 'patch', 'event', 'focus'].some(key => url.searchParams.has(key)) ? readSignalContext() : null;
     const previousBeat = url.searchParams.get('beat');
-    void selectChampion(requested || initial.identity.id, {
+    void selectChampion(requested || retained?.championId || initial.identity.id, {
       navigation: false,
       older: url.searchParams.get('older') ?? initial.older,
       newer: url.searchParams.get('newer') ?? url.searchParams.get('patch') ?? initial.newer,
-      event: url.searchParams.get('event') ?? (!requested ? initial.selectedId ?? '' : ''),
+      event: url.searchParams.get('event') ?? retained?.event ?? (!requested ? initial.selectedId ?? '' : ''),
       field: url.searchParams.get('focus') ?? '',
       seen: url.searchParams.get('seen') ?? '',
     });
@@ -481,6 +505,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
 
   rosterDialog.addEventListener('close', () => { if (rosterOpener?.isConnected) rosterOpener.focus({ preventScroll: true }); });
   rosterInput.addEventListener('input', renderRoster);
+  window.addEventListener('resize', () => { if (rosterDialog.open) renderRoster(); });
   roleInput.addEventListener('change', renderRoster);
   fieldInput.addEventListener('change', () => {
     selected = voyageSelection(period.records, fieldInput.value);

@@ -1,3 +1,4 @@
+import { stationaryWorld, unobstructed } from './journey-test-helpers';
 import { test, expect, type Page } from "@playwright/test";
 import type { JourneyModel } from '../../src/lib/voyage-data';
 
@@ -26,19 +27,18 @@ async function expectOpeningBounds(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   const bounds = await page.locator('#change').evaluate(scene => {
     const rect=scene.getBoundingClientRect();
-    return { top:rect.top,bottom:rect.bottom,height:rect.height,viewport:innerHeight,documentHeight:document.documentElement.scrollHeight,horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth };
+    return { top:rect.top,bottom:rect.bottom,height:rect.height,viewport:innerHeight,documentHeight:document.documentElement.scrollHeight };
   });
   expect(bounds.height).toBeGreaterThan(150);
   expect(bounds.top).toBeGreaterThan(0);
-  expect(bounds.bottom).toBeLessThanOrEqual(bounds.viewport + 2);
-  expect(bounds.horizontalOverflow).toBeLessThanOrEqual(1);
-  expect(bounds.documentHeight).toBeLessThanOrEqual(bounds.viewport + 1);
-  await expect(page.locator('.voyage-station-heading h1')).toBeInViewport({ratio:1});
-  await expect(page.locator('[data-roster-open]')).toBeInViewport({ratio:1});
+  await stationaryWorld(page);
+  await unobstructed(page.locator('[data-record-source]'));
+  await unobstructed(page.locator('.voyage-station-heading h1'));
+  await unobstructed(page.locator('[data-roster-open]'));
   await expect(page.locator('[data-map-open]')).toBeInViewport({ratio:1});
 }
 
-test('three focused scenes expose real evidence without document scrolling', async ({page}) => {
+test('three focused scenes expose real evidence with one document scroll', async ({page}) => {
   await page.goto('/explore'); await ready(page);
   const scenes=page.locator('[data-journey-panel]');
   await expect(scenes).toHaveCount(3);
@@ -117,11 +117,16 @@ test("the full roster supports roles and normalized names beyond featured champi
   const roster = await response.json() as Array<{ id: string; roles: string[] }>;
   expect(roster).toHaveLength(173); // The committed roster, not a live-game count.
   const results = page.locator("[data-roster-results] [data-choose-champion]");
-  await expect(results).toHaveCount(roster.length);
+  await expect.poll(() => results.count()).toBeGreaterThan(0);
+  expect(await results.count()).toBeLessThanOrEqual(12);
+  await expect(page.locator('[data-roster-status]')).toContainText(`of ${roster.length}`);
   const junglers = roster.filter((champion) => champion.roles.includes("jungle"));
   expect(junglers.length).toBeGreaterThan(0);
   await page.locator("#voyage-roster [data-roster-role]").selectOption("jungle");
-  await expect(results).toHaveCount(junglers.length);
+  await expect.poll(() => results.count()).toBeGreaterThan(0);
+  expect(await results.count()).toBeLessThanOrEqual(12);
+  const jungleIds = new Set(junglers.map(champion => champion.id));
+  for (const id of await results.evaluateAll(nodes => nodes.map(node => node.getAttribute('data-choose-champion')!))) expect(jungleIds.has(id)).toBe(true);
   await page.locator("#voyage-roster [data-roster-role]").selectOption("");
   await page.locator("[data-roster-query]").fill("kha zix");
   await expect(results).toHaveCount(1);
@@ -274,13 +279,13 @@ for (const [path,surface,current] of readingRoutes) {
         const id=await tab.getAttribute('aria-controls');
         await expect(page.locator('#'+id)).toBeVisible();
         await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
-        expect(await page.evaluate(()=>scrollY)).toBe(0);
+        await stationaryWorld(page);
       }
     }
     if(surface==='missing') {
       await page.getByRole('link',{name:'Return to the Rift',exact:false}).first().click();
       await expect(page).toHaveURL(url=>url.pathname==='/');
-      await expect(page.locator('[data-observatory]')).toBeVisible();
+      await expect(page.locator('[data-home-signals]')).toBeVisible();
       await page.goBack();
     }
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);

@@ -1,0 +1,434 @@
+/* The same task language in every player scene: a focal record, one useful
+   action, and optional detail. No additional navigation system lives here. */
+.signal-loadout-actions,
+.player-build-save-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .8rem 1.25rem;
+}
+.signal-loadout-actions { margin-block: 1.15rem .6rem; }
+.player-build-save { min-width: 0; }
+.player-build-save .player-capture-status:empty { display: none; }
+.review-summary .player-build-save { margin-top: 1.25rem; }
+
+.signal-adjustment-form { grid-template-columns: minmax(0, 1fr); }
+.signal-prepared-adjustment {
+  padding: clamp(1rem, 2.4vw, 1.7rem);
+  border: 1px solid color-mix(in srgb, var(--accent, #b9f6e7) 28%, transparent);
+  border-radius: 1.1rem;
+  background: linear-gradient(135deg, rgb(114 225 205 / 9%), rgb(16 25 36 / 55%));
+  outline-offset: 5px;
+}
+.signal-prepared-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+.signal-prepared-adjustment h3 {
+  margin: 0 0 1rem;
+  max-width: 38ch;
+  color: var(--text, #edf3f4);
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
+  line-height: 1.16;
+  text-wrap: balance;
+}
+.signal-prepared-condition { display: flex; align-items: flex-start; gap: .55rem; }
+.signal-prepared-condition svg { flex: 0 0 auto; margin-top: .15em; }
+.signal-prepared-adjustment dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; margin-block: 1.4rem; }
+.signal-prepared-adjustment dt { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted, #9eabb7); }
+.signal-prepared-adjustment dd { margin: .45rem 0 0; line-height: 1.55; }
+.signal-adjustment-details > summary { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 44px; cursor: pointer; }
+.signal-adjustment-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding-block: 1rem; }
+.signal-adjustment-fields .player-field { min-width: 0; }
+.signal-adjustment-fields :is(input, select, textarea) { width: 100%; min-width: 0; }
+
+.signal-focus-context { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem; }
+.signal-focus-delta { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: .85rem; align-items: center; margin-block: 1.4rem; }
+.signal-focus-delta > dl { min-width: 0; }
+.signal-focus-delta dt { margin-bottom: .5rem; color: var(--text-muted, #9eabb7); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
+.signal-focus-delta dd { margin: 0; font-size: clamp(1.2rem, 2.3vw, 2rem); line-height: 1.2; overflow-wrap: anywhere; }
+.signal-focus-delta > dl:last-child dd { color: var(--accent, #b9f6e7); }
+.signal-focus-description { max-width: 45ch; line-height: 1.55; }
+.signal-focus-note { margin-top: .7rem; color: var(--text-muted, #9eabb7); font-size: .8rem; }
+.signal-focus-details { margin-block: .8rem 1rem; }
+.signal-focus-details > summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; }
+.signal-focus-details > p { max-width: 65ch; line-height: 1.6; }
+.signal-player-scope > summary { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; min-height: 44px; cursor: pointer; }
+.signal-player-scope > summary strong { font-weight: 500; }
+.signal-player-scope .automatic-toolbar { margin-top: .8rem; }
+.signal-use-loadout { margin-block: .85rem .35rem; }
+
+@media (max-width: 600px) {
+  .signal-prepared-adjustment dl,
+  .signal-adjustment-fields { grid-template-columns: minmax(0, 1fr); }
+  .signal-focus-delta { gap: .6rem; }
+  .signal-prepared-adjustment { padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signal-prepared-adjustment { scroll-behavior: auto; }
+}
+
+/* Scene contract. The shared shell owns travel, visibility and the viewport;
+   these workspaces contribute only compact headings and the active task. */
+.rift-shell[data-journey-ready] :is(.automatic-workspace, .recall-workspace, .player-profile, .journey-match, .player-gateway) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  background: transparent;
+  overflow: visible;
+}
+.rift-shell[data-journey-ready] :is(.automatic-wrap, .recall-wrap, [data-briefing-report]) { display: contents; }
+.rift-shell :is(.automatic-header, .recall-header, .review-champion-heading, .player-identity-header) {
+  flex: none;
+  margin: 0;
+  padding: 0 0 1rem;
+  max-width: none;
+  border: 0;
+  background: transparent;
+}
+.rift-shell :is(.automatic-header, .recall-header, .review-champion-heading, .gateway-heading) h1 {
+  font: 500 clamp(1.8rem, 3.5vw, 3.1rem)/1.06 var(--font-display);
+  letter-spacing: -.045em;
+  margin: .35rem 0 .2rem;
+}
+.rift-shell :is(.automatic-header > p:last-child, .recall-tagline, .gateway-heading > p:last-child) {
+  margin: 0;
+  font-size: .86rem;
+  line-height: 1.5;
+}
+.rift-shell :is(.automatic-eyebrow, .recall-eyebrow, .player-kicker) { font-size: .65rem; }
+.rift-shell :is(.automatic-footnote, .recall-local-note, .gateway-footnote) {
+  flex: none;
+  min-height: 0;
+  margin: 0;
+  padding: .45rem 0 0;
+  border: 0;
+  font-size: .7rem;
+}
+.rift-shell :is(.automatic-footnote, .recall-local-note, .gateway-footnote) :is(p, summary) { margin: 0; font-size: .7rem; }
+.rift-shell :is(.automatic-footnote, .gateway-footnote) details[open] { padding: .75rem; background: #0b1822; border: 1px solid #aac9cd33; }
+.rift-shell :is(.automatic-panel, .recall-panel, .memory-note, .observed-build) { border-color: #b9d5d52b; background: #0c1b25bd; box-shadow: none; }
+.rift-shell :is(.automatic-workspace, .recall-workspace, .player-workspace) :is(section, form) { scroll-margin-top: 1rem; }
+
+/* Automatic briefing: the recorded change is the object in the room. */
+.rift-shell .automatic-identity.signal-player-scope { display: block; padding: 0; margin: 0 0 .4rem; border-bottom: 1px solid #b9d5d52b; flex: none; }
+.rift-shell .signal-player-scope > summary { padding: .3rem 0; list-style: none; font-size: .85rem; color: #c4d8d8; }
+.rift-shell .signal-player-scope > summary::-webkit-details-marker { display: none; }
+.rift-shell .signal-player-scope > summary > span { font-size: .72rem; color: #a7babf; margin-left: auto; }
+.rift-shell .signal-player-scope-body { padding: .5rem 0; }
+.rift-shell[data-journey-ready] .automatic-workspace:has(.signal-player-scope[open], .automatic-footnote details[open]) { overflow-y: auto; overscroll-behavior: contain; }
+.rift-shell[data-journey-ready] .automatic-workspace:has(.signal-player-scope[open], .automatic-footnote details[open]) [data-journey-panel] { flex: 0 0 auto; max-height: none; overflow: visible; }
+.rift-shell .signal-player-scope-body > p { font-size: .72rem; }
+.rift-shell .automatic-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem; margin: .7rem 0 .4rem; }
+.rift-shell .automatic-toolbar .automatic-field { width: min(100%, 260px); }
+.rift-shell .automatic-toolbar .automatic-refresh { margin-left: auto; }
+.rift-shell .automatic-sample { flex: none; margin: 0 0 .65rem; }
+.rift-shell .automatic-sample p { font-size: .7rem; line-height: 1.5; }
+.rift-shell .automatic-lead-grid { display: block; max-width: 880px; margin: 0 auto; }
+.rift-shell .automatic-focus { padding: clamp(1.2rem, 3vw, 2.4rem); background: linear-gradient(125deg, #142e35d9, #0a1922b8); border-radius: .8rem; }
+.rift-shell .automatic-focus h2 { max-width: 25ch; margin: .8rem 0 1.1rem; font-size: clamp(1.6rem, 3.2vw, 2.6rem); line-height: 1.12; }
+.rift-shell .automatic-focus-context { margin: 1rem 0; }
+.rift-shell .automatic-focus > .automatic-actions { margin-top: .9rem; gap: .65rem 1.2rem; }
+.rift-shell .automatic-comparison { max-width: 550px; margin-block: 1.2rem !important; }
+.rift-shell .automatic-comparison dd { font-size: clamp(1.8rem, 4vw, 3rem); }
+.rift-shell .automatic-session { padding: 0; margin: .65rem 0 0; border: 0; background: transparent; }
+.rift-shell .automatic-session > summary { display: flex; align-items: center; gap: .7rem; min-height: 44px; cursor: pointer; font-size: .8rem; }
+.rift-shell .automatic-session > summary strong { margin-left: auto; font-weight: 500; }
+.rift-shell .automatic-session-body { padding-block: 1rem; }
+.rift-shell .automatic-method { max-width: 880px; margin: .3rem auto; padding: 0; border: 0; background: transparent; font-size: .8rem; }
+.rift-shell .automatic-entry { align-self: center; width: min(100%, 920px); gap: clamp(1.2rem, 4vw, 3rem); padding: clamp(1.2rem, 3vw, 2.2rem); }
+.rift-shell .automatic-entry h2 { font-size: clamp(1.6rem, 3vw, 2.3rem); margin: .7rem 0; }
+.rift-shell .automatic-lookup { margin: 1.4rem 0 0; padding: 0; border: 0; background: transparent; }
+.rift-shell .automatic-entry-preview { padding: 1rem; }
+.rift-shell .journey-connection-mark { display: grid; place-items: center; width: 110px; height: 110px; margin: 0 auto 1.5rem; border: 1px solid #c4e1e53a; border-radius: 50%; color: #b8e9e6; box-shadow: 0 0 0 12px #bde6ed04, 0 0 70px #9ce5e614; }
+.rift-shell .journey-connection ol { display: grid; gap: 1.1rem; padding: 0; list-style: none; }
+.rift-shell .journey-connection li { display: flex; align-items: center; gap: .8rem; font-size: .82rem; }
+.rift-shell .automatic-change-grid { grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr)); gap: 1rem; }
+.rift-shell .automatic-change-card { padding: 1.2rem; }
+.rift-shell .automatic-loadout { padding: clamp(1.2rem, 3vw, 2.2rem); }
+.rift-shell .patch-impact { margin: 0; border: 1px solid #b9d5d52b; border-radius: .8rem; background: #0b1b24cf; padding: clamp(1.2rem, 3vw, 2.2rem); }
+.rift-shell .patch-impact-heading h2 { font-size: clamp(1.7rem, 3vw, 2.5rem); }
+
+/* Identity stays small enough that the visitor arrives at their games. */
+.rift-shell .player-identity-wrap { max-width: none; }
+.rift-shell .identity-topline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0 0 .4rem; }
+.rift-shell .identity-topline .identity-back { margin: 0; }
+.rift-shell .player-identity-row { flex-direction: row; gap: 1rem; }
+.rift-shell .player-identity-person { gap: 1rem; }
+.rift-shell .player-avatar { width: 58px; height: 58px; border-radius: 50%; }
+.rift-shell .player-avatar img { border-radius: inherit; }
+.rift-shell .profile-identity-copy h1 { font: 500 clamp(1.4rem, 2.8vw, 2.3rem)/1.1 var(--font-display); margin: 0 0 .25rem; }
+.rift-shell .identity-region { font-size: .68rem; }
+.rift-shell .identity-ranks { margin: .6rem 0 0; padding: 0; font-size: .68rem; }
+.rift-shell .identity-save-status:empty { display: none; }
+.rift-shell .identity-options { position: relative; margin: 0; }
+.rift-shell .identity-options > summary { display: flex; align-items: center; gap: .5rem; border: 1px solid #aac9cd33; border-radius: .4rem; padding: .6rem .75rem; font-size: .75rem; }
+.rift-shell .identity-options > div { position: absolute; z-index: 12; top: calc(100% + 6px); right: 0; width: min(260px, 80vw); padding: 1rem; background: #0b1822; border: 1px solid #aac9cd44; border-radius: .5rem; box-shadow: 0 20px 60px #0006; }
+.rift-shell .identity-options > div p { font-size: .75rem; margin: 0 0 .7rem; }
+.rift-shell .player-records { width: 100%; max-width: none; margin: 0; padding: 0 0 1rem; }
+.rift-shell .player-tabs { margin: 0 0 .7rem; gap: 1.2rem; }
+.rift-shell .player-tabs button { min-height: 44px; font-size: .83rem; }
+.rift-shell .profile-controls { margin: 0 0 .45rem; padding: 0; }
+.rift-shell .player-view { margin-top: 1rem; }
+.rift-shell .match-chronology { grid-template-columns: repeat(auto-fit, minmax(min(345px, 100%), 1fr)); gap: .8rem; }
+.rift-shell .match-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "identity status" "score score" "record open";
+  gap: .9rem 1rem;
+  padding: 1.15rem;
+  background: linear-gradient(125deg, #102731e8, #0a1922b3);
+  border-radius: .65rem;
+  box-shadow: none;
+}
+.rift-shell .match-identity { grid-area: identity; }
+.rift-shell .match-status { grid-area: status; align-items: flex-end; text-align: right; }
+.rift-shell .match-score { grid-area: score; }
+.rift-shell .match-score strong { font-size: 1.5rem; }
+.rift-shell .match-record { grid-area: record; }
+.rift-shell .match-open { grid-area: open; font-size: .7rem; }
+.rift-shell .match-time { display: grid; gap: .2rem; }
+.rift-shell .match-row .loadout-items { gap: .3rem; }
+.rift-shell .match-row .item-icon { width: 27px; height: 27px; }
+.rift-shell .match-route-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .4rem; }
+.rift-shell .review-champion-heading { display: flex; align-items: center; gap: 1rem; }
+.rift-shell .review-champion-portrait { width: 60px; height: 60px; }
+.rift-shell .review-champion-heading .player-chips { margin: .4rem 0 0; }
+.rift-shell .review-summary { margin: 0; border: 0; padding: clamp(1rem, 3vw, 2rem); gap: 2rem; background: #0c1b25bd; border-radius: .75rem; }
+.rift-shell .review-summary > div:first-child h2 { font-size: clamp(2rem, 5vw, 4rem); }
+.rift-shell .review-focus { padding: 1.3rem; border-radius: .75rem; background: #102630d9; }
+.rift-shell .review-focus p { font-size: clamp(1.1rem, 1.7vw, 1.45rem); line-height: 1.5; }
+.rift-shell .build-suggestion { background: #0c1b25bd; border-color: #b9d5d52b; }
+
+/* A remembered player and a saved note are useful entry points, not forms. */
+.rift-shell .gateway-composition { width: min(100%, 780px); max-width: none; padding: clamp(1rem, 3vw, 2rem); margin: 0 auto; background: #0c1b25bd; border: 1px solid #b9d5d52b; border-radius: .8rem; }
+.rift-shell .gateway-heading { margin: 0 0 1.25rem; animation: none; }
+.rift-shell .gateway-lookup-scene > summary,
+.rift-shell .gateway-destinations > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 44px; border-bottom: 1px solid #aac9cd33; font-size: .8rem; }
+.rift-shell .lookup-form { margin: .8rem 0 0; padding: .8rem 0; border: 0; gap: 1rem; }
+.rift-shell .remembered-player { display: grid; grid-template-columns: 1fr auto; gap: .6rem 1.2rem; padding: 1.3rem; margin: .5rem 0 1rem; border: 1px solid #a9ddd34d; border-radius: .6rem; background: #8ed8d00b; }
+.rift-shell .remembered-player > .player-kicker { grid-column: 1/-1; }
+.rift-shell .remembered-player strong { font: 500 clamp(1.3rem, 2.8vw, 2rem)/1.2 var(--font-display); overflow-wrap: anywhere; }
+.rift-shell .gateway-destinations { margin-top: .8rem; }
+.rift-shell .gateway-destination-label { display: none; }
+.rift-shell .gateway-intents { gap: 1rem; }
+.rift-shell .gateway-footnote { margin-top: 1rem; }
+.rift-shell .recall-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.rift-shell .recall-header-note { padding: 0; border: 0; }
+.rift-shell .recall-library-section { margin: 0; padding: clamp(1rem, 2.5vw, 1.8rem); border: 0; border-radius: .75rem; background: #0c1b2599; }
+.rift-shell .recall-scene-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #b9d5d52b; }
+.rift-shell .recall-scene-heading h2 { font: 500 clamp(1.5rem, 2.5vw, 2.1rem)/1.1 var(--font-display); margin: .4rem 0 0; }
+.rift-shell .recall-library-content { padding-top: 1.1rem; }
+.rift-shell .recall-notebook-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr)); gap: 1rem; }
+.rift-shell .recall-saved-note { padding: 1.4rem; border-color: #b9d5d52b; background: linear-gradient(140deg, #15303b99, #0c1b25b8); }
+.rift-shell .recall-note-text { font: 400 clamp(1.05rem, 2vw, 1.45rem)/1.5 var(--font-display); }
+.rift-shell .recall-context { margin: 0 0 1rem; padding: 1rem; }
+.rift-shell .recall-step { display: none; }
+.rift-shell .recall-planning-grid { gap: 1.2rem; }
+.rift-shell .notebook-empty-orbit { display: grid; justify-items: center; text-align: center; padding: clamp(1.5rem, 5vh, 3rem) 1rem; }
+.rift-shell .notebook-empty-mark { display: grid; place-items: center; width: 92px; height: 92px; margin-bottom: 1.2rem; border: 1px solid #b9d5d53d; border-radius: 50%; color: #b4e6de; box-shadow: 0 0 0 12px #bde6ed05; }
+.rift-shell .notebook-empty-orbit h3 { margin: .5rem 0; }
+.rift-shell .notebook-empty-orbit .recall-button { margin-top: 1.2rem; }
+.rift-shell .recall-editor:modal { position: fixed; width: min(680px, calc(100vw - 32px)); max-height: min(820px, calc(100dvh - 40px)); margin: auto; padding: clamp(1.2rem, 4vw, 2rem); border: 1px solid #c4d4e757; border-radius: .8rem; background: #0c1829; color: #e8eef4; box-shadow: 0 40px 160px #0009; overflow-y: auto; }
+.rift-shell .recall-editor::backdrop { background: #020710bd; backdrop-filter: blur(12px); }
+.rift-shell .recall-editor .recall-note-form { display: block; }
+.rift-shell .recall-note-context { margin: 1.2rem 0; border-block: 1px solid #c4d4e72a; }
+.rift-shell .recall-note-context > summary { display: flex; align-items: center; gap: .7rem; min-height: 48px; cursor: pointer; font-size: .8rem; }
+.rift-shell .recall-note-context > summary small { margin-left: auto; }
+.rift-shell .recall-note-context-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; padding: .7rem 0 1.2rem; }
+.rift-shell .recall-note-context-fields .recall-checkbox { grid-column: 1/-1; }
+
+@media (max-width: 700px) {
+  .rift-shell :is(.automatic-entry, .review-summary, .recall-planning-grid, .recall-active-layout) { grid-template-columns: minmax(0, 1fr); }
+  .rift-shell .automatic-entry-preview { display: none; }
+  .rift-shell .automatic-header h1,
+  .rift-shell .recall-header h1,
+  .rift-shell .review-champion-heading h1 { font-size: 1.8rem; }
+  .rift-shell .automatic-focus { padding: 1.1rem; }
+  .rift-shell .automatic-focus h2 { font-size: 1.65rem; }
+  .rift-shell .automatic-toolbar .automatic-field { width: 100%; }
+  .rift-shell .automatic-toolbar .automatic-refresh { margin-left: 0; }
+  .rift-shell .player-identity-row { flex-wrap: wrap; gap: .6rem; }
+  .rift-shell .player-identity-person { flex: 1 1 auto; gap: .8rem; }
+  .rift-shell .player-avatar { width: 46px; height: 46px; }
+  .rift-shell .profile-identity-copy h1 { font-size: 1.45rem; }
+  .rift-shell .profile-identity-copy h1 em { display: inline-block; font-size: .55em; margin-left: .45rem; }
+  .rift-shell .identity-ranks { font-size: .63rem; }
+  .rift-shell .identity-actions button { min-height: 44px; padding: .5rem .65rem; }
+  .rift-shell .profile-hub .mode-families { gap: .3rem; }
+  .rift-shell .profile-hub .mode-families button { min-height: 46px; gap: .25rem; font-size: .64rem; padding: .4rem .2rem; }
+  .rift-shell .mode-queue-choice { width: 100%; flex-wrap: wrap; }
+  .rift-shell .profile-hub .mode-queue-choice select { width: 100%; min-width: 0; font-size: 16px; }
+  .rift-shell .profile-filter-fields { padding: .7rem; }
+  .rift-shell .profile-hub .profile-filter-fields select { font-size: 16px; }
+  .rift-shell .profile-filter-fields > .player-field { min-width: min(180px, 100%); }
+  .rift-shell .match-row { padding: 1rem; gap: .75rem; }
+  .rift-shell .match-identity { gap: .65rem; }
+  .rift-shell .match-identity h3 { font-size: .95rem; overflow-wrap: anywhere; }
+  .rift-shell .match-champion { width: 40px; height: 40px; }
+  .rift-shell .match-open { font-size: 0; }
+  .rift-shell .match-open .player-icon { width: 18px; height: 18px; }
+  .rift-shell .match-route-actions { gap: .6rem; flex-wrap: wrap; }
+  .rift-shell .review-champion-portrait { width: 48px; height: 48px; }
+  .rift-shell .lookup-form { grid-template-columns: minmax(0, 1fr); gap: .85rem; }
+  .rift-shell .gateway-composition { padding: 1.15rem; }
+  .rift-shell .gateway-heading h1 { font-size: 2.4rem; }
+  .rift-shell .gateway-intents { gap: .5rem; }
+  .rift-shell .gateway-intents button { gap: .35rem; }
+  .rift-shell .gateway-intents button strong { font-size: .72rem; }
+  .rift-shell .gateway-intents .intent-arrow { display: none; }
+  .rift-shell .remembered-player { grid-template-columns: minmax(0, 1fr); padding: 1rem; }
+  .rift-shell .recall-header-note { display: none; }
+  .rift-shell .recall-note-context-fields { grid-template-columns: minmax(0, 1fr); }
+  .rift-shell .recall-note-text { font-size: 1.15rem; }
+  .rift-shell .recall-library-section { padding: 1rem; }
+}
+@media (max-height: 600px) {
+  /* A short screen gets one workspace scroll surface, including settings and
+     failures. Only the selected scene participates; the shared chrome stays put. */
+  .rift-shell[data-journey-ready] .automatic-workspace { overflow-y: auto; overscroll-behavior: contain; }
+  .rift-shell[data-journey-ready] .automatic-workspace [data-journey-panel] { flex: 0 0 auto; max-height: none; overflow: visible; }
+  .rift-shell :is(.automatic-header, .recall-header, .review-champion-heading, .player-identity-header) { padding-bottom: .55rem; }
+  .rift-shell :is(.automatic-header, .recall-header) h1 { font-size: 1.6rem; }
+  .rift-shell .identity-ranks { margin-top: .25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rift-shell :is(.gateway-heading, .profile-identity-copy, .match-open .player-icon) { animation: none; transition: none; }
+}
+
+
+/* One arrow icon fits inside the match card on narrow phones. The original
+   16px grid track could overflow its 18px SVG despite visually clipping. */
+@media (max-width: 700px) {
+  .rift-shell .match-open { width: 24px; min-width: 24px; justify-self: end; justify-content: center; }
+  .rift-shell .match-open .player-icon { width: 18px; height: 18px; flex: none; }
+}
+
+/* Keep the entire remembered-player gateway, including privacy disclosure,
+   within a short laptop's first scene without hiding its useful controls. */
+@media (min-width: 701px) and (max-height: 760px) {
+  .rift-shell .gateway-composition { padding: .9rem 1.35rem; }
+  .rift-shell .gateway-heading { margin-bottom: .5rem; }
+  .rift-shell .gateway-heading h1 { font-size: clamp(2rem, 3.2vw, 2.7rem); margin: .2rem 0; }
+  .rift-shell .player-gateway:has(.remembered-player) .gateway-heading > p:last-child { display: none; }
+  .rift-shell .remembered-player { padding: .85rem 1rem; margin: .3rem 0 .55rem; }
+  .rift-shell .lookup-form { margin: .45rem 0 0; padding: .45rem 0; }
+  .rift-shell .gateway-destinations { margin-top: .35rem; }
+  .rift-shell .gateway-footnote { margin-top: .4rem; }
+}
+
+/* A 320px phone needs the lookup itself above the fold. All inputs retain
+   44px hit targets and 16px text; spacing and heading scale instead. */
+@media (max-width: 380px) and (min-height: 481px) and (max-height: 650px) {
+  .rift-shell .gateway-composition { padding: .7rem .8rem; }
+  .rift-shell .gateway-heading { margin-bottom: .35rem; }
+  .rift-shell .gateway-heading h1 { font-size: clamp(1.5rem, 7vw, 1.8rem); line-height: 1.08; margin: .2rem 0; }
+  .rift-shell .gateway-heading > p:last-child { margin: 0; font-size: .69rem; line-height: 1.2; }
+  .rift-shell .gateway-lookup-scene > summary,
+  .rift-shell .gateway-destinations > summary { min-height: 44px; }
+  .rift-shell .lookup-form { margin: .25rem 0 0; padding: .25rem 0; gap: .35rem; }
+  .rift-shell .lookup-form :is(input, select, button) { min-height: 44px; }
+  .rift-shell .gateway-destinations { margin-top: .3rem; }
+  .rift-shell .gateway-footnote { margin-top: .35rem; }
+  .rift-shell .remembered-player { padding: .65rem; margin: .25rem 0; }
+  .rift-shell .remembered-player strong { font-size: 1.15rem; }
+}
+
+/* Landscape phones have a short, independently scrollable station. The
+   remembered player is placed before optional lookup and mode controls. */
+@media (max-height: 480px) {
+  .rift-shell .gateway-composition {
+    display: flex; flex-direction: column; align-items: stretch; gap: .3rem;
+    max-height: 100%; overflow-y: auto; padding: .35rem .65rem;
+  }
+  .rift-shell .gateway-heading { margin: 0; flex: none; }
+  .rift-shell .gateway-heading h1 { font-size: clamp(1.4rem, 3.2vw, 1.85rem); line-height: 1.1; margin: 0; }
+  .rift-shell .gateway-heading > p:last-child { display: none; }
+  .rift-shell .remembered-player {
+    order: 1; display: flex; flex-wrap: nowrap; align-items: center;
+    min-height: 44px; padding: .4rem .6rem; margin: 0;
+  }
+  .rift-shell .remembered-player .player-kicker { display: none; }
+  .rift-shell .remembered-player strong { font-size: clamp(.95rem, 2vw, 1.25rem); line-height: 1.1; }
+  .rift-shell .gateway-lookup-scene { order: 2; flex: none; }
+  .rift-shell .gateway-destinations { order: 3; flex: none; margin: 0; }
+  .rift-shell .gateway-footnote { order: 4; flex: none; margin: 0; padding: 0; }
+  .rift-shell .lookup-form { margin: .3rem 0; padding: .3rem 0; }
+}
+
+/* Make every gateway action a full touch target, including its native disclosure. */
+.rift-shell .gateway-lookup-scene > summary,
+.rift-shell .gateway-destinations > summary,
+.rift-shell .gateway-intents button { min-height: 46px; box-sizing: border-box; }
+@media (max-height: 480px) {
+  .rift-shell[data-journey-ready] .player-gateway-shell { min-height: 0; overflow: hidden; }
+  .rift-shell[data-journey-ready] .player-gateway { min-height: 0; max-height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+}
+
+/* The interactive gateway must not be translated while viewport and focus
+   measurements are made. Motion stays on the surrounding cinematic world. */
+.rift-shell .gateway-composition { animation: none !important; transform: none !important; }
+@media (max-width: 380px) {
+  .rift-shell .match-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "identity identity" "status status" "score score" "record open";
+  }
+  .rift-shell .match-status { align-items: flex-start; text-align: left; }
+}
+@media (max-height: 480px) {
+  .rift-shell .gateway-composition { scroll-padding-block: 4px; }
+}
+/* Player hub's older five-column card rule must not override the journey
+   grid: mixed implicit tracks put the result on top of long champion names. */
+@media (max-width: 380px) {
+  .rift-shell .profile-hub .match-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "identity identity" "status status" "score score" "record open";
+  }
+  .rift-shell .profile-hub .match-status { grid-area: status; justify-self: start; }
+}
+.rift-shell .gateway-composition { scroll-padding-block: 8px; padding-bottom: max(16px, 1.2rem); }
+@media (max-height: 480px) {
+  .rift-shell .player-gateway:has(.remembered-player) .gateway-heading { display: none; }
+  .rift-shell .gateway-composition { padding-block: 6px 14px; gap: 0; }
+  .rift-shell .remembered-player { margin: 0; }
+  .rift-shell .gateway-footnote { margin: 0; padding: 0; }
+}
+/* Reveal every saved-player entry without requiring a first scroll on a
+   320px-tall landscape view. Remove old inter-block margins, not controls. */
+@media (max-height: 480px) {
+  .rift-shell .player-gateway:has(.remembered-player) :is(.gateway-lookup-scene,.gateway-destinations,.gateway-footnote) { margin-block: 0 !important; }
+  .rift-shell .player-gateway:has(.remembered-player) .gateway-composition { gap:0; padding-top:4px; padding-bottom:4px; }
+}
+/* Scroll-to-focus needs breathing room so subpixel rounding never clips
+   an interactive hit target at the scroll boundary. */
+.rift-shell .player-gateway :is(summary,input,select,button,.remembered-player) { scroll-margin-block: 9px; }
+@media (max-height: 760px) {
+  .rift-shell .player-profile-shell .player-identity-header { padding-block: 3px !important; }
+  .rift-shell .profile-hub .player-tabs { margin-bottom: 3px; }
+  .rift-shell .profile-hub .player-section-heading { margin-bottom: 4px; }
+  .rift-shell .profile-hub .player-view { margin-top: 3px; }
+}
+/* The historical profile header should not consume the entire first scene
+   before the player can inspect a single match. */
+@media (max-height: 760px) {
+  .rift-shell .profile-hub .player-identity-row { gap: 4px; }
+  .rift-shell .profile-hub .identity-back { margin-bottom: 2px; }
+  .rift-shell .profile-hub .identity-ranks { margin: 0; }
+  .rift-shell .profile-hub .profile-identity-copy h1 { margin: 0; }
+  .rift-shell .profile-hub .player-tabs button { min-height: 44px; }
+  .rift-shell .profile-hub .mode-families button { min-height: 44px; }
+  .rift-shell .profile-hub .player-section-heading { padding: 0; }
+  .rift-shell .profile-hub .profile-controls { padding: 0; margin: 0; }
+  .rift-shell .profile-hub .player-records { padding-top: 0; }
+}
+@media (max-width: 380px) {
+  .rift-shell .gateway-privacy > summary { position: relative; top: -2px; }
+}
+/* Short laptops can show the entire first result without clipping its review
+   action by using a tighter but readable row rhythm. */
+@media (min-width: 701px) and (max-height: 760px) {
+  .rift-shell .profile-hub .match-row { padding-block: 7px; row-gap: 5px; }
+}

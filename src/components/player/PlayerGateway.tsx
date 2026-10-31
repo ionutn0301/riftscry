@@ -5,7 +5,7 @@ import { readRecentPlayer, RECENT_PLAYER_EVENT, rememberRecentPlayer } from '../
 import { api, fetcher, playerLink, type PlayerView } from './client';
 import { usePlayerCooldown } from './usePlayerCooldown';
 import PlayerIcon from './PlayerIcon';
-import '../../styles/journey-companion.css';
+import '../../styles/signal-player.css';
 
 const platformNames: Record<string, string> = {
   eun1: 'EUNE · Nordic & East', euw1: 'EUW · Europe West', na1: 'NA · North America',

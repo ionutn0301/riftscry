@@ -3,9 +3,10 @@ import { useJourneyReady } from '../experience/useJourneyReady';
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr';
 import { participant, type SummonerProfile } from '../../lib/player/contracts';
 import { historyAvailabilityForQueue, historyOptions } from '../../lib/player/modes';
-import { briefingLink } from '../../lib/player/identity';
+import { briefingLink, rememberRecentPlayer } from '../../lib/player/identity';
 import { api, fetcher, playerLink, type PlayerInitial, type PlayerView } from './client';
 import { usePlayerHistory } from './usePlayerHistory';
+import { useSelectedPlayer } from './useSelectedPlayer';
 import { itemMetadataKey } from './useItemMetadata';
 import PlayerArrival, { type PlayerRank } from './PlayerArrival';
 import PlayerSample from './PlayerSample';
@@ -16,7 +17,7 @@ import PlayerIcon from './PlayerIcon';
 import { championDisplayName } from './championArtwork';
 import PlayerModePicker from './PlayerModePicker';
 import ChampionPortrait from './ChampionPortrait';
-import '../../styles/journey-companion.css';
+import '../../styles/signal-player.css';
 
 type Filters = { queue: string; champion: string; result: string; view: PlayerView };
 type Account = { puuid: string; gameName: string; tagLine: string };
@@ -45,6 +46,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   const historyAvailability = !history.loading && history.matches.length === 0
     ? historyAvailabilityForQueue(filters.queue) : undefined;
   const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
+  useSelectedPlayer(platform, puuid, name, Boolean(name));
   const profile = { ...initial, ...filters, name };
   const back = playerLink(platform, puuid, { ...filters, name });
   const nextGameHref = briefingLink({ platform, puuid, name }, { champion: filters.champion, queue: filters.queue });
@@ -80,9 +82,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
       const saved = sessionStorage.getItem(key);
       if (saved && Number.isFinite(Number(saved))) {
         frame = requestAnimationFrame(() => {
-          const records = document.getElementById('player-records');
-          if (document.body.dataset.journeyReady && records) records.scrollTo({ top: Number(saved), behavior: 'instant' });
-          else window.scrollTo({ top: Number(saved), behavior: 'instant' });
+          window.scrollTo({ top: Number(saved), behavior: 'instant' });
           sessionStorage.removeItem(key);
         });
       }
@@ -97,18 +97,14 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
   }
 
   function remember() {
-    try {
-      localStorage.setItem('riftscry:remembered-player:v1', JSON.stringify({ platform, puuid, name }));
-      setMessage('Saved on this browser.');
-    } catch {
-      setMessage('Saving is unavailable in this browser.');
-    }
+    setMessage(rememberRecentPlayer({ platform, puuid, name })
+      ? 'This player will open on your next visit.'
+      : 'Saving is unavailable in this browser. Your player link still works.');
   }
 
   function leave() {
     try {
-      const records = document.getElementById('player-records');
-      sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`, String(document.body.dataset.journeyReady && records ? records.scrollTop : window.scrollY));
+      sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`, String(window.scrollY));
     }
     catch { /* Match navigation remains available without browser storage. */ }
   }

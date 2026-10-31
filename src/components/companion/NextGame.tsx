@@ -7,7 +7,7 @@ import PlayerIcon from '../player/PlayerIcon';
 import { useCompanion } from './useCompanion';
 import RecallBackup from './RecallBackup';
 import RecallNoteForm, { type NoteFields } from './RecallNoteForm';
-import '../../styles/journey-companion.css';
+import '../../styles/signal-player.css';
 import { ContextTags, LoadoutView, NoteSource, PatchCheck, dateLabel, outcomeLabels, queueName, situationName, type RecallChampion } from './RecallParts';
 
 type Update = (updater: (state: CompanionState) => CompanionState) => boolean;
@@ -80,7 +80,15 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
       if (context.situation !== 'any') url.searchParams.set('situation', context.situation); else url.searchParams.delete('situation');
       window.history.replaceState(window.history.state, '', url);
       setNoteId(null); setBuildId(null); setShowAllNotes(false);
+      return true;
     }
+    return false;
+  }
+
+  function prepareBuild(build: SavedBuild) {
+    if (active || !chooseContext({ champion: build.champion, queue: String(build.queue), situation: 'any' })) return;
+    setBuildId(build.id);
+    focusCard();
   }
 
   function openEditor(note: QuickNote | 'new', opener: HTMLButtonElement) {
@@ -167,7 +175,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
         </section>
         <section id="loadouts" className="recall-library-section" data-journey-panel data-journey-label="Loadouts" data-journey-world="player">
           <header className="recall-scene-heading"><div><p className="recall-eyebrow">FROM YOUR GAMES</p><h2>Saved loadouts</h2></div><span className="recall-summary-caption">{state.builds.length}/30</span></header>
-          <div className="recall-library-content"><p>Your recorded items and runes, with their original game and patch.</p>{state.builds.length ? <div className="recall-notebook-grid">{[...state.builds].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt - a.createdAt).map(build => <SavedLoadout key={build.id} build={build} archive={archive} update={update} onDelete={() => deleteEntry({ kind: 'build', entry: build })} onReviewed={() => reviewBuild(build.id)} />)}</div> : <div className="recall-empty-small"><p>No saved loadouts yet.</p><a className="recall-text-link" href="/players?view=builds">Find your games and save a loadout<PlayerIcon name="arrow-right" size={16} /></a></div>}</div>
+          <div className="recall-library-content"><p>Your recorded items and runes, with their original game and patch.</p>{state.builds.length ? <div className="recall-notebook-grid">{[...state.builds].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt - a.createdAt).map(build => <SavedLoadout key={build.id} build={build} archive={archive} update={update} onDelete={() => deleteEntry({ kind: 'build', entry: build })} onReviewed={() => reviewBuild(build.id)} onUse={active ? undefined : () => prepareBuild(build)} />)}</div> : <div className="recall-empty-small"><p>No saved loadouts yet.</p><a className="recall-text-link" href="/players?view=builds">Find your games and save a loadout<PlayerIcon name="arrow-right" size={16} /></a></div>}</div>
         </section>
       <section id="game-card" className="recall-game-scene" data-journey-panel data-journey-label="Game card" data-journey-world="next-game">
       {active ? <ActiveCard key={active.id} run={active} archive={archive} onFinish={(outcome, reflection) => {
@@ -254,7 +262,7 @@ function ActiveCard({ run, archive, onFinish, onDiscard }: { run: RecallRun; arc
   </section>;
 }
 
-function SavedLoadout({ build, archive, update, onDelete, onReviewed }: { build: SavedBuild; archive: RecallPatch[]; update: Update; onDelete: () => void; onReviewed: () => void }) {
+function SavedLoadout({ build, archive, update, onDelete, onReviewed, onUse }: { build: SavedBuild; archive: RecallPatch[]; update: Update; onDelete: () => void; onReviewed: () => void; onUse?: () => void }) {
   const id = useId();
   const nameInput = useRef<HTMLInputElement>(null);
   const renameButton = useRef<HTMLButtonElement>(null);
@@ -283,6 +291,7 @@ function SavedLoadout({ build, archive, update, onDelete, onReviewed }: { build:
   return <article className="recall-saved-build" data-recall-build={build.id}>
     <header className="recall-saved-build-heading"><ChampionPortrait champion={build.champion} size={40} /><div><h3>{build.name}</h3><p>{championDisplayName(build.champion)} · {queueName(build.queue)}</p></div></header>
     <LoadoutView build={build} /><PatchCheck record={build} archive={archive} onReviewed={onReviewed} />
+    {onUse && <button type="button" className="recall-button recall-button--quiet signal-use-loadout" onClick={onUse}>Use in a game card<PlayerIcon name="arrow-right" size={16} /></button>}
     {renaming && <form className="recall-rename-form" onSubmit={event => { event.preventDefault(); saveName(); }}><div className="recall-field"><label htmlFor={`${id}-name`}>Loadout name</label><input ref={nameInput} id={`${id}-name`} value={name} onChange={event => setName(event.target.value)} required maxLength={100} /></div><div className="recall-inline-actions"><button className="recall-button recall-button--quiet" disabled={!name.trim()}>Save name</button><button type="button" className="recall-text-button" onClick={closeRename}>Cancel</button></div></form>}
     <div className="recall-record-actions"><button type="button" className="recall-text-button" aria-pressed={build.pinned} onClick={() => update(current => ({ ...current, builds: current.builds.map(record => record.id === build.id ? { ...record, pinned: !record.pinned } : record) }))}><PlayerIcon name="star" size={15} />{build.pinned ? 'Unpin' : 'Pin'}</button><button ref={renameButton} type="button" className="recall-text-button" onClick={() => { if (renaming) closeRename(); else { originalName.current = build.name; setName(build.name); setRenaming(true); } }}>Rename</button><button type="button" className="recall-text-button recall-delete" onClick={onDelete}>Delete loadout</button></div>
   </article>;

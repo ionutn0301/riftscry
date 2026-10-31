@@ -1,7 +1,8 @@
 import { test, expect, type Page } from '@playwright/test';
 import { RECENT_PLAYER_KEY } from '../../src/lib/player/identity';
 import { installFixtures, makeMatch, platform, puuid, otherPuuid, recentAramWin, sourceMatch, type FixtureRequest } from '../player-e2e/fixtures';
-import { openScene, readyWorld } from './journey-test-helpers';
+import { openBriefingSettings } from '../player-e2e/briefing-controls';
+import { stationaryWorld, openScene, readyWorld } from './journey-test-helpers';
 
 const player = { platform, puuid, name: 'Fixture Player#TEST' };
 const direct = (id = puuid, extra = '') => `/next-game?platform=${platform}&puuid=${id}${extra}`;
@@ -46,7 +47,8 @@ test('one lookup automatically prepares the report and the next visit resumes wi
   await form.getByRole('button', { name: 'Get my briefing', exact: true }).click();
   const report = await reportReady(page);
   await expect(page).toHaveURL(url => url.pathname === '/next-game' && url.searchParams.get('puuid') === puuid && url.searchParams.get('platform') === platform);
-  await expect(report.getByRole('heading', { name: 'Fixture Player#TEST', exact: true })).toBeVisible();
+  await expect(report.locator('.signal-player-scope > summary').getByText('Fixture Player#TEST', { exact: true })).toBeVisible();
+  await expect(report.locator('.signal-player-scope')).toHaveJSProperty('open', false);
   await expect(report.locator('[data-automatic-focus]')).toBeVisible();
   await openScene(page, 'loadout');
   await expect(report.getByRole('list', { name: 'Recorded final loadout' })).toContainText('Boots');
@@ -86,6 +88,7 @@ test('mode changes request exact history and empty Mayhem never becomes regular 
   await reportReady(page);
   await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:450"]')).toBeVisible();
+  await openBriefingSettings(page);
   await page.getByLabel('Game mode', { exact: true }).selectOption('2400');
   const report = await reportReady(page);
   await expect(report.getByRole('heading', { name: 'Mayhem history is not available from Riot.', exact: true })).toBeVisible();
@@ -96,6 +99,7 @@ test('mode changes request exact history and empty Mayhem never becomes regular 
   await reportReady(page);
   await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:450"]')).toBeVisible();
+  await openBriefingSettings(page);
   await expect(page.getByLabel('Game mode', { exact: true })).toHaveValue('450');
   noAuthoringRequests(requests);
 });
@@ -126,6 +130,8 @@ test('history failure stays explicit and pauses automatic checks instead of fabr
   const report = await reportReady(page);
   await expect(report.getByRole('alert')).toContainText('Fixture history is temporarily unavailable.');
   await expect(report).toContainText('Automatic checks are paused');
+  await expect(report.getByRole('button', { name: 'Retry briefing', exact: true })).toBeVisible();
+  await expect(report.locator('.signal-player-scope')).toHaveJSProperty('open', false);
   await expect(report.locator('[data-automatic-focus]')).toHaveCount(0);
   await expect(report.getByRole('list', { name: 'Recorded final loadout' })).toHaveCount(0);
   const before = historyRequests(requests).length;
@@ -179,6 +185,7 @@ test('explicit identity overrides the saved shortcut and changing players keeps 
   await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Ahri:420"]')).toBeVisible();
   expect(historyRequests(requests).every(request => new URL(request.url).searchParams.get('puuid') === puuid)).toBe(true);
+  await openBriefingSettings(page);
   await page.getByRole('button', { name: 'Change player', exact: true }).click();
   const form = page.getByRole('form', { name: 'Get an automatic player briefing' });
   await expect(form).toBeVisible();
@@ -187,7 +194,7 @@ test('explicit identity overrides the saved shortcut and changing players keeps 
   await form.getByRole('button', { name: 'Get my briefing', exact: true }).click();
   await reportReady(page);
   await expect(page).toHaveURL(url => url.searchParams.get('puuid') === otherPuuid);
-  await expect(page.getByRole('heading', { name: 'Other Fixture Player#TEST', exact: true })).toBeVisible();
+  await expect(page.locator('.signal-player-scope > summary').getByText('Other Fixture Player#TEST', { exact: true })).toBeVisible();
   await openScene(page, 'changes');
   await expect(page.locator('[data-champion-catchup="Jinx:420"]')).toBeVisible();
   await expect(page.locator('[data-champion-catchup="Ahri:420"]')).toHaveCount(0);
@@ -242,6 +249,7 @@ test('the automatic lookup and report fit 320px with readable fields and usable 
   await reportReady(page);
   await page.evaluate(() => document.fonts.ready);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  const settings = await openBriefingSettings(page);
   const mode = page.getByLabel('Game mode', { exact: true });
   expect(await mode.evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
   for (const control of [mode, page.getByRole('button', { name: 'Change player', exact: true })]) {
@@ -249,10 +257,25 @@ test('the automatic lookup and report fit 320px with readable fields and usable 
     expect(bounds!.height).toBeGreaterThanOrEqual(44);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
   }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  await page.setViewportSize({ width: 568, height: 320 });
+  for (const control of [mode, settings.getByRole('button', { name: 'Refresh', exact: true }), settings.locator(':scope > summary')]) {
+    await control.scrollIntoViewIfNeeded();
+    await expect(control).toBeInViewport({ ratio: 0.99 });
+    expect(await control.evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return hit === element || Boolean(hit && element.contains(hit));
+    })).toBe(true);
+  }
+  await stationaryWorld(page);
+  await page.setViewportSize({ width: 320, height: 568 });
+  await settings.locator(':scope > summary').click();
+  await expect(settings).toHaveJSProperty('open', false);
   await expect(page.locator('[data-automatic-focus="patch"]')).toBeVisible();
-  await page.locator('#focus').evaluate(element => element.scrollTo(0, 0));
+  await page.locator('[data-automatic-focus] h2').scrollIntoViewIfNeeded();
   await expect(page.locator('[data-automatic-focus] h2')).toBeInViewport({ ratio: 0.15 });
-  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await stationaryWorld(page);
 });
 
 test('a delayed account response in an older tab preserves the newer player selection', async ({ page }) => {
@@ -269,10 +292,10 @@ test('a delayed account response in an older tab preserves the newer player sele
     await installFixtures(newer, { matches: [sourceMatch] });
     await open(newer, direct(otherPuuid));
     await reportReady(newer);
-    await expect(newer.getByRole('heading', { name: 'Other Fixture Player#TEST', exact: true })).toBeVisible();
+    await expect(newer.locator('.signal-player-scope > summary').getByText('Other Fixture Player#TEST', { exact: true })).toBeVisible();
     await expect.poll(() => newer.evaluate(key => JSON.parse(localStorage.getItem(key)!).puuid, RECENT_PLAYER_KEY)).toBe(otherPuuid);
     release();
-    await expect(page.getByRole('heading', { name: 'Fixture Player#TEST', exact: true })).toBeVisible();
+    await expect(page.locator('.signal-player-scope > summary').getByText('Fixture Player#TEST', { exact: true })).toBeVisible();
     expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!).puuid, RECENT_PLAYER_KEY)).toBe(otherPuuid);
   } finally { release(); await newer.close(); }
 });

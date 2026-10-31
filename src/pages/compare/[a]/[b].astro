@@ -1,10 +1,11 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import "../../../styles/journey-readers.css";
+import "../../../styles/signal-readers.css";
 import ComparePicker from "../../../components/islands/ComparePicker";
 import DeltaGlyph from "../../../components/DeltaGlyph.astro";
 import { comparePatches } from "../../../lib/compare";
 import { getAllPatches, getAssetVersion, getChampionMeta } from "../../../lib/data";
+import { assetFor } from "../../../lib/investigation";
 import type { Classification } from "../../../lib/schema";
 
 export function getStaticPaths() {
@@ -31,7 +32,18 @@ const grouped = groups.map((group) => ({...group,champions:result.champions.filt
     <p class="journey-context-line">After {result.older}, through {result.newer}. Starting patch excluded. Classifications describe records, not current strength.</p>
     <section id="comparison" class="journey-panel journey-comparison-panel" data-journey-panel data-journey-label="Champions" data-journey-world="compare" aria-label="Champion comparison">
       <p class="compare-range-note" data-compare-context hidden></p><button class="journey-quiet-link" data-compare-all hidden>Show all champions</button>
-      {grouped.map(group => <section class="compare-group journey-comparison-group" aria-labelledby={"h-" + group.key}><h2 id={"h-" + group.key}><DeltaGlyph kind={group.key} showLabel={false}/>{group.title}<span>{group.champions.length}</span></h2><ul class="champ-rows">{group.champions.map(champion => <li data-compare-champion={champion.championId}><a href={"/champion/" + champion.championId.toLowerCase()} class="champ"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async"/><span class="name">{meta[champion.championId]?.name ?? champion.championId}</span></a><span class="trail">{champion.patches.map((patch,index) => <>{index > 0 && <span class="sep" aria-hidden="true">→</span>}<a href={"/patch/" + patch.patchId + "#" + champion.championId.toLowerCase()} class={"step step-" + patch.classification}>{patch.patchId} {patch.classification}</a></>)}</span></li>)}</ul></section>)}
+      <div class="signal-comparison-workspace" data-comparison-workspace data-comparison-newer={result.newer} data-comparison-older={result.older}>
+        <div class="signal-comparison-stage" data-comparison-stage hidden>
+          <figure class="signal-comparison-art"><img data-comparison-art alt="" width="1215" height="717" decoding="async" /><p class="signal-comparison-art-fallback" data-comparison-art-fallback hidden>Artwork unavailable. The patch records are still here.</p><figcaption><span class="journey-reader-kicker">YOUR PERSPECTIVE</span><h2 data-comparison-name></h2></figcaption></figure>
+          <div class="signal-comparison-evidence"><p class="journey-reader-kicker">AFTER {result.older} → THROUGH {result.newer}</p><div class="signal-comparison-trail" data-comparison-trail></div><a class="journey-quiet-link" data-comparison-explore href="/explore">Trace an exact change <span aria-hidden="true">↗</span></a><a class="journey-quiet-link" data-comparison-history href="/champions">Complete history <span aria-hidden="true">↗</span></a></div>
+        </div>
+        <div class="signal-comparison-index">
+        {grouped.map(group => <section class="compare-group journey-comparison-group" aria-labelledby={"h-" + group.key}><h2 id={"h-" + group.key}><DeltaGlyph kind={group.key} showLabel={false}/>{group.title}<span>{group.champions.length}</span></h2><ul class="champ-rows">{group.champions.map(champion => <li id={"compare-" + champion.championId.toLowerCase()} data-compare-champion={champion.championId} data-signal-subject={champion.championId} data-signal-name={meta[champion.championId]?.name ?? champion.championId} data-signal-patch={result.newer} data-compare-art={assetFor(champion.championId).splash}>
+          <button type="button" class="signal-comparison-choice" data-compare-preview hidden aria-pressed="false" aria-label={`Inspect ${meta[champion.championId]?.name ?? champion.championId} changes`}><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="44" height="44" loading="lazy" decoding="async"/><span>{meta[champion.championId]?.name ?? champion.championId}</span><span aria-hidden="true">↗</span></button>
+          <a href={"/champion/" + champion.championId.toLowerCase()} class="champ"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + champion.championId + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async"/><span class="name">{meta[champion.championId]?.name ?? champion.championId}</span></a><span class="trail">{champion.patches.map((patch,index) => <>{index > 0 && <span class="sep" aria-hidden="true">→</span>}<a href={"/patch/" + patch.patchId + "#" + champion.championId.toLowerCase()} class={"step step-" + patch.classification}>{patch.patchId} {patch.classification}</a></>)}</span>
+        </li>)}</ul></section>)}
+        </div>
+      </div>
       {!result.champions.length && <div class="journey-empty"><h2>No direct champion records.</h2><p>Check items and systems for the wider changes.</p></div>}
     </section>
     {result.items.length > 0 && <section id="items" class="journey-panel journey-record-list" data-journey-panel data-journey-label="Items" data-journey-world="patch" aria-label="Item comparison"><div class="journey-panel-heading"><p class="journey-reader-kicker">{result.items.length} ITEMS</p><h2>Follow the loadout.</h2></div><ul class="journey-comparison-list">{result.items.map(item => <li><h3>{item.name}</h3><div>{item.patches.map(id => <a href={"/patch/" + id + "#items"}>Patch {id} ↗</a>)}</div></li>)}</ul></section>}
@@ -40,4 +52,5 @@ const grouped = groups.map((group) => ({...group,champions:result.champions.filt
 </Layout>
 <script>
   import '../../../scripts/compare-context';
+  import '../../../scripts/signal-comparison';
 </script>

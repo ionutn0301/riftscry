@@ -27,7 +27,7 @@ export default function PlayerArrival({ briefingHref, initial, summoner, ranks, 
         </div>
         <div className="player-identity-tools">
           <div className="player-actions identity-actions">
-            <details className="identity-options"><summary aria-label="Player options"><PlayerIcon name="user" size={17} /><span>Player</span></summary><div><button className="player-button-secondary" type="button" aria-label="Save player on this browser" onClick={onRemember}><PlayerIcon name="bookmark" size={17} />Save player</button><p>Keep this player as your saved shortcut on this browser.</p></div></details>
+            <details className="identity-options"><summary aria-label="Player options"><PlayerIcon name="user" size={17} /><span>Player</span></summary><div><p>Your selected player is remembered on this browser when storage is available.</p><button className="player-button-secondary" type="button" aria-label="Use this player on your next visit" onClick={onRemember}><PlayerIcon name="bookmark" size={17} />Use this player</button><a className="player-text-link" href="/players">Change player<PlayerIcon name="arrow-right" size={15} /></a></div></details>
             <button className="player-button-secondary" type="button" aria-label={!retrySeconds && !loading ? 'Refresh recent matches' : undefined} disabled={loading || retrySeconds > 0} onClick={onRefresh}><PlayerIcon name={retrySeconds ? 'clock' : 'refresh'} size={17} />{retrySeconds ? `Retry in ${retrySeconds}s` : loading ? 'Loading…' : 'Refresh'}</button>
           </div>
           <p className="identity-save-status" role="status" aria-live="polite">{message}</p>

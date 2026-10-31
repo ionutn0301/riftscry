@@ -1,6 +1,5 @@
 /* Player journeys share the voyage's landscape, typography and navigation.
    Atmosphere belongs behind the page; every action remains ordinary HTML. */
-body:is([data-surface="players"], [data-surface="player"], [data-surface="match"]) #main { padding-left: 0; }
 .player-workspace {
   --player-accent: #8ed8d0;
   --player-text: #e6ece5;
@@ -593,7 +592,6 @@ body:is([data-surface="players"], [data-surface="player"], [data-surface="match"
   .gateway-intents { gap: 12px; }
   .gateway-intents button { flex-direction: row; align-items: center; gap: 7px; padding: 8px 0; }
   .gateway-anticipation { display: none; }
-  .gateway-footnote p { display: none; }
   .remembered-player { margin-top: 12px; }
   .profile-arrival-foot { margin-top: 5px; }
 }

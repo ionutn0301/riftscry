@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ObservatoryHome from '../components/experience/ObservatoryHome.astro';
+import SignalJourney from '../components/experience/SignalJourney.astro';
 ---
-<Layout surface="home" title="RiftScry — The Rift is shifting." description="Every patch leaves a signal. Enter a cinematic League of Legends observatory, discover what changed for your champions, and get your personal next-game briefing.">
+<Layout surface="home" title="RiftScry — The space between games." description="Follow a champion. Reveal the exact change. Carry something into your next game. An interactive League of Legends archive and personal briefing.">
   <script is:inline>
     // Existing shared journey links and saved reading places still reach their
     // original chapter after the companion becomes the front door.
@@ -12,5 +12,5 @@ import ObservatoryHome from '../components/experience/ObservatoryHome.astro';
       location.replace('/explore' + previousJourney.search + previousJourney.hash);
     }
   </script>
-  <ObservatoryHome />
+  <SignalJourney />
 </Layout>

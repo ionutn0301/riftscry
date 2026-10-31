@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { COMPANION_KEY } from '../../src/lib/companion';
 import { openScene } from './profile-controls';
+import { openBriefingSettings } from './briefing-controls';
 import { RECENT_PLAYER_KEY } from '../../src/lib/player/identity';
 import {
   installFixtures, mayhemMatch, otherPuuid, platform, profilePath, puuid, query, recentAramLoss, recentAramWin,
@@ -16,17 +17,25 @@ function isBriefingTarget(url: URL, queue: string, champion = 'Ahri') {
     url.searchParams.get('champion') === champion;
 }
 
-test('homepage Games destination completes lookup and remembers the player automatically', async ({ page }) => {
+test('homepage My game prepares the briefing and continues into matches after one lookup', async ({ page }) => {
   const requests = await installFixtures(page, { matches: [recentAramWin] });
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('yours to explore.');
-  await page.locator('[data-observatory] a[data-world-link="players"]').click();
-  await expect(page).toHaveURL(url => url.pathname === '/players');
-  await expect(page.locator('[data-player-gateway]')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('stands still.');
+  await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'My game', exact: true }).click();
+  await expect(page).toHaveURL(url => url.pathname === '/next-game');
+  const lookup = page.getByRole('form', { name: 'Get an automatic player briefing', exact: true });
+  await expect(lookup).toBeVisible();
   expect(requests).toEqual([]);
-  await page.getByLabel('Server', { exact: true }).selectOption(platform);
-  await page.getByLabel('Riot ID', { exact: true }).fill(identity);
-  await page.getByRole('button', { name: 'Find player', exact: true }).click();
+  await lookup.getByLabel('Server', { exact: true }).selectOption(platform);
+  await lookup.getByLabel('Riot ID', { exact: true }).fill(identity);
+  await lookup.getByRole('button', { name: 'Get my briefing', exact: true }).click();
+  await expect(page).toHaveURL(url => url.pathname === '/next-game' && url.searchParams.get('platform') === platform && url.searchParams.get('puuid') === puuid);
+  await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('.automatic-sample')).toContainText('1 of 1 recent games imported.');
+  expect(requests.filter(request => request.action === 'lookup')).toHaveLength(1);
+  expect(requests.filter(request => request.action === 'history')).toHaveLength(1);
+  const settings = await openBriefingSettings(page);
+  await settings.getByRole('link', { name: 'All matches', exact: true }).click();
   await expect(page).toHaveURL(url => url.pathname === profilePath && url.searchParams.get('view') === 'history');
   await expect(page.locator('[data-player-profile]')).toHaveAttribute('data-view', 'history');
   await expect(page.getByRole('region', { name: 'Recent match sample', exact: true })).toHaveAttribute('aria-busy', 'false');
@@ -35,7 +44,7 @@ test('homepage Games destination completes lookup and remembers the player autom
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? 'null'), RECENT_PLAYER_KEY)).toEqual({ platform, puuid, name: identity });
   expect(await readCompanion(page)).toBeNull();
   expect(requests.filter(request => request.action === 'lookup')).toHaveLength(1);
-  expect(requests.filter(request => request.action === 'history')).toHaveLength(1);
+  expect(requests.filter(request => request.action === 'history')).toHaveLength(2);
   expect(requests.filter(request => request.action === 'review' || request.action === 'timeline')).toEqual([]);
 });
 
@@ -92,7 +101,7 @@ test('an observed build opens its automatic briefing without saving or using ano
   const build = page.locator('.observed-build');
   await expect(build).toHaveCount(1);
   await expect(build.locator('.item-label[title="Boots"]')).toBeVisible();
-  await expect(build.getByRole('button', { name: /Save.*next game/ })).toHaveCount(0);
+  await expect(build.getByRole('button', { name: 'Keep loadout', exact: true })).toBeVisible();
   const link = build.getByRole('link', { name: 'Automatic briefing', exact: true });
   expect(isBriefingTarget(new URL(await link.getAttribute('href') ?? '', page.url()), '450')).toBe(true);
   await link.click();
@@ -114,7 +123,8 @@ test('an observed build opens its automatic briefing without saving or using ano
 test('match review opens an automatic Mayhem briefing with exact player and mode context', async ({ page }) => {
   const requests = await installFixtures(page, { matches: [mayhemMatch] });
   await page.goto(matchPath(mayhemMatch.metadata.matchId));
-  await expect(page.locator('.player-quick-note, .player-build-save')).toHaveCount(0);
+  await expect(page.locator('.player-quick-note')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Keep loadout', exact: true })).toBeVisible();
   const link = page.getByRole('link', { name: 'Automatic briefing', exact: true });
   await expect(link).toBeVisible();
   expect(isBriefingTarget(new URL(await link.getAttribute('href') ?? '', page.url()), '2400')).toBe(true);
@@ -132,6 +142,31 @@ test('match review opens an automatic Mayhem briefing with exact player and mode
   expect(historyRequests.length).toBeGreaterThan(0);
   expect(historyRequests.every(request => new URL(request.url).searchParams.get('queue') === '2400')).toBe(true);
   expect(requests.filter(request => request.action === 'review' || request.action === 'timeline')).toEqual([]);
+});
+
+test('one kept loadout carries its champion and mode into an optional game card', async ({ page }) => {
+  const requests = await installFixtures(page, { matches: [recentAramWin] });
+  await page.goto(`${profilePath}?view=builds&queue=450`);
+  const build = page.locator('.observed-build');
+  await expect(build.getByRole('button', { name: 'Keep loadout', exact: true })).toBeEnabled();
+  expect(await readCompanion(page)).toBeNull();
+  await build.getByRole('button', { name: 'Keep loadout', exact: true }).click();
+  await expect(build.getByRole('button', { name: 'Loadout kept', exact: true })).toBeDisabled();
+  await build.getByRole('link', { name: 'Open notebook', exact: true }).click();
+  await expect(page).toHaveURL(url => url.pathname === '/notebook' && url.hash === '#loadouts');
+  const saved = page.locator('[data-recall-build]');
+  await expect(saved).toHaveCount(1);
+  await expect(saved).toContainText('Boots');
+  await saved.getByRole('button', { name: 'Use in a game card', exact: true }).click();
+  await expect(page.locator('#game-card')).toBeVisible();
+  await expect(page.getByLabel('Champion for next game', { exact: true })).toHaveValue('Ahri');
+  await expect(page.getByLabel('Game mode for next game', { exact: true })).toHaveValue('450');
+  await expect(page.locator('#recall-card')).toContainText('Boots');
+  const state = JSON.parse(await readCompanion(page) ?? '{}');
+  expect(state.builds).toHaveLength(1);
+  expect(state.builds[0]).toMatchObject({ platform, puuid, champion: 'Ahri', queue: 450, source: recentAramWin.metadata.matchId });
+  expect(state.runs).toEqual([]);
+  expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);
 });
 
 test('lookup and explicit briefing links work when the browser cannot remember the player', async ({ page }) => {

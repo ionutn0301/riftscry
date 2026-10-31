@@ -64,6 +64,9 @@ test('AI suggestion prefills a draft, opens evidence, and saves only after confi
 
   await openScene(page, 'match-review');
   await page.getByRole('button', { name: 'Review draft', exact: true }).click();
+  await expect(page.locator('[data-prepared-adjustment]')).toContainText(suggestion.alternative);
+  await expect(page.locator('[data-prepared-adjustment]')).toContainText(suggestion.tradeoff);
+  await expect(page.locator('.signal-adjustment-details')).toHaveJSProperty('open', false);
   await expect(page.getByLabel('Decision being reconsidered', { exact: true })).toHaveValue(suggestion.original);
   await expect(page.getByLabel('Proposed alternative', { exact: true })).toHaveValue(suggestion.alternative);
   await expect(page.getByLabel('Tracked item', { exact: true })).toHaveValue('3047');

@@ -8,6 +8,7 @@ import { parseMemories, filterMemories, reviseMemory, confirmMatchApplicability,
 import PlayerIcon from './PlayerIcon';
 import ChampionPortrait from './ChampionPortrait';
 import { championDisplayName } from './championArtwork';
+import '../../styles/signal-player.css';
 
 const GENERAL_CONDITION = 'Same champion, role, queue and patch';
 const CUSTOM_CONDITION = 'Specific matchup or replay condition — requires confirmation';
@@ -48,12 +49,19 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
     if (!draft) return;
     setOpen(true);
     setStatus('Draft ready. Review it before saving.');
+  }, [draft]);
+
+  // The prepared card is rendered only after the disclosure opens. Focusing in
+  // the draft effect races React's next commit and silently loses keyboard focus.
+  useEffect(() => {
+    if (!draft || !open) return;
     const frame = requestAnimationFrame(() => {
-      draftDetails.current?.querySelector<HTMLInputElement>('[name="original"]')?.focus({ preventScroll: true });
-      draftDetails.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+      const target = draftDetails.current?.querySelector<HTMLElement>('[data-prepared-adjustment]');
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ block: 'nearest', behavior: 'auto' });
     });
     return () => cancelAnimationFrame(frame);
-  }, [draft]);
+  }, [draft, open]);
 
   useEffect(() => {
     if (!savedId || !notes.some(note => note.id === savedId)) return;
@@ -151,6 +159,7 @@ function AdjustmentForm({ draft, platform, puuid, sourceId, metadata, disabled, 
   const [condition, setCondition] = useState(draft?.condition ?? GENERAL_CONDITION);
   const [target, setTarget] = useState(draft?.targetItem ?? 0);
   const [targetChanged, setTargetChanged] = useState(false);
+  const [editing, setEditing] = useState(!draft);
   const conditions = [...new Set([condition, GENERAL_CONDITION, CUSTOM_CONDITION])];
 
   function chooseTarget(item: number) {
@@ -164,14 +173,30 @@ function AdjustmentForm({ draft, platform, puuid, sourceId, metadata, disabled, 
     }
   }
 
-  return <form onSubmit={event => { event.preventDefault(); onSave(new FormData(event.currentTarget)); }} className="player-form">
-    {draft && <div className="memory-source player-field-wide"><p className="player-kicker">YOUR DRAFT</p><p>{targetChanged ? 'New item selected. Add its reason and tradeoff.' : 'Edit the idea, then save it.'}</p>{draft.source && /^https:\/\//.test(draft.source.url) && <a href={draft.source.url} target="_blank" rel="noreferrer">{draft.source.label} ↗</a>}</div>}
+  return <form onSubmit={event => { event.preventDefault(); onSave(new FormData(event.currentTarget)); }} onInvalidCapture={event => {
+    const details = event.currentTarget.querySelector<HTMLDetailsElement>('.signal-adjustment-details');
+    if (details) details.open = true;
+    setEditing(true);
+  }} className="player-form signal-adjustment-form">
+    {draft && <section className="signal-prepared-adjustment player-field-wide" data-prepared-adjustment tabIndex={-1} aria-label="Prepared adjustment">
+      <div className="signal-prepared-item"><ItemLabel id={target} metadata={items} compact /><span className="player-kicker">READY TO KEEP</span></div>
+      <h3>{alternative}</h3>
+      <p className="signal-prepared-condition"><PlayerIcon name="target" size={15} />{condition}</p>
+      <dl><div><dt>Why consider it</dt><dd>{reason || 'Add a reason for the new item.'}</dd></div><div><dt>The tradeoff</dt><dd>{tradeoff || 'Add the tradeoff for the new item.'}</dd></div></dl>
+      {draft.source && /^https:\/\//.test(draft.source.url) && <a className="player-text-link" href={draft.source.url} target="_blank" rel="noreferrer">{draft.source.label} ↗</a>}
+      {targetChanged && <p role="status">New item selected. Review its reason and tradeoff before saving.</p>}
+    </section>}
+    <details className="signal-adjustment-details player-field-wide" open={editing} onToggle={event => setEditing(event.currentTarget.open)}>
+      <summary>{draft ? 'Edit details' : 'Your adjustment'}<PlayerIcon name="plus" size={16} /></summary>
+      <div className="signal-adjustment-fields">
     <div className="player-field"><label htmlFor={`${fieldId}-condition`}>When it applies</label><select id={`${fieldId}-condition`} name="condition" value={condition} onChange={event => setCondition(event.target.value)}>{conditions.map(value => <option key={value}>{value}</option>)}</select></div>
     <div className="player-field"><label htmlFor={`${fieldId}-original`}>Decision being reconsidered</label><input id={`${fieldId}-original`} name="original" required maxLength={600} value={original} onChange={event => setOriginal(event.target.value)} /></div>
     <div className="player-field"><label htmlFor={`${fieldId}-alternative`}>Proposed alternative</label><input id={`${fieldId}-alternative`} name="alternative" required maxLength={600} value={alternative} onChange={event => setAlternative(event.target.value)} /></div>
     <ItemPicker platform={platform} puuid={puuid} id={sourceId} value={target} onChange={chooseTarget} metadata={items} />
     <div className="player-field"><label htmlFor={`${fieldId}-reason`}>Reason</label><textarea id={`${fieldId}-reason`} name="reason" required maxLength={600} value={reason} onChange={event => setReason(event.target.value)} /></div>
     <div className="player-field"><label htmlFor={`${fieldId}-tradeoff`}>Tradeoff</label><textarea id={`${fieldId}-tradeoff`} name="tradeoff" required maxLength={600} value={tradeoff} onChange={event => setTradeoff(event.target.value)} /></div>
+      </div>
+    </details>
     <div className="player-actions player-field-wide"><button disabled={disabled}><PlayerIcon name="bookmark" /> Save adjustment</button><button type="button" className="player-button-secondary" onClick={onCancel}>Close draft</button></div>
     <p className="player-help player-field-wide">Tracking starts when you save. Confirm custom conditions for each later game.</p>
   </form>;

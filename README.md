@@ -2,27 +2,30 @@
   <img src="src/assets/brand/logo-desktop-dark.png" alt="RiftScry" width="420" />
 </p>
 
-<h3 align="center">The Rift is shifting.</h3>
+<h3 align="center">The space between games.</h3>
 
-RiftScry is a League of Legends companion that turns available match history into
-an automatic briefing. Enter a Riot ID once, then return for the useful details:
-what changed since you played, how your latest session went, and one thing to review.
+RiftScry is a League of Legends companion for following what changed and carrying
+something useful into the next game. Choose a champion, reveal an exact archive
+record, or enter a Riot ID once for an automatic briefing from available match
+history. The experience connects those paths across the whole site.
 
-**Current experience:** [The connected observatory](docs/connected-observatory/README.md) —
-a navigable world with five destinations and focused task scenes across the platform.
+**Current experience: the signal journey.** Read the
+[platform audit](docs/signal-journey/AUDIT.md) and
+[research behind the direction](docs/signal-journey/RESEARCH.md).
 
-- **Explore by choosing:** the homepage is an interactive destination instrument.
-  Briefing, Games, Champions, Patches, and Saved remain available everywhere. Hover,
-  focus, or the preview arrows change the world’s perspective; every destination
-  is also a direct native link.
-- **One task in focus:** scene controls replace long stacks of page sections. Select
-  a patch record, inspect a champion, switch briefing scenes, or open source detail
-  in place. Real reading areas scroll naturally. Browser Back, shared links,
-  keyboard controls, reduced motion, and no-JavaScript archive access are preserved.
-- **Less setup:** a remembered player resumes directly. Free champion exploration
-  starts from the latest available recorded change; explicit date ranges remain
-  exact. The notebook opens with saved notes and a one-field editor; preparation
-  cards and context settings are optional.
+- **Choose, reveal, inspect, keep:** the homepage opens on a real champion change,
+  moves into its exact evidence, and carries the selected record forward. Featured
+  choices change the evidence itself; source dates distinguish archive examples
+  from the visitor's games.
+- **One coherent journey:** Discover, My game, and Saved anchor the shared header.
+  Named scene controls keep one task active, with natural scrolling for longer
+  evidence. The map and ordinary links provide direct access to every destination.
+  Browser Back, shared URLs, keyboard controls, reduced motion, and no-JavaScript
+  archive reading remain part of the design.
+- **Context that follows:** valid selected player and archive context can resume
+  across routes. Exact before/after values, a champion's dated history, the patch
+  timeline, and comparisons use the same evidence-led presentation. Explicit
+  date ranges and queue selections retain their scope.
 - **Automatic briefing:** `/next-game` discovers recent champions, exact queues and
   recorded loadouts from imported games. It assembles a session recap and a focus
   supported by available evidence. No notes, saved cards or reflections are required.
@@ -35,21 +38,27 @@ a navigable world with five destinations and focused task scenes across the plat
   scenarios, with formulas and sources. No build entry is needed. Standard
   Summoner's Rift calculations are distinct from other modes' archived changes.
 - **Recent games and builds:** exact-mode history, automatically grouped observed
-  loadouts, match facts, and optional timeline or AI-assisted review. The sample is
-  bounded; it is not a complete season history or a global build recommendation.
+  loadouts, match facts, and optional timeline or AI-assisted review. Keep loadout
+  saves the actual record in one click and opens its notebook destination. The
+  bounded sample is not a complete season history or a global build recommendation.
 - **Champion archive:** structured changes, your optional champion pool, comparisons,
   and the immersive archive journey at `/explore`.
-- **Existing notebook and Build Memory:** previously saved preparation remains at
-  `/notebook`; player-scoped item adjustments remain in Build Memory. These optional
-  records are independent of the automatic briefing.
+- **Optional preparation:** `/notebook` retains notes, loadouts, game cards,
+  reflections, and backups. A saved loadout can prefill its champion and exact mode.
+  Generated Build Memory adjustments open as ready-to-save summaries with Edit
+  details available. Saving, starting a card, and marking a patch reviewed remain
+  explicit actions, independent of the automatic briefing.
 
-A successful lookup remembers the recent player on this browser when storage is
-available. Direct player links still work without storage. There is no automatic
-cross-device account sync or ownership verification. Automatic results require exposed
-match history; Riot currently keeps ARAM: Mayhem history private, so the site explains
-that gap instead of inventing a report or substituting ordinary ARAM.
+A successful lookup or explicit valid player selection remembers the player on this
+browser when storage is available. Direct player links still work without storage.
+There is no automatic cross-device account sync or ownership verification. Automatic
+results require exposed match history; checked Mayhem availability metadata explains
+empty imports without inventing a report or substituting ordinary ARAM. Exact mode
+capabilities and source references live in [modes.ts](src/lib/player/modes.ts).
 
-![RiftScry connected observatory](docs/connected-observatory/screenshots/home-desktop.webp)
+Verification of the signal journey is in progress. Current browser results and visual
+evidence belong to the pull request and its CI artifacts. Earlier screenshots remain
+in the historical release documentation and are not presented as the current UI.
 
 ## Run it
 
@@ -86,15 +95,22 @@ Riot access mode, server-side credentials and Redis cache/budget state; see
 [the player release notes](docs/player-release.md). Never expose credentials to the
 client or commit deployment environment files.
 
+- [Product contract](PRODUCT.md) — current journey, evidence boundaries, and browser-storage semantics
+- [Design contract](DESIGN.md) — shared scene model, route presentation, and active implementation map
+- [Signal journey audit](docs/signal-journey/AUDIT.md) — platform scope, simplification, and source/dependency cleanup
+- [Signal journey research](docs/signal-journey/RESEARCH.md) — references and the decisions they support
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
-- [Connected observatory](docs/connected-observatory/README.md) — current interaction model, platform audit, research, and verification
-- [Cinematic observatory](docs/cinematic-observatory/README.md) — research, visual direction, interaction design and release verification
-- [Cinematic continuity](docs/cinematic-everywhere/README.md) — all-page simplification, route coverage, responsive captures and verification
-- [Homepage refresh](docs/homepage-refresh/README.md) — newcomer and returning-player paths, archive examples and responsive audit
 - [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
 - [Personal patch impact](docs/personal-patch-impact/README.md) — calculations, coverage, sources and verification
 - [Data & methodology](docs/DATA.md) — schema, classification and provenance
 - [Contributing](CONTRIBUTING.md) — checks and contribution workflow
+
+Earlier presentation checkpoints and captures remain discoverable in the
+[connected observatory](docs/connected-observatory/README.md),
+[cinematic observatory](docs/cinematic-observatory/README.md),
+[cinematic continuity](docs/cinematic-everywhere/README.md), and
+[homepage refresh](docs/homepage-refresh/README.md) records, and in git history.
+Their designs and verification results describe those earlier commits.
 
 ## Commands
 

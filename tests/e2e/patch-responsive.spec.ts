@@ -35,27 +35,36 @@ for (const [width, height] of [[320,568],[359,603],[390,844],[700,800],[844,390]
     await stationaryWorld(page);
     await expect(page.locator('.filter-bar')).toHaveCSS('position','static');
 
-    await expect(record.locator('.delta-row')).toHaveCount(changes.length);
-    for (const change of changes) {
-      const row = record.locator('.delta-row').filter({ has: page.getByText(change.label, { exact: true }) });
+    await expect(record.locator('[data-signal-record]')).toHaveCount(changes.length);
+    await expect(record.locator('[data-signal-record]:not([hidden])')).toHaveCount(1);
+    for (const [index, change] of changes.entries()) {
+      const choice = record.locator(`[data-signal-choice="${index}"]`);
+      await unobstructed(choice);
+      await choice.click();
+      const row = record.locator(`[data-signal-record="${index}"]`);
+      await expect(row).toBeVisible();
       if (change.kind === 'numeric') {
         await expect(row.locator('.before')).toHaveText(change.before!);
         await expect(row.locator('.after')).toHaveText(change.after!);
       } else await expect(row.locator('.prose-text')).toHaveText(change.text!);
+      expect(await row.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
     }
-    const healthValues = record.locator('.delta-row').filter({ has: page.getByText('Health Growth', { exact: true }) }).locator('.values');
+    await record.locator('[data-signal-choice="0"]').click();
+    const healthValues = record.locator('[data-signal-record="0"] .signal-aperture');
     await healthValues.scrollIntoViewIfNeeded();
     await expect(healthValues).toBeInViewport({ ratio: 0.99 });
 
     if(width <= 700) {
-      const name = await page.locator('#belveth h3').boundingBox();
+      const name = await page.locator('#belveth > header h2').boundingBox();
       const badge = await page.locator('#belveth > header > :last-child').boundingBox();
       // The responsive header may put its badge beside or below the name; both
       // must remain distinct, within the same evidence column.
       expect(badge!.x >= name!.x + name!.width - 1 || badge!.y >= name!.y + name!.height - 1).toBe(true);
       expect(badge!.x + badge!.width).toBeLessThanOrEqual(canvas.x + canvas.width + 1);
       const dock=await page.locator('.journey-header').boundingBox();
-      expect(dock!.y+dock!.height).toBeLessThanOrEqual(72);
+      expect(dock!.y).toBeGreaterThanOrEqual(-1);
+      expect(dock!.y + dock!.height).toBeLessThanOrEqual(height);
+      await unobstructed(healthValues);
     }
     await page.screenshot({path:testInfo.outputPath(`patch-record-${width}.png`)});
     await page.getByRole('button',{name:'Open the Rift map',exact:true}).click();

@@ -81,6 +81,12 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.getByRole('button', { name: 'Review draft', exact: true }).first().click();
     await expect(page.locator('#match-memory')).toBeVisible();
     await expect(page.locator('#build-memory')).toBeVisible();
+    await expect(page.locator('[data-prepared-adjustment]')).toBeVisible();
+    await expect(page.locator('[data-prepared-adjustment]')).toBeFocused();
+    await expect(page.locator('.signal-adjustment-details')).toHaveJSProperty('open', false);
+    await expect(page.getByRole('button', { name: 'Save adjustment', exact: true })).toBeVisible();
+    await page.locator('.signal-adjustment-details > summary').click();
+    await expect(page.getByLabel('Decision being reconsidered', { exact: true })).toBeVisible();
     expect(requests.filter(request => request.action === 'review').map(request => request.method)).toEqual(['POST']);
     expect(requests.filter(request => request.action === 'timeline')).toEqual([]);
     expect(await page.evaluate(key => localStorage.getItem(key), `riftscry:build-memory:v1:${platform}:${puuid}`)).toBeNull();
