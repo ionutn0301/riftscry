@@ -36,6 +36,7 @@ for(const viewport of [{width:1024,height:600},{width:1366,height:768},{width:14
     await expect(rows.last()).toBeInViewport({ratio:.99});
     expect(Math.abs(await top(media)-imageTop)).toBeLessThanOrEqual(1);
     await expect(lens.locator('[data-reader-champion-link]')).toBeInViewport({ratio:.99});
+    await page.screenshot({path:`player-visuals/champions-last-row-${viewport.width}x${viewport.height}.png`});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
     // Retain native document scrolling: no wheel forwarding or trapped inner list.
     expect(await page.locator('#main').evaluate(main=>[...main.querySelectorAll('*')].filter(element=>

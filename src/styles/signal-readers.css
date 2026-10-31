@@ -76,9 +76,11 @@ body[data-journey-ready] .journey-casting-wall { overflow:auto; overscroll-behav
   .journey-roster-panel > .journey-roster-lens {
     grid-area:preview; align-self:start; position:sticky;
     top:calc(var(--world-header-height) + 16px);
-    height:calc(100dvh - var(--world-header-height) - 128px);
+    /* Leave room for the shared footer and document padding at the last row,
+       otherwise sticky positioning pushes the stage upward at the page end. */
+    height:calc(100dvh - var(--world-header-height) - 164px);
   }
-  .journey-roster-panel .roster-lens-media { max-height:max(90px,calc(100dvh - var(--world-header-height) - 280px)); }
+  .journey-roster-panel .roster-lens-media { max-height:max(90px,calc(100dvh - var(--world-header-height) - 320px)); }
   .journey-roster-panel:has([data-reader-champion-lens][hidden]) { grid-template-areas:"heading" "tools" "results"; }
 }
 
