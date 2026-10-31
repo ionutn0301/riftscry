@@ -10,6 +10,44 @@ async function separated(passage:Locator){
   expect(collisions).toEqual([]);
 }
 
+test.describe('Mobile chapter focus',()=>{
+  test.use({viewport:{width:390,height:844},hasTouch:true});
+
+  test('one homepage: chapter navigation never frames the page and controls retain keyboard focus',async({page})=>{
+    await installFixtures(page);await page.goto('/');
+    await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
+    await page.evaluate(()=>document.fonts.ready);
+    const atlas=page.locator('#atlas');const signal=page.locator('#signal');
+    const change=atlas.locator('.atlas-follow-signal');const previous=page.locator('[data-journey-prev]');
+    // Keyboard modality used to transfer the full-panel focus outline to each
+    // chapter. Assert the actual navigation focus, rather than a fresh page load.
+    await change.focus();await page.keyboard.press('Enter');
+    await expect(signal).toBeFocused();
+    expect(await signal.evaluate(element=>element.matches(':focus-visible'))).toBe(true);
+    await expect(signal).toHaveCSS('outline-style','none');
+    await previous.focus();await page.keyboard.press('Enter');
+    await expect(atlas).toBeFocused();await expect(atlas).toHaveCSS('outline-style','none');
+    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+    await mkdir('player-visuals',{recursive:true});
+    await page.screenshot({path:'player-visuals/home-focused-chapter-390x844.png',fullPage:true});
+
+    const entry=atlas.locator('[data-passage-enter]');
+    await entry.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
+    await expect(entry).toBeFocused();
+    expect(await entry.evaluate(element=>element.matches(':focus-visible'))).toBe(true);
+    await expect.poll(()=>entry.evaluate(element=>{
+      const style=getComputedStyle(element);
+      return style.outlineStyle!=='none'&&parseFloat(style.outlineWidth)>0;
+    })).toBe(true);
+
+    // Touch navigation after keyboard use must not bring back the chapter frame.
+    await change.tap();await expect(signal).toBeFocused();
+    await expect(signal).toHaveCSS('outline-style','none');
+    await previous.tap();await expect(atlas).toBeFocused();
+    await expect(atlas).toHaveCSS('outline-style','none');
+  });
+});
+
 for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,height:384},{width:844,height:390},{width:1366,height:600},{width:1366,height:768},{width:1440,height:900},{width:1920,height:1080}]){
   test(`${viewport.width}×${viewport.height}: one homepage, one title and no overlapping controls`,async({page})=>{
     await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});

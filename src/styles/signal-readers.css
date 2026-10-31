@@ -61,6 +61,27 @@ body[data-journey-ready] .journey-casting-wall { overflow:auto; overscroll-behav
 .roster-entry-roles { display:block; font-size:8px; color:var(--reader-muted); margin-top:5px; }
 .roster-arrow { display:none; }
 
+/* The roster scrolls as one document. Its left stage stays in the viewport,
+   so wheel/trackpad scrolling works over the artwork as well as the list. */
+@media (min-width:761px) {
+  .journey-roster-panel {
+    grid-template-areas:"preview heading" "preview tools" "preview results";
+    grid-template-rows:auto auto 1fr;
+    row-gap:0;
+  }
+  .journey-roster-panel > .journey-reader-header { grid-area:heading; flex-wrap:wrap; gap:8px 20px; }
+  .journey-roster-panel > .journey-roster-tools { grid-area:tools; flex-wrap:wrap; gap:8px 16px; }
+  .journey-roster-panel .roster-search { flex:1 0 100%; max-width:none; }
+  .journey-roster-panel > .journey-roster-results { grid-area:results; }
+  .journey-roster-panel > .journey-roster-lens {
+    grid-area:preview; align-self:start; position:sticky;
+    top:calc(var(--world-header-height) + 16px);
+    height:calc(100dvh - var(--world-header-height) - 128px);
+  }
+  .journey-roster-panel .roster-lens-media { max-height:max(90px,calc(100dvh - var(--world-header-height) - 280px)); }
+  .journey-roster-panel:has([data-reader-champion-lens][hidden]) { grid-template-areas:"heading" "tools" "results"; }
+}
+
 /* The chosen champion remains present while the evidence changes. */
 .journey-champion-panel { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(25px,4vw,65px); }
 .journey-champion-art { position:relative; display:flex; flex-direction:column; justify-content:center; min-width:0; min-height:0; margin:0; }
