@@ -30,6 +30,8 @@ async function mount(href = '/') {
   history.replaceState(null, '', href);
   document.body.innerHTML = `
     <main data-home-signals>
+      <a data-home-briefing href="/next-game"><small data-home-briefing-caption></small><strong data-home-briefing-label></strong></a>
+      <a data-home-reading hidden><strong data-home-reading-label></strong></a>
       <picture><source data-home-portrait><img data-home-art></picture><span data-home-art-fallback hidden></span>
       <section class="signal-act--arrival"><a data-home-personal href="/next-game"></a><p data-home-return hidden></p><a data-home-context hidden href="/explore#change"></a></section>
       ${signals.map(signal => `<a data-home-choice="${signal.championId}" href="${signal.explore}">${signal.championName}</a><div data-home-record="${signal.championId}"></div>`).join('')}
@@ -58,6 +60,29 @@ afterEach(() => {
 });
 
 describe('home context continuity in the actual script', () => {
+  it('returns to a remembered briefing and an exact archive trail without creating new saved work',async()=>{
+    const selected={platform:'eun1',puuid:'fixture-player-000000000000000000000000000000000',name:'Returning Player#TEST'};
+    localStorage.setItem('riftscry:recent-player:v1',JSON.stringify(selected));
+    localStorage.setItem('riftscry:resume',JSON.stringify({href:prior.href,label:'Ahri — exact historical record',updatedAt:'2026-10-31T12:00:00Z'}));
+    await mount('/');
+    const briefing=document.querySelector<HTMLAnchorElement>('[data-home-briefing]')!,trail=document.querySelector<HTMLAnchorElement>('[data-home-reading]')!;
+    expect(briefing.textContent).toContain('Continue briefing');expect(briefing.getAttribute('aria-label')).toContain(selected.name);
+    expect(new URL(briefing.href).searchParams.get('puuid')).toBe(selected.puuid);
+    expect(trail.hidden).toBe(false);expect(trail.getAttribute('href')).toBe(prior.href);expect(trail.textContent).toContain('exact historical record');
+    expect(localStorage.getItem('riftscry:kept-findings')).toBeNull();expect(localStorage.getItem('riftscry:last-reviewed-patch')).toBeNull();
+    localStorage.clear();window.dispatchEvent(new StorageEvent('storage',{key:null}));
+    expect(briefing.textContent).toContain('Find my next move');expect(briefing.getAttribute('href')).toBe('/next-game');expect(trail.hidden).toBe(true);
+  });
+
+  it('keeps the entrance useful when storage is blocked or an unsafe resume was injected',async()=>{
+    localStorage.setItem('riftscry:resume',JSON.stringify({href:'https://another.example',label:'Unsafe',updatedAt:'2026-10-31T12:00:00Z'}));
+    await mount('/');expect(document.querySelector<HTMLElement>('[data-home-reading]')!.hidden).toBe(true);
+    vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw new DOMException('Blocked','SecurityError');});
+    await mount('/');
+    expect(document.querySelector<HTMLElement>('[data-home-reading]')!.hidden).toBe(true);
+    expect(document.querySelector('[data-home-briefing]')!.getAttribute('href')).toBe('/next-game');
+    expect(document.querySelector('[data-home-briefing-label]')!.textContent).toBe('Find my next move');
+  });
   it('keeps an exact prior record through arrival, canonical reload and arrival history restoration', async () => {
     localStorage.setItem(SIGNAL_CONTEXT_KEY, JSON.stringify(prior));
     await mount('/');

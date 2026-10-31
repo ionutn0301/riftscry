@@ -16,6 +16,8 @@ for (const file of pages) {
   const assert = (condition,message) => { if (!condition) throw new Error(file + ': ' + message); };
   assert(document.querySelectorAll('.journey-spine a').length === 6,'missing connected route path');
   assert(document.querySelectorAll('#rift-map-dialog [data-atlas-portal]').length === 5,'missing atlas destinations');
+  assert(document.querySelector('#rift-map-dialog [data-passage-aperture][d]'),'missing shared morphing aperture');
+  assert(document.querySelector('#rift-map-dialog [data-passage-range]'),'missing non-gesture camera control');
   assert(document.querySelectorAll('main h1').length === 1,'expected one page heading');
   assert(document.querySelectorAll('[data-atlas-environment]').length === 2,'missing environment planes');
   assert(document.querySelector('[data-journey-deck]'),'missing chapter controller');

@@ -6,9 +6,9 @@
 .passage-viewport canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
 .passage-still { position:absolute; width:150%; height:122%; left:calc(50% + var(--passage-offset-x)); top:calc(48% + var(--passage-offset-y)); transform:translate(-50%,-50%); pointer-events:none; }
 .rift-passage[data-passage-painted] .passage-still { visibility:hidden; }
-.passage-horizon { position:absolute; width:86%; height:50%; left:7%; top:25%; border:1px solid #afd9cf22; border-radius:50%; transform:perspective(800px) rotateX(63deg) rotateZ(-12deg); pointer-events:none; }
-.passage-horizon::before,.passage-horizon::after { content:''; position:absolute; inset:-15%; border:1px solid #afd9cf0d; border-radius:50%; }
-.passage-horizon::after { inset:16%; }
+.passage-aperture { position:absolute; inset:-10%; width:120%; height:120%; pointer-events:none; overflow:visible; transform:perspective(1100px) rotateY(var(--passage-drift,0deg)); }
+.passage-aperture path { stroke:var(--passage-color); stroke-width:1; opacity:.36; vector-effect:non-scaling-stroke; }
+.passage-aperture circle { stroke:#c3e4d2; stroke-width:.5; stroke-dasharray:2 16; opacity:.3; vector-effect:non-scaling-stroke; }
 .passage-axis,.passage-coordinate { position:absolute; top:22px; color:#91b4b6; font:8px 'Spline Sans Mono',monospace; letter-spacing:.14em; pointer-events:none; }
 .passage-axis { left:0; writing-mode:vertical-rl; }.passage-coordinate { right:4px; }
 .passage-reading { position:absolute; z-index:2; bottom:130px; left:0; max-width:42%; pointer-events:none; }
@@ -38,9 +38,14 @@
 .atlas-arrival-heading > p:last-child { font-size:12px; color:#a3bdbe; }
 .atlas-arrival-heading .journey-eyebrow { font-size:8px; }
 .atlas-arrival .passage-viewport { margin-left:23%; width:77%; }
-.atlas-arrival-footer { display:flex; flex-wrap:wrap; align-items:center; gap:12px 28px; border-top:1px solid var(--line); padding:8px 0; }
-.atlas-arrival-footer > a { display:inline-flex; align-items:center; gap:12px; min-height:44px; color:#bedfcf; font-size:11px; }
-.atlas-arrival-footer > span { margin-left:auto; color:#8faead; font:7px 'Spline Sans Mono',monospace; letter-spacing:.13em; }
+.atlas-arrival-footer { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:0 28px; border-top:1px solid var(--line); }
+.atlas-arrival-footer > a { display:flex; align-items:center; gap:12px; min-height:58px; min-width:0; color:#bedfcf; font-size:11px; }
+.atlas-arrival-footer > a > span { min-width:0; }
+.atlas-arrival-footer :is(small,strong) { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.atlas-arrival-footer small { color:#8faead; font:7px/1.6 'Spline Sans Mono',monospace; letter-spacing:.1em; }
+.atlas-arrival-footer strong { font:400 12px/1.6 var(--font-ui); }
+.atlas-arrival-footer b { margin-left:auto; font-size:19px; font-weight:400; }
+.atlas-arrival-footer .atlas-reading-link { grid-column:1/-1; border-top:1px solid #bddbc516; }
 .atlas-live-dot { width:5px; height:5px; border-radius:50%; background:#c5efd3; box-shadow:0 0 0 5px #c5efd30d; }
 body[data-journey-ready] .signal-journey:has(#atlas:not([hidden])) > :is(.signal-subject-visual,.signal-cast) { display:none; }
 body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibility:hidden; }
@@ -109,8 +114,8 @@ body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibili
   .atlas-arrival-heading h1 { font-size:clamp(31px,8vw,43px); margin:12px 0 8px; }
   .atlas-arrival-heading h1 br { display:none; }.atlas-arrival-heading h1 em { display:block; }
   .atlas-arrival-heading > p:last-child { display:none; }.atlas-arrival-heading .journey-eyebrow { font-size:7px; }
-  .atlas-arrival-footer { gap:0 12px; padding:0; }
-  .atlas-arrival-footer > a { font-size:9px; gap:8px; }.atlas-arrival-footer .atlas-personal-link { margin-left:auto; }
+  .atlas-arrival-footer { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:0 12px; padding:0; }
+  .atlas-arrival-footer > a { font-size:9px; gap:8px; }.atlas-arrival-footer strong { font-size:11px; }.atlas-arrival-footer .atlas-personal-link { margin:0; }
   .journey-chrome .journey-spine { display:flex; padding-top:0; }
   .journey-spine a { flex:1; flex-direction:column; gap:5px; padding:4px 1px; font-size:8px; }
   .journey-spine a + a::before { top:15px; left:-6px; width:12px; }

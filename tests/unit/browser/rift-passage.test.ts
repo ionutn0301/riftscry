@@ -37,6 +37,14 @@ it('uses wheel travel inside the object and releases page scrolling at its bound
   viewport.dispatchEvent(new KeyboardEvent('keydown',{key:'End',cancelable:true}));paint();
   const edge=new WheelEvent('wheel',{deltaY:200,cancelable:true});viewport.dispatchEvent(edge);expect(edge.defaultPrevented).toBe(false);
 });
+it('does not chatter between kinetic titles around a wheel or drag boundary',async()=>{
+  await import('../../../src/scripts/rift-passage');
+  const wheel=(deltaY:number)=>viewport.dispatchEvent(new WheelEvent('wheel',{deltaY,cancelable:true}));
+  const range=document.querySelector('[data-passage-range]')!;
+  wheel(176);expect(range.getAttribute('aria-valuetext')).toBe('Briefing');
+  wheel(32);expect(range.getAttribute('aria-valuetext')).toBe('Games');
+  wheel(-32);expect(range.getAttribute('aria-valuetext')).toBe('Games');
+});
 it('keeps direct destination links native and follows updated remembered-player URLs',async()=>{
   await import('../../../src/scripts/rift-passage');
   const link=document.querySelector<HTMLAnchorElement>('[data-passage-stop="0"]')!;

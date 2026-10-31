@@ -15,9 +15,13 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
 ---
 <div class="signal-journey" data-home-signals data-journey-deck data-journey-default="atlas" data-journey-active="atlas">
   <section id="atlas" class="atlas-arrival" data-journey-panel data-journey-label="The Rift" data-journey-world="home" aria-labelledby="atlas-title">
-    <header class="atlas-arrival-heading"><p class="journey-eyebrow"><i aria-hidden="true"></i> THE SPACE BETWEEN GAMES</p><h1 id="atlas-title">Every game leaves<br />a <em>ripple.</em></h1><p>Choose where yours takes you.</p></header>
+    <header class="atlas-arrival-heading"><p class="journey-eyebrow"><i aria-hidden="true"></i> THE SPACE BETWEEN GAMES</p><h1 id="atlas-title" aria-label="Every game leaves a ripple.">Every game leaves<br />a <em>ripple.</em></h1><p>Choose where yours takes you.</p></header>
     <RiftAtlas entrance />
-    <div class="atlas-arrival-footer"><a href="#signal" class="atlas-follow-signal"><span class="atlas-live-dot" aria-hidden="true"></span>Follow a champion signal <span aria-hidden="true">→</span></a><a href="/next-game" data-station-link="next-game" class="atlas-personal-link">Open my briefing ↗</a><span>CHOOSE A PLACE TO ENTER</span></div>
+    <div class="atlas-arrival-footer">
+      <a href="/next-game" data-station-link="next-game" class="atlas-personal-link" data-home-briefing><span><small data-home-briefing-caption>FROM YOUR GAMES</small><strong data-home-briefing-label>Find my next move</strong></span><b aria-hidden="true">↗</b></a>
+      <a href="#signal" class="atlas-follow-signal"><span class="atlas-live-dot" aria-hidden="true"></span>Follow a champion signal <span aria-hidden="true">→</span></a>
+      <a class="atlas-reading-link" href="/explore#change" data-home-reading hidden><span><small>YOUR LAST TRAIL</small><strong data-home-reading-label>Resume exploring</strong></span><b aria-hidden="true">↗</b></a>
+    </div>
   </section>
   <figure class="signal-subject-visual" aria-label="Champion in focus">
     <div class="signal-subject-window"><picture><source media="(max-width:700px)" srcset={first.artwork.portrait} data-home-portrait /><img src={first.artwork.splash} alt={`${first.championName} — official Riot Games artwork`} width="1215" height="717" fetchpriority="high" decoding="async" data-home-art /></picture><span class="signal-art-fallback" data-home-art-fallback hidden>Artwork unavailable. The signal is still here.</span></div>

@@ -65,10 +65,13 @@ test('the destination range moves the same object continuously and keeps direct 
   await page.goto('/');await readyWorld(page);
   const passage=page.locator('#atlas [data-passage]');
   await expect(passage).toHaveAttribute('data-passage-painted','true');
+  const shape=await passage.locator('[data-passage-aperture]').getAttribute('d');
   const range=passage.locator('[data-passage-range]');await range.focus();await page.keyboard.press('End');
   await expect(range).toHaveAttribute('aria-valuetext','Saved');
   await expect(passage.locator('[data-passage-enter]')).toHaveAttribute('href',/\/pool#briefing$/);
   await expect.poll(()=>passage.getAttribute('data-passage-position')).toBe('4.0000');
+  expect(await passage.locator('[data-passage-aperture]').getAttribute('d')).not.toBe(shape);
+  await expect(passage.locator('[data-passage-title]')).toHaveAccessibleName('A world that remembers.');
   await expect(passage.locator('canvas')).toBeVisible();await expect(passage.locator('[data-passage-still]')).toBeHidden();
   await expect(passage.locator('[data-passage-stop]')).toHaveCount(5);
   await stationaryWorld(page);

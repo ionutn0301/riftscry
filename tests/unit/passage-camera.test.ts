@@ -1,5 +1,5 @@
 import { describe,it,expect } from 'vitest';
-import { advancePassage,passagePose,passageColor,passagePosition } from '../../src/lib/passage-camera';
+import { advancePassage,passagePose,passageColor,passagePosition,passageAperture } from '../../src/lib/passage-camera';
 describe('continuous Rift camera',()=>{
   it('retains its current pose when a visitor reverses travel',()=>{
     let position=0;
@@ -30,5 +30,22 @@ describe('continuous Rift camera',()=>{
     expect(passagePosition(NaN)).toBe(0);expect(passagePosition(-9)).toBe(0);expect(passagePosition(10)).toBe(4);
     expect(advancePassage(0,4,100)).toBe(advancePassage(0,4,.05));
     expect(advancePassage(0,4,-2)).toBe(0);
+  });
+  it('keeps the camera tangent continuous while crossing a destination',()=>{
+    const h=.0001;
+    for(let i=1;i<4;i++){
+      const left=passagePose(i-h),at=passagePose(i),right=passagePose(i+h);
+      for(let j=0;j<3;j++)expect(Math.abs((at.rotation[j]!-left.rotation[j]!)/h-(right.rotation[j]!-at.rotation[j]!)/h)).toBeLessThan(.01);
+      expect(Math.abs((at.focal-left.focal)/h-(right.focal-at.focal)/h)).toBeLessThan(.01);
+    }
+  });
+  it('morphs through distinct closed apertures with stable geometry at every position',()=>{
+    expect(new Set([0,1,2,3,4].map(passageAperture)).size).toBe(5);
+    for(let i=0;i<=80;i++){
+      const shape=passageAperture(i/20);expect(shape.startsWith('M')).toBe(true);expect(shape.endsWith('Z')).toBe(true);
+      expect(shape.match(/C/g)).toHaveLength(32);expect(shape).not.toMatch(/NaN|Infinity/);
+      for(const value of shape.match(/-?\d+\.\d+/g)!)expect(Number(value)).toBeGreaterThan(0);
+    }
+    expect(passageAperture(NaN)).toBe(passageAperture(0));
   });
 });

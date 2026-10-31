@@ -126,19 +126,39 @@ browser and API verification.
 - Reduced motion, native URLs, source records and the no-JavaScript archive
   remain part of the shared design.
 
+## Motion and useful return paths — 1 November 2026
+
+- Destination headings unfold in masked words while keeping one complete
+  accessible name and the authored emphasis. Chapter headings share a depth
+  reveal; React-owned text is not split or rewritten.
+- A closed Bézier aperture morphs with the same continuous position as the
+  projected 3D Rift. Camera rotations/offsets use a spline, with zero-slope focal
+  pushes at station boundaries. Pointer lean eases to rest and travel streaks
+  follow movement. All RAF work stops when the camera and lean settle.
+- A selection dead band prevents heading chatter near drag boundaries. Motion
+  preferences remove kinetic animation and make the camera selection immediate.
+- The entrance exposes a remembered briefing and the exact previous public
+  reading URL using existing validated storage. Cross-tab changes, clearing and
+  blocked storage have explicit fallbacks. No new persistence or API request is
+  introduced, and arriving does not keep findings or mark patches reviewed.
+- A common native handoff connects patch records to item impact and recorded
+  build evidence to its own source match. Choosing another impact champion
+  changes that match link too; it never silently routes to another build.
+
 ## Actual verification and limitations
 
 Validation for this revision:
 
-- Astro check: 263 files, zero errors and warnings, one pre-existing unused-import
+- Astro check: 266 files, zero errors and warnings, one pre-existing unused-import
   hint in `src/pages/players.astro`.
-- Vitest: all 543 tests pass across 58 files. New cases cover camera convergence,
+- Vitest: all 549 tests pass across 59 files. New cases cover camera convergence,
   boundary/reversal behavior, reduced motion, resize without canvas clearing,
   wheel scroll release, image races/failure/abort, fast React scene registration,
-  and explicit AI request/success/failure/deterministic fallback.
+  explicit AI request/success/failure/deterministic fallback, camera tangent
+  continuity, closed shape topology, kinetic text semantics and useful returns.
 - Production build succeeds with the existing Astro/Vercel adapter.
 - Production-output contract passes on all 622 generated content pages.
-- Browser collections parse successfully: 753 archive/journey cases and 110
+- Browser collections parse successfully: 753 archive/journey cases and 111
   fixture-backed player cases. Collection is not browser execution.
 
 Browser suites cover the five destinations, menu focus return, long profile

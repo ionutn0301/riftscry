@@ -1,7 +1,7 @@
 ---
 import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 import { getRiftPreset, projectRift } from '../../lib/rift-geometry';
-import { passagePose } from '../../lib/passage-camera';
+import { passagePose,passageAperture } from '../../lib/passage-camera';
 interface Props { surface?: string; entrance?: boolean }
 const { surface = 'home', entrance = false } = Astro.props;
 const active = stationForSurface(surface);
@@ -13,7 +13,7 @@ const faces = projectRift({...getRiftPreset('home'),...pose,accent:first.color})
 ---
 <div class:list={['rift-atlas','rift-passage',entrance && 'rift-atlas--entrance']} data-rift-atlas data-passage data-passage-initial={index} style={`--passage-color:${first.color};--passage-offset-x:${pose.x*100}%;--passage-offset-y:${pose.y*100}%`}>
   <div class="passage-viewport" data-passage-gesture tabindex="-1" role="group" aria-label="Explore the Rift in depth" aria-describedby={`${id}-hint`}>
-    <div class="passage-horizon" aria-hidden="true"></div>
+    <svg class="passage-aperture" viewBox="0 0 1000 1000" fill="none" aria-hidden="true"><path d={passageAperture(index)} data-passage-aperture/><circle cx="500" cy="500" r="400"/></svg>
     <svg class="passage-still" data-passage-still viewBox="0 0 1000 1000" fill="none" aria-hidden="true">
       <defs>{faces.filter(face=>!face.luminous).map(face=><linearGradient id={`${id}-facet-${face.index}`} x1="0" y1="0" x2="0" y2="1">
         {face.gradient.map((color,i)=><stop offset={i/4} stop-color={color}/>)}

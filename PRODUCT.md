@@ -14,7 +14,10 @@ next visit. The shared interaction is **choose → reveal → inspect → keep**
 
 The homepage begins with five connected spatial destinations and a direct briefing
 action. Its champion-signal branch reveals a real, identified archive record. Returning visitors
-can resume a selected player or public archive context. Personal briefings build
+can resume a selected player or public archive context. The entrance offers a
+direct remembered briefing and an exact archive reading link without requesting
+player data. Patch changes lead to personal item impact; impact and loadout
+scenes link to their actual source match and its explicit AI action. Personal briefings build
 from available records without requiring a note, build entry, preparation card,
 or reflection. Each route supports the same journey and remains a direct entry.
 

@@ -30,3 +30,15 @@ test('the match overview reaches AI analysis in one deliberate action',async({pa
   await expect(page.locator('.review-full')).toHaveJSProperty('open',true);
   expect(requests.filter(request=>request.action==='review').map(request=>request.method)).toEqual(['POST']);
 });
+test('a returning player reaches build evidence and match review from the homepage',async({page})=>{
+  const requests=await installFixtures(page,{matches:[sourceMatch]});
+  await page.addInitScript(({puuid})=>localStorage.setItem('riftscry:recent-player:v1',JSON.stringify({platform:'eun1',puuid,name:'Fixture Player#TEST'})),{puuid});
+  await page.goto('/');await expect(page.locator('[data-home-briefing-label]')).toHaveText('Continue briefing');
+  expect(requests).toEqual([]);await page.locator('[data-home-briefing]').click();
+  await expect(page.locator('[data-journey-tab="changes"]')).toBeVisible();await page.locator('[data-journey-tab="changes"]').click();
+  await page.locator('#changes .journey-handoff').click();await expect(page.locator('#impact')).toBeVisible();
+  const source=page.locator('#impact .journey-handoff');await expect(source).toHaveAttribute('href',new RegExp(`/matches/${sourceMatch.metadata.matchId}\\?`));
+  await source.click();await expect(page.locator('[data-match-ai-entry]')).toBeVisible();
+  expect(requests.filter(request=>request.action==='review')).toEqual([]);await page.locator('[data-match-ai-entry]').click();
+  await expect(page.locator('#match-review')).toBeVisible();await expect(page.locator('.review-mode')).toContainText('AI-assisted interpretation');
+});

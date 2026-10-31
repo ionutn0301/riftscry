@@ -2,7 +2,8 @@
 
 ## Current direction: the Rift atlas
 
-This is the design contract implemented in the 31 October 2026 refactor.
+This is the design contract implemented in the 31 October 2026 refactor,
+with motion and return-path refinement on 1 November 2026.
 The [atlas audit and research](docs/rift-atlas/AUDIT.md) record this change. It
 supersedes earlier scrolling-homepage, observatory, and disconnected player
 presentation amendments. See the [platform audit](docs/signal-journey/AUDIT.md)
@@ -16,7 +17,16 @@ spatial instrument on every route supply a stable geography. The entrance and
 menu use one perspective-projected Rift with five authored camera positions.
 Drag, wheel, keyboard and a native range move the same object continuously;
 all five destinations also remain ordinary links. Camera work is optional and
-reduced motion selects the destination immediately. Within each place: where the visitor left off,
+reduced motion selects the destination immediately. Destination type unfolds in
+masked words; the same camera position drives a closed, morphing aperture.
+Spline interpolation keeps tangents continuous between stations, while pointer
+lean and travel streaks provide depth. Rendering stops at rest. Shared chapter
+headings use a finite depth reveal without modifying React-owned text nodes.
+Kinetic text retains one complete accessible heading and preserves authored
+emphasis; reduced motion removes these animations.
+
+The homepage brings the remembered briefing and exact public reading place
+forward without making another lookup or storing new work. Within each place: where the visitor left off,
 what changed, and what they take forward. A champion, player, recorded match, or
 patch pair gives the scene a subject. **Choose → reveal → inspect → keep** is the
 shared interaction grammar. The important moment is an understandable change or
@@ -137,6 +147,8 @@ shortcuts must not capture text entry or composition.
 | --- | --- |
 | Spatial atlas and route path | `src/components/experience/RiftAtlas.astro`, `JourneySpine.astro`, `src/scripts/rift-atlas.ts`, `src/scripts/rift-passage.ts`, `src/lib/passage-camera.ts`, `src/styles/rift-atlas.css` |
 | Shared shell and navigation | `src/layouts/Layout.astro`, `src/components/experience/JourneyWayfinder.astro`, `src/components/experience/JourneyChrome.astro`, `src/styles/experience-shell.css` |
+| Kinetic type and camera-linked shape | `src/scripts/kinetic-type.ts`, `src/lib/passage-camera.ts`, `src/scripts/rift-passage.ts` |
+| Evidence-to-action handoffs | `src/components/experience/JourneyHandoff.tsx`; native links from changes to impact, and from impact/loadout to the exact source match |
 | Scene visibility, history, and focus | `src/scripts/connected-observatory.ts`; shared map/motion behavior in `src/scripts/experience.ts` |
 | Public subject and player continuation | `src/scripts/signal-continuity.ts`, `src/lib/signal-context.ts`, `src/lib/player/identity.ts` |
 | Homepage | `src/components/experience/SignalJourney.astro`, `src/scripts/signal-journey.ts`, `src/styles/signal-journey.css` |
