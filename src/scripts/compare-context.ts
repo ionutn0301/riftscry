@@ -20,8 +20,8 @@ if (status && showAll) {
     }
     status!.hidden = !scoped;
     status!.textContent = matches
-      ? `${matches} ${matches === 1 ? 'champion has' : 'champions have'} direct records in this perspective. Items and systems are available in their scenes.`
-      : 'No direct champion records in this perspective. Show all champions or explore items and systems.';
+      ? `${matches} ${matches === 1 ? 'champion has' : 'champions have'} direct records in this selected perspective. Items and systems are available in their scenes.`
+      : 'No direct champion records in this selected perspective. Show all champions or explore items and systems.';
     showAll!.hidden = !scoped;
   }
   showAll.addEventListener('click', () => {

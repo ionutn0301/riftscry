@@ -82,9 +82,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
       const saved = sessionStorage.getItem(key);
       if (saved && Number.isFinite(Number(saved))) {
         frame = requestAnimationFrame(() => {
-          const records = document.getElementById('player-records');
-          if (document.body.dataset.journeyReady && records) records.scrollTo({ top: Number(saved), behavior: 'instant' });
-          else window.scrollTo({ top: Number(saved), behavior: 'instant' });
+          window.scrollTo({ top: Number(saved), behavior: 'instant' });
           sessionStorage.removeItem(key);
         });
       }
@@ -106,8 +104,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
 
   function leave() {
     try {
-      const records = document.getElementById('player-records');
-      sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`, String(document.body.dataset.journeyReady && records ? records.scrollTop : window.scrollY));
+      sessionStorage.setItem(`riftscry:scroll:${platform}:${puuid}`, String(window.scrollY));
     }
     catch { /* Match navigation remains available without browser storage. */ }
   }

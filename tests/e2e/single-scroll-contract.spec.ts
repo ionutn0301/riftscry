@@ -1,0 +1,80 @@
+import { expect, test, type Page } from '@playwright/test';
+
+const routes = [
+  '/', '/explore', '/champions', '/champion/ahri', '/patches', '/patch/26.16',
+  '/compare/26.16/26.14', '/pool', '/notebook', '/players', '/next-game', '/nonexistent-room',
+] as const;
+
+async function audit(page: Page) {
+  return page.evaluate(() => {
+    const visible = (el: Element) => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return rect.width > 0 && rect.height > 0 &&
+        style.visibility !== 'hidden' && style.display !== 'none' && !el.closest('[hidden]');
+    };
+    const containers = [...document.querySelectorAll('main *, .journey-map-inner *')]
+      .filter(el => visible(el) && /^(auto|scroll)$/.test(getComputedStyle(el).overflowY)
+        && el.scrollHeight > el.clientHeight + 3)
+      .map(el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + '.' + String(el.className).slice(0, 60));
+    return {
+      containers,
+      horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
+      hero: document.querySelector('.signal-journey')?.getBoundingClientRect().toJSON(),
+      footer: document.querySelector('.journey-chrome')?.getBoundingClientRect().toJSON(),
+    };
+  });
+}
+test('every room has one vertical document scroll at desktop and phone sizes', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'Chromium geometry sweep; other suites cover WebKit');
+  test.setTimeout(180_000);
+  for (const { width, height } of [
+    { width: 320, height: 568 }, { width: 390, height: 844 },
+    { width: 568, height: 320 }, { width: 844, height: 390 },
+    { width: 1366, height: 768 }, { width: 1440, height: 900 },
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const route of routes) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+      await expect.poll(async () => (await audit(page)).horizontalOverflow,
+        { message: route + ' at ' + width + 'x' + height + ' must never scroll horizontally' })
+        .toBeLessThanOrEqual(1);
+      const measured = await audit(page);
+      expect(measured.containers, route + ' at ' + width + 'x' + height + ' has nested scrolling').toEqual([]);
+      if (route === '/') {
+        await expect.poll(async () => {
+          const current = await audit(page);
+          return Math.round((current.hero?.bottom ?? 99999) - (current.footer?.top ?? 0));
+        }, {message: 'Home hero must not cover navigation at ' + width + 'x' + height})
+          .toBeLessThanOrEqual(2);
+        expect(measured.hero).toBeTruthy();
+        expect(measured.hero!.height, 'Home hero exceeds screen height at ' + width + 'x' + height)
+          .toBeLessThanOrEqual(height);
+      }
+    }
+  }
+});
+test('the jump map keeps all destinations visible without nested scrolling', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'Chromium geometry sweep; WebKit tested by main suite');
+  test.setTimeout(90_000);
+  for (const { width, height } of [
+    { width: 320, height: 568 }, { width: 390, height: 844 },
+    { width: 568, height: 320 }, { width: 844, height: 390 },
+    { width: 1366, height: 768 },
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/explore');
+    await page.getByRole('button', { name: 'Open the Rift map' }).click();
+    const map = page.locator('#rift-map-dialog');
+    const overflow = await map.evaluate(el => [el, ...el.querySelectorAll('*')]
+      .filter(node => /^(auto|scroll)$/.test(getComputedStyle(node).overflowY)
+        && node.scrollHeight > node.clientHeight + 2).length);
+    expect(overflow).toBe(0);
+    for (const link of await map.locator('[data-world-link]').all()) {
+      await expect(link).toBeInViewport({ ratio: .99 });
+    }
+    await map.getByRole('button', { name: 'Close the Rift map' }).click();
+  }
+});

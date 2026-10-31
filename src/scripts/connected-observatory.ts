@@ -41,6 +41,12 @@ function activate(id: string, options: { history?: boolean; focus?: boolean; ann
   if (old !== panel.id) deck.dataset.journeyTravel = previousIndex < 0 ? 'arrive'
     : index > previousIndex ? 'forward' : 'backward';
   active = panel.id;
+  // A new chapter begins at its own entrance. With a single document scroll
+  // (not a trapped panel scrollbar), preserve the previous chapter only when
+  // navigating browser history; direct chapter activation returns to the top.
+  if (old && old !== panel.id && options.history) {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
   for (const item of panels) {
     item.hidden = item !== panel;
     item.inert = item !== panel;

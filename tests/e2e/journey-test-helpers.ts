@@ -65,6 +65,15 @@ export async function unobstructed(control: Locator) {
 }
 
 export async function stationaryWorld(page: Page) {
-  expect(await page.evaluate(() => scrollY)).toBe(0);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  // Navigation remains an animated journey, but only the document may scroll
+  // vertically. A nested scroll panel would trap mouse wheel, touch or focus.
+  const report = await page.evaluate(() => ({
+    horizontal: document.documentElement.scrollWidth - innerWidth,
+    nested: [...document.querySelectorAll('main *')]
+      .filter(element => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
+        && element.scrollHeight > element.clientHeight + 3)
+      .map(element => element.tagName.toLowerCase() + '.' + String(element.className).slice(0, 60)),
+  }));
+  expect(report.horizontal).toBeLessThanOrEqual(1);
+  expect(report.nested).toEqual([]);
 }

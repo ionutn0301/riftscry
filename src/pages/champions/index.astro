@@ -17,6 +17,7 @@ const featured = latest.champions.slice(0,3).flatMap((c) => {
   return champion ? [champion] : [];
 });
 const spotlight = featured[0] ?? champions[0]!;
+const featuredIds = new Set(latest.champions.slice(0, 12).map(change => change.championId));
 const normalize = (value: string) => value.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",adc:"ADC",support:"Support" };
 ---
@@ -41,10 +42,10 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
         <p class="journey-art-credit">RIOT GAMES ARTWORK · ARCHIVE THROUGH {latest.releaseDate}</p>
       </div>
       <div class="journey-roster-results">
-        <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions</p><span>SELECT A PERSPECTIVE</span></div>
+        <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions in focus</p><button type="button" data-roster-expand aria-controls="roster-wall" aria-expanded="false">View all {champions.length} champions ↗</button></div>
         <p class="journey-empty" data-roster-empty hidden>No matches. Try another name or clear the filters.</p>
-        <ul class="roster-wall journey-casting-wall">
-          {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-key={c.id} data-signal-subject={c.id} data-signal-name={c.name} data-signal-patch={c.latest} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
+        <ul id="roster-wall" class="roster-wall journey-casting-wall">
+          {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-featured={featuredIds.has(c.id) ? "true" : undefined} data-roster-key={c.id} data-signal-subject={c.id} data-signal-name={c.name} data-signal-patch={c.latest} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
             <a href={"/champion/" + c.id.toLowerCase()}><span class="roster-portrait"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async" /></span><span class="roster-entry-copy"><span class="name">{c.name}</span><span class="roster-entry-roles">{c.roles.map(role => roleLabels[role]).join(" / ")}</span></span><span class="roster-arrow" aria-hidden="true">↗</span></a>
           </li>)}
         </ul>
@@ -66,19 +67,24 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
     const rows = [...root.querySelectorAll<HTMLElement>("[data-roster-row]")];
     const count = root.querySelector<HTMLElement>("[data-roster-count]")!;
     const empty = root.querySelector<HTMLElement>("[data-roster-empty]")!;
+    const expand = root.querySelector<HTMLButtonElement>("[data-roster-expand]")!;
     const reset = root.querySelector<HTMLButtonElement>("[data-roster-reset]")!;
     let role = "";
+    let expanded = false;
     const normal = (value: string) => value.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
     function apply(sync = true) {
       const query = normal(search.value);
       let shown = 0;
       for (const row of rows) {
-        const match = (!query || (row.dataset.rosterQuery ?? "").includes(query)) && (!role || (row.dataset.rosterRoles ?? "").split(",").includes(role));
+        const match = (!query || (row.dataset.rosterQuery ?? "").includes(query)) && (!role || (row.dataset.rosterRoles ?? "").split(",").includes(role)) && (Boolean(query || role || expanded) || row.dataset.rosterFeatured === "true");
         row.hidden = !match;
         if (match) shown++;
       }
       count.textContent = String(shown);
       empty.hidden = shown > 0;
+      expand.hidden = Boolean(query || role);
+      expand.setAttribute("aria-expanded", String(expanded));
+      expand.textContent = expanded ? "Show recent changes" : "View all " + rows.length + " champions ↗";
       reset.hidden = !query && !role;
       for (const button of buttons) button.setAttribute("aria-pressed", String(button.dataset.rosterRole === role));
       if (sync) {
@@ -98,6 +104,7 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
     tools.hidden = false;
     tools.addEventListener("submit",(event) => event.preventDefault());
     search.addEventListener("input",() => apply());
+    expand.addEventListener("click", () => { expanded = !expanded; apply(false); });
     for (const button of buttons) button.addEventListener("click",() => { role = button.dataset.rosterRole === role ? "" : button.dataset.rosterRole ?? ""; apply(); });
     reset.addEventListener("click",() => { search.value = ""; role = ""; apply(); search.focus(); });
     window.addEventListener("popstate",restore);

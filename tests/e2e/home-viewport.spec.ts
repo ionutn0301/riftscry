@@ -10,14 +10,14 @@ async function sceneFits(page: Page) {
   await expect(panel).toHaveCount(1);
   const bounds = (await panel.boundingBox())!;
   const header = (await page.locator('.journey-header').boundingBox())!;
-  const cast = (await page.locator('.signal-cast').boundingBox())!;
   const footer = (await page.locator('.journey-chrome').boundingBox())!;
+  const hero = (await page.locator('.signal-journey').boundingBox())!;
+  const viewport = page.viewportSize()!;
   expect(bounds.height).toBeGreaterThan(0);
-  expect(bounds.y).toBeGreaterThanOrEqual(header.y + header.height - 1);
-  expect(bounds.y + bounds.height).toBeLessThanOrEqual(cast.y + 1);
-  expect(cast.y + cast.height).toBeLessThanOrEqual(footer.y + 1);
-  expect(footer.y + footer.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
-  await expect(page.locator('[data-journey-panel][hidden]')).toHaveCount(2);
+  expect(hero.height, 'A scene must not be taller than the screen').toBeLessThanOrEqual(viewport.height + 1);
+  expect(header.y).toBeGreaterThanOrEqual(-1);
+  expect(footer.y + footer.height).toBeLessThanOrEqual(viewport.height + 1);
+  expect((await page.locator('[data-journey-panel][hidden]').count())).toBe(2);
   for (const inactive of await page.locator('[data-journey-panel][hidden]').all()) await expect(inactive).toHaveJSProperty('inert', true);
   await stationaryWorld(page);
 }
