@@ -3,7 +3,7 @@ import type { Match } from '../../src/lib/player/contracts';
 import type { PatchImpactReport } from '../../src/lib/player/patch-impact';
 import { installFixtures, makeMatch, platform, puuid, type FixtureRequest } from '../player-e2e/fixtures';
 import { openBriefingSettings } from '../player-e2e/briefing-controls';
-import { openScene, readyWorld } from './journey-test-helpers';
+import { stationaryWorld, openScene, readyWorld } from './journey-test-helpers';
 
 // These are browser-only response fixtures. Engine reference calculations have
 // separate unit tests; these figures are not claims about live champion balance.
@@ -188,9 +188,9 @@ test('switching champions keeps the viewport and context controls still through 
     await page.evaluate(() => document.fonts.ready);
     const choices = impact.locator('.patch-impact-contexts');
     const secondChoice = impact.getByRole('button', { name: /Ahri/ });
-    // Records can scroll within their active scene; the shared world stays put.
+    // Scroll the document to the choices before measuring selection stability.
     await choices.scrollIntoViewIfNeeded();
-    expect(await page.evaluate(() => scrollY)).toBe(0);
+    await stationaryWorld(page);
     const position = async () => {
       await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
       return choices.evaluate(element => ({
@@ -391,7 +391,7 @@ for (const [width, height] of [[320, 568], [1440, 900]] as const) {
       await expect(details.locator(`a[href="https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json"]`)).toBeVisible();
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    expect(await page.evaluate(() => scrollY)).toBe(0);
+    await stationaryWorld(page);
     await expect(page).toHaveURL(url => url.hash === '#impact');
     expect(impactRequests(requests)).toHaveLength(1);
     expect(new URL(impactRequests(requests)[0]!.url).searchParams.get('id')).toBe(referenceMatch.metadata.matchId);

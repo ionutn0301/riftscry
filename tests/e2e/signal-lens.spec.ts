@@ -126,7 +126,7 @@ for (const entry of ['/compare', '/compare/26.16']) test(`${entry} preserves a s
 });
 
 test('patch filters can empty and restore the selected exact record without stale context', async ({ page }) => {
-  await page.goto('/patch?champions=belveth#belveth');
+  await page.goto('/patch/26.16?champions=belveth#belveth');
   await readyWorld(page);
   await expect(page).toHaveURL(url => /^\/patch\/\d+\.\d+\/?$/.test(url.pathname) && url.searchParams.get('champions') === 'belveth' && url.hash === '#belveth');
   await expect(page.locator('#belveth')).toBeVisible();

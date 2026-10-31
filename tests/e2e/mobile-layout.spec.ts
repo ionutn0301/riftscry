@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { openScene, readyWorld } from "./journey-test-helpers";
+import { openScene, readyWorld, stationaryWorld } from "./journey-test-helpers";
 import championData from "../../src/data/champions.json" with { type: "json" };
 import roleData from "../../src/data/roles.json" with { type: "json" };
 
@@ -55,9 +55,10 @@ async function readyJourneyMap(page: Page, width: number, height: number) {
   const opener = page.locator("[data-map-open]");
   await opener.focus();
   const scrollBefore = await page.evaluate(() => scrollY);
-  expect(scrollBefore).toBe(0);
+  await stationaryWorld(page);
   const reading = page.locator('.voyage-evidence-desk');
-  const panelScroll = await reading.evaluate(element => { element.scrollTop = Math.min(100, element.scrollHeight - element.clientHeight); return element.scrollTop; });
+  const panelScroll = await reading.evaluate(element => element.scrollTop);
+  expect(panelScroll).toBe(0);
   return { opener, scrollBefore, reading, panelScroll };
 }
 

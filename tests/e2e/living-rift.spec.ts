@@ -266,6 +266,7 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
   }
 
   await search.clear();
+  await page.locator('[data-roster-expand]').click();
   const ahri = page.locator('[data-roster-key="Ahri"] > a');
   await ahri.focus();
   await expect(ahri).toBeFocused();

@@ -1,3 +1,4 @@
+import { stationaryWorld } from './journey-test-helpers';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import historicalPatch from '../../src/data/patches/26.16.json' with { type: 'json' };
 
@@ -26,7 +27,7 @@ async function activeScene(page: Page, id: string) {
   await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
   await expect(page.locator(`[data-journey-tab="${id}"]`)).toHaveAttribute('aria-selected', 'true');
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
-  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+  await stationaryWorld(page);
   return panel;
 }
 
@@ -147,11 +148,10 @@ test('Explore presents real evidence directly and moves between scenes with tap 
   await expect(page.locator('[data-record-after]')).toHaveText('75 / 95 / 115 / 135 / 155 (+35 / 40 / 45 / 50 / 55% AP)');
   await expect(page.locator('[data-record-source]')).toHaveAttribute('href', 'https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-16-notes/');
   const keep = page.locator('[data-focus-record]');
-  // Long rank arrays may scroll within the reading area on a phone. The
-  // surrounding world and its scene controls must remain stationary.
+  // Long rank arrays use the document scroll on a phone; controls remain reachable.
   await keep.scrollIntoViewIfNeeded();
   await reachable(keep);
-  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await stationaryWorld(page);
   await keep.click();
   await expect(keep).toHaveAttribute('aria-pressed', 'true');
   const next = page.locator('[data-journey-next]');

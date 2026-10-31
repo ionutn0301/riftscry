@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { RECENT_PLAYER_KEY } from '../../src/lib/player/identity';
 import { installFixtures, makeMatch, platform, puuid, otherPuuid, recentAramWin, sourceMatch, type FixtureRequest } from '../player-e2e/fixtures';
 import { openBriefingSettings } from '../player-e2e/briefing-controls';
-import { openScene, readyWorld } from './journey-test-helpers';
+import { stationaryWorld, openScene, readyWorld } from './journey-test-helpers';
 
 const player = { platform, puuid, name: 'Fixture Player#TEST' };
 const direct = (id = puuid, extra = '') => `/next-game?platform=${platform}&puuid=${id}${extra}`;
@@ -268,14 +268,14 @@ test('the automatic lookup and report fit 320px with readable fields and usable 
       return hit === element || Boolean(hit && element.contains(hit));
     })).toBe(true);
   }
-  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await stationaryWorld(page);
   await page.setViewportSize({ width: 320, height: 568 });
   await settings.locator(':scope > summary').click();
   await expect(settings).toHaveJSProperty('open', false);
   await expect(page.locator('[data-automatic-focus="patch"]')).toBeVisible();
-  await page.locator('#focus').evaluate(element => element.scrollTo(0, 0));
+  await page.locator('[data-automatic-focus] h2').scrollIntoViewIfNeeded();
   await expect(page.locator('[data-automatic-focus] h2')).toBeInViewport({ ratio: 0.15 });
-  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await stationaryWorld(page);
 });
 
 test('a delayed account response in an older tab preserves the newer player selection', async ({ page }) => {

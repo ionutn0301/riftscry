@@ -94,6 +94,7 @@ test('choosing a signal changes the subject and evidence without moving the open
     boxes: [...document.querySelectorAll('[data-home-signals], #signal-title, [data-home-choice], .journey-header, .journey-chrome')]
       .map(element => { const box = element.getBoundingClientRect(); return [box.x, box.y, box.width, box.height]; }),
   }));
+  await choices.first().scrollIntoViewIfNeeded();
   const baseline = await position();
   const expectStationary = async () => {
     await settleLayout(page);

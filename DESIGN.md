@@ -23,7 +23,7 @@ player; named scene tabs and previous/next controls belong to the active route.
 No destination requires completing the homepage first.
 
 After enhancement, the shell fits the viewport and exposes one active scene.
-Long evidence has a natural scrolling area within that scene. Hidden scenes are
+Long evidence grows in the document; the page has one vertical scroll and no nested reading panels. Hidden scenes are
 inert and removed from the focus order. Headers and route controls stay reachable;
 short screens must not hide the action or create a second document-sized page
 inside the shell. Ordinary document flow and source records remain the archive
