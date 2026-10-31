@@ -9,6 +9,7 @@ const station = journeyStations.find(item => item.id === stationForSurface(surfa
 <footer class="journey-chrome" data-journey-chrome>
   <a class="signal-thread" href="/explore#change" data-signal-thread aria-label="Continue exploring a change"><span class="signal-thread-mark" aria-hidden="true">◇</span><span><small data-signal-thread-caption>{station?.label ?? 'THE SPACE BETWEEN GAMES'}</small><strong data-signal-thread-name>Find your signal</strong></span><span aria-hidden="true">↗</span></a>
   <div class="journey-scene-controls" data-journey-controls hidden>
+    <span class="journey-current-scene" data-journey-current-label></span>
     <span class="journey-scene-coordinate"><span data-journey-position>01</span><span aria-hidden="true">/</span><span data-journey-count>01</span></span>
     <button class="journey-scene-arrow" type="button" data-journey-prev aria-label="Previous scene">←</button>
     <div class="journey-scene-tabs" data-journey-tabs role="tablist" aria-label="Scenes in this destination"></div>

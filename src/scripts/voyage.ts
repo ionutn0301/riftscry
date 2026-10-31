@@ -4,6 +4,7 @@ import { $pool, togglePool, inPool } from '../lib/pool';
 import { rememberReading } from '../lib/return-briefing';
 import { readFindings, writeFindings, FINDINGS_LIMIT } from '../lib/kept-findings';
 import { rememberSignal, readSignalContext } from '../lib/signal-context';
+import { swapArtwork } from './artwork';
 
 const voyage = document.querySelector<HTMLElement>('[data-voyage]');
 const initialData = document.querySelector<HTMLScriptElement>('#voyage-initial-data');
@@ -11,6 +12,7 @@ const initialData = document.querySelector<HTMLScriptElement>('#voyage-initial-d
 if (voyage && initialData?.textContent) startVoyage(voyage, JSON.parse(initialData.textContent) as JourneyModel);
 
 function startVoyage(host: HTMLElement, initial: JourneyModel) {
+  const artworkLifetime=new AbortController();
   const query = <T extends HTMLElement = HTMLElement>(selector: string) => host.querySelector<T>(selector)!;
   const root = document.documentElement;
   let model = initial;
@@ -87,13 +89,8 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     setText('[data-champion-title]', model.identity.title);
     setText('[data-return-perspective]', 'Keep ' + model.identity.name + ' close.');
     setText('[data-selection-status]', `Following ${model.identity.name}.`);
-    const replacingArtwork = artwork.getAttribute('src') !== model.identity.splash;
-    artwork.hidden = replacingArtwork;
-    setHidden('[data-art-fallback]', true);
-    artwork.alt = model.identity.name + ' — official Riot Games artwork';
-    query<HTMLSourceElement>('[data-champion-portrait]').srcset = model.identity.portrait;
-    if (replacingArtwork) artwork.src = model.identity.splash;
-    requestAnimationFrame(reconcileArtwork);
+    void swapArtwork(artwork,{src:model.identity.splash,alt:model.identity.name+' — official Riot Games artwork',
+      fallback:query('[data-art-fallback]'),portrait:{source:query<HTMLSourceElement>('[data-champion-portrait]'),src:model.identity.portrait}},artworkLifetime.signal);
     host.querySelectorAll<HTMLButtonElement>('[data-choose-champion]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.chooseChampion === model.identity.id)));
     setHref('[data-champion-link]', '/champion/' + model.identity.id.toLowerCase());
     updateSaved();
@@ -531,6 +528,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
   window.addEventListener('pagehide', (event) => {
     // A page restored from the back-forward cache keeps its live listeners.
     if (event.persisted) return;
+    artworkLifetime.abort();
     pending?.abort();
     unsubscribe();
   });

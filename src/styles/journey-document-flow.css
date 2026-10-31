@@ -21,6 +21,9 @@ body.rift-shell[data-journey-ready] #main [data-journey-panel] {
   flex: 0 0 auto; height: auto; min-height: 0; max-height: none; overflow: visible;
   overscroll-behavior: auto; min-width: 0;
 }
+/* Newly committed React chapters wait for one atomic registration. They must
+   never flash together while the scene observer catches up. */
+body.rift-shell[data-journey-ready] #main [data-journey-panel]:not([data-journey-visible]) { display:none; }
 body.rift-shell[data-journey-ready] .journey-header {
   position: sticky; top: 0; z-index: 50;
   background: linear-gradient(#071016f0,#071016c9); backdrop-filter: blur(14px);
@@ -35,7 +38,7 @@ body.rift-shell[data-journey-ready] #main :is(
   .voyage-station-scene,.voyage-evidence-desk,.player-records,.player-view,
   .automatic-workspace,.recall-workspace,.recall-library-section,
   .gateway-composition,.player-gateway,.player-profile,.player-match,.purchase-timeline
-) { max-height: none; height: auto; overflow-y: visible; overscroll-behavior-y: auto; }
+) { max-height: none; height: auto; overflow: visible; overscroll-behavior: auto; }
 body.rift-shell[data-journey-ready] :is(.journey-record-selector,.journey-patch-stops) {
   overflow-x: visible; flex-wrap: wrap; align-content: start;
 }

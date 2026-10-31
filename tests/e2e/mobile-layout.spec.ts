@@ -109,10 +109,10 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
       .filter((element) => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
         && element.scrollHeight > element.clientHeight + 1)
       .map(element => element.className));
-    // The direct destination list can scroll on short screens. Its header,
-    // search, specialist links and the page behind it remain stationary.
+    // Only the outer dialog may scroll on short screens. Its destination
+    // instrument must never create a second scroll surface inside it.
     expect(scrollableRegions.length).toBeLessThanOrEqual(1);
-    if (scrollableRegions.length) expect(scrollableRegions[0]).toContain('signal-destinations');
+    if (scrollableRegions.length) expect(scrollableRegions[0]).toContain('journey-map');
     const closeMap = map.getByRole("button", { name: "Close the Rift map" });
     const searchMap = map.locator("[data-palette-trigger]");
     await expectUncovered(closeMap);

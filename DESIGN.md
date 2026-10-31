@@ -12,7 +12,11 @@ and [research](docs/signal-journey/RESEARCH.md) for the rationale, and
 The organizing idea is a connected world in the space between games. The Beacon
 (briefing), Echoes (games), Archive (champions), Fracture (patches), and Sanctuary
 (saved material) are places on one atlas. A persistent route path and the same
-spatial map on every route supply a stable geography. Within each place: where the visitor left off,
+spatial instrument on every route supply a stable geography. The entrance and
+menu use one perspective-projected Rift with five authored camera positions.
+Drag, wheel, keyboard and a native range move the same object continuously;
+all five destinations also remain ordinary links. Camera work is optional and
+reduced motion selects the destination immediately. Within each place: where the visitor left off,
 what changed, and what they take forward. A champion, player, recorded match, or
 patch pair gives the scene a subject. **Choose → reveal → inspect → keep** is the
 shared interaction grammar. The important moment is an understandable change or
@@ -20,7 +24,8 @@ useful recorded fact; scenery and movement frame that moment.
 
 ## One shell across the platform
 
-The header offers Discover, My game, and Saved. The map provides direct links to
+The desktop header offers Discover, My game, and Saved. Mobile uses a compact
+header, the five-place path and a full-screen Rift instrument. The map provides direct links to
 the five established destinations, with comparison, exploration, and notebook
 shortcuts. A lower continuation link follows the selected archive subject or
 player; named scene tabs and previous/next controls belong to the active route.
@@ -130,7 +135,7 @@ shortcuts must not capture text entry or composition.
 
 | Responsibility | Active sources |
 | --- | --- |
-| Spatial atlas and route path | `src/components/experience/RiftAtlas.astro`, `JourneySpine.astro`, `src/scripts/rift-atlas.ts`, `src/styles/rift-atlas.css` |
+| Spatial atlas and route path | `src/components/experience/RiftAtlas.astro`, `JourneySpine.astro`, `src/scripts/rift-atlas.ts`, `src/scripts/rift-passage.ts`, `src/lib/passage-camera.ts`, `src/styles/rift-atlas.css` |
 | Shared shell and navigation | `src/layouts/Layout.astro`, `src/components/experience/JourneyWayfinder.astro`, `src/components/experience/JourneyChrome.astro`, `src/styles/experience-shell.css` |
 | Scene visibility, history, and focus | `src/scripts/connected-observatory.ts`; shared map/motion behavior in `src/scripts/experience.ts` |
 | Public subject and player continuation | `src/scripts/signal-continuity.ts`, `src/lib/signal-context.ts`, `src/lib/player/identity.ts` |
@@ -139,6 +144,7 @@ shortcuts must not capture text entry or composition.
 | Champion exploration | `src/components/experience/HomeVoyage.astro`, `src/scripts/voyage.ts`, `src/styles/signal-explore.css` |
 | Roster/archive preview and comparisons | `src/scripts/reader-lens.ts`, `src/scripts/signal-comparison.ts` |
 | Player, briefing, and notebook presentation | `src/components/player/`, `src/components/companion/`, `src/styles/signal-player.css`, and their retained task styles |
+| Decoded artwork swaps | `src/scripts/artwork.ts` (latest selection wins; retain the current image until the next is decoded) |
 | Shared environment | `src/components/experience/RiftScene.astro`, `src/scripts/rift-scene.ts`, `src/styles/rift-scene.css` |
 
 The filename `connected-observatory.ts` remains the scene controller; it does not

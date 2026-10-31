@@ -60,6 +60,32 @@ test('an explicit signal link still opens the evidence journey', async ({ page }
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id','reveal');
 });
 
+test('the destination range moves the same object continuously and keeps direct entry ready',async({page})=>{
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.goto('/');await readyWorld(page);
+  const passage=page.locator('#atlas [data-passage]');
+  await expect(passage).toHaveAttribute('data-passage-painted','true');
+  const range=passage.locator('[data-passage-range]');await range.focus();await page.keyboard.press('End');
+  await expect(range).toHaveAttribute('aria-valuetext','Saved');
+  await expect(passage.locator('[data-passage-enter]')).toHaveAttribute('href',/\/pool#briefing$/);
+  await expect.poll(()=>passage.getAttribute('data-passage-position')).toBe('4.0000');
+  await expect(passage.locator('canvas')).toBeVisible();await expect(passage.locator('[data-passage-still]')).toBeHidden();
+  await expect(passage.locator('[data-passage-stop]')).toHaveCount(5);
+  await stationaryWorld(page);
+});
+
+test('dragging the object changes its camera without navigating or requiring a tutorial',async({page,isMobile})=>{
+  test.skip(isMobile,'The range and native links cover touch projects; this checks a real captured pointer drag.');
+  await page.setViewportSize({width:390,height:844});await page.goto('/');await readyWorld(page);
+  const passage=page.locator('#atlas [data-passage]'),viewport=passage.locator('[data-passage-gesture]');
+  await viewport.scrollIntoViewIfNeeded();const box=(await viewport.boundingBox())!;
+  const x=box.x+box.width*.8,y=box.y+box.height*.38;
+  await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x-box.width*.65,y,{steps:16});await page.mouse.up();
+  await expect.poll(async()=>Number(await passage.getAttribute('data-passage-position'))).toBeGreaterThan(.9);
+  await expect(page).toHaveURL(url=>url.pathname==='/');
+  await expect(passage.locator('[data-passage-enter]')).toHaveText(/Enter (Games|Champions|Patches|Saved)/);
+});
+
 test.describe('native atlas without scripts', () => {
   test.use({javaScriptEnabled:false});
   test('all five destinations are genuine usable links', async ({ page }) => {

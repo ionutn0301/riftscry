@@ -1,4 +1,5 @@
 import { journeyStations, stationForSurface } from '../lib/journey-stations';
+import { swapArtwork } from './artwork';
 
 /** Presentation only. Never imports player data or turns exploration into tasks. */
 const abort = new AbortController();
@@ -10,7 +11,7 @@ let current = stationForSurface(document.body.dataset.surface ?? 'home');
 let environment = images[0]?.dataset.atlasEnvironment ?? 'gateway';
 let preview = false;
 
-function setEnvironment(stationId: string) {
+async function setEnvironment(stationId: string) {
   const station = journeyStations.find(item => item.id === stationForSurface(stationId));
   const name = station?.image ?? 'gateway';
   if (name === environment) return;
@@ -18,18 +19,16 @@ function setEnvironment(stationId: string) {
   const version = ++request;
   const target = images[1 - layer];
   if (!target) return;
-  const show = () => {
-    if (version !== request || !target.naturalWidth || target.classList.contains('is-current')) return;
+  try {
+    const loaded = await swapArtwork(target,{src:`/images/journey/${name}-mobile.webp`,alt:''},abort.signal);
+    if (!loaded) { if (version === request) environment=''; return; }
+    if (version !== request) return;
+    if (typeof target.decode === 'function') await target.decode();
+    if (version !== request || abort.signal.aborted || target.classList.contains('is-current')) return;
     images[layer]?.classList.remove('is-current');
     target.classList.add('is-current');
     layer = 1 - layer;
-  };
-  target.onload = show;
-  target.onerror = () => { if (version === request) environment = ''; };
-  // All backgrounds are existing, local, compressed assets. Failed artwork
-  // leaves the current environment in place and never affects a real link.
-  target.src = `/images/journey/${name}-mobile.webp`;
-  if (target.complete && target.naturalWidth) show();
+  } catch { if (version === request) environment = ''; }
 }
 
 function restoreEnvironment() {

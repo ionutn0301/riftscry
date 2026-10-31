@@ -47,7 +47,7 @@ for (const preference of ['device', 'saved'] as const) test(`${preference} reduc
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'reveal');
   await page.locator('[data-journey-prev]').click();
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'signal');
-  await expect(page.locator('[data-journey-prev]')).toBeDisabled();
+  await expect(page.locator('[data-journey-prev]')).toBeEnabled();
   await expect(page.locator('[data-home-signals]')).toHaveAttribute('data-home-subject', subject!);
   await expect.poll(() => environment.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0);
   await expect.poll(() => page.locator('[data-home-signals]').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0);
@@ -86,7 +86,7 @@ test.describe('the signal journey before JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('static atmosphere, native destinations and exact source records are available immediately', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('[data-rift-scene-static]')).toBeVisible();
+    await expect(page.locator('#atlas [data-passage-still]')).toBeVisible();
     const environment = page.locator('.rift-scene__landscape img');
     await expect(environment).toBeVisible();
     await expect.poll(() => environment.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);

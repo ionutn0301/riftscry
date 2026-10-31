@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 const key = 'riftscry:atlas-places:v1';
+let probes:HTMLImageElement[]=[];
 const query = <T extends Element = HTMLElement>(selector:string) => document.querySelector<T>(selector)!;
 async function mount(surface = 'home') {
   document.body.dataset.surface = surface;
@@ -14,30 +15,40 @@ async function mount(surface = 'home') {
   for (const image of document.querySelectorAll('img')) {
     Object.defineProperty(image,'naturalWidth',{value:720,configurable:true});
     Object.defineProperty(image,'complete',{value:false,configurable:true});
+    Object.defineProperty(image,'decode',{value:()=>Promise.resolve(),configurable:true});
   }
   await import('../../../src/scripts/rift-atlas');
 }
-beforeEach(() => { vi.resetModules(); sessionStorage.clear(); });
+beforeEach(() => {
+  vi.resetModules(); sessionStorage.clear(); probes=[];
+  vi.stubGlobal('Image', function () {
+    const probe=document.createElement('img');
+    Object.defineProperty(probe,'naturalWidth',{value:720});
+    Object.defineProperty(probe,'decode',{value:()=>Promise.resolve()});
+    probes.push(probe);return probe;
+  });
+});
 afterEach(() => {
   window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:false}));
-  document.body.innerHTML = ''; vi.restoreAllMocks();
+  document.body.innerHTML = ''; vi.restoreAllMocks(); vi.unstubAllGlobals();
 });
 
 it('discards late environment loads and restores the actual place after a preview', async () => {
   await mount();
   const image = query<HTMLImageElement>('img:not(.is-current)');
   query('[data-atlas-portal="champions"]').dispatchEvent(new Event('pointerover',{bubbles:true}));
-  const stale = image.onload!;
+  const stale = probes[0]!;
   query('[data-atlas-portal="patches"]').dispatchEvent(new Event('pointerover',{bubbles:true}));
-  stale.call(image,new Event('load'));
+  stale.dispatchEvent(new Event('load'));
+  await Promise.resolve(); await Promise.resolve();
   expect(image.classList.contains('is-current')).toBe(false);
-  image.onload!.call(image,new Event('load'));
-  expect(image.classList.contains('is-current')).toBe(true);
+  probes[1]!.dispatchEvent(new Event('load'));
+  await vi.waitFor(()=>expect(image.classList.contains('is-current')).toBe(true));
   expect(image.src).toContain('fracture-mobile.webp');
   query('[data-rift-atlas]').dispatchEvent(new Event('pointerleave'));
   const entrance = query<HTMLImageElement>('img:first-child');
-  entrance.onload!.call(entrance,new Event('load'));
-  expect(entrance.classList.contains('is-current')).toBe(true);
+  probes[2]!.dispatchEvent(new Event('load'));
+  await vi.waitFor(()=>expect(entrance.classList.contains('is-current')).toBe(true));
   expect(image.classList.contains('is-current')).toBe(false);
 });
 
@@ -75,7 +86,8 @@ it('uses the active chapter environment and removes listeners when the document 
   await mount();
   window.dispatchEvent(new CustomEvent('riftscry:journey-change',{detail:{id:'history'}}));
   const image = query<HTMLImageElement>('img:not(.is-current)');
-  expect(image.src).toContain('archive-mobile.webp');
+  probes[0]!.dispatchEvent(new Event('load'));
+  await vi.waitFor(()=>expect(image.src).toContain('archive-mobile.webp'));
   window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:false}));
   const before = image.src;
   query('[data-atlas-portal="patches"]').dispatchEvent(new Event('pointerover',{bubbles:true}));

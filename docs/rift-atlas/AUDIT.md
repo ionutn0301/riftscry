@@ -16,6 +16,14 @@ earlier viewport locking and nested scrolling. The refactor replaces it with a
 compact document-flow contract and makes the site's structure visible as places.
 The existing working data pipeline and optional personal workflows are retained.
 
+The second pass identified concrete defects: profile styles placed identity and
+result in intersecting grid cells; changing only `overflow-y` left accidental
+scrollports when `overflow-x` was hidden; image changes blanked the displayed
+asset before its replacement decoded; resizing a canvas cleared it between
+paints; React could briefly commit all chapters before registration. AI review
+also lacked a clear entry action in the overview. These paths are now corrected
+in source and covered by targeted regression tests.
+
 ## Current research
 
 This is a qualitative review of primary sources, not a popularity ranking.
@@ -33,11 +41,34 @@ next focus, and a sanctuary for what you keep. These labels supplement clear tas
 names and correspond to real destinations. This synthesis does not claim that
 spatial navigation has never appeared elsewhere.
 
+## Igloo reference and new interaction
+
+The [Igloo creator case study by abeto](https://www.awwwards.com/igloo-inc-case-study.html)
+describes planning a camera journey, prototyping geometry before final art,
+iterating in the browser, and making effects and transitions part of a connected
+world. RiftScry adopts the continuous-camera principle with its own fractured
+Rift object and task geography. This is an interaction synthesis, not a claim
+that the implementation matches Igloo's production quality.
+
+The homepage and shared menu now render a real perspective projection of the
+same existing mesh. Five authored views connect by eased movement, material
+color and a focal push between destinations. Mobile supports direct object
+dragging and a native range; keyboard and wheel work too. Native links remain
+visible and do not wait for an animation. The menu is the same spatial
+instrument, including on deep routes. Chapter and document transitions open a
+cut through depth instead of fading the entire scene. Canvas2D avoids a WebGL2
+requirement; the SSR SVG remains until a successful first paint. No runtime
+package or texture download was added for this interaction.
+
+The live Igloo site returned its WebGL2 compatibility fallback in this browser.
+Its rendered interaction could not be inspected here; the creator's published
+case study is the source for these design principles.
+
 ## Entire platform inventory
 
 | Route | Place and experience |
 | --- | --- |
-| / | Spatial atlas with five native portals, setting previews, direct briefing entry, and a champion-signal branch. |
+| / | Continuous Rift camera with five native destinations, direct briefing entry, and a champion-signal branch. |
 | /explore | Archive: retain the champion, interval, selected field and exact evidence while travelling through task chapters. |
 | /champions | Archive: search and preview a champion; reduce excess card framing so artwork occupies the scene. |
 | /champion/:slug | Archive: dated records, true before/after values and sources, with the atlas path always reachable. |
@@ -47,7 +78,7 @@ spatial navigation has never appeared elsewhere.
 | /next-game | Beacon: enter a Riot ID once; the existing automatic briefing, patch impact and recorded loadout do the work. |
 | /players | Echoes: one identity lookup, remembered player and sensible task defaults. |
 | /players/:platform/:puuid | Echoes: player identity, exact-mode history, observed builds and Build Memory inherit the shared environment and path. |
-| /matches/:id | Echoes: overview, review, source evidence and build tasks are chapters of the same destination. |
+| /matches/:id | Echoes: overview, explicit AI review entry, source evidence and build tasks are chapters of the same destination. |
 | /pool | Sanctuary: champions and exact kept findings retain their source links. |
 | /notebook | Sanctuary: notes, retained builds, preparation and backups remain optional. |
 | 404 | Shared atlas, search and route path support recovery. |
@@ -62,8 +93,24 @@ browser and API verification.
 
 - `journey-stations.ts` supplies task names, places, links, artwork and colors to
   the entrance, modal atlas and persistent route path.
-- `RiftAtlas.astro` renders real links. Pointer, touch, Tab, directional arrows
-  and Enter provide access without a compulsory drag gesture or tutorial.
+- `RiftAtlas.astro` renders the persistent object, its SVG fallback and real
+  links. `rift-passage.ts` paints the projected mesh; `passage-camera.ts` owns
+  continuous pose/color interpolation. The RAF stops once the camera settles,
+  pauses in hidden documents, and caps rendering density at 1.5 device pixels.
+  Touch, range, Tab, directional arrows and native links provide alternatives.
+- Mobile chapter controls show the active chapter name and use 44px targets.
+  The menu has one outer scroll on short screens, never an inner destination
+  list. Route content and evidence retain one document scroll.
+- Profile identity, tags and mode/result labels wrap in natural flow. Match
+  cards use one named-area grid, with separate identity and result rows at
+  380px and below. Optional identity settings open in flow.
+- `artwork.ts` holds the old image until the latest requested asset is decoded.
+  Stale completions cannot replace it, returning to the displayed source cancels
+  pending work, and failed current assets reveal the existing honest fallback.
+  Canvas dimensions change only in a callback that also paints.
+- Match overview has a direct AI action. It reveals the named chapter and makes
+  exactly one explicit request, even on rapid repeated activation. AI failures
+  keep deterministic facts and retry; deterministic responses retain their label.
 - `rift-atlas.ts` previews settings with two environment planes. Stale image
   requests cannot commit an obsolete destination; failed art leaves links usable.
 - The existing chapter controller owns panel selection, focus, fragments,
@@ -81,28 +128,29 @@ browser and API verification.
 
 ## Actual verification and limitations
 
-Before workspace access was lost:
+Validation for this revision:
 
-- The first implementation passed Astro typecheck, the production build and
-  519 unit/integration tests.
-- Five additional atlas DOM tests passed separately: stale image requests,
-  keyboard movement, blocked storage, place-only memory and lifecycle cleanup.
-- The production-output atlas contract passed on 622 generated content pages,
-  including every generated champion history, patch and comparison pair.
-- Vercel deployed commit `061c1da` successfully.
+- Astro check: 263 files, zero errors and warnings, one pre-existing unused-import
+  hint in `src/pages/players.astro`.
+- Vitest: all 543 tests pass across 58 files. New cases cover camera convergence,
+  boundary/reversal behavior, reduced motion, resize without canvas clearing,
+  wheel scroll release, image races/failure/abort, fast React scene registration,
+  and explicit AI request/success/failure/deterministic fallback.
+- Production build succeeds with the existing Astro/Vercel adapter.
+- Production-output contract passes on all 622 generated content pages.
+- Browser collections parse successfully: 753 archive/journey cases and 110
+  fixture-backed player cases. Collection is not browser execution.
 
-Browser suites were added/migrated for the new entrance and dialog name. They
-were not executed in this session. Browser geometry, cinematic composition and
-live Riot/AI behavior remain unverified.
+Browser suites cover the five destinations, menu focus return, long profile
+labels at 320/390/844/1440px, accidental nested scrolling, camera travel, reduced
+motion, native Back and explicit AI entry. They have been collected, not executed
+in this environment. Mocked DOM tests establish state and lifecycle behavior;
+they do not establish visual composition or browser performance.
 
-The managed preview CLI reports an absent daemon mailbox. The deployed preview
-redirects this browser to Vercel sign-in, and the connected preview-access tool
-could not access the deployment. The workspace then became unavailable during
-final cleanup. The main implementation was already committed, and remaining
-test/documentation updates were preserved through GitHub. Final incremental
-changes therefore require a fresh full check in a restored environment.
-
-The PR remains a draft. Before merging, review desktop and mobile composition,
-short landscape, enlarged text, hit targets, failed art, reduced motion, complete
-player journeys and native Back. Neither DOM tests nor historical screenshots
-establish cinematic quality, measured performance or accessibility certification.
+The managed preview CLI reports an absent daemon mailbox. The Vercel preview
+redirects this browser to sign-in, and the connected preview-access tools report
+no access to that deployment/team. The PR remains a draft until browser review
+can verify desktop, mobile, short landscape, enlarged text, touch gestures,
+failed assets and real player journeys. Live Riot/AI services have not been
+exercised by fixture-based tests. No claim of zero UI defects, measured frame
+rate or accessibility certification is made.
