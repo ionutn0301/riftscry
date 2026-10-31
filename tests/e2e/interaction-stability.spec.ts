@@ -20,7 +20,7 @@ test('failed imagery leaves named native signal choices and exact evidence avail
   try {
     await page.goto('/', { waitUntil: 'commit' });
     await expect(choices).toHaveCount(3);
-    await expect(home.locator('#signal-title')).toContainText('stands still.');
+    await expect(home.locator('#signal-title')).toContainText('Choose a champion.');
     const signals = await homeSignals(page);
     for (const [index, signal] of signals.entries()) {
       await expect(choices.nth(index)).toHaveAttribute('href', signal.explore);

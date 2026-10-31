@@ -21,6 +21,11 @@ for (const file of pages) {
   assert(document.querySelectorAll('main h1').length === 1,'expected one page heading');
   assert(document.querySelectorAll('[data-atlas-environment]').length === 2,'missing environment planes');
   assert(document.querySelector('[data-journey-deck]'),'missing chapter controller');
+  if(document.querySelector('#atlas')){
+    assert(document.querySelectorAll('#atlas .passage-reading h1').length===1,'homepage title must belong to its single reading area');
+    assert(document.querySelectorAll('#atlas h2,.atlas-arrival-heading').length===0,'homepage contains a competing headline block');
+    assert(document.querySelectorAll('#atlas [data-passage-enter]').length===1,'homepage must have one primary entry action');
+  }
   for (const img of document.querySelectorAll('[data-rift-atlas] img, [data-atlas-environment]')) {
     const src = img.getAttribute('src');
     if (src) await access(join('public',src));

@@ -3,6 +3,7 @@ import { beforeEach,afterEach,it,expect,vi } from 'vitest';
 let frames:Map<number,FrameRequestCallback>,nextFrame:number,resize:()=>void,widthWrites:number;
 let viewport:HTMLElement,canvas:HTMLCanvasElement;
 beforeEach(()=>{
+  localStorage.clear();
   vi.resetModules();frames=new Map();nextFrame=0;widthWrites=0;document.documentElement.dataset.motion='full';
   vi.stubGlobal('requestAnimationFrame',(fn:FrameRequestCallback)=>{frames.set(++nextFrame,fn);return nextFrame;});
   vi.stubGlobal('cancelAnimationFrame',(id:number)=>frames.delete(id));
@@ -50,6 +51,21 @@ it('keeps direct destination links native and follows updated remembered-player 
   const link=document.querySelector<HTMLAnchorElement>('[data-passage-stop="0"]')!;
   link.href='/next-game?platform=eun1&puuid=remembered';await Promise.resolve();expect(enter().href).toBe(link.href);
   const click=new MouseEvent('click',{bubbles:true,cancelable:true,ctrlKey:true});link.dispatchEvent(click);expect(click.defaultPrevented).toBe(false);
+});
+it('uses one entry action for the remembered player, then restores the home title after travelling',async()=>{
+  host().setAttribute('data-passage-home','true');
+  const title=document.querySelector<HTMLElement>('[data-passage-title]')!;title.innerHTML='Every game leaves <em>a ripple.</em>';title.setAttribute('aria-label','Every game leaves a ripple.');
+  enter().innerHTML='<span data-passage-enter-label data-home-briefing-label></span><span aria-hidden="true">↗</span>';
+  const person=document.createElement('p');person.setAttribute('data-passage-personal','');host().append(person);
+  localStorage.setItem('riftscry:recent-player:v1',JSON.stringify({platform:'eun1',puuid:'fixture-player-000000000000000000000000000000000',name:'Returning Player#TEST'}));
+  await import('../../../src/scripts/rift-passage');
+  expect(enter().textContent).toContain('Continue briefing');expect(person.textContent).toBe('Returning Player#TEST');
+  viewport.dispatchEvent(new KeyboardEvent('keydown',{key:'End',cancelable:true}));
+  expect(enter().hasAttribute('data-home-briefing')).toBe(false);expect(person.hidden).toBe(true);expect(enter().textContent).toContain('Enter Saved');
+  localStorage.clear();window.dispatchEvent(new StorageEvent('storage',{key:null}));
+  viewport.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',cancelable:true}));
+  expect(title.getAttribute('aria-label')).toBe('Every game leaves a ripple.');expect(title.querySelector('em')?.textContent).toBe('a ripple.');
+  expect(enter().textContent).toContain('Enter Briefing');expect(person.hidden).toBe(true);
 });
 it('keeps reduced motion immediate, with no continuous idle animation',async()=>{
   await import('../../../src/scripts/rift-passage');

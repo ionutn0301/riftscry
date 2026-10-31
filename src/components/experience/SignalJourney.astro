@@ -15,11 +15,9 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
 ---
 <div class="signal-journey" data-home-signals data-journey-deck data-journey-default="atlas" data-journey-active="atlas">
   <section id="atlas" class="atlas-arrival" data-journey-panel data-journey-label="The Rift" data-journey-world="home" aria-labelledby="atlas-title">
-    <header class="atlas-arrival-heading"><p class="journey-eyebrow"><i aria-hidden="true"></i> THE SPACE BETWEEN GAMES</p><h1 id="atlas-title" aria-label="Every game leaves a ripple.">Every game leaves<br />a <em>ripple.</em></h1><p>Choose where yours takes you.</p></header>
     <RiftAtlas entrance />
     <div class="atlas-arrival-footer">
-      <a href="/next-game" data-station-link="next-game" class="atlas-personal-link" data-home-briefing><span><small data-home-briefing-caption>FROM YOUR GAMES</small><strong data-home-briefing-label>Find my next move</strong></span><b aria-hidden="true">↗</b></a>
-      <a href="#signal" class="atlas-follow-signal"><span class="atlas-live-dot" aria-hidden="true"></span>Follow a champion signal <span aria-hidden="true">→</span></a>
+      <a href="#signal" class="atlas-follow-signal"><span class="atlas-live-dot" aria-hidden="true"></span>Inspect a champion change <span aria-hidden="true">→</span></a>
       <a class="atlas-reading-link" href="/explore#change" data-home-reading hidden><span><small>YOUR LAST TRAIL</small><strong data-home-reading-label>Resume exploring</strong></span><b aria-hidden="true">↗</b></a>
     </div>
   </section>
@@ -31,7 +29,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   </figure>
 
   <section id="signal" class="signal-act signal-act--arrival" data-journey-panel data-journey-label="Find a signal" data-journey-world="home" aria-labelledby="signal-title">
-    <div class="signal-opening-copy"><p class="journey-eyebrow"><i aria-hidden="true"></i> A SIGNAL FROM THE ARCHIVE</p><h2 id="signal-title">The Rift<br /> never <em>stands still.</em></h2><p class="signal-opening-caption">Choose a champion. Reveal what shifted.</p>
+    <div class="signal-opening-copy"><p class="journey-eyebrow"><i aria-hidden="true"></i> CHAMPION ARCHIVE</p><h2 id="signal-title">Choose a <em>champion.</em></h2><p class="signal-opening-caption">Select a portrait. Inspect its recorded change.</p>
       <div class="signal-opening-actions"><a class="signal-primary-action" href="#reveal" data-home-reveal><span>Reveal the change</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/next-game" data-home-personal data-station-link="next-game">Use my games <span aria-hidden="true">→</span></a></div>
       <p class="signal-return-hint" data-home-return hidden></p>
       <a class="signal-return-hint signal-secondary-action" href="/explore#change" data-home-context hidden></a>

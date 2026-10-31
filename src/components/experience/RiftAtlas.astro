@@ -11,7 +11,7 @@ const id = entrance ? 'entrance-passage' : 'menu-passage';
 const pose = passagePose(index);
 const faces = projectRift({...getRiftPreset('home'),...pose,accent:first.color});
 ---
-<div class:list={['rift-atlas','rift-passage',entrance && 'rift-atlas--entrance']} data-rift-atlas data-passage data-passage-initial={index} style={`--passage-color:${first.color};--passage-offset-x:${pose.x*100}%;--passage-offset-y:${pose.y*100}%`}>
+<div class:list={['rift-atlas','rift-passage',entrance && 'rift-atlas--entrance']} data-rift-atlas data-passage data-passage-home={entrance?'true':undefined} data-passage-initial={index} style={`--passage-color:${first.color};--passage-offset-x:${pose.x*100}%;--passage-offset-y:${pose.y*100}%`}>
   <div class="passage-viewport" data-passage-gesture tabindex="-1" role="group" aria-label="Explore the Rift in depth" aria-describedby={`${id}-hint`}>
     <svg class="passage-aperture" viewBox="0 0 1000 1000" fill="none" aria-hidden="true"><path d={passageAperture(index)} data-passage-aperture/><circle cx="500" cy="500" r="400"/></svg>
     <svg class="passage-still" data-passage-still viewBox="0 0 1000 1000" fill="none" aria-hidden="true">
@@ -26,9 +26,10 @@ const faces = projectRift({...getRiftPreset('home'),...pose,accent:first.color})
   </div>
   <div class="passage-reading">
     <p class="journey-eyebrow" data-passage-place>{first.number} / {first.place}</p>
-    <h2 data-passage-title>{first.title}</h2>
+    {entrance?<h1 id="atlas-title" data-passage-title aria-label="Every game leaves a ripple.">Every game leaves <em>a ripple.</em></h1>:<h2 data-passage-title>{first.title}</h2>}
     <p data-passage-description>{first.description}</p>
-    <a class="passage-enter" href={first.href} data-passage-enter>Enter {first.label}<span aria-hidden="true">↗</span></a>
+    <a class="passage-enter" href={first.href} data-passage-enter data-home-briefing={entrance?'':undefined}><span data-passage-enter-label data-home-briefing-label={entrance?'':undefined}>Enter {first.label}</span><span aria-hidden="true">↗</span></a>
+    {entrance&&<p class="passage-personal" data-passage-personal hidden></p>}
   </div>
   <div class="passage-instrument" data-passage-instrument hidden>
     <button type="button" data-passage-step="-1" aria-label="Previous destination">←</button>

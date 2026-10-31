@@ -115,6 +115,7 @@ function discover() {
   if (!found || !foundPanels.length) return;
   const changed = found !== deck || foundPanels.length !== panels.length || foundPanels.some((panel, index) => panel !== panels[index]);
   if (!changed) return;
+  const newDocumentDeck=deck===null;
   deck = found;
   panels = foundPanels;
   const fragment = document.createDocumentFragment();
@@ -137,6 +138,13 @@ function discover() {
     : found.matches('[data-home-signals]') && new URLSearchParams(location.search).has('signal') ? 'signal'
     : deck.dataset.journeyDefault ?? panels[0]!.id;
   activate(requested);
+  // A chapter fragment selects a scene. It must not scroll the route title
+  // behind the sticky header as the unenhanced chapters collapse. Deep record
+  // fragments and browser history retain native document restoration.
+  if(newDocumentDeck&&panels.some(panel=>panel.id===hashId())&&
+    (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming|undefined)?.type!=='back_forward'){
+    requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'instant'}));
+  }
 }
 
 function scheduleDiscover() { if (!pendingFrame) pendingFrame = requestAnimationFrame(discover); }
