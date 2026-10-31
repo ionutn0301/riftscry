@@ -16,7 +16,14 @@ async function sceneFits(page: Page) {
   expect(bounds.height).toBeGreaterThan(0);
   expect(hero.height, 'A scene must not be taller than the screen').toBeLessThanOrEqual(viewport.height + 1);
   expect(header.y).toBeGreaterThanOrEqual(-1);
-  expect(footer.y + footer.height).toBeLessThanOrEqual(viewport.height + 1);
+  if (viewport.height > 620) {
+    expect(footer.y + footer.height).toBeLessThanOrEqual(viewport.height + 1);
+  } else {
+    // Short-screen navigation follows the content instead of obscuring links.
+    const chrome = page.locator('.journey-chrome');
+    await chrome.scrollIntoViewIfNeeded();
+    await expect(chrome).toBeInViewport({ ratio: 0.99 });
+  }
   expect((await page.locator('[data-journey-panel][hidden]').count())).toBe(2);
   for (const inactive of await page.locator('[data-journey-panel][hidden]').all()) await expect(inactive).toHaveJSProperty('inert', true);
   await stationaryWorld(page);

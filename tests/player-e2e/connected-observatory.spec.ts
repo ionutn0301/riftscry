@@ -28,6 +28,7 @@ async function ready(page: Page) {
 }
 
 async function reachable(control: Locator) {
+  await control.scrollIntoViewIfNeeded();
   await expect(control).toBeInViewport({ ratio: 0.99 });
   await expect.poll(() => control.evaluate(element => {
     const box = element.getBoundingClientRect();
@@ -56,7 +57,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         return { top: box.top, bottom: box.bottom, width: box.width, height: box.height };
       });
       expect(geometry.top).toBeGreaterThanOrEqual(0);
-      expect(geometry.bottom).toBeLessThanOrEqual(viewport.height + 1);
+      expect(geometry.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(geometry.width).toBeGreaterThan(0);
       expect(geometry.height).toBeGreaterThan(100);
       const panelCount = await page.locator('[data-journey-panel]').count();
@@ -74,11 +75,17 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       }
       await reachable(page.locator(route.action).first());
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
-      // Data may scroll inside its reading panel; the world itself must stay put.
-      expect(await page.evaluate(() => {
-        window.scrollTo({ top: innerHeight * 2, behavior: 'instant' });
-        return scrollY;
-      })).toBe(0);
+      // A route may be longer than the screen, but the document is the only
+      // vertical scroll surface. Never trap content inside another scrollport.
+      const scrolling = await page.locator('#main').evaluate(main =>
+        [...main.querySelectorAll('*')].filter(element =>
+          /^(auto|scroll)$/.test(getComputedStyle(element).overflowY) &&
+          element.scrollHeight > element.clientHeight + 3).length);
+      expect(scrolling).toBe(0);
+      const maxScroll = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+      const windowScroll = await page.evaluate(() => { window.scrollTo({ top: innerHeight * 2, behavior: 'instant' }); return scrollY; });
+      expect(windowScroll).toBeGreaterThanOrEqual(0);
+      if (maxScroll > 5) expect(windowScroll).toBeGreaterThan(0);
       expect(requests.filter(request => request.action === 'review' || request.action === 'timeline')).toEqual([]);
       expect(errors).toEqual([]);
     });

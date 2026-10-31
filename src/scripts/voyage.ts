@@ -287,9 +287,19 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     const search = normalizeChampionName(rosterInput.value);
     const role = roleInput.value;
     const filtered = roster.filter((champion) => (!search || normalizeChampionName(champion.name).includes(search) || normalizeChampionName(champion.id).includes(search)) && (!role || champion.roles.includes(role)));
+    // Only a useful, viewport-sized selection belongs in this dialog.
+    // Search covers the full roster, and the full champion page is one link away.
+    const featured = (rosterDialog.dataset.rosterFeatured ?? '').split(',').filter(Boolean);
+    const ordered = search || role ? filtered : [...filtered].sort((a, b) => {
+      const priority = (id: string) => id === model.identity.id ? -1 : featured.includes(id) ? featured.indexOf(id) : 999;
+      return priority(a.id) - priority(b.id);
+    });
+    const limit = innerHeight <= 420 ? innerWidth <= 700 ? 4 : 6
+      : innerWidth <= 700 ? innerHeight <= 620 ? 6 : 9 : 12;
+    const preview = ordered.slice(0, limit);
     const list = query('[data-roster-results]');
     const fragment = document.createDocumentFragment();
-    for (const champion of filtered) {
+    for (const champion of preview) {
       const item = document.createElement('li');
       const button = document.createElement('button');
       button.type = 'button';
@@ -313,7 +323,11 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
       fragment.append(item);
     }
     list.replaceChildren(fragment);
-    setText('[data-roster-status]', filtered.length ? `${filtered.length} ${filtered.length === 1 ? 'champion' : 'champions'}. Choose one to change your journey.` : 'No champion matches. Try a different name or role.');
+    setText('[data-roster-status]', filtered.length
+      ? preview.length < filtered.length
+        ? `Showing ${preview.length} of ${filtered.length}. Search to find any champion.`
+        : `${filtered.length} ${filtered.length === 1 ? 'champion' : 'champions'} found. Choose your perspective.`
+      : 'No champion matches. Try a different name or role.');
   }
 
   async function openRoster() {
@@ -322,7 +336,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
     rosterDialog.showModal();
     rosterDialog.scrollTop = 0;
     rosterInput.focus({ preventScroll: true });
-    setText('[data-roster-status]', 'Opening the full champion roster…');
+    setText('[data-roster-status]', 'Opening champion search…');
     try { await loadRoster(); renderRoster(); }
     catch { setText('[data-roster-status]', 'The roster could not load. Close and reopen to retry, or use the complete roster page below.'); }
   }
@@ -491,6 +505,7 @@ function startVoyage(host: HTMLElement, initial: JourneyModel) {
 
   rosterDialog.addEventListener('close', () => { if (rosterOpener?.isConnected) rosterOpener.focus({ preventScroll: true }); });
   rosterInput.addEventListener('input', renderRoster);
+  window.addEventListener('resize', () => { if (rosterDialog.open) renderRoster(); });
   roleInput.addEventListener('change', renderRoster);
   fieldInput.addEventListener('change', () => {
     selected = voyageSelection(period.records, fieldInput.value);

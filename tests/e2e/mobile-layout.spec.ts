@@ -153,7 +153,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
 }
 
 for (const [width, height] of [[320, 568], [390, 844]] as const) {
-  test(`champion selection has one usable scroll surface at ${width}px`, async ({ page }) => {
+  test(`champion selection is searchable without an internal scroll surface at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/explore#perspective", { waitUntil: "domcontentloaded" });
     await readyJourney(page);
@@ -163,17 +163,17 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     await opener.click();
     const roster = page.locator("#voyage-roster");
     await expect(roster).toBeVisible();
-    await expect(roster.locator("[data-choose-champion]")).toHaveCount(Object.keys(champions).length);
+    await expect.poll(() => roster.locator("[data-choose-champion]").count()).toBeGreaterThan(0);
+    expect(await roster.locator("[data-choose-champion]").count()).toBeLessThanOrEqual(12);
     const search = roster.getByRole("searchbox", { name: "Find a champion" });
     await expect(search).toBeFocused();
     expect(await search.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
     const scrollRegions = await roster.evaluate((dialog) => {
       const regions = [dialog, ...dialog.querySelectorAll("*")].filter((element) =>
         /^(auto|scroll)$/.test(getComputedStyle(element).overflowY) && element.scrollHeight > element.clientHeight + 1);
-      for (const element of regions) element.scrollTop = element.scrollHeight;
       return regions.length;
     });
-    expect(scrollRegions).toBe(1);
+    expect(scrollRegions).toBe(0);
     const close = roster.getByRole("button", { name: "Close champion selection" });
     await expectUncovered(close);
     await close.click();
@@ -185,7 +185,7 @@ for (const [width, height] of [[320, 568], [390, 844]] as const) {
     const scrollPositions = await roster.evaluate((dialog) => [dialog, ...dialog.querySelectorAll("*")]
       .filter((element) => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
         && element.scrollHeight > element.clientHeight + 1).map((element) => element.scrollTop));
-    expect(scrollPositions).toEqual([0]);
+    expect(scrollPositions).toEqual([]);
     await search.fill("Azir");
     await expect(roster.locator("[data-choose-champion]")).toHaveCount(1);
     const scrollBeforeSelection = await page.evaluate(() => scrollY);

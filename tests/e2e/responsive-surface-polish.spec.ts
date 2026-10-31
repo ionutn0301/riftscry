@@ -20,7 +20,11 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1366, 768], 
     await expect(scene).toHaveCount(1);
     await expect(scene).toHaveAttribute('id', 'change');
     const bounds = (await scene.boundingBox())!;
-    expect(bounds.y + bounds.height).toBeLessThanOrEqual(height + 1);
+    expect(bounds.height).toBeGreaterThan(0);
+    const nested = await page.locator('main').evaluate(main => [...main.querySelectorAll('*')]
+      .filter(element => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)
+        && element.scrollHeight > element.clientHeight + 3).length);
+    expect(nested, 'The document owns the only vertical scroll').toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
     const actions = page.locator('[data-roster-open], #change [data-focus-record], #change [data-record-source], #change .voyage-station-continue');
     await expect(actions).toHaveCount(4);
@@ -33,7 +37,7 @@ for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1366, 768], 
         return hit === element || Boolean(hit && element.contains(hit));
       })).toBe(true);
     }
-    expect(await page.evaluate(() => scrollY)).toBe(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   });
 }
 

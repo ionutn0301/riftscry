@@ -153,7 +153,7 @@ test.describe('readers before JavaScript', () => {
     await expect(navigation.getByRole('link', { name: 'Notebook', exact: true })).toBeVisible();
     await page.locator('[data-history-record]').first().scrollIntoViewIfNeeded();
     await expect(page.locator('[data-history-record]').first()).toBeVisible();
-    await expect(page.locator('[data-history-record]').first().getByRole('link', { name: /^Riot’s notes/ })).toHaveAttribute('href', /^https:\/\//);
+    await expect(page.locator('[data-history-record]').first().getByRole('link', { name: /Original source/ })).toHaveAttribute('href', /^https:\/\//);
     await navigation.getByRole('link', { name: 'Patches', exact: true }).click();
     await expect(page).toHaveURL(/\/patches$/);
     await page.locator('[data-archive-focus-link]').click();

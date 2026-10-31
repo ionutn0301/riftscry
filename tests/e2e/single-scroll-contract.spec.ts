@@ -78,3 +78,66 @@ test('the jump map keeps all destinations visible without nested scrolling', asy
     await map.getByRole('button', { name: 'Close the Rift map' }).click();
   }
 });
+
+test('the champion search stays within one screen on phones and desktop', async ({ page }, info) => {
+  test.skip(info.project.name === 'mobile-chromium', 'Chromium and WebKit geometry runs cover this case');
+  test.setTimeout(180_000);
+  for (const { width, height } of [
+    { width: 320, height: 568 }, { width: 390, height: 844 },
+    { width: 568, height: 320 }, { width: 844, height: 390 },
+    { width: 1366, height: 768 },
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/explore');
+    await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+    await page.locator('[data-roster-open]').click();
+    const roster = page.locator('#voyage-roster');
+    await expect(roster).toBeVisible();
+    await expect.poll(() => roster.locator('[data-choose-champion]').count()).toBeGreaterThan(0);
+    expect(await roster.locator('[data-choose-champion]').count()).toBeLessThanOrEqual(12);
+    const scroll = await roster.evaluate(dialog => [dialog, ...dialog.querySelectorAll('*')]
+      .filter(el => /^(auto|scroll)$/.test(getComputedStyle(el).overflowY)
+        && el.scrollHeight > el.clientHeight + 2)
+      .map(el => String(el.className)));
+    expect(scroll, 'Champion search must not contain a scrollable inner panel').toEqual([]);
+    const search = roster.getByRole('searchbox', { name: 'Find a champion' });
+    await expect(search).toBeFocused();
+    await search.fill('Khazix');
+    await expect(roster.locator('[data-choose-champion]')).toHaveCount(1);
+    await expect(roster.locator('[data-choose-champion="Khazix"]')).toBeInViewport({ ratio: 1 });
+    await roster.getByRole('button', { name: 'Close champion selection' }).click();
+    await expect(roster).not.toBeVisible();
+  }
+});
+
+test('home actions stay tappable through all three acts on short screens', async ({ page }, info) => {
+  test.skip(info.project.name === 'mobile-chromium', 'Chromium and WebKit geometry runs cover this case');
+  test.setTimeout(180_000);
+  for (const { width, height } of [
+    { width: 320, height: 480 }, { width: 320, height: 568 },
+    { width: 390, height: 844 }, { width: 844, height: 390 },
+    { width: 1366, height: 768 },
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+    for (const scene of ['signal', 'reveal', 'carry'] as const) {
+      await page.locator('[data-journey-tab="' + scene + '"]').click();
+      const actions = page.locator('#' + scene + ' a:visible, #' + scene + ' button:visible');
+      for (const action of await actions.all()) {
+        await action.scrollIntoViewIfNeeded();
+        await expect.poll(() => action.evaluate(el => {
+          const r = el.getBoundingClientRect();
+          if (!r.width || !r.height) return true;
+          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          return hit === el || (hit !== null && el.contains(hit));
+        }), { message: scene + ' action must receive a tap at ' + width + 'x' + height }).toBe(true);
+      }
+      const measure = await audit(page);
+      expect(measure.containers).toEqual([]);
+      expect(measure.horizontalOverflow).toBeLessThanOrEqual(1);
+      expect(measure.hero?.height).toBeLessThanOrEqual(height);
+    }
+  }
+});

@@ -250,3 +250,164 @@ body.rift-shell[data-journey-ready] .signal-journey { overflow-x: clip; }
   body.rift-shell[data-journey-ready] .signal-carry-explore { margin-top:0; }
   body.rift-shell[data-journey-ready] .signal-carry-desk .signal-opening-actions { margin-top:0; }
 }
+
+/* Search-first champion picker: a handful of choices, never a 6,000px dialog
+   scroll well. The full accessible roster remains a normal page link. */
+body.rift-shell .voyage-roster-dialog {
+  width: min(calc(100vw - 24px), 960px);
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: hidden !important;
+}
+body.rift-shell .voyage-roster-shell {
+  display: grid; grid-template-rows: auto auto auto auto auto;
+  gap: clamp(5px, 1vh, 12px);
+  padding: clamp(12px,2.4vh,24px) clamp(12px,2.8vw,30px);
+  max-height: none;
+}
+body.rift-shell .voyage-roster-shell > header {
+  position: static; padding: 0; align-items: center; gap: 12px;
+}
+body.rift-shell .voyage-roster-shell h2 {
+  margin: 4px 0 0; font-size: clamp(22px,3vw,38px);
+}
+body.rift-shell .roster-search-row { margin: 0; gap: 10px; }
+body.rift-shell .roster-search-row label { gap: 3px; }
+body.rift-shell .roster-search-row :is(input,select) { min-height: 44px; padding-block: 7px; }
+body.rift-shell [data-roster-status] { min-height: 15px; margin: 0; font-size: 11px; }
+body.rift-shell .voyage-roster-results { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 3px 9px; }
+body.rift-shell .voyage-roster-results button { min-height: 48px; padding: 4px 5px; gap: 7px; }
+body.rift-shell .voyage-roster-results img { width: 30px; height: 30px; }
+body.rift-shell .voyage-roster-results small { font-size: 10px; margin-top: 1px; }
+body.rift-shell .voyage-roster-shell > footer { margin: 0; padding-top: 4px; gap: 8px; align-items: center; }
+@media (max-width: 700px) {
+  body.rift-shell .voyage-roster-shell { padding: 12px; gap: 6px; }
+  body.rift-shell .voyage-roster-results { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 3px 7px; }
+  body.rift-shell .voyage-roster-results button { min-height: 48px; }
+  body.rift-shell .voyage-roster-shell h2 { font-size: 23px; }
+  body.rift-shell .roster-search-row { grid-template-columns: minmax(0,1fr); gap: 6px; }
+  body.rift-shell .roster-search-row label { font-size: 10px; }
+  body.rift-shell .roster-search-row :is(input,select) { min-height: 44px; }
+  body.rift-shell .voyage-roster-results small { display: none; }
+  body.rift-shell .voyage-roster-shell > footer { padding-top: 2px; font-size: 10px; }
+}
+@media (max-height: 420px) and (orientation:landscape) {
+  body.rift-shell .voyage-roster-shell { padding: 7px 11px; gap: 4px; }
+  body.rift-shell .voyage-roster-shell h2 { font-size: 20px; margin: 0; }
+  body.rift-shell .voyage-roster-shell .journey-eyebrow { display: none; }
+  body.rift-shell .roster-search-row { grid-template-columns: minmax(0,1fr) 112px; gap: 8px; }
+  body.rift-shell .roster-search-row label { font-size: 9px; }
+  body.rift-shell .roster-search-row :is(input,select) { min-height: 44px; padding: 4px 6px; }
+  body.rift-shell .voyage-roster-results { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 3px; }
+  body.rift-shell .voyage-roster-results button { min-height: 44px; padding: 2px; }
+  body.rift-shell .voyage-roster-results img { width: 24px; height: 24px; }
+  body.rift-shell .voyage-roster-results strong { font-size: 10px; }
+  body.rift-shell [data-roster-status] { font-size: 10px; }
+  body.rift-shell .voyage-roster-shell > footer { padding-top: 0; }
+  body.rift-shell .voyage-roster-shell > footer a { min-height: 34px; }
+}
+/* WebKit's font metrics were making the second and third cinematic acts
+   taller than the viewport. Keep the actual before/after evidence and its
+   44px actions, but cut decorative vertical space rather than clipping it. */
+@media (min-width:701px) and (max-height:900px) {
+  body.rift-shell[data-journey-ready] .signal-reveal-desk {
+    padding:8px 0 10px 20px;
+  }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk > header { margin-bottom:10px; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk h2 {
+    font-size:clamp(27px,2.6vw,39px); line-height:1.03; margin-top:7px;
+  }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record { padding:8px 0 4px; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-coordinate { margin-bottom:5px; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-heading h3 { font-size:20px; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-aperture.delta-row {
+    min-height:100px; padding:12px 0 10px;
+  }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value { gap:6px; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value > strong {
+    font-size:clamp(29px,2.8vw,45px);
+  }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-footer {
+    padding-top:4px; margin-top:4px;
+  }
+  body.rift-shell[data-journey-ready] .signal-reveal-actions { margin-top:8px; }
+  body.rift-shell[data-journey-ready] .signal-carry-desk { padding:clamp(12px,3vh,24px) 0 10px; }
+  body.rift-shell[data-journey-ready] .signal-carry-desk h2 {
+    font-size:clamp(32px,3.8vw,54px); margin-top:10px;
+  }
+  body.rift-shell[data-journey-ready] .signal-carried-record {
+    margin-top:15px; padding:12px 0; gap:15px;
+  }
+  body.rift-shell[data-journey-ready] .signal-carried-record strong {
+    font-size:clamp(20px,2.5vw,34px);
+  }
+  body.rift-shell[data-journey-ready] .signal-carried-mark { font-size:40px; }
+  body.rift-shell[data-journey-ready] .signal-carry-explore { margin-top:6px; }
+}
+@media (min-width:701px) and (max-height:520px) and (orientation:landscape) {
+  body.rift-shell[data-journey-ready] .signal-reveal-desk {
+    width:70%; padding:0 0 0 12px;
+  }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk h2 { font-size:24px; margin:3px 0; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk > header { margin-bottom:3px; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-coordinate { margin-bottom:0; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-aperture.delta-row {
+    min-height:58px; padding:4px 0;
+  }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value > strong { font-size:24px; }
+  body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-footer { margin:0; padding:0; }
+  body.rift-shell[data-journey-ready] .signal-reveal-actions { margin-top:0; }
+  body.rift-shell[data-journey-ready] .signal-carry-desk { padding:0; width:70%; }
+  body.rift-shell[data-journey-ready] .signal-carry-desk h2 { font-size:25px; margin:3px 0; }
+  body.rift-shell[data-journey-ready] .signal-carried-record { margin-top:4px; padding:4px 0; gap:8px; }
+  body.rift-shell[data-journey-ready] .signal-carried-record > div { gap:3px; }
+  body.rift-shell[data-journey-ready] .signal-carried-mark { font-size:24px; }
+  body.rift-shell[data-journey-ready] .signal-carried-record strong { font-size:18px; }
+  body.rift-shell[data-journey-ready] .signal-carried-record div > span { display:none; }
+  body.rift-shell[data-journey-ready] .signal-carry-explore { margin-top:0; }
+  body.rift-shell[data-journey-ready] .signal-carry-desk .signal-opening-actions { margin-top:0; }
+}
+/* Reveal is a compact inspection instrument on phones, not a tall article.
+   Exact source and actions remain 44px targets; ornament gives way to data. */
+@media (max-width:700px) {
+ body.rift-shell[data-journey-ready] .signal-reveal-desk { padding:0 0 4px; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk > header { margin-bottom:4px; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk h2 { font-size:clamp(21px,6vw,27px); margin:4px 0; line-height:1; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record { padding:4px 0; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-coordinate { margin-bottom:3px; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-heading h3 { font-size:17px; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-aperture.delta-row { min-height:64px; padding:6px 0; gap:6px; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value { gap:3px; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-value > strong { font-size:clamp(21px,6vw,28px); }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-reading { padding-bottom:0; }
+ body.rift-shell[data-journey-ready] .signal-reveal-desk .signal-record-footer { padding-top:0; margin-top:0; }
+ body.rift-shell[data-journey-ready] .signal-reveal-actions { margin-top:4px; gap:2px 8px; }
+ body.rift-shell[data-journey-ready] .signal-reveal-actions .signal-secondary-action { min-height:44px; }
+}
+@media (max-width:700px) and (min-height:530px) and (max-height:620px) and (orientation:portrait) {
+ body.rift-shell[data-journey-ready] #main .signal-journey .signal-act {
+   height: min(306px, calc(100dvh - var(--world-header-height) - 150px)) !important;
+ }
+}
+/* Very short screens cannot display cinematic evidence plus two toolbars
+   simultaneously. The chapter control follows the content here, so it
+   never sits over a source link or a touch target. */
+@media (max-height:620px) {
+  body.rift-shell[data-surface='home'][data-journey-ready] .journey-chrome {
+    position: relative !important;
+    bottom: auto !important;
+  }
+  body.rift-shell[data-surface='home'][data-journey-ready] #main {
+    padding-bottom: max(110px, 22vh);
+  }
+  body.rift-shell[data-surface='home'][data-journey-ready]
+  .signal-journey[data-journey-active='reveal'] .signal-cast,
+  body.rift-shell[data-surface='home'][data-journey-ready]
+  .signal-journey[data-journey-active='carry'] .signal-cast {
+    display: none;
+  }
+}
+@media (max-height:620px) {
+  body.rift-shell[data-surface='home'][data-journey-ready] #main {
+    padding-bottom: max(180px, 35vh);
+  }
+}

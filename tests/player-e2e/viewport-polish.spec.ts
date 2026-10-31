@@ -24,7 +24,8 @@ for (const viewport of [
       }
       await expect(form.getByRole('button', { name: 'Find player', exact: true })).toBeEnabled();
       await page.evaluate(() => document.fonts.ready);
-      expect(await gateway.evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(viewport.height + 1);
+      const gatewayWidth = await gateway.evaluate(element => element.getBoundingClientRect().width);
+      expect(gatewayWidth).toBeLessThanOrEqual(viewport.width + 1);
       // Optional destination choices must remain reachable when expanded too.
       await page.locator('.gateway-destinations > summary').click();
       const controls = gateway.locator('input:visible, select:visible, button:visible, summary:visible, .remembered-player:visible');
@@ -43,12 +44,17 @@ for (const viewport of [
         expect(geometry.overflow).toBeLessThanOrEqual(1);
       }
       await form.getByLabel('Riot ID', { exact: true }).click();
-      await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth))
+        .toBeLessThanOrEqual(1);
+      const nested = await gateway.evaluate(element => [...element.querySelectorAll('*')]
+        .filter(node => /^(auto|scroll)$/.test(getComputedStyle(node).overflowY) &&
+          node.scrollHeight > node.clientHeight + 3).length);
+      expect(nested).toBe(0);
     });
   }
 }
 
-test('desktop expanded purchase evidence scrolls within its scene', async ({ page }) => {
+test('desktop expanded purchase evidence scrolls the document without nested panels', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   const timeline = { info: { frames: [{ timestamp: 1_500_000, events: Array.from({ length: 24 }, (_, index) => ({
     type: 'ITEM_PURCHASED', timestamp: (index + 1) * 60_000, participantId: 1, itemId: 3047,
@@ -69,9 +75,9 @@ test('desktop expanded purchase evidence scrolls within its scene', async ({ pag
   await events.locator('li').first().scrollIntoViewIfNeeded();
   const box = await events.locator('li').first().boundingBox();
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
-  const before = await page.locator('#match-evidence').evaluate(element => element.scrollTop);
+  const before = await page.evaluate(() => scrollY);
   await page.mouse.wheel(0, 250);
-  await expect.poll(() => page.locator('#match-evidence').evaluate(element => element.scrollTop)).toBeGreaterThan(before);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(before);
   expect(await events.evaluate(element => element.scrollTop)).toBe(0);
-  expect(await page.evaluate(() => scrollY)).toBe(0);
+  expect(await page.locator('#match-evidence').evaluate(element => element.scrollTop)).toBe(0);
 });
