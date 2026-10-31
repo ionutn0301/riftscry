@@ -54,6 +54,7 @@ async function readyJourneyMap(page: Page, width: number, height: number) {
   await expect(paletteIsland).not.toHaveAttribute("ssr", "");
   const opener = page.locator("[data-map-open]");
   await opener.focus();
+  await expectUncovered(opener);
   const scrollBefore = await page.evaluate(() => scrollY);
   await stationaryWorld(page);
   const reading = page.locator('.voyage-evidence-desk');
@@ -119,7 +120,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await closeMap.click();
     await expect(map).not.toBeVisible();
     await expect(opener).toBeFocused();
-    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
     expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
     await expect(page.locator("#change")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
@@ -135,7 +136,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await map.getByRole("button", { name: "Close the Rift map" }).click();
     await expect(map).not.toBeVisible();
     await expect(opener).toBeFocused();
-    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
     expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
     await expect(page.locator("#change")).toBeVisible();
     await opener.click();
@@ -146,7 +147,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await page.getByRole("button", { name: "Close search", exact: true }).click();
     await expect(page.locator("[cmdk-input]")).not.toBeVisible();
     await expect(opener).toBeFocused();
-    expect(Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
+    await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - scrollBefore)).toBeLessThanOrEqual(1);
     expect(await reading.evaluate(element => element.scrollTop)).toBe(panelScroll);
     await expect(page.locator("#change")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
@@ -283,4 +284,31 @@ test("the short desktop keeps the next-scene action clear of the main navigation
   await next.click();
   await expect(page.locator('#history')).toBeVisible();
   await expect(page.locator('#history')).toBeFocused();
+});
+
+test('map and search return to the same scrolled archive record', async ({ page }) => {
+  await page.goto('/patches');
+  await readyWorld(page);
+  await page.evaluate(() => window.scrollTo({ top: 400, behavior: 'instant' }));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
+  const before = await page.evaluate(() => scrollY);
+  const opener = page.locator('[data-map-open]');
+  // Keyboard activation exercises a visible sticky control without the test
+  // driver first scrolling it to its original document position.
+  await opener.evaluate(element => (element as HTMLElement).focus({ preventScroll: true }));
+  await page.keyboard.press('Enter');
+  const map = page.locator('#rift-map-dialog');
+  await expect(map).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(map).toBeHidden();
+  await expect(opener).toBeFocused();
+  await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - before)).toBeLessThanOrEqual(1);
+  await page.keyboard.press('Enter');
+  await expect(map).toBeVisible();
+  await map.locator('[data-palette-trigger]').click();
+  await expect(page.locator('[cmdk-input]')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[cmdk-input]')).toBeHidden();
+  await expect(opener).toBeFocused();
+  await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - before)).toBeLessThanOrEqual(1);
 });

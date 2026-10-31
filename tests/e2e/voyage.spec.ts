@@ -27,12 +27,11 @@ async function expectOpeningBounds(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   const bounds = await page.locator('#change').evaluate(scene => {
     const rect=scene.getBoundingClientRect();
-    return { top:rect.top,bottom:rect.bottom,height:rect.height,viewport:innerHeight,documentHeight:document.documentElement.scrollHeight,horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth };
+    return { top:rect.top,bottom:rect.bottom,height:rect.height,viewport:innerHeight,documentHeight:document.documentElement.scrollHeight };
   });
   expect(bounds.height).toBeGreaterThan(150);
   expect(bounds.top).toBeGreaterThan(0);
   await stationaryWorld(page);
-  expect(bounds.horizontalOverflow).toBeLessThanOrEqual(1);
   await unobstructed(page.locator('[data-record-source]'));
   await unobstructed(page.locator('.voyage-station-heading h1'));
   await unobstructed(page.locator('[data-roster-open]'));

@@ -14,7 +14,11 @@ async function sceneFits(page: Page) {
   const hero = (await page.locator('.signal-journey').boundingBox())!;
   const viewport = page.viewportSize()!;
   expect(bounds.height).toBeGreaterThan(0);
-  expect(hero.height, 'A scene must not be taller than the screen').toBeLessThanOrEqual(viewport.height + 1);
+  // The arrival stays compact. Exact evidence can grow in the document; its
+  // artwork remains bounded while every source and action stays reachable.
+  if (await panel.getAttribute('id') === 'signal') expect(hero.height, 'The opening must fit the screen').toBeLessThanOrEqual(viewport.height + 1);
+  const art = (await page.locator('.signal-subject-visual').boundingBox())!;
+  expect(art.height, 'Artwork must not grow with the evidence document').toBeLessThanOrEqual(viewport.height + 1);
   expect(header.y).toBeGreaterThanOrEqual(-1);
   if (viewport.height > 620) {
     expect(footer.y + footer.height).toBeLessThanOrEqual(viewport.height + 1);
@@ -32,32 +36,32 @@ async function sceneFits(page: Page) {
 for (const [width, height] of sizes) for (const state of ['new', 'returning'] as const) test(`all three signal acts stay reachable at ${width}×${height} for ${state} players`, async ({ page }) => {
   await page.setViewportSize({ width, height });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-    if (state === 'returning') await page.addInitScript(selected => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected)), player);
-    await page.goto('/'); await readySignal(page);
-    const arrival = await openScene(page, 'signal');
-    if (state === 'returning') await expect(page.locator('[data-home-return]')).toContainText(player.name);
-    else await expect(page.locator('[data-home-return]')).toBeHidden();
-    await arrival.locator('h1').scrollIntoViewIfNeeded();
-    await expect(arrival.locator('h1')).toBeInViewport({ ratio: 0.99 });
-    for (const selector of ['[data-home-reveal]', '[data-home-personal]', '[data-home-beacon]']) await reachableTarget(arrival.locator(selector), page);
-    if (await arrival.locator('[data-home-context]').isVisible()) await reachableTarget(arrival.locator('[data-home-context]'), page);
-    for (const choice of await page.locator('[data-home-choice]').all()) await reachableTarget(choice, page);
-    await reachableTarget(page.locator('.signal-cast-all'), page);
-    await reachableTarget(page.locator('[data-map-open]'), page);
-    await sceneFits(page);
+  if (state === 'returning') await page.addInitScript(selected => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(selected)), player);
+  await page.goto('/'); await readySignal(page);
+  const arrival = await openScene(page, 'signal');
+  if (state === 'returning') await expect(page.locator('[data-home-return]')).toContainText(player.name);
+  else await expect(page.locator('[data-home-return]')).toBeHidden();
+  await arrival.locator('h1').scrollIntoViewIfNeeded();
+  await expect(arrival.locator('h1')).toBeInViewport({ ratio: 0.99 });
+  for (const selector of ['[data-home-reveal]', '[data-home-personal]', '[data-home-beacon]']) await reachableTarget(arrival.locator(selector), page);
+  if (await arrival.locator('[data-home-context]').isVisible()) await reachableTarget(arrival.locator('[data-home-context]'), page);
+  for (const choice of await page.locator('[data-home-choice]').all()) await reachableTarget(choice, page);
+  await reachableTarget(page.locator('.signal-cast-all'), page);
+  await reachableTarget(page.locator('[data-map-open]'), page);
+  await sceneFits(page);
 
-    const reveal = await openScene(page, 'reveal');
-    const record = reveal.locator('[data-home-record]:not([hidden])');
-    await expect(record.locator('.before')).not.toBeEmpty();
-    await expect(record.locator('.after')).not.toBeEmpty();
-    await reachableTarget(reveal.locator('[data-home-keep]'), page);
-    await reachableTarget(reveal.locator('[data-home-trace]'), page);
-    await unobstructed(record.getByRole('link', { name: 'Original source' }));
-    await sceneFits(page);
+  const reveal = await openScene(page, 'reveal');
+  const record = reveal.locator('[data-home-record]:not([hidden])');
+  await expect(record.locator('.before')).not.toBeEmpty();
+  await expect(record.locator('.after')).not.toBeEmpty();
+  await reachableTarget(reveal.locator('[data-home-keep]'), page);
+  await reachableTarget(reveal.locator('[data-home-trace]'), page);
+  await unobstructed(record.getByRole('link', { name: 'Original source' }));
+  await sceneFits(page);
 
-    const carry = await openScene(page, 'carry');
-    for (const link of await carry.getByRole('link').all()) await reachableTarget(link, page);
-    await sceneFits(page);
+  const carry = await openScene(page, 'carry');
+  for (const link of await carry.getByRole('link').all()) await reachableTarget(link, page);
+  await sceneFits(page);
 });
 
 test('the active signal refits after a returning player rotates portrait and landscape', async ({ page }) => {

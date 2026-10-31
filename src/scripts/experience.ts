@@ -70,6 +70,7 @@ window.addEventListener('riftscry:journey-change', readingChanged);
 window.addEventListener('hashchange', readingChanged);
 window.addEventListener('popstate', readingChanged);
 let mapOpener: HTMLElement | null = null;
+let mapReturnPosition: { href: string; x: number; y: number } | null = null;
 function openMap(event?: Event) {
   if (!map || map.open) return;
   readingChanged();
@@ -78,6 +79,7 @@ function openMap(event?: Event) {
     : document.activeElement instanceof HTMLElement && document.activeElement !== document.body
       ? document.activeElement
       : trigger;
+  mapReturnPosition = { href: location.href, x: scrollX, y: scrollY };
   map.showModal();
   const navigation = map.querySelector<HTMLElement>('.signal-destinations');
   const current = map.querySelector<HTMLAnchorElement>('[aria-current="page"]');
@@ -95,6 +97,9 @@ document.querySelector('[data-map-close]')?.addEventListener('click', () => map?
 map?.addEventListener('close', () => {
   if (mapOpener?.isConnected) mapOpener.focus({ preventScroll: true });
   else trigger?.focus({ preventScroll: true });
+  const position = mapReturnPosition;
+  mapReturnPosition = null;
+  if (position?.href === location.href) window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' });
 });
 document.addEventListener('keydown', (event) => {
   // Option+M can produce a different character on macOS; match the key's code.

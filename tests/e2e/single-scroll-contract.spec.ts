@@ -21,6 +21,7 @@ async function audit(page: Page) {
       containers,
       horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
       hero: document.querySelector('.signal-journey')?.getBoundingClientRect().toJSON(),
+      artwork: document.querySelector('.signal-subject-visual')?.getBoundingClientRect().toJSON(),
       footer: document.querySelector('.journey-chrome')?.getBoundingClientRect().toJSON(),
     };
   });
@@ -137,7 +138,8 @@ test('home actions stay tappable through all three acts on short screens', async
       const measure = await audit(page);
       expect(measure.containers).toEqual([]);
       expect(measure.horizontalOverflow).toBeLessThanOrEqual(1);
-      expect(measure.hero?.height).toBeLessThanOrEqual(height);
+      if (scene === 'signal') expect(measure.hero?.height).toBeLessThanOrEqual(height);
+      expect(measure.artwork?.height).toBeLessThanOrEqual(height);
     }
   }
 });

@@ -276,7 +276,10 @@ test('reader spotlights follow the chosen champion and exact archived patch', as
     await expect(lens.locator('[data-reader-champion-art]')).toHaveAttribute('src', /\/Ahri_0\.jpg$/);
     await localDestination(lens.locator('[data-reader-champion-link]'), '/champion/ahri');
   }
-  await expect(page.locator('[data-reader-champion-lens="arrival"] [data-reader-champion-link]')).toBeInViewport({ ratio: 1 });
+  const historyLink = page.locator('[data-reader-champion-lens="arrival"] [data-reader-champion-link]');
+  await historyLink.scrollIntoViewIfNeeded();
+  await expect(historyLink).toBeInViewport({ ratio: 1 });
+  await unobstructed(historyLink);
 
   await page.goto('/patches');
   await ready(page);

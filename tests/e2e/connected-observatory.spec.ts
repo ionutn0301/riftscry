@@ -13,6 +13,7 @@ async function ready(page: Page) {
 }
 
 async function reachable(control: Locator) {
+  await control.scrollIntoViewIfNeeded();
   await expect(control).toBeInViewport({ ratio: 0.99 });
   await expect.poll(() => control.evaluate(element => {
     const rect = element.getBoundingClientRect();
