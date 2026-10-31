@@ -22,7 +22,7 @@ export async function readySignal(page: Page) {
   await expect(page.locator('[data-journey-tab]')).toHaveCount(4);
   // Signal cases take the explicit branch; the atlas entrance has its own suite.
   if (await page.locator('#atlas').isVisible()) await page.locator('.atlas-follow-signal').click();
-  await expect(page.locator('#signal-title')).toContainText('stands still.');
+  await expect(page.locator('#signal-title')).toContainText('Choose a champion.');
 }
 
 /** Read the build-time examples so assertions follow archive updates. */

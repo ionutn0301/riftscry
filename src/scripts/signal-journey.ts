@@ -106,13 +106,6 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   }, options);
   function player() {
     const selected = readRecentPlayer();
-    const briefing=host.querySelector<HTMLAnchorElement>('[data-home-briefing]');
-    if(briefing){
-      briefing.href=selected?briefingLink(selected):'/next-game';
-      briefing.setAttribute('aria-label',selected?`Continue briefing for ${selected.name||'your player'}`:'Find my next move from my games');
-      text('[data-home-briefing-label]',selected?'Continue briefing':'Find my next move');
-      text('[data-home-briefing-caption]',selected?.name||'FROM YOUR GAMES');
-    }
     const hint = host.querySelector<HTMLElement>('[data-home-return]')!;
     hint.hidden = !selected;
     href('[data-home-personal]', selected ? briefingLink(selected) : '/next-game');

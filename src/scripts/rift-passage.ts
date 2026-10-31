@@ -2,6 +2,7 @@ import { journeyStations } from '../lib/journey-stations';
 import { getRiftPreset, projectRift } from '../lib/rift-geometry';
 import { advancePassage, passagePose, passagePosition, passageColor,passageAperture } from '../lib/passage-camera';
 import { prepareKineticTitle,setKineticTitle } from './kinetic-type';
+import { readRecentPlayer,RECENT_PLAYER_EVENT,RECENT_PLAYER_KEY } from '../lib/player/identity';
 
 /** A persistent object and continuous camera; links never wait for travel. */
 document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
@@ -12,9 +13,12 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
   const stops=[...root.querySelectorAll<HTMLAnchorElement>('[data-passage-stop]')];
   const enter=root.querySelector<HTMLAnchorElement>('[data-passage-enter]')!;
   const title=root.querySelector<HTMLElement>('[data-passage-title]')!;
+  const home=root.hasAttribute('data-passage-home');
+  const homeTitle=[...title.childNodes].map(node=>node.cloneNode(true));
+  const homeLabel=title.getAttribute('aria-label')||title.textContent||'';
+  let player=readRecentPlayer();
   const aperture=root.querySelector<SVGPathElement>('[data-passage-aperture]');
   prepareKineticTitle(title);
-  const opening=root.closest('.atlas-arrival')?.querySelector<HTMLElement>('h1');if(opening)prepareKineticTitle(opening);
   const abort=new AbortController(),events={signal:abort.signal};
   let context:CanvasRenderingContext2D|null=null;
   try{context=canvas.getContext('2d',{alpha:true});}catch{/* SVG and links remain complete. */}
@@ -25,6 +29,16 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
   const reduced=()=>document.documentElement.dataset.motion==='reduced'||matchMedia('(prefers-reduced-motion: reduce)').matches;
   const visible=()=>!suspended&&!document.hidden&&viewport.getClientRects().length>0;
   function text(selector:string,value:string){const node=root.querySelector(selector);if(node)node.textContent=value;}
+  function entry(){
+    const station=journeyStations[selected]!,personal=home&&selected===0&&player;
+    const label=enter.querySelector('[data-passage-enter-label]')??enter;
+    label.textContent=personal?'Continue briefing':`Enter ${station.label}`;
+    if(home)enter.toggleAttribute('data-home-briefing',selected===0);
+    enter.setAttribute('aria-label',personal?`Continue briefing for ${player!.name||'your player'}`:`Enter ${station.label}`);
+    const identity=root.querySelector<HTMLElement>('[data-passage-personal]');
+    if(identity){identity.textContent=personal?player!.name:'';identity.setAttribute('aria-hidden',String(!personal||!player?.name));}
+    enter.href=stops[selected]!.href;
+  }
   function select(value:number){
     target=passagePosition(value);
     // A small dead band prevents kinetic titles chattering around a drag boundary.
@@ -33,14 +47,14 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
     if(index!==selected){
       selected=index;
       text('[data-passage-place]',`${station.number} / ${station.place}`);
-      setKineticTitle(title,station.title);text('[data-passage-description]',station.description);
+      if(home&&index===0){title.replaceChildren(...homeTitle.map(node=>node.cloneNode(true)));title.removeAttribute('data-kinetic-title');title.setAttribute('aria-label',homeLabel);prepareKineticTitle(title);}
+      else setKineticTitle(title,station.title);
+      text('[data-passage-description]',station.description);
       text('[data-passage-coordinate]',`${station.number} / 05`);
-      enter.replaceChildren(document.createTextNode(`Enter ${station.label}`),Object.assign(document.createElement('span'),{textContent:'↗'}));
-      enter.lastElementChild?.setAttribute('aria-hidden','true');
       root.style.setProperty('--passage-color',station.color);
     }
     stops.forEach((stop,i)=>stop.toggleAttribute('data-passage-selected',i===index));
-    enter.href=stops[index]!.href;
+    entry();
     root.querySelectorAll<HTMLButtonElement>('[data-passage-step]').forEach(button=>button.disabled=Number(button.dataset.passageStep)<0?index===0:index===4);
     if(reduced())position=target;
     schedule();
@@ -92,7 +106,9 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
   range.addEventListener('input',()=>select(Number(range.value)),events);
   root.querySelectorAll<HTMLButtonElement>('[data-passage-step]').forEach(button=>button.addEventListener('click',()=>select(Math.round(target)+Number(button.dataset.passageStep)),events));
   stops.forEach((stop,index)=>{
-    stop.addEventListener('pointerover',event=>{if(event.pointerType!=='touch')select(index);},events);
+    // Layout changes can fire pointerover beneath a stationary cursor. Only
+    // physical pointer movement should preview another destination.
+    stop.addEventListener('pointermove',event=>{if(event.pointerType!=='touch'&&selected!==index)select(index);},events);
     stop.addEventListener('focus',()=>select(index),events);
   });
   viewport.addEventListener('keydown',event=>{
@@ -133,9 +149,12 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
   viewport.addEventListener('lostpointercapture',()=>{if(drag){drag=null;select(Math.round(target));}},events);
   const links=new MutationObserver(()=>{enter.href=stops[selected]!.href;});
   stops.forEach(stop=>links.observe(stop,{attributes:true,attributeFilter:['href']}));
+  const restorePlayer=()=>{player=readRecentPlayer();entry();};
+  window.addEventListener(RECENT_PLAYER_EVENT,restorePlayer,events);
+  window.addEventListener('storage',event=>{if([RECENT_PLAYER_KEY,'riftscry:remembered-player:v1',null].includes(event.key))restorePlayer();},events);
   document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(frame);frame=0;time=0;schedule();},events);
   window.addEventListener('riftscry:motion-change',()=>{cancelAnimationFrame(frame);frame=0;if(reduced()){position=target;lookX=lookY=targetLookX=targetLookY=0;}schedule();},events);
-  window.addEventListener('pageshow',()=>{suspended=false;measure();},events);
+  window.addEventListener('pageshow',()=>{suspended=false;restorePlayer();measure();},events);
   window.addEventListener('pagehide',event=>{
     suspended=true;cancelAnimationFrame(frame);frame=0;time=0;
     if(!event.persisted){abort.abort();observer.disconnect();links.disconnect();}

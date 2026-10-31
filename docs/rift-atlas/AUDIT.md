@@ -145,32 +145,68 @@ browser and API verification.
   build evidence to its own source match. Choosing another impact champion
   changes that match link too; it never silently routes to another build.
 
+## Composition correction — 1 November 2026
+
+The production screenshot exposed a composition defect that unit and output
+contracts did not measure. An absolutely positioned brand headline collided
+with a separately positioned destination headline; the entrance also repeated
+its destination navigation in the global footer. The secondary champion path
+used another introductory slogan, which made the page feel like two entrances.
+
+The correction puts one dynamic H1, caption and primary entry in a dedicated
+grid area. The visual, range and native destinations each own a separate area;
+mobile stacks those areas in ordinary document flow. The extra headline block
+and duplicate briefing action are removed. The remembered player changes the
+single entry action, while exact public reading resume remains a quiet link.
+The global chapter/footer navigation is hidden on the entrance and returns
+only after entering a task. The champion branch is a picker rather than a
+second welcome screen. Chapter fragments now reset the initial document scroll
+without changing deep-record or browser-history restoration.
+
+The previous browser CI finished with 105 passes and six failures after the
+merge. Some checks referenced retired navigation/artwork; the Saved chapter
+also exposed an initial fragment scroll defect. Those expectations and the
+fragment behavior are corrected. A separate CI job now measures intersections
+between actual browser boxes at 320, 390, 683, 844, 1366, 1440 and 1920px, including a 600px-tall laptop,
+checks all five destinations and the menu, and retains screenshots. Its results
+must be reviewed before treating the correction as visually verified.
+
+The first geometry run passed six viewports and exposed a separate 390px
+interaction defect: after a title changed height, `pointerover` could preview a
+destination under the stationary cursor and skip the expected next stop. Hover
+preview now requires physical pointer movement; title/caption space is stable,
+and the grid can grow with content. The range hint has its own row so a keyboard
+focus ring cannot cross its text. The follow-up run passes all eight viewports at `54ac17e`. Its desktop, mobile,
+short-laptop and landscape captures were inspected. The focused browser job
+also reruns the six scenarios that failed after the prior merge.
+
 ## Actual verification and limitations
 
 Validation for this revision:
 
-- Astro check: 266 files, zero errors and warnings, one pre-existing unused-import
+- Astro check: 267 files, zero errors and warnings, one pre-existing unused-import
   hint in `src/pages/players.astro`.
-- Vitest: all 549 tests pass across 59 files. New cases cover camera convergence,
+- Vitest: all 551 tests pass across 59 files. New cases cover camera convergence,
   boundary/reversal behavior, reduced motion, resize without canvas clearing,
   wheel scroll release, image races/failure/abort, fast React scene registration,
   explicit AI request/success/failure/deterministic fallback, camera tangent
   continuity, closed shape topology, kinetic text semantics and useful returns.
 - Production build succeeds with the existing Astro/Vercel adapter.
 - Production-output contract passes on all 622 generated content pages.
-- Browser collections parse successfully: 753 archive/journey cases and 111
+- Browser collections parse successfully: 753 archive/journey cases and 119
   fixture-backed player cases. Collection is not browser execution.
 
 Browser suites cover the five destinations, menu focus return, long profile
 labels at 320/390/844/1440px, accidental nested scrolling, camera travel, reduced
-motion, native Back and explicit AI entry. They have been collected, not executed
-in this environment. Mocked DOM tests establish state and lifecycle behavior;
+motion, native Back and explicit AI entry. The full suites were collected locally; the eight-viewport geometry suite was
+executed in GitHub Actions, with captures reviewed as described above. The
+full-suite outcome is recorded on the PR. Mocked DOM tests establish state and lifecycle behavior;
 they do not establish visual composition or browser performance.
 
 The managed preview CLI reports an absent daemon mailbox. The Vercel preview
 redirects this browser to sign-in, and the connected preview-access tools report
-no access to that deployment/team. The PR remains a draft until browser review
-can verify desktop, mobile, short landscape, enlarged text, touch gestures,
-failed assets and real player journeys. Live Riot/AI services have not been
+no access to that deployment/team. CI captures now verify the entrance composition at the listed viewports.
+Live browser access, enlarged-text review and real-service journeys remain
+separate verification limits. Live Riot/AI services have not been
 exercised by fixture-based tests. No claim of zero UI defects, measured frame
 rate or accessibility certification is made.

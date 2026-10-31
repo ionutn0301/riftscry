@@ -6,6 +6,37 @@ on:
   pull_request:
 
 jobs:
+  homepage-composition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Verify homepage composition and reported browser regressions
+        run: >
+          pnpm exec playwright test --config=playwright.player.config.ts
+          --grep 'one homepage|homepage My game|one shared scene frames|every route family|390px pool:'
+        env:
+          CI: "true"
+      - name: Retain homepage geometry and visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-composition
+          path: |
+            player-visuals/home-*.png
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
   build-and-test:
     runs-on: ubuntu-latest
     steps:

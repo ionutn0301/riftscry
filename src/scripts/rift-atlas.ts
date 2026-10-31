@@ -39,13 +39,14 @@ function restoreEnvironment() {
 
 document.querySelectorAll<HTMLElement>('[data-rift-atlas]').forEach(atlas => {
   function show(event: Event) {
+    if(event instanceof PointerEvent&&event.pointerType==='touch')return;
     const portal = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-atlas-portal]') : null;
     if (!portal) return;
     preview = true;
     document.body.dataset.atlasPreview = portal.dataset.atlasPortal;
     setEnvironment(portal.dataset.atlasPortal!);
   }
-  atlas.addEventListener('pointerover', show, options);
+  atlas.addEventListener('pointermove', show, options);
   atlas.addEventListener('focusin', show, options);
   atlas.addEventListener('pointerleave', () => {
     if (!atlas.contains(document.activeElement)) restoreEnvironment();

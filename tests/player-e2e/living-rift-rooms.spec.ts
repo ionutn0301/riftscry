@@ -4,7 +4,7 @@ import { installFixtures, platform, profilePath, puuid, query, recentAramWin, vi
 // These documents include SSR player routes. Use the fixture-backed Astro
 // runtime, rather than the static archive server, to test their shared scene.
 const rooms = [
-  { path: '/', surface: 'home', task: '.journey-primary [data-station-link="next-game"]' },
+  { path: '/', surface: 'home', task: '#atlas [data-passage-enter]' },
   { path: '/explore', surface: 'explore', task: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', task: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', task: '[data-direct-save="Nunu"]' },
@@ -49,7 +49,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         // retain the authored environment when the animated renderer is off.
         await expect(scene).toHaveAttribute('data-rift-renderer', 'static');
         await expect(scene).toHaveAttribute('data-rift-motion', 'still');
-        await expect(scene.locator('[data-rift-scene-static]')).toBeVisible();
+        if(room.surface==='home')await expect(page.locator('#atlas [data-passage-canvas]')).toBeVisible();
+        else await expect(scene.locator('[data-rift-scene-static]')).toBeVisible();
         await expect(scene.locator('[data-rift-scene-canvas]')).toBeHidden();
         await expect(scene.locator('a, button, input, select, textarea, [tabindex]')).toHaveCount(0);
         const task = page.locator(room.task).first();

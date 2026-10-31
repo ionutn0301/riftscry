@@ -20,6 +20,7 @@ body.rift-shell[data-journey-ready] #main [data-journey-deck] {
 body.rift-shell[data-journey-ready] #main [data-journey-panel] {
   flex: 0 0 auto; height: auto; min-height: 0; max-height: none; overflow: visible;
   overscroll-behavior: auto; min-width: 0;
+  scroll-margin-top:calc(var(--world-header-height) + 160px);
 }
 /* Newly committed React chapters wait for one atomic registration. They must
    never flash together while the scene observer catches up. */

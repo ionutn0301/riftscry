@@ -4,7 +4,7 @@ import { installFixtures, platform, profilePath, puuid, query, recentAramWin, vi
 // The development runtime serves the SSR player/profile/match documents.
 // All player responses are existing synthetic fixtures, never a live account.
 const routes = [
-  { path: '/', surface: 'home', action: '.journey-primary [data-station-link="next-game"]' },
+  { path: '/', surface: 'home', action: '#atlas [data-passage-enter]' },
   { path: '/explore#perspective', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },
@@ -67,14 +67,15 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(panel).toHaveAttribute('role', 'tabpanel');
       await expect(panel).toHaveAccessibleName(/\S/);
       const mobile=viewport.width<=700;
-      const navigation = page.getByRole('navigation', { name: mobile?'Journey destinations':'Main navigation', exact: true });
-      await expect(navigation.getByRole('link')).toHaveCount(mobile?6:3);
-      for (const name of mobile?['next-game','players','champions','patches','pool']:['Discover','My game','Saved']) {
-        const destination = mobile?navigation.locator('[data-spine-station="'+name+'"]'):navigation.getByRole('link', { name, exact: true });
+      const home=route.surface==='home';
+      const navigation = home?page.locator('#atlas .passage-stops'):page.getByRole('navigation', { name: mobile?'Journey destinations':'Main navigation', exact: true });
+      await expect(navigation.getByRole('link')).toHaveCount(home?5:mobile?6:3);
+      for (const name of home||mobile?['next-game','players','champions','patches','pool']:['Discover','My game','Saved']) {
+        const destination = home?navigation.locator('[data-station-link="'+name+'"]'):mobile?navigation.locator('[data-spine-station="'+name+'"]'):navigation.getByRole('link', { name, exact: true });
         await reachable(destination);
         expect((await destination.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       }
-      await reachable(page.locator(mobile&&route.surface==='home'?'.atlas-personal-link':route.action).first());
+      await reachable(page.locator(route.action).first());
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
       // A route may be longer than the screen, but the document is the only
       // vertical scroll surface. Never trap content inside another scrollport.

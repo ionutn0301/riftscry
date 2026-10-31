@@ -23,7 +23,7 @@
 .signal-art-coordinate { position: absolute; top: 6%; right: 3%; writing-mode: vertical-rl; color: #98b7b1; font: 8px 'Spline Sans Mono',monospace; letter-spacing: .15em; }
 .signal-opening-copy { position: relative; padding-top: clamp(20px,6vh,70px); width: 52%; max-width: 700px; }
 .signal-opening-copy .journey-eyebrow { font-size: 9px; }
-.signal-opening-copy :is(h1,h2) { margin: 25px 0 24px; font: 400 clamp(55px,6.4vw,106px)/.96 var(--font-display); letter-spacing: -.055em; color: #eaf0e6; text-wrap: nowrap; }
+.signal-opening-copy :is(h1,h2) { margin: 25px 0 24px; font: 400 clamp(36px,4.5vw,64px)/.96 var(--font-display); letter-spacing: -.055em; color: #eaf0e6; text-wrap: balance; }
 .signal-opening-copy :is(h1,h2) em { font-style: normal; color: #bfd8cb; }
 .signal-opening-caption { font: 14px/1.7 var(--font-ui); color: #a5babf; }
 .signal-opening-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 26px; margin-top: 34px; }
@@ -90,7 +90,7 @@
 
 @media (min-width: 1700px) { .signal-journey { max-width: 1600px; margin-inline: auto; } }
 @media (max-width: 1100px) {
-  .signal-opening-copy :is(h1,h2) { font-size: clamp(54px,7.2vw,78px); }
+  .signal-opening-copy :is(h1,h2) { font-size: clamp(34px,5vw,56px); }
   .signal-opening-actions { gap: 8px 20px; }
   .signal-beacon { min-width: 220px; right: 3%; padding: 16px; top: 56%; }
   .signal-cast { gap: 20px; }

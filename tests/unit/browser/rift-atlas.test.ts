@@ -36,9 +36,9 @@ afterEach(() => {
 it('discards late environment loads and restores the actual place after a preview', async () => {
   await mount();
   const image = query<HTMLImageElement>('img:not(.is-current)');
-  query('[data-atlas-portal="champions"]').dispatchEvent(new Event('pointerover',{bubbles:true}));
+  query('[data-atlas-portal="champions"]').dispatchEvent(new Event('pointermove',{bubbles:true}));
   const stale = probes[0]!;
-  query('[data-atlas-portal="patches"]').dispatchEvent(new Event('pointerover',{bubbles:true}));
+  query('[data-atlas-portal="patches"]').dispatchEvent(new Event('pointermove',{bubbles:true}));
   stale.dispatchEvent(new Event('load'));
   await Promise.resolve(); await Promise.resolve();
   expect(image.classList.contains('is-current')).toBe(false);
@@ -90,6 +90,6 @@ it('uses the active chapter environment and removes listeners when the document 
   await vi.waitFor(()=>expect(image.src).toContain('archive-mobile.webp'));
   window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:false}));
   const before = image.src;
-  query('[data-atlas-portal="patches"]').dispatchEvent(new Event('pointerover',{bubbles:true}));
+  query('[data-atlas-portal="patches"]').dispatchEvent(new Event('pointermove',{bubbles:true}));
   expect(image.src).toBe(before); expect(image.onload).toBeNull();
 });
