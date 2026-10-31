@@ -1,0 +1,170 @@
+/* Spatial navigation is shared by the entrance, every route, and the jump map.
+   The atlas is real links on an authored plane; movement never gates access. */
+.rift-atlas { --atlas-x:0; --atlas-y:0; position:relative; isolation:isolate; width:100%; min-height:430px; flex:1; }
+.rift-atlas::before { content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 48% 50%,#8dcebd14,transparent 60%); }
+.atlas-connections { position:absolute; inset:0; width:100%; height:100%; stroke:#b8daca24; stroke-width:.7; pointer-events:none; }
+.atlas-connections .atlas-orbit { stroke:#b8daca46; stroke-dasharray:2 6; }
+.atlas-connections circle { fill:#c4eed6; stroke:none; }
+.atlas-reticle { position:absolute; left:47%; top:47%; width:clamp(110px,15vw,220px); aspect-ratio:1; transform:translate(-50%,-50%); border:1px solid #c5eedb20; border-radius:50%; pointer-events:none; }
+.atlas-reticle::before,.atlas-reticle::after { content:''; position:absolute; inset:12%; border:1px solid #c5eedb18; border-radius:50%; }
+.atlas-reticle::after { inset:-20%; border-style:dashed; opacity:.5; }
+.atlas-reticle i { position:absolute; width:1px; height:140%; left:50%; top:-20%; background:#bce4cf25; }
+.atlas-reticle i:nth-child(2) { transform:rotate(90deg); }
+.atlas-reticle > span { position:absolute; inset:0; display:grid; place-items:center; color:#bce4cf66; font:11px 'Spline Sans Mono',monospace; letter-spacing:.3em; }
+/* Defeat the retired list-map geometry at its source with a distinct component. */
+.rift-atlas .atlas-portals { display:contents; }
+.rift-atlas .atlas-portal {
+  position:absolute; left:var(--portal-x); top:var(--portal-y); transform:translate(-50%,-50%);
+  display:grid; grid-template-columns:1fr; width:clamp(130px,16vw,230px); min-height:44px;
+  gap:0; padding:0; border:0; text-align:center; color:var(--station-color); background:none;
+  transition:filter .3s; -webkit-tap-highlight-color:transparent;
+}
+.rift-atlas .atlas-portal:hover,.rift-atlas .atlas-portal[aria-current] { background:none; }
+.atlas-portal-image { position:relative; display:block; height:clamp(75px,12vh,130px); width:75%; margin:0 auto 14px; }
+.atlas-portal-image::before { content:''; position:absolute; inset:-8px; border:1px solid color-mix(in srgb,var(--station-color) 35%,transparent); clip-path:polygon(0 0,20% 0,20% 2%,2% 2%,2% 100%,0 100%,0 0,100% 0,100% 100%,80% 100%,80% 98%,98% 98%,98% 0); transform:rotate(-6deg); transition:transform .5s var(--journey-ease); }
+.atlas-portal-image::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,transparent 20%,#07101655); box-shadow:inset 0 0 30px #07101666; pointer-events:none; }
+.atlas-portal-image > img { display:block; width:100%; height:100%; object-fit:cover; object-position:50% 45%; clip-path:polygon(10% 0,100% 0,90% 100%,0 100%); filter:saturate(.5) brightness(.65); transition:filter .4s,transform .6s var(--journey-ease); }
+.atlas-portal-glyph { position:absolute; inset:0; z-index:1; display:grid; place-items:center; }
+.rift-atlas .atlas-portal-glyph svg { display:block; width:30px; height:30px; stroke:var(--station-color); stroke-width:1; filter:drop-shadow(0 2px 5px #000); }
+.atlas-portal-caption { position:relative; display:block; }
+.atlas-portal-caption small { font:8px/1.5 'Spline Sans Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--station-color); }
+.rift-atlas .atlas-portal-caption strong { display:block; margin:5px 0 0; color:#ebf2e6; font:400 clamp(22px,2.5vw,35px)/1.05 var(--font-display); letter-spacing:-.04em; }
+.atlas-portal-caption > span { display:block; position:absolute; top:100%; width:calc(100% + 50px); left:-25px; margin-top:8px; color:#b4c8c7; font:11px/1.5 var(--font-ui); opacity:0; transform:translateY(5px); transition:opacity .3s,transform .3s; pointer-events:none; }
+.rift-atlas .atlas-portal > b { position:absolute; right:5%; top:42%; color:var(--station-color); font:20px var(--font-ui); opacity:0; transform:translate(-4px,4px); transition:opacity .3s,transform .3s; }
+.atlas-portal:is(:hover,:focus-visible,[aria-current]) .atlas-portal-image img { filter:saturate(.85) brightness(1); transform:translateY(-5px); }
+.atlas-portal:is(:hover,:focus-visible,[aria-current]) .atlas-portal-image::before { transform:rotate(0deg) scale(1.05); }
+.atlas-portal:is(:hover,:focus-visible) .atlas-portal-caption > span,.rift-atlas .atlas-portal:is(:hover,:focus-visible) > b { opacity:1; transform:none; }
+.atlas-coordinate { position:absolute; bottom:5%; color:#8eafad; font:7px 'Spline Sans Mono',monospace; letter-spacing:.15em; writing-mode:vertical-rl; }
+.atlas-coordinate--west { left:0; transform:rotate(180deg); }.atlas-coordinate--east { right:0; }
+.atlas-arrival { position:relative; display:flex; flex-direction:column; min-height:660px; }
+.atlas-arrival-heading { position:absolute; z-index:2; top:4px; left:0; pointer-events:none; }
+.atlas-arrival-heading h1 { font:400 clamp(36px,4vw,64px)/.99 var(--font-display); letter-spacing:-.05em; margin:14px 0; color:#edf1e9; }
+.atlas-arrival-heading h1 em { font-family:Georgia,serif; font-weight:400; color:#c6e7d0; }
+.atlas-arrival-heading > p:last-child { color:#a5bcbe; font-size:12px; }
+.atlas-arrival .rift-atlas { min-height:590px; }
+.atlas-arrival .atlas-portal { width:clamp(130px,16vw,230px); }
+.atlas-arrival .atlas-portal[data-atlas-portal='next-game'] { --portal-x:40%!important; --portal-y:41%!important; }
+.atlas-arrival .atlas-portal[data-atlas-portal='champions'] { --portal-x:70%!important; --portal-y:20%!important; }
+.atlas-arrival .atlas-portal[data-atlas-portal='players'] { --portal-x:16%!important; --portal-y:72%!important; }
+.atlas-arrival .atlas-portal[data-atlas-portal='patches'] { --portal-x:89%!important; --portal-y:63%!important; }
+.atlas-arrival .atlas-portal[data-atlas-portal='pool'] { --portal-x:59%!important; --portal-y:81%!important; }
+.atlas-arrival .atlas-connections { opacity:0; }
+.atlas-arrival .rift-atlas::after { content:''; position:absolute; z-index:-1; left:16%; top:20%; width:73%; height:62%; border:1px solid #cae8d326; border-radius:50%; transform:rotate(-14deg); pointer-events:none; }
+.atlas-arrival-footer { display:flex; align-items:center; gap:30px; padding:12px 0; border-top:1px solid var(--line); }
+.atlas-arrival-footer > a { display:inline-flex; gap:16px; align-items:center; min-height:44px; color:#d2e9da; font-size:12px; }
+.atlas-arrival-footer > span { margin-left:auto; color:#8ea6ac; font:8px 'Spline Sans Mono',monospace; letter-spacing:.1em; }
+.atlas-live-dot { width:5px; height:5px; border-radius:50%; background:#c8f3d9; box-shadow:0 0 0 5px #c8f3d915; }
+body[data-journey-ready] .signal-journey:has(#atlas:not([hidden])) > :is(.signal-subject-visual,.signal-cast) { display:none; }
+body.rift-shell[data-journey-ready] #main .atlas-arrival { min-height:max(500px,calc(100svh - var(--world-header-height) - 164px)); }
+body.rift-shell[data-journey-ready] .atlas-arrival .rift-atlas { min-height:430px; flex:1; }
+/* A visible path keeps the entire platform connected, even deep inside a match. */
+.journey-chrome .journey-spine { display:flex; grid-column:1/-1; justify-content:center; align-items:center; gap:0; border-top:1px solid #bcdcc916; padding-top:6px; width:100%; }
+.journey-spine a { position:relative; display:flex; align-items:center; justify-content:center; gap:8px; min-height:44px; min-width:44px; padding:6px 22px; color:#8ea9ad; font:10px var(--font-ui); }
+.journey-spine a + a::before { content:''; position:absolute; left:-12px; top:50%; width:24px; height:1px; background:#a7c9bd2b; }
+.journey-spine i { display:block; width:5px; height:5px; border:1px solid var(--station-color); transform:rotate(45deg); }
+.journey-spine small { font:inherit; }.journey-spine-home > span { color:var(--world-signal); font-size:20px; }
+.journey-spine a[aria-current],.journey-spine a:hover { color:#e2efdf; }
+.journey-spine a[aria-current] i { background:var(--station-color); box-shadow:0 0 15px var(--station-color); }
+.journey-spine a[data-visited] i { background:var(--station-color); }
+.journey-chrome { gap:0 24px; padding-bottom:max(6px,env(safe-area-inset-bottom)); }
+.journey-scene-tabs button { position:relative; border:0; border-bottom:1px solid #a9cbbc2b; color:#96b0b3; }
+.journey-scene-tabs button[aria-selected=true] { border-color:var(--world-signal); }
+.journey-scene-tabs button::before { content:attr(data-scene-number); font:8px 'Spline Sans Mono',monospace; margin-right:7px; opacity:.6; }
+.journey-map .journey-map-inner { max-width:1380px; padding-block:24px; justify-content:initial; }
+.journey-map .journey-map-heading { padding-bottom:0; }
+.journey-map .journey-map-heading h2 { font-size:clamp(32px,4vw,58px); margin-top:6px; }
+.journey-map .rift-atlas { min-height:420px; }
+.journey-map .journey-map-footer { border-top:1px solid var(--line); padding-top:6px; }
+.journey-map { background:radial-gradient(ellipse at 50% 45%,#16332fe8,#061016fc 75%); }
+/* Give every destination a physical setting. Two image planes dissolve without
+   reloading the document, including scene changes within React islands. */
+.rift-scene .atlas-environment { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; filter:saturate(.65) brightness(.68); transform:scale(1.04); transition:opacity 1s ease,transform 1.8s var(--journey-ease); }
+.rift-scene .atlas-environment.is-current { opacity:.62; transform:scale(1); }
+.rift-shell .rift-scene__landscape img { opacity:.22; }
+.rift-shell .rift-scene__object { opacity:.12; }
+.rift-shell .rift-scene__reading-light { background:linear-gradient(90deg,#061016ee,#061016be 46%,#06101666),linear-gradient(0deg,#061016f5,transparent 65%); }
+body[data-surface=home] .rift-scene .atlas-environment.is-current { opacity:.44; }
+body[data-atlas-preview] .rift-scene .atlas-environment.is-current { opacity:.76; }
+body[data-atlas-preview] .rift-scene__reading-light { background:linear-gradient(90deg,#061016c7,#06101665),linear-gradient(0deg,#061016d9,transparent); }
+.rift-shell[data-journey-ready] [data-journey-panel] { animation:atlas-chapter-enter .7s var(--journey-ease) both; }
+@keyframes atlas-chapter-enter { from { opacity:0; transform:perspective(1400px) translate3d(var(--scene-travel-x),16px,-55px); filter:blur(4px); } to { opacity:1; transform:none; filter:blur(0); } }
+/* Route artwork is part of the scene, rather than another framed dashboard. */
+.rift-shell .journey-reader { min-height:calc(100svh - var(--world-header-height) - 210px); }
+.rift-shell :is(.journey-champion-art picture,.roster-lens-media) { border:0; mask-image:linear-gradient(0deg,transparent,#000 14%,#000 85%,transparent); }
+.rift-shell .roster-lens-media::after,.rift-shell .journey-champion-art picture::after { border:0; }
+.rift-shell :is(.automatic-panel,.recall-panel) { background:#08171eb3; backdrop-filter:blur(8px); }
+.rift-shell .journey-reader-header { border-bottom:1px solid #badac51a; margin-bottom:24px; }
+.rift-shell .journey-roster-tools { margin-bottom:28px; }
+.rift-shell .journey-champion-art picture { aspect-ratio:1.05; }
+.rift-shell .journey-casting-wall { gap:4px; }
+.rift-shell .roster-entry > a { border-color:transparent; background:transparent; min-height:115px; padding:10px 6px; }
+.rift-shell .roster-entry > a:hover,.rift-shell .roster-entry[data-reader-active] > a { background:#c1e8de09; border-color:#b9e3dc65; }
+.rift-shell .roster-portrait { width:55px; height:55px; }
+@media (min-width:1600px) { .rift-atlas--entrance { max-width:1500px; margin:auto; } }
+@media (max-width:900px) {
+  .atlas-arrival-heading h1 { font-size:45px; }.atlas-arrival-heading > p:last-child { font-size:11px; }
+  .journey-spine a { padding-inline:16px; }.atlas-portal-caption > span { font-size:10px; }
+  .atlas-arrival-footer { gap:18px; }.atlas-arrival-footer > span { display:none; }
+}
+@media (max-width:700px) {
+  :root { --world-header-height:104px; }
+  .atlas-arrival-heading { position:relative; padding-top:8px; }
+  .atlas-arrival-heading h1 { font-size:clamp(32px,9vw,46px); margin:10px 0; }
+  .atlas-arrival-heading h1 br { display:none; }
+  .atlas-arrival-heading .journey-eyebrow { font-size:7px; }
+  .atlas-arrival-heading > p:last-child { font-size:11px; }
+  body.rift-shell[data-journey-ready] #main .atlas-arrival { min-height:0; }
+  .rift-atlas,.journey-map .rift-atlas,body.rift-shell[data-journey-ready] .atlas-arrival .rift-atlas { min-height:440px; }
+  .rift-atlas .atlas-portal { width:110px; }
+  .atlas-portal-image { width:78px; height:67px; margin-bottom:10px; }
+  .rift-atlas .atlas-portal-caption strong { font-size:22px; margin-top:3px; }
+  .atlas-portal-caption small { font-size:6px; letter-spacing:.07em; }
+  .atlas-portal-caption > span,.rift-atlas .atlas-portal > b { display:none; }
+  .rift-atlas .atlas-portal-glyph svg { width:24px; height:24px; }
+  .atlas-portal[data-atlas-portal=next-game],.atlas-arrival .atlas-portal[data-atlas-portal=next-game] { --portal-x:25%!important; --portal-y:20%!important; }
+  .atlas-portal[data-atlas-portal=players],.atlas-arrival .atlas-portal[data-atlas-portal=players] { --portal-x:24%!important; --portal-y:67%!important; }
+  .atlas-portal[data-atlas-portal=champions],.atlas-arrival .atlas-portal[data-atlas-portal=champions] { --portal-x:73%!important; --portal-y:29%!important; }
+  .atlas-portal[data-atlas-portal=patches],.atlas-arrival .atlas-portal[data-atlas-portal=patches] { --portal-x:76%!important; --portal-y:78%!important; }
+  .atlas-portal[data-atlas-portal=pool],.atlas-arrival .atlas-portal[data-atlas-portal=pool] { --portal-x:50%!important; --portal-y:48%!important; }
+  .atlas-connections { display:none; }
+  .atlas-reticle { left:50%; top:48%; width:270px; opacity:.7; }
+  .atlas-reticle > span { display:none; }
+  .atlas-arrival .rift-atlas::after { left:12%; top:16%; width:76%; height:60%; transform:rotate(-25deg); }
+  .atlas-coordinate { bottom:4%; font-size:6px; }
+  .atlas-arrival-footer { flex-wrap:wrap; gap:0 18px; padding:3px 0; }
+  .atlas-arrival-footer > a { font-size:10px; gap:10px; }
+  .atlas-arrival-footer .atlas-personal-link { margin-left:auto; }
+  .journey-chrome .journey-spine { display:flex; flex-wrap:nowrap; padding-top:0; }
+  .journey-spine a { flex:1; padding:5px 2px; flex-direction:column; gap:5px; font-size:8px; }
+  .journey-spine a + a::before { left:-7px; width:14px; top:15px; }
+  .journey-spine-home > span { font-size:14px; line-height:7px; }
+  .journey-chrome .journey-trail-end { display:none; }
+  .journey-scene-tabs { display:flex; min-width:0; }
+  .journey-scene-tabs button { flex:1; font-size:0; padding:0; width:44px; min-width:44px; min-height:44px; }
+  .journey-scene-tabs button::before { font-size:10px; margin:0; opacity:1; }
+  .journey-chrome { padding-block:0 max(4px,env(safe-area-inset-bottom)); }
+  .journey-map .journey-map-inner { padding:16px 18px; height:auto; min-height:100dvh; }
+  .journey-map .journey-map-heading h2 { font-size:34px; }
+  .journey-map .journey-map-heading .journey-eyebrow { font-size:7px; }
+  .journey-map .journey-map-footer { gap:0 18px; }
+  .journey-map .journey-map-footer :is(a,button) { font-size:10px; }
+  .journey-map { overflow-y:auto; }
+}
+@media (max-height:680px) and (min-width:701px) {
+  .atlas-arrival-heading h1 { font-size:42px; }
+  .atlas-arrival .atlas-portal-image { height:80px; }
+  .atlas-arrival .atlas-portal-caption strong { font-size:27px; }
+}
+@media (max-height:480px) and (orientation:landscape) {
+  .atlas-arrival-heading { position:absolute; }.atlas-arrival-heading h1 { font-size:32px; }.atlas-arrival-heading h1 br { display:block; }
+  .atlas-arrival-heading > p:last-child { display:none; }
+  .rift-atlas,.journey-map .rift-atlas,body.rift-shell[data-journey-ready] .atlas-arrival .rift-atlas { min-height:380px; }
+  .journey-spine a { flex-direction:row; gap:6px; font-size:9px; }
+  .journey-spine a + a::before { top:50%; }
+}
+@media (prefers-reduced-motion:reduce) { .atlas-environment,.atlas-portal-image > img,.atlas-portal-image::before { transition:none!important; } }
+html[data-motion=reduced] .rift-shell [data-journey-panel] { animation:none; }
+@media (scripting:none) {
+  .signal-journey > .atlas-arrival { margin-bottom:50px; }
+  .signal-journey > .signal-subject-visual { display:none; }
+}

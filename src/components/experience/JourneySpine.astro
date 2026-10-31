@@ -1,0 +1,10 @@
+---
+import { journeyStations, stationForSurface } from '../../lib/journey-stations';
+interface Props { surface: string }
+const { surface } = Astro.props;
+const active = stationForSurface(surface);
+---
+<nav class="journey-spine" aria-label="Journey destinations">
+  <a href="/#atlas" class="journey-spine-home" aria-label="Return to the Rift atlas" aria-current={active === 'home' ? 'page' : undefined}><span aria-hidden="true">◇</span><small>The Rift</small></a>
+  {journeyStations.map(station => <a href={station.href} data-station-link={station.id} data-spine-station={station.id} aria-current={active === station.id ? 'page' : undefined} style={`--station-color:${station.color}`}><i aria-hidden="true"></i><small>{station.label}</small><span class="sr-only"> — {station.place}</span></a>)}
+</nav>

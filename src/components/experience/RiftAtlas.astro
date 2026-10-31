@@ -1,0 +1,22 @@
+---
+import { journeyStations, stationForSurface } from '../../lib/journey-stations';
+interface Props { surface?: string; entrance?: boolean }
+const { surface = 'home', entrance = false } = Astro.props;
+const active = stationForSurface(surface);
+---
+<div class:list={['rift-atlas', entrance && 'rift-atlas--entrance']} data-rift-atlas>
+  <div class="atlas-reticle" aria-hidden="true"><i></i><i></i><span>R / S</span></div>
+  <svg class="atlas-connections" viewBox="0 0 1000 600" preserveAspectRatio="none" fill="none" aria-hidden="true">
+    <path class="atlas-orbit" d="M220 168Q30 220 130 414T650 468Q1000 500 840 252T540 90Q340 0 220 168Z" />
+    <path d="m220 168 320-78 300 162-190 216-520-54 90-246m0 0 430 300M540 90l110 378M130 414l710-162" />
+    {journeyStations.map(station => <circle cx={station.x * 10} cy={station.y * 6} r="5" />)}
+  </svg>
+  <nav class:list={['atlas-portals', !entrance && 'signal-destinations']} aria-label="RiftScry destinations">
+    {journeyStations.map(station => <a class="atlas-portal" href={station.href} data-station-link={station.id} data-world-link={station.id} data-rift-destination={station.id} data-atlas-portal={station.id} aria-current={active === station.id ? 'page' : undefined} style={`--portal-x:${station.x}%;--portal-y:${station.y}%;--station-color:${station.color}`}>
+      <span class="atlas-portal-image"><img src={`/images/journey/${station.image}-mobile.webp`} alt="" width="480" height="720" loading={entrance ? 'eager' : 'lazy'} decoding="async" /><span class="atlas-portal-glyph"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={station.glyph} /></svg></span></span>
+      <span class="atlas-portal-caption"><small>{station.number} / {station.place}</small><strong>{station.label}</strong><span>{station.description}</span></span><b aria-hidden="true">↗</b>
+    </a>)}
+  </nav>
+  <span class="atlas-coordinate atlas-coordinate--west" aria-hidden="true">35° N / BETWEEN GAMES</span>
+  <span class="atlas-coordinate atlas-coordinate--east" aria-hidden="true">NO TWO PATHS ALIKE</span>
+</div>

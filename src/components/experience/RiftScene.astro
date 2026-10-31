@@ -1,11 +1,13 @@
 ---
 import { getRiftPreset, projectRift } from '../../lib/rift-geometry';
 import '../../styles/rift-scene.css';
+import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 
 interface Props { surface?: string; }
 const scene = getRiftPreset(Astro.props.surface);
 const faces = projectRift(scene);
 const luminousFaces = faces.filter(face => face.luminous);
+const environment = journeyStations.find(station => station.id === stationForSurface(Astro.props.surface ?? 'home'))?.image ?? 'gateway';
 const style = [
   `--rift-scene-accent:${scene.accent}`,
   `--rift-scene-secondary:${scene.secondary}`,
@@ -32,6 +34,8 @@ const style = [
     <source media="(max-width: 700px)" srcset="/images/voyage/rift-overlook-mobile.webp" />
     <img src="/images/voyage/rift-overlook.webp" alt="" width="1672" height="941" decoding="async" fetchpriority={scene.surface === 'home' ? 'high' : 'auto'} />
   </picture>
+  <img class="atlas-environment is-current" data-atlas-environment={environment} src={`/images/journey/${environment}-mobile.webp`} alt="" width="480" height="720" decoding="async" />
+  <img class="atlas-environment" data-atlas-environment alt="" width="480" height="720" decoding="async" />
   <div class="rift-scene__distance"></div>
   <div class="rift-scene__aurora"></div>
   <div class="rift-scene__object" data-rift-scene-object>

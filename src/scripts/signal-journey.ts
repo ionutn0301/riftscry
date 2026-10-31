@@ -138,6 +138,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   // A URL records the actual opening subject so Back restores it exactly.
   const initialUrl = new URL(location.href);
   initialUrl.searchParams.set('signal', current.championId);
+  if (!initialUrl.hash && !requested) initialUrl.hash = 'atlas';
   history.replaceState(history.state, '', initialUrl.pathname + initialUrl.search + initialUrl.hash);
   player(); artworkState();
 }

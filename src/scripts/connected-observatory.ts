@@ -130,6 +130,7 @@ function discover() {
   if (controls) controls.hidden = panels.length < 2;
   const requested = containingPanel(hashId())?.id ? hashId()
     : panels.some(panel => panel.id === active) ? active
+    : found.matches('[data-home-signals]') && new URLSearchParams(location.search).has('signal') ? 'signal'
     : deck.dataset.journeyDefault ?? panels[0]!.id;
   activate(requested);
 }

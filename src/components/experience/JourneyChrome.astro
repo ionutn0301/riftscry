@@ -1,6 +1,7 @@
 ---
 import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 import SiteFooter from '../SiteFooter.astro';
+import JourneySpine from './JourneySpine.astro';
 interface Props { surface: string }
 const { surface } = Astro.props;
 const station = journeyStations.find(item => item.id === stationForSurface(surface));
@@ -15,6 +16,7 @@ const station = journeyStations.find(item => item.id === stationForSurface(surfa
   </div>
   <div class="journey-trail-end"><span class="journey-status-dot" aria-hidden="true"></span><span data-journey-caption>CHOOSE. REVEAL. CARRY.</span><button class="journey-about" type="button" data-about-open aria-haspopup="dialog" aria-controls="journey-about-dialog" aria-label="About RiftScry">ⓘ</button></div>
   <p class="sr-only" role="status" aria-live="polite" data-journey-announcement></p>
+  <JourneySpine surface={surface} />
 </footer>
 <dialog id="journey-about-dialog" class="journey-about-dialog" aria-labelledby="journey-about-title"><div><header><h2 id="journey-about-title">About RiftScry.</h2><button type="button" data-about-close aria-label="Close about">Close ×</button></header><SiteFooter /></div></dialog>
 <noscript><SiteFooter /></noscript>

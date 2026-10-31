@@ -3,6 +3,7 @@ import { getAllPatches, getChampionMeta, getLatestPatch } from '../../lib/data';
 import { buildHomeSignals } from '../../lib/home-signals';
 import { assetFor, recordsFor } from '../../lib/investigation';
 import SignalRecord from './SignalRecord.astro';
+import RiftAtlas from './RiftAtlas.astro';
 import '../../styles/signal-journey.css';
 const latest = getLatestPatch();
 const signals = buildHomeSignals(getAllPatches(), getChampionMeta()).map(signal => {
@@ -12,7 +13,12 @@ const signals = buildHomeSignals(getAllPatches(), getChampionMeta()).map(signal 
 const first = signals[0]!;
 const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
 ---
-<div class="signal-journey" data-home-signals data-journey-deck data-journey-default="signal" data-journey-active="signal">
+<div class="signal-journey" data-home-signals data-journey-deck data-journey-default="atlas" data-journey-active="atlas">
+  <section id="atlas" class="atlas-arrival" data-journey-panel data-journey-label="The Rift" data-journey-world="home" aria-labelledby="atlas-title">
+    <header class="atlas-arrival-heading"><p class="journey-eyebrow"><i aria-hidden="true"></i> THE SPACE BETWEEN GAMES</p><h1 id="atlas-title">Every game leaves<br />a <em>ripple.</em></h1><p>Choose where yours takes you.</p></header>
+    <RiftAtlas entrance />
+    <div class="atlas-arrival-footer"><a href="#signal" class="atlas-follow-signal"><span class="atlas-live-dot" aria-hidden="true"></span>Follow a champion signal <span aria-hidden="true">→</span></a><a href="/next-game" data-station-link="next-game" class="atlas-personal-link">Open my briefing ↗</a><span>CHOOSE A PLACE TO ENTER</span></div>
+  </section>
   <figure class="signal-subject-visual" aria-label="Champion in focus">
     <div class="signal-subject-window"><picture><source media="(max-width:700px)" srcset={first.artwork.portrait} data-home-portrait /><img src={first.artwork.splash} alt={`${first.championName} — official Riot Games artwork`} width="1215" height="717" fetchpriority="high" decoding="async" data-home-art /></picture><span class="signal-art-fallback" data-home-art-fallback hidden>Artwork unavailable. The signal is still here.</span></div>
     <div class="signal-aperture-outline" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -21,7 +27,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   </figure>
 
   <section id="signal" class="signal-act signal-act--arrival" data-journey-panel data-journey-label="Find a signal" data-journey-world="home" aria-labelledby="signal-title">
-    <div class="signal-opening-copy"><p class="journey-eyebrow"><i aria-hidden="true"></i> THE SPACE BETWEEN GAMES</p><h1 id="signal-title">The Rift<br /> never <em>stands still.</em></h1><p class="signal-opening-caption">Neither should your perspective.</p>
+    <div class="signal-opening-copy"><p class="journey-eyebrow"><i aria-hidden="true"></i> A SIGNAL FROM THE ARCHIVE</p><h2 id="signal-title">The Rift<br /> never <em>stands still.</em></h2><p class="signal-opening-caption">Choose a champion. Reveal what shifted.</p>
       <div class="signal-opening-actions"><a class="signal-primary-action" href="#reveal" data-home-reveal><span>Reveal the change</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/next-game" data-home-personal data-station-link="next-game">Use my games <span aria-hidden="true">→</span></a></div>
       <p class="signal-return-hint" data-home-return hidden></p>
       <a class="signal-return-hint signal-secondary-action" href="/explore#change" data-home-context hidden></a>
@@ -31,7 +37,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   </section>
 
   <section id="reveal" class="signal-act signal-act--reveal" data-journey-panel data-journey-label="Reveal the change" data-journey-world="explore" aria-labelledby="signal-reveal-title">
-    <div class="signal-reveal-desk"><header><p class="journey-eyebrow">ONE CHANGE / EXACTLY AS RECORDED</p><h2 id="signal-reveal-title">A moment.<br /><em>A different possibility.</em></h2></header>
+    <div class="signal-reveal-desk"><header><p class="journey-eyebrow">ONE CHANGE / EXACTLY AS RECORDED</p><h2 id="signal-reveal-title">See the <em>shift.</em></h2></header>
       {signals.map((signal,index) => <div data-home-record={signal.championId} hidden={index !== 0}><SignalRecord label={signal.championName} championId={signal.championId} entries={[{change:signal.record.change,ability:signal.ability,abilityName:signal.abilityName}]} patchId={signal.patchId} sourceUrl={signal.sourceUrl}/></div>)}
       <div class="signal-reveal-actions"><button class="signal-primary-action" type="button" data-home-keep hidden><span>Keep this finding</span><span aria-hidden="true">+</span></button><a class="signal-secondary-action" href={first.explore.replace('#change','#history')} data-home-trace>Trace it through time <span aria-hidden="true">↗</span></a></div>
       <p class="signal-keep-status" role="status" data-home-keep-status></p>
@@ -39,7 +45,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   </section>
 
   <section id="carry" class="signal-act signal-act--carry" data-journey-panel data-journey-label="Take it forward" data-journey-world="pool" aria-labelledby="signal-carry-title">
-    <div class="signal-carry-desk"><p class="journey-eyebrow" data-home-carry-caption>YOUR NEXT PERSPECTIVE</p><h2 id="signal-carry-title">Take something<br /><em>into the next game.</em></h2><div class="signal-carried-record"><span class="signal-carried-mark" aria-hidden="true">◇</span><div><small data-home-carry-name>{first.championName} / {first.abilityName}</small><strong data-home-carry-value>{first.before} → {first.after}</strong><span data-home-carry-label>{first.label} · Patch {first.patchId}</span></div></div><div class="signal-opening-actions"><a class="signal-primary-action" href="/next-game" data-home-personal data-station-link="next-game"><span>Find my next move</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/pool#findings">Open kept findings <span aria-hidden="true">→</span></a></div><a class="signal-carry-explore" href={first.explore} data-home-explore>Continue with {first.championName} ↗</a></div>
+    <div class="signal-carry-desk"><p class="journey-eyebrow" data-home-carry-caption>YOUR NEXT PERSPECTIVE</p><h2 id="signal-carry-title">Carry it <em>forward.</em></h2><div class="signal-carried-record"><span class="signal-carried-mark" aria-hidden="true">◇</span><div><small data-home-carry-name>{first.championName} / {first.abilityName}</small><strong data-home-carry-value>{first.before} → {first.after}</strong><span data-home-carry-label>{first.label} · Patch {first.patchId}</span></div></div><div class="signal-opening-actions"><a class="signal-primary-action" href="/next-game" data-home-personal data-station-link="next-game"><span>Find my next move</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/pool#findings">Open kept findings <span aria-hidden="true">→</span></a></div><a class="signal-carry-explore" href={first.explore} data-home-explore>Continue with {first.championName} ↗</a></div>
   </section>
 
   <nav class="signal-cast" aria-label="Choose a signal"><span class="signal-cast-label">CHANGE YOUR<br />PERSPECTIVE</span><div>{signals.map((signal,index) => <a href={signal.explore} data-home-choice={signal.championId} aria-current={index === 0 ? 'true' : undefined}><img src={signal.icon} alt="" width="44" height="44" decoding="async"/><span><small>{String(index + 1).padStart(2,'0')} / {signal.direction === 'neutral' ? 'ADJUSTMENT' : signal.direction.toUpperCase()}</small><strong>{signal.championName}</strong></span></a>)}</div><a class="signal-cast-all" href="/champions">Find your champion <span aria-hidden="true">↗</span></a></nav>
