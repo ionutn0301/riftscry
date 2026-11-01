@@ -23,16 +23,16 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
 ---
 <Layout surface="champions" title="Champions — RiftScry" description="Choose a champion. Move through exact patch records in the RiftScry observatory.">
   <div class="journey-reader journey-roster" data-journey-deck data-roster-directory>
-    <header class="journey-reader-header" id="route-arrival">
-      <div><p class="journey-reader-kicker">CHAMPIONS / {champions.length} PERSPECTIVES</p><h1>Find your champion.</h1></div>
-      <a class="journey-quiet-link" href="/pool#briefing">Saved champions <span aria-hidden="true">↗</span></a>
-    </header>
-    <form class="roster-tools journey-roster-tools" data-roster-tools hidden>
-      <div class="roster-search"><label for="roster-search">Find a champion</label><input id="roster-search" data-roster-search type="search" placeholder="Champion name…" autocomplete="off" spellcheck="false" /></div>
-      <div class="roster-role-options" role="group" aria-label="Champion role"><button type="button" data-roster-role="" aria-pressed="true">All</button>{ROLES.map((role) => <button type="button" data-roster-role={role} aria-pressed="false">{roleLabels[role]}</button>)}</div>
-      <button type="button" class="journey-quiet-link" data-roster-reset hidden>Clear</button>
-    </form>
     <section id="roster" class="journey-panel journey-roster-panel" data-journey-panel data-journey-label="Find a champion" data-journey-world="champions" aria-label="Champion roster">
+      <header class="journey-reader-header" id="route-arrival">
+        <div><p class="journey-reader-kicker">CHAMPIONS / {champions.length} PERSPECTIVES</p><h1>Find your champion.</h1></div>
+        <a class="journey-quiet-link" href="/pool#briefing">Saved champions <span aria-hidden="true">↗</span></a>
+      </header>
+      <form class="roster-tools journey-roster-tools" data-roster-tools hidden>
+        <div class="roster-search"><label for="roster-search">Find a champion</label><input id="roster-search" data-roster-search type="search" placeholder="Champion name…" autocomplete="off" spellcheck="false" /></div>
+        <div class="roster-role-options" role="group" aria-label="Champion role"><button type="button" data-roster-role="" aria-pressed="true">All</button>{ROLES.map((role) => <button type="button" data-roster-role={role} aria-pressed="false">{roleLabels[role]}</button>)}</div>
+        <button type="button" class="journey-quiet-link" data-roster-reset hidden>Clear</button>
+      </form>
       <div class="roster-lens journey-roster-lens" data-reader-champion-lens="arrival" data-reader-key={spotlight.id}>
         <figure>
           <div class="roster-lens-media" data-reader-lens-media><img data-reader-champion-art src={assetFor(spotlight.id).splash} alt={spotlight.name + " — official Riot Games artwork"} width="1215" height="717" loading="eager" decoding="async" /><p class="roster-lens-fallback" data-reader-art-fallback hidden>Artwork unavailable. Champion records are still available.</p></div>

@@ -46,7 +46,10 @@ html[data-motion=reduced] :is(.kinetic-word,[data-kinetic-heading]) { animation:
 .rift-shell[data-journey-ready] [data-journey-deck] { --scene-travel-x: 28px; }
 .rift-shell[data-journey-ready] [data-journey-travel='backward'] { --scene-travel-x: -28px; }
 .rift-shell[data-journey-ready] [data-journey-travel='arrive'] { --scene-travel-x: 0px; }
-.rift-shell[data-journey-ready] [data-journey-panel]:focus-visible { outline: 1px solid var(--line-strong); outline-offset: -1px; }
+/* Chapters receive focus after navigation for reading continuity. They are not
+   controls: framing the whole chapter looks like an intermittent page border.
+   Interactive descendants retain their own visible keyboard focus indicators. */
+.rift-shell[data-journey-ready] [data-journey-panel]:focus-visible { outline: none; }
 .rift-shell [data-reveal] { opacity: 1; transform: none; }
 .rift-shell [data-journey-panel] > :first-child { scroll-margin-top: 12px; }
 
