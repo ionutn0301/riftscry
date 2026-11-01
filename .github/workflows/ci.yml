@@ -28,7 +28,7 @@ jobs:
         run: pnpm build
       - name: Verify pending scripts, failed art and no-JavaScript navigation
         run: >
-          pnpm exec playwright test --project=desktop
+          pnpm exec playwright test --project=desktop --output=test-results/fallback
           tests/e2e/interaction-stability.spec.ts tests/e2e/rift-atlas.spec.ts tests/e2e/companion-home.spec.ts
           --grep 'failed imagery leaves|all five destinations are genuine usable links|all acts expose exact source evidence'
         env:
