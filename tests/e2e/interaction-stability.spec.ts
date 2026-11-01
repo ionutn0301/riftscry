@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Page } from '@playwright/test';
 import { homeSignals, readySignal, readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
 
@@ -49,7 +50,7 @@ test('failed imagery leaves a native entrance and exact evidence before and afte
     await expect(initial.locator('.before')).toHaveText(signals[0]!.before);
     await expect(initial.locator('.after')).toHaveText(signals[0]!.after);
     await expect(initial.getByRole('link', { name: 'Original source' })).toHaveAttribute('href', signals[0]!.sourceUrl);
-    await page.locator('[data-map-open]').click();
+    await mapControl(page).click();
     await page.locator('#rift-map-dialog [data-station-link="champions"]').click();
     await expect(page).toHaveURL(url => url.pathname === '/champions');
     await readyWorld(page);

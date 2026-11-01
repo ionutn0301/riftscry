@@ -201,6 +201,8 @@ html[data-journey-crossing='enter'],html[data-journey-crossing='return'] { --cro
   .journey-primary { gap: 24px; }
   .world-utilities { gap: 10px; }
   .journey-search-trigger kbd { display: none; }
+  /* The persistent dock owns the menu on phones and tablets, in either orientation. */
+  .world-utilities .journey-map-trigger { display: none; }
 }
 @media (max-width: 700px) {
   :root { --world-header-height: 112px; --scene-gutter: 18px; }

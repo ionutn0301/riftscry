@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect } from '@playwright/test';
 import { readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
 import patch from '../../src/data/patches/26.16.json' with { type: 'json' };
@@ -67,7 +68,7 @@ for (const [width, height] of [[320,568],[359,603],[390,844],[700,800],[844,390]
       await unobstructed(healthValues);
     }
     await page.screenshot({path:testInfo.outputPath(`patch-record-${width}.png`)});
-    await page.getByRole('button',{name:'Open the Rift map',exact:true}).click();
+    await mapControl(page).click();
     await expect(page.locator('#rift-map-dialog')).toBeVisible();
     await page.getByRole('button',{name:'Close the Rift map',exact:true}).click();
     await expect(page).toHaveURL(url => url.hash === '#belveth' && url.searchParams.get('pool') === '1');

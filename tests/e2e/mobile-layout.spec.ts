@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Locator, type Page } from "@playwright/test";
 import { openScene, readyWorld, stationaryWorld } from "./journey-test-helpers";
 import championData from "../../src/data/champions.json" with { type: "json" };
@@ -52,7 +53,7 @@ async function readyJourneyMap(page: Page, width: number, height: number) {
   const paletteIsland = page.locator('astro-island[component-url*="CommandPalette"]');
   await paletteIsland.waitFor({ state: "attached" });
   await expect(paletteIsland).not.toHaveAttribute("ssr", "");
-  const opener = page.locator("[data-map-open]");
+  const opener = mapControl(page);
   await opener.focus();
   await expectUncovered(opener);
   const scrollBefore = await page.evaluate(() => scrollY);
@@ -292,7 +293,7 @@ test('map and search return to the same scrolled archive record', async ({ page 
   await page.evaluate(() => window.scrollTo({ top: 400, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
   const before = await page.evaluate(() => scrollY);
-  const opener = page.locator('[data-map-open]');
+  const opener = mapControl(page);
   // Keyboard activation exercises a visible sticky control without the test
   // driver first scrolling it to its original document position.
   await opener.evaluate(element => (element as HTMLElement).focus({ preventScroll: true }));

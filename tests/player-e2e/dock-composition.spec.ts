@@ -18,6 +18,11 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
       await page.goto(route.path,{waitUntil:'domcontentloaded'});await ready(page);
       if(route.current==='Games')await expect(page.locator('.match-row').first()).toBeVisible();
       const chrome=page.locator('.journey-chrome'),dock=chrome.locator('.journey-dock');
+      const headerMenu=page.locator('.journey-header [data-map-open]');
+      if(viewport.width<=1100){
+        await expect(headerMenu).toBeHidden();
+        await expect(page.locator('[aria-controls="rift-map-dialog"]:visible')).toHaveCount(1);
+      }else await expect(headerMenu).toBeVisible();
       await expect(chrome).toBeVisible();await expect(chrome).toHaveCSS('position','fixed');
       await expect(dock.locator(':scope > a > span')).toHaveText(labels);
       await expect(dock.locator('[aria-current]')).toHaveCount(1);
@@ -51,6 +56,14 @@ test.describe('Touch dock navigation',()=>{
     const atlas=page.locator('[data-dock-atlas]');await atlas.tap();
     await expect(atlas).toHaveAttribute('aria-expanded','true');await expect(page.locator('#rift-map-dialog')).toBeVisible();
     await page.keyboard.press('Escape');await expect(atlas).toBeFocused();await expect(atlas).toHaveAttribute('aria-expanded','false');
+    // The shortcut must return to the dock, including after the desktop opener hides.
+    await page.locator('body').evaluate(()=>{(document.activeElement as HTMLElement)?.blur();});
+    await page.keyboard.press('Alt+KeyM');await expect(page.locator('#rift-map-dialog')).toBeVisible();
+    await page.keyboard.press('Escape');await expect(atlas).toBeFocused();
+    await page.setViewportSize({width:1440,height:900});
+    await page.locator('.journey-header [data-map-open]').click();
+    await page.setViewportSize({width:390,height:844});
+    await page.keyboard.press('Escape');await expect(atlas).toBeFocused();
     for(const station of ['champions','patches']){
       await atlas.tap();await page.locator(`#rift-map-dialog [data-passage-stop][data-station-link="${station}"]`).tap();
       await expect(page).toHaveURL(url=>url.pathname===`/${station}`);await ready(page);

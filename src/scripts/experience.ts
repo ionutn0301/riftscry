@@ -28,8 +28,8 @@ motionButton?.addEventListener('click', () => {
 });
 
 const map = document.querySelector<HTMLDialogElement>('#rift-map-dialog');
-const trigger = document.querySelector<HTMLButtonElement>('[data-map-open]');
 const mapTriggers = [...document.querySelectorAll<HTMLElement>('[data-map-open],[data-dock-atlas]')];
+const visibleMapTrigger = () => mapTriggers.find(element => element.isConnected && element.getClientRects().length > 0) ?? null;
 const readingLink = map?.querySelector<HTMLAnchorElement>('[data-reading-shortcut]');
 const readingLocation = () => location.pathname + location.search + location.hash;
 function updateReadingLink() {
@@ -77,9 +77,9 @@ function openMap(event?: Event) {
   readingChanged();
   mapOpener = event?.currentTarget instanceof HTMLElement
     ? event.currentTarget
-    : document.activeElement instanceof HTMLElement && document.activeElement !== document.body
+    : document.activeElement instanceof HTMLElement && document.activeElement !== document.body && document.activeElement.getClientRects().length > 0
       ? document.activeElement
-      : trigger;
+      : visibleMapTrigger();
   mapReturnPosition = { href: location.href, x: scrollX, y: scrollY };
   map.showModal();
   mapTriggers.forEach(button => button.setAttribute('aria-expanded','true'));
@@ -102,8 +102,8 @@ mapTriggers.forEach(button => button.addEventListener('click', event => {
 document.querySelector('[data-map-close]')?.addEventListener('click', () => map?.close());
 map?.addEventListener('close', () => {
   mapTriggers.forEach(button => button.setAttribute('aria-expanded','false'));
-  if (mapOpener?.isConnected) mapOpener.focus({ preventScroll: true });
-  else trigger?.focus({ preventScroll: true });
+  const returnTo=mapOpener?.isConnected&&mapOpener.getClientRects().length>0?mapOpener:visibleMapTrigger();
+  returnTo?.focus({ preventScroll: true });
   const position = mapReturnPosition;
   mapReturnPosition = null;
   if (position?.href === location.href) window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' });

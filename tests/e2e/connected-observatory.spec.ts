@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { stationaryWorld } from './journey-test-helpers';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import historicalPatch from '../../src/data/patches/26.16.json' with { type: 'json' };
@@ -42,7 +43,7 @@ test('the opening reveals a real signal and its menu supports a useful champion 
   const reveal = await activeScene(page, 'reveal');
   await expect(reveal.locator('[data-home-record]:not([hidden]) .before')).not.toBeEmpty();
   await expect(reveal.locator('[data-home-record]:not([hidden]) .after')).not.toBeEmpty();
-  await page.locator('[data-map-open]').click();
+  await mapControl(page).click();
   const map = page.locator('#rift-map-dialog');
   const destinations = map.locator('a[data-world-link]');
   await expect(destinations).toHaveCount(5);

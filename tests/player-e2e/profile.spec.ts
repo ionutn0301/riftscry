@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
   installFixtures, mayhemMatch, mixedModeMatches, oldRankedMatch, platform, profilePath, puuid,
@@ -409,7 +410,7 @@ test('match cards and the shared map retain keyboard navigation when player and 
   await page.route('**/img/profileicon/29.png', route => route.abort());
   await page.goto(namedProfile, { waitUntil: 'domcontentloaded' });
   await expect(page.locator('body')).toHaveAttribute('data-surface', 'player');
-  const mapOpener = page.locator('[data-map-open]');
+  const mapOpener = mapControl(page);
   await expect(mapOpener).toHaveCount(1);
   await mapOpener.click();
   const map = page.locator('#rift-map-dialog');

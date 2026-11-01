@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import {test,expect,type Locator} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
 import {installFixtures} from './fixtures';
@@ -72,7 +73,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
       expect(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeLessThanOrEqual(1);
     }
     expect(requests).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
-    await page.locator('[data-map-open]').click();const menu=page.locator('#rift-map-dialog [data-passage]');await separated(menu);
+    await mapControl(page).click();const menu=page.locator('#rift-map-dialog [data-passage]');await separated(menu);
     for(const stop of await menu.locator('[data-passage-stop]').all()){
       await stop.scrollIntoViewIfNeeded();await expect(stop).toBeInViewport({ratio:.99});
     }

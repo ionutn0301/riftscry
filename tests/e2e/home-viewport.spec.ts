@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { openScene, reachableTarget, readySignal, stationaryWorld, unobstructed } from './journey-test-helpers';
@@ -47,7 +48,7 @@ for (const [width, height] of sizes) for (const state of ['new', 'returning'] as
   if (await arrival.locator('[data-home-context]').isVisible()) await reachableTarget(arrival.locator('[data-home-context]'), page);
   for (const choice of await page.locator('[data-home-choice]').all()) await reachableTarget(choice, page);
   await reachableTarget(page.locator('.signal-cast-all'), page);
-  await reachableTarget(page.locator('[data-map-open]'), page);
+  await reachableTarget(mapControl(page), page);
   await sceneFits(page);
 
   const reveal = await openScene(page, 'reveal');

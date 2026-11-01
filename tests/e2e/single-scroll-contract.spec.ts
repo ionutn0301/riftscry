@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { expect, test, type Page } from '@playwright/test';
 
 const routes = [
@@ -69,7 +70,7 @@ test('the jump map keeps all destinations reachable with one modal scroll', asyn
   ]) {
     await page.setViewportSize({ width, height });
     await page.goto('/explore');
-    await page.getByRole('button', { name: 'Open the Rift map' }).click();
+    await mapControl(page).click();
     const map = page.locator('#rift-map-dialog');
     const overflow = await map.evaluate(el => [...el.querySelectorAll('*')]
       .filter(node => /^(auto|scroll)$/.test(getComputedStyle(node).overflowY)
