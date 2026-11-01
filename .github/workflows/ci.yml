@@ -6,6 +6,43 @@ on:
   pull_request:
 
 jobs:
+  transition-composition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Verify live page crossings with motion enabled
+        run: pnpm exec playwright test --config=playwright.player.config.ts transition-composition.spec.ts
+        env:
+          CI: "true"
+      - name: Build static loading and native-link fallbacks
+        run: pnpm build
+      - name: Verify pending scripts, failed art and no-JavaScript navigation
+        run: >
+          pnpm exec playwright test --project=desktop --output=test-results/fallback
+          tests/e2e/interaction-stability.spec.ts tests/e2e/rift-atlas.spec.ts tests/e2e/companion-home.spec.ts
+          --grep 'failed imagery leaves|all five destinations are genuine usable links|all acts expose exact source evidence'
+        env:
+          CI: "true"
+      - name: Retain transition videos and sampled paint layers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: transition-composition
+          path: |
+            player-visuals/transition-*
+            test-results/
+          retention-days: 7
+
   homepage-composition:
     runs-on: ubuntu-latest
     timeout-minutes: 10

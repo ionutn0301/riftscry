@@ -5,7 +5,7 @@ async function settleLayout(page: Page) {
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
 }
 
-test('failed imagery leaves named native signal choices and exact evidence available before and after enhancement', async ({ page }) => {
+test('failed imagery leaves a native entrance and exact evidence before and after enhancement', async ({ page }) => {
   let releaseScripts = () => {};
   const scriptsHeld = new Promise<void>(resolve => { releaseScripts = resolve; });
   await page.route('**/*', async route => {
@@ -20,28 +20,35 @@ test('failed imagery leaves named native signal choices and exact evidence avail
   try {
     await page.goto('/', { waitUntil: 'commit' });
     await expect(choices).toHaveCount(3);
+    await expect(home.locator('#atlas')).toBeVisible();
+    await expect(home.locator('#atlas [data-passage-enter]')).toBeVisible();
+    await expect(home.locator('.signal-subject-visual')).toBeHidden();
+    await expect(home.locator('.signal-cast')).toBeHidden();
     await expect(home.locator('#signal-title')).toContainText('Choose a champion.');
     const signals = await homeSignals(page);
     for (const [index, signal] of signals.entries()) {
       await expect(choices.nth(index)).toHaveAttribute('href', signal.explore);
       await expect(choices.nth(index).locator('strong')).toHaveText(signal.championName);
-      await expect(choices.nth(index)).toHaveAccessibleName(new RegExp(signal.championName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     }
     await expect(page.locator('#signal [data-home-personal]')).toHaveAttribute('href', '/next-game');
     await expect(page.locator('[data-home-keep]')).toBeHidden();
     const initial = home.locator('[data-home-record]:not([hidden])');
     await expect(initial.locator('.before')).toHaveText(signals[0]!.before);
     await expect(initial.locator('.after')).toHaveText(signals[0]!.after);
-    await expect(initial.getByRole('link', { name: 'Original source' })).toHaveAttribute('href', signals[0]!.sourceUrl);
+    await expect(initial.locator('a').filter({hasText:'Original source'})).toHaveAttribute('href', signals[0]!.sourceUrl);
     releaseScripts();
     await readySignal(page);
     await expect(home.locator('[data-home-art-fallback]')).toBeVisible();
     await expect(home.locator('[data-home-art]')).toBeHidden();
+    for (const [index, signal] of signals.entries()) {
+      await expect(choices.nth(index)).toHaveAccessibleName(new RegExp(signal.championName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    }
     for (const choice of await choices.all()) await unobstructed(choice);
     await home.locator('[data-home-reveal]').click();
     await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'reveal');
     await expect(initial.locator('.before')).toHaveText(signals[0]!.before);
     await expect(initial.locator('.after')).toHaveText(signals[0]!.after);
+    await expect(initial.getByRole('link', { name: 'Original source' })).toHaveAttribute('href', signals[0]!.sourceUrl);
     await page.locator('[data-map-open]').click();
     await page.locator('#rift-map-dialog [data-station-link="champions"]').click();
     await expect(page).toHaveURL(url => url.pathname === '/champions');
