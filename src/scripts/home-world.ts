@@ -67,7 +67,9 @@ function mount(film:HTMLElement) {
   }
   function scene(){
     const index=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas'));
-    target=index;flightAt=performance.now();depth.textContent=labels[index]!;world.dataset.filmScene=ids[index];
+    // Reading a scene can leave the renderer idle. Start the next travel
+    // clock now so its first frame cannot jump ahead by the entire idle gap.
+    target=index;flightAt=performance.now();last=flightAt;depth.textContent=labels[index]!;world.dataset.filmScene=ids[index];
     if(reduced)current=target;
     heading();request();
   }
