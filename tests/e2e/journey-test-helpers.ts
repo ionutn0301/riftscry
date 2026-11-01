@@ -71,7 +71,10 @@ export async function stationaryWorld(page: Page) {
   // vertically. A nested scroll panel would trap mouse wheel, touch or focus.
   // A scene's finite arrival transform can briefly extend beyond the viewport.
   // Wait for its final layout, keeping the overflow assertion itself unchanged.
-  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  try { await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1); }
+  catch(error){
+    console.log('Overflow geometry',JSON.stringify(await page.evaluate(()=>({url:location.href,width:innerWidth,scroll:document.documentElement.scrollWidth,nodes:[...document.querySelectorAll<HTMLElement>('body *')].filter(el=>el.getClientRects().length&&!el.closest('[hidden]')&&!el.closest('[aria-hidden=true]')).map(el=>{const r=el.getBoundingClientRect();return {name:el.tagName+'.'+String(el.className),left:r.left,right:r.right,width:r.width,overflow:getComputedStyle(el).overflowX};}).filter(r=>r.right>innerWidth+1||r.left< -1).slice(0,16)}))));throw error;
+  }
   const report = await page.evaluate(() => ({
     nested: [...document.querySelectorAll('main *')]
       .filter(element => /^(auto|scroll)$/.test(getComputedStyle(element).overflowY)

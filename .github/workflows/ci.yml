@@ -6,6 +6,41 @@ on:
   pull_request:
 
 jobs:
+  surface-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium webkit
+      - name: Verify archive, Atlas and narrow WebKit regressions
+        run: >
+          pnpm exec playwright test
+          tests/e2e/companion-home.spec.ts tests/e2e/observatory.spec.ts
+          tests/e2e/reading-continuity.spec.ts tests/e2e/responsive-surface-polish.spec.ts
+          tests/e2e/single-scroll-contract.spec.ts tests/e2e/briefing-report-composition.spec.ts
+          tests/e2e/voyage-layout.spec.ts tests/e2e/voyage.spec.ts tests/e2e/connected-observatory.spec.ts
+          --grep 'reveal, keep and carry|reduced motion keeps|long Continue|Rift map has no|champion search stays|phone chapter controls|populated briefing|chapter (history|return) layout at 390|reading destination|patch stations retain|Explore presents|keyboard scene navigation'
+        env:
+          CI: "true"
+      - name: Retain surface geometry and browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surface-regressions
+          path: |
+            player-visuals/
+            test-results/
+          retention-days: 7
+
   home-flight:
     runs-on: ubuntu-latest
     timeout-minutes: 10

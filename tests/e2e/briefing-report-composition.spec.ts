@@ -33,6 +33,7 @@ async function shell(page:Page){
       stageZ:getComputedStyle(document.documentElement,'::view-transition-group(journey-stage)').zIndex,
       navZ:getComputedStyle(document.documentElement,'::view-transition-group(journey-navigation)').zIndex};
   });
+  if(result.horizontal>1)console.log('Briefing overflow',JSON.stringify(await page.evaluate(()=>({width:innerWidth,nodes:[...document.querySelectorAll<HTMLElement>('body *')].filter(el=>el.getClientRects().length&&!el.closest('[hidden]')&&!el.closest('[aria-hidden=true]')).map(el=>{const r=el.getBoundingClientRect();return {name:el.tagName+'.'+String(el.className),left:r.left,right:r.right};}).filter(r=>r.right>innerWidth+1||r.left< -1).slice(0,16)}))));
   expect.soft(result.height).toBe(68);expect.soft(result.bottom).toBeGreaterThanOrEqual(11);
   expect.soft(result.position).toBe('fixed');expect.soft(result.hit).toBe(true);
   expect.soft(result.headerTop,'The header must not disappear as the briefing loads or scrolls').toBeGreaterThanOrEqual(-1);
@@ -100,7 +101,9 @@ test('populated briefing keeps its navigation and compact shell before hydration
   await expect(page.locator('.automatic-loading')).toBeVisible();
   expect(await page.locator('.automatic-wrap').evaluate(el=>getComputedStyle(el).display)).toBe('contents');
   const before=await shell(page);
-  await capture(page,`${info.project.name}-pending-scripts`);
+  // WebKit waits for deferred module loading before taking a screenshot.
+  // Geometry and hit-testing above still verify the intentionally held state.
+  if(info.project.name!=='mobile')await capture(page,`${info.project.name}-pending-scripts`);
   release();await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
   await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
   const after=await shell(page);expect(after.height).toBe(before.height);expect(after.bottom).toBe(before.bottom);

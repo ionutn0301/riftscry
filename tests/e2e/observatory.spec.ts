@@ -34,7 +34,8 @@ for (const preference of ['device', 'saved'] as const) test(`${preference} reduc
   await expect(environment).toHaveAttribute('data-rift-renderer', 'static');
   await expect(environment).toHaveAttribute('data-rift-motion', 'still');
   await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
-  await expect(page.locator('[data-rift-scene-static]')).toBeVisible();
+  await expect(page.locator('[data-home-world]')).toHaveAttribute('data-film-motion','reduced');
+  await expect(page.locator('[data-home-world-canvas]')).toBeVisible();
   const subject = await page.locator('[data-home-signals]').getAttribute('data-home-subject');
   await page.locator('[data-journey-next]').click();
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'reveal');

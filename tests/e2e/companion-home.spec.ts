@@ -157,11 +157,8 @@ test('reveal, keep and carry preserve one exact source record through Saved and 
   await expect(record.locator('.before')).toHaveText(signal.before);
   await expect(record.locator('.after')).toHaveText(signal.after);
   await expect(record.getByRole('link', { name: 'Original source' })).toHaveAttribute('href', patch.sourceUrl);
-  // Focusing either side changes emphasis, never the recorded numbers.
-  await record.locator('[data-signal-set="0"]').click();
-  await expect(record.locator('[data-signal-range]')).toHaveValue('0');
-  await record.locator('[data-signal-range]').focus(); await page.keyboard.press('End');
-  await expect(record.locator('[data-signal-range]')).toHaveValue('100');
+  // The home desk presents both exact values together, without a manual scrub.
+  await expect(record.locator('[data-signal-scrub]')).toBeHidden();
   await expect(record.locator('.before')).toHaveText(signal.before);
   await expect(record.locator('.after')).toHaveText(signal.after);
   expect(await findings(page)).toEqual([]);

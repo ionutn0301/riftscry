@@ -131,6 +131,7 @@ function discover() {
     fragment.append(button);
   }
   tabs?.replaceChildren(fragment);
+  tabs?.style.setProperty('--journey-scene-count',String(panels.length));
   // Keep a single-scene tab as its accessible label, but don't add a redundant control row.
   if (controls) controls.hidden = panels.length < 2;
   const requested = containingPanel(hashId())?.id ? hashId()

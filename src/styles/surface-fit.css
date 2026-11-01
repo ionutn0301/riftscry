@@ -1,0 +1,35 @@
+/* Atlas is a quick map. Reserve the footer first, then let its scenery flex. */
+@media (min-width:701px) and (min-height:620px) {
+  body.rift-shell #rift-map-dialog .journey-map-inner { height:100dvh; min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto auto; gap:8px; }
+  body.rift-shell #rift-map-dialog .rift-passage { height:100%; min-height:0; grid-template-rows:minmax(0,1fr) 72px 66px; }
+}
+body.rift-shell #rift-map-dialog [data-reading-shortcut] { min-width:44px; }
+body.rift-shell #rift-map-dialog [data-reading-subject] { min-width:0; }
+@media (orientation:landscape) and (max-height:480px) {
+  body.rift-shell #rift-map-dialog .journey-map-footer { flex-wrap:nowrap; gap:0 12px; }
+  body.rift-shell #rift-map-dialog .journey-map-footer > :is(a,button) { flex:none; }
+  body.rift-shell #rift-map-dialog .journey-map-footer > [data-reading-shortcut] { flex:0 1 130px; min-width:44px; }
+  body.rift-shell #voyage-roster .voyage-roster-shell { padding:10px 14px; gap:4px; }
+  body.rift-shell #voyage-roster .journey-eyebrow { display:none; }
+  body.rift-shell #voyage-roster .voyage-roster-shell h2 { font-size:24px; margin:0; }
+  body.rift-shell #voyage-roster .roster-search-row { grid-template-columns:minmax(0,1fr) 130px; gap:10px; }
+  body.rift-shell #voyage-roster .roster-search-row label { gap:2px; font-size:10px; }
+  body.rift-shell #voyage-roster .voyage-roster-results { grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; }
+  body.rift-shell #voyage-roster .voyage-roster-results button { min-height:44px; padding:2px; gap:4px; }
+  body.rift-shell #voyage-roster .voyage-roster-results img { width:24px; height:24px; }
+  body.rift-shell #voyage-roster .voyage-roster-results small { display:none; }
+  body.rift-shell #voyage-roster [data-roster-status] { margin:0; font-size:10px; line-height:1.4; }
+  body.rift-shell #voyage-roster .voyage-roster-shell > footer { padding:0; }
+}
+/* Keep every scene name visible and tappable on narrow documents. */
+@media (max-width:700px) {
+  body.rift-shell #main .journey-scene-tabs { display:grid; grid-template-columns:repeat(var(--journey-scene-count,3),minmax(0,1fr)); overflow:visible; gap:2px; }
+  body.rift-shell #main .journey-scene-tabs button { min-width:0; min-height:44px; white-space:normal; overflow-wrap:anywhere; padding:4px; font-size:10px; line-height:1.25; }
+}
+@media (max-width:700px) {
+  body.rift-shell #voyage-roster .journey-eyebrow { display:none; }
+  body.rift-shell #voyage-roster .roster-search-row { grid-template-columns:minmax(0,1fr) 100px; }
+  body.rift-shell #voyage-roster .roster-search-row label { gap:4px; font-size:10px; }
+  body.rift-shell #voyage-roster .voyage-roster-results button { min-height:44px; }
+  body.rift-shell #voyage-roster [data-roster-status] { font-size:10px; line-height:1.4; margin:0; }
+}
