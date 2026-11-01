@@ -441,8 +441,12 @@ html:not([data-motion]) .automatic-loading { display:none; }
 .rift-shell .memory-empty-action { display:inline-flex; align-items:center; gap:12px; min-height:44px; padding:10px 14px; margin-top:14px; border:1px solid var(--line-strong); border-radius:4px; color:var(--world-signal); font-size:13px; }
 .rift-shell :is(.lookup-form,.automatic-lookup) input[aria-invalid=true] { border-color:#edb3a1; box-shadow:0 0 0 1px #edb3a14d; }
 @media (max-width:360px) {
-  .rift-shell .profile-hub .mode-families { grid-template-columns:repeat(3,minmax(0,1fr)); }
-  .rift-shell .profile-hub .mode-families button { flex-direction:row; gap:6px; min-height:44px; padding:6px 4px; }
-  .rift-shell .profile-hub .profile-controls { align-items:start; }
-  .rift-shell .profile-hub .profile-filter-details > summary { min-height:44px; font-size:11px; }
+  .rift-shell .profile-hub .profile-controls { grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; gap:6px; }
+  .rift-shell .profile-hub :is(.player-mode-picker,.mode-families) { display:contents; }
+  .rift-shell .profile-hub .mode-families button { flex-direction:row; gap:5px; min-height:44px; padding:6px 4px; }
+  .rift-shell .profile-hub .mode-families .player-icon { width:18px; height:18px; flex:none; }
+  .rift-shell .profile-hub .mode-queue-choice { grid-column:1 / -1; }
+  .rift-shell .profile-hub .profile-filter-details { grid-column:3; grid-row:2; }
+  .rift-shell .profile-hub .profile-filter-details[open] { grid-column:1 / -1; grid-row:auto; }
+  .rift-shell .profile-hub .profile-filter-details > summary { min-height:44px; font-size:11px; padding:6px 4px; flex-direction:row; }
 }

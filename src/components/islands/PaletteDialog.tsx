@@ -1,5 +1,5 @@
 import { Command } from "cmdk";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import type { SearchEntry } from "../../lib/search-index";
 import "./palette.css";
 
@@ -19,6 +19,7 @@ export default function PaletteDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const searchHintId = useId();
   const [entries, setEntries] = useState<SearchEntry[]>(cached ?? []);
   const [loadState, setLoadState] = useState<"loading" | "ready" | "error">(cached ? "ready" : "loading");
   const [attempt, setAttempt] = useState(0);
@@ -26,17 +27,21 @@ export default function PaletteDialog({
   useEffect(() => {
     if (cached) { setLoadState("ready"); return; }
     const controller = new AbortController();
+    let active = true;
+    const timeout = window.setTimeout(() => controller.abort(), 12_000);
     setLoadState("loading");
     fetch("/search-index.json", { signal: controller.signal })
       .then(r => { if (!r.ok) throw new Error("Search unavailable"); return r.json(); })
       .then((data: SearchEntry[]) => {
         if (!Array.isArray(data)) throw new Error("Search unavailable");
+        if (!active) return;
         cached = data;
         setEntries(data);
         setLoadState("ready");
       })
-      .catch(() => { if (!controller.signal.aborted) setLoadState("error"); });
-    return () => controller.abort();
+      .catch(() => { if (active) setLoadState("error"); })
+      .finally(() => window.clearTimeout(timeout));
+    return () => { active = false; window.clearTimeout(timeout); controller.abort(); };
   }, [attempt]);
 
   return (
@@ -52,7 +57,8 @@ export default function PaletteDialog({
         <span className="palette-caret" aria-hidden="true">
           Δ
         </span>
-        <Command.Input aria-label="Search champions, patches, items, and systems" placeholder="Champion, patch, item, system…" />
+        <span className="sr-only" id={searchHintId}>Search champions, patches, items, and systems.</span>
+        <Command.Input aria-describedby={searchHintId} placeholder="Champion, patch, item, system…" />
         <button type="button" className="palette-close" aria-label="Close search" onClick={() => onOpenChange(false)}>Close</button>
       </div>
       <Command.List aria-busy={loadState === "loading"}>

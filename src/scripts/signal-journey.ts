@@ -116,6 +116,18 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     if (entry) entry.textContent = selected ? 'Continue my briefing →' : 'Use my games →';
     text('[data-home-briefing-label]',selected?'Continue briefing':'My briefing');
     host.querySelector('[data-home-briefing]')?.setAttribute('aria-label',selected?`Continue briefing for ${selected.name||'your player'}`:'Open my briefing');
+    const briefing = host.querySelector<HTMLAnchorElement>('[data-home-briefing]');
+    const entrance = host.querySelector<HTMLAnchorElement>('.atlas-follow-signal');
+    const actions = host.querySelector<HTMLElement>('.home-approach-actions');
+    if (briefing && entrance && actions) {
+      briefing.classList.toggle('signal-primary-action', Boolean(selected));
+      briefing.classList.toggle('signal-secondary-action', !selected);
+      entrance.classList.toggle('signal-primary-action', !selected);
+      entrance.classList.toggle('signal-secondary-action', Boolean(selected));
+      // Visual and keyboard order agree: returning players reach their useful
+      // briefing first, while the cinematic journey stays one action away.
+      actions.prepend(selected ? briefing : entrance);
+    }
     resume();
     if (selected) {
       hint.textContent = `Ready when you are, ${selected.name || 'summoner'}.`;

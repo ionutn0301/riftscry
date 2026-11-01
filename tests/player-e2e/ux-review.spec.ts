@@ -111,11 +111,33 @@ test('UX audit: search distinguishes loading, failure and no matches and offers 
   await page.goto('/champions');await ready(page);
   const trigger=page.getByRole('banner',{name:'RiftScry controls'}).getByRole('button',{name:'Search the archive',exact:true});
   await trigger.click();const search=page.getByRole('dialog',{name:'Search RiftScry'});
-  await expect(search.getByRole('status')).toHaveText('Opening the archive…');await expect(search.locator('[cmdk-empty]')).toHaveCount(0);
+  await expect(search.locator('.palette-status[role="status"]')).toHaveText('Opening the archive…');await expect(search.locator('[cmdk-empty]')).toHaveCount(0);
   release();await expect(search.getByRole('alert')).toContainText('temporarily unavailable');await capture(page,'search-error');
   await search.getByRole('button',{name:'Try again',exact:true}).click();await expect(search.getByRole('option',{name:'Azir',exact:true})).toBeVisible();
-  await search.getByRole('combobox',{name:'Search champions, patches, items, and systems'}).fill('no-such-champion');await expect(search.locator('[cmdk-empty]')).toContainText('No matches');
+  const input=search.getByRole('combobox',{name:'Search RiftScry'});await expect(input).toHaveAccessibleDescription('Search champions, patches, items, and systems.');
+  await input.fill('no-such-champion');await expect(search.locator('[cmdk-empty]')).toContainText('No matches');
   await page.keyboard.press('Escape');await expect(search).toHaveCount(0);await expect(trigger).toBeFocused();
   await trigger.click();await search.getByRole('combobox').fill('Azir');await search.getByRole('option',{name:'Azir',exact:true}).click();
   await expect(page).toHaveURL(/\/champion\/azir\/?$/);
+});
+
+
+test('UX audit: a returning homepage leads with the useful player briefing',async({page})=>{
+  await page.addInitScript(player=>localStorage.setItem('riftscry:recent-player:v1',JSON.stringify(player)),{platform,puuid,name:'Fixture Player#TEST'});
+  const requests=await installFixtures(page,{matches:visualMatches});await page.goto('/');await ready(page);
+  for(const viewport of [{width:320,height:480},{width:568,height:320},{width:1440,height:900}]){
+    await page.setViewportSize(viewport);
+    const primary=page.locator('.home-approach-actions a:visible').first();
+    await expect(primary).toHaveAttribute('data-home-briefing','');await expect(primary).toHaveClass(/signal-primary-action/);
+    const frame=(await page.locator('#atlas').boundingBox())!;
+    for(const action of await page.locator('.home-approach-actions a:visible').all()){
+      const box=(await action.boundingBox())!;expect.soft(box.height).toBeGreaterThanOrEqual(44);
+      expect.soft(box.y).toBeGreaterThanOrEqual(frame.y-1);expect.soft(box.y+box.height).toBeLessThanOrEqual(frame.y+frame.height+1);
+    }
+    expect.soft(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeLessThanOrEqual(1);
+    await capture(page,`returning-home-${viewport.width}x${viewport.height}`);
+  }
+  expect(requests).toEqual([]);await page.locator('[data-home-briefing]').click();
+  await expect(page).toHaveURL(url=>url.pathname==='/next-game'&&url.searchParams.get('puuid')===puuid);
+  await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
 });

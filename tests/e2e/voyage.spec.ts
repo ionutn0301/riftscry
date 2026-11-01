@@ -272,7 +272,7 @@ for (const [path,surface,current] of readingRoutes) {
     await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
     const controls=page.getByRole('tablist',{name:'Scenes in this destination'});
     if(await controls.isVisible()) {
-      const labels=await controls.getByRole('tab').allTextContents();
+      const labels=await controls.getByRole('tab').evaluateAll(tabs=>tabs.map(tab=>tab.getAttribute('aria-label')??tab.textContent??''));
       for(const label of labels) {
         const tab=controls.getByRole('tab',{name:label,exact:true});
         await tab.click();
