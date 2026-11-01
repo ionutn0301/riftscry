@@ -5,7 +5,7 @@ import {installFixtures,platform,profilePath} from './fixtures';
 test.use({video:'on'});
 
 const probeKey='riftscry:test:crossing-paint';
-type Sample={time:number;clip:string;geometryAnimation:string;panelClipped:boolean;mobilePrimaryVisible:boolean;layers:{name:string;display:string;opacity:number}[]};
+type Sample={time:number;clip:string;geometryAnimation:string;panelClipped:boolean;extraHomeSceneVisible:boolean;mobilePrimaryVisible:boolean;layers:{name:string;display:string;opacity:number}[]};
 type Crossing={id:string;path:string;ready:boolean;finished:boolean;skipped:boolean;cinematic:boolean;samples:Sample[]};
 
 async function observeCrossings(page:Page){
@@ -30,6 +30,7 @@ async function observeCrossings(page:Page){
             clip:getComputedStyle(document.documentElement,'::view-transition-new(journey-stage)').clipPath,
             geometryAnimation:getComputedStyle(document.documentElement,'::view-transition-group(journey-stage)').animationName,
             panelClipped:[...document.querySelectorAll('[data-journey-panel]')].some(panel=>panel.getClientRects().length>0&&getComputedStyle(panel).clipPath!=='none'),
+            extraHomeSceneVisible:[...document.querySelectorAll('.signal-journey[data-journey-active=atlas] > :is(.signal-subject-visual,.signal-cast,[data-journey-panel]:not(#atlas))')].some(element=>element.getClientRects().length>0),
             mobilePrimaryVisible:innerWidth<=700&&Boolean(primary?.getClientRects().length),
             layers:['root','journey-stage','journey-header','journey-navigation','player-identity'].map(name=>{
             const style=getComputedStyle(document.documentElement,`::view-transition-old(${name})`);
@@ -70,6 +71,7 @@ async function crossing(page:Page,path:string){
   expect(latest.samples.every(sample=>sample.clip==='none'),'Camera travel must not slice the incoming text').toBe(true);
   expect(latest.samples.every(sample=>sample.geometryAnimation==='none'),'Different page heights must not stretch the incoming text').toBe(true);
   expect(latest.samples.some(sample=>sample.panelClipped),'Chapter arrival must not slice the incoming text either').toBe(false);
+  expect(latest.samples.some(sample=>sample.extraHomeSceneVisible),'Returning home must never flash the other champion scene').toBe(false);
   expect(latest.samples.some(sample=>sample.mobilePrimaryVisible),'Desktop navigation must never flash on a phone').toBe(false);
   expect(await page.locator('.gateway-heading,.profile-identity-copy').evaluateAll(elements=>
     elements.every(element=>getComputedStyle(element).viewTransitionName==='none'))).toBe(true);

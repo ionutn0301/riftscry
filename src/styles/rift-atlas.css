@@ -48,7 +48,10 @@
 body[data-surface=home]:has(#atlas:not([hidden])) .journey-chrome { display:none; }
 body.rift-shell[data-journey-ready] .signal-journey:has(#atlas:not([hidden])) { min-height:0; }
 .atlas-live-dot { width:5px; height:5px; border-radius:50%; background:#c5efd3; box-shadow:0 0 0 5px #c5efd30d; }
-body[data-journey-ready] .signal-journey:has(#atlas:not([hidden])) > :is(.signal-subject-visual,.signal-cast) { display:none; }
+/* The classic head script sets data-motion before paint. Keep the authored
+   no-JS reading fallback, but never snapshot the extra home scenes while the
+   enhancement modules are still loading. */
+html[data-motion] .signal-journey[data-journey-active=atlas] > :is(.signal-subject-visual,.signal-cast,[data-journey-panel]:not(#atlas)) { display:none; }
 body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibility:hidden; }
 /* One path connects even a deep match or champion page to the rest of the Rift. */
 .journey-chrome .journey-spine { display:flex; grid-column:1/-1; justify-content:center; align-items:center; width:100%; gap:0; border-top:1px solid #bcdcc916; padding-top:4px; }
