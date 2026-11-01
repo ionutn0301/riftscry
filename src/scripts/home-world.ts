@@ -17,6 +17,7 @@ function mount(film:HTMLElement) {
   const media=matchMedia('(prefers-reduced-motion: reduce)');
   let reduced=document.documentElement.dataset.motion==='reduced'||media.matches,width=0,height=0,frame=0,last=0,painted=0;
   let current=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas')),target=current;
+  let flightAt=performance.now();
   let lookX=0,lookY=0,pointerX=0,pointerY=0,wheel=0,wheelAt=0,lockedUntil=0;
   let gesture:{x:number;y:number;id:number}|null=null;
   let words:Animation[]=[];
@@ -31,10 +32,10 @@ function mount(film:HTMLElement) {
   }
   function draw(now:number){
     frame=0;
-    const dt=Math.min((now-last)/1000||.016,.05);last=now;
+    const dt=Math.min((now-last)/1000||.016,.25);last=now;
     if(reduced){current=target;lookX=lookY=0;}else{
       current+=(target-current)*(1-Math.exp(-6*dt));
-      if(Math.abs(target-current)<.0005)current=target;
+      if(Math.abs(target-current)<.0005||(!gesture&&now-flightAt>1500))current=target;
       lookX+=(pointerX-lookX)*(1-Math.exp(-4*dt));lookY+=(pointerY-lookY)*(1-Math.exp(-4*dt));
     }
     const camera=filmCamera(current,lookX,lookY);
@@ -44,8 +45,8 @@ function mount(film:HTMLElement) {
     for(const face of projectHomeWorld(camera,width,height)){
       ctx.beginPath();face.points.forEach(([x,y],index)=>index?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();
       ctx.fillStyle=face.fill;ctx.fill();
-      // A hairline of the same colour seals subpixel seams between terrain faces.
-      ctx.strokeStyle=face.fill;ctx.lineWidth=.65;ctx.stroke();
+      // Seal nearby subpixel seams; distance fog lets the far mesh skip strokes.
+      if(face.depth<35){ctx.strokeStyle=face.fill;ctx.lineWidth=.65;ctx.stroke();}
     }
     if(canvas.hidden){canvas.hidden=false;world.dataset.filmPaint='ready';}
     if(now-painted>90||current===target){
@@ -66,7 +67,7 @@ function mount(film:HTMLElement) {
   }
   function scene(){
     const index=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas'));
-    target=index;depth.textContent=labels[index]!;world.dataset.filmScene=ids[index];
+    target=index;flightAt=performance.now();depth.textContent=labels[index]!;world.dataset.filmScene=ids[index];
     if(reduced)current=target;
     heading();request();
   }

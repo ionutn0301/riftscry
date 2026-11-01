@@ -72,3 +72,17 @@ test('cinematic home respects reduced motion and the live motion control',async(
   expect(await world(page).getAttribute('data-film-camera')).toBe(still);
   await page.reload();await readyWorld(page);await expect(world(page)).toHaveAttribute('data-film-motion','reduced');
 });
+
+test('cinematic home remains useful when the graphics context is unavailable',async({page})=>{
+  await page.addInitScript(()=>{Object.defineProperty(HTMLCanvasElement.prototype,'getContext',{value:()=>null});});
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('/');await readyWorld(page);
+  await expect(page.locator('[data-home-world-still]')).toBeVisible();await expect(page.locator('[data-home-world-canvas]')).toBeHidden();
+  await page.locator('.atlas-follow-signal').click();await expect(page.locator('#signal')).toBeVisible();
+  await page.locator('[data-home-reveal]').click();await expect(page.locator('#reveal')).toBeVisible();
+  await expect(page.locator('[data-home-record]:not([hidden]) .before')).not.toBeEmpty();
+  await expect(page.locator('[data-home-record]:not([hidden]) .after')).not.toBeEmpty();
+  await page.locator('[data-home-keep]').click();await expect(page.locator('#carry')).toBeVisible();
+  await expect(page.locator('[data-home-explore]')).toHaveAttribute('href',/\/explore\?champion=/);
+  expect(errors).toEqual([]);
+});

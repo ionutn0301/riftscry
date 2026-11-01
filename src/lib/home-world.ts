@@ -37,8 +37,13 @@ export function makeHomeWorld():readonly WorldFace[] {
   // A luminous current cuts a continuous canyon. The camera follows its bends.
   for(let row=0;row<60;row++){
     const z=80-row*3.4,next=z-3.4;
-    quad([curve(z)-4,-2.4,z],[curve(z)+4,-2.4,z],[curve(next)+4,-2.4,next],[curve(next)-4,-2.4,next],[23,68,70]);
-    quad([curve(z)-.08,-2.35,z],[curve(z)+.08,-2.35,z],[curve(next)+.08,-2.35,next],[curve(next)-.08,-2.35,next],[131,222,205],true);
+    // Keep each water surface whole so painter ordering cannot turn the
+    // current into a broken road stripe as its two triangles cross in depth.
+    face([[curve(z)-4,-2.4,z],[curve(z)+4,-2.4,z],[curve(next)+4,-2.4,next],[curve(next)-4,-2.4,next]],[23,68,70]);
+    for(const offset of [-1.2,0,1.2]){
+      const x=curve(z)+offset+Math.sin(z*.18+offset)*.4,nx=curve(next)+offset+Math.sin(next*.18+offset)*.4,w=offset===0?.045:.015;
+      face([[x-w,-2.3,z],[x+w,-2.3,z],[nx+w,-2.3,next],[nx-w,-2.3,next]],[104,182,173],true);
+    }
     for(const side of [-1,1])for(let col=0;col<5;col++){
       const vertex=(r:number,c:number):Vec3=>{const q=80-r*3.4,offset=4+c*8;return [curve(q)+side*offset,-2.2+c*c*1.1+noise(side*c,q)*Math.min(c,2)*2,q];};
       const shade=18+col*3+Math.round(noise(col,z)*4);
