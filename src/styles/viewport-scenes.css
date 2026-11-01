@@ -1,0 +1,150 @@
+/* Size the entrance from the visible browser viewport. The artwork flexes;
+   copy and touch targets keep their intrinsic size. No body scroll lock. */
+@media (max-width:700px), (max-width:1000px) and (max-height:480px) {
+  html[data-motion] body.rift-shell[data-surface=home] { min-height:100dvh; }
+  html[data-motion] body[data-surface=home] .rift-site-shell { height:100dvh; min-height:0; }
+  html[data-motion] body[data-surface=home] #main { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; padding-block:6px var(--journey-dock-clearance); }
+  html[data-motion] body[data-surface=home] #main .signal-journey { display:flex; flex-direction:column; flex:1 1 auto; height:auto; min-height:0; }
+  html[data-motion] body[data-surface=home] #main .atlas-arrival { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+  html[data-motion] body[data-surface=home] #main .rift-atlas--entrance { flex:1 1 auto; min-height:0; height:auto; grid-template-rows:auto minmax(0,1fr) 64px; gap:6px 0; }
+  html[data-motion] .rift-atlas--entrance .passage-reading { padding:0; }
+  html[data-motion] .rift-atlas--entrance .journey-eyebrow { margin:0; }
+  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:clamp(28px,7.7vw,38px); line-height:1.12; min-height:2.24em; margin:8px 0; max-width:19ch; }
+  /* Clip the moving word itself. Overflow on a nested inline-block mask can
+     cut off its final baseline when the title rewraps on a short phone. */
+  html[data-motion] .rift-atlas--entrance .kinetic-word-mask { overflow:visible; padding:0; margin:0; vertical-align:baseline; }
+  html[data-motion] .rift-atlas--entrance .kinetic-word { clip-path:inset(-.25em); animation-name:passage-word-arrive; }
+  html[data-motion] .rift-atlas--entrance [data-passage-description] { min-height:0; margin:0; line-height:1.5; }
+  html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:10px; min-height:44px; }
+  html[data-motion] .rift-atlas--entrance .passage-enter > span:last-child { line-height:1; }
+  html[data-motion] .rift-atlas--entrance .passage-personal { margin:4px 0 0; min-height:16px; line-height:16px; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument { min-height:64px; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument label { height:64px; grid-template-rows:20px 44px; }
+  html[data-motion] body[data-surface=home] .atlas-arrival-footer { flex:none; flex-wrap:nowrap; gap:12px; min-height:45px; }
+  html[data-motion] body[data-surface=home] .atlas-arrival-footer > a { flex:1; }
+  html[data-motion] body[data-surface=home] .atlas-arrival-footer .atlas-reading-link { width:auto; max-width:45%; border:0; }
+
+  /* The other home chapters use the same stage and one compact portrait rail. */
+  html[data-motion] body.rift-shell[data-surface=home] #main .journey-chapters { flex:none; min-height:53px; }
+  html[data-motion] body[data-surface=home] .journey-scene-controls { margin-bottom:0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main .signal-act { flex:1 1 auto; min-height:0; padding:0; border:0; }
+  html[data-motion] body[data-surface=home] .signal-cast { display:flex; flex:none; gap:8px; padding-top:4px; }
+  html[data-motion] body[data-surface=home] .signal-cast > div { flex:1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px; }
+  html[data-motion] body[data-surface=home] .signal-cast > div > a { flex-direction:column; gap:2px; padding:3px 1px; min-height:48px; }
+  html[data-motion] body[data-surface=home] .signal-cast img { width:24px; height:24px; }
+  html[data-motion] body[data-surface=home] .signal-cast strong { font-size:10px; }
+  html[data-motion] body[data-surface=home] .signal-cast small { display:none; }
+  html[data-motion] body[data-surface=home] .signal-cast-all { width:65px; min-height:44px; font-size:9px; gap:4px; }
+  html[data-motion] body[data-surface=home] .signal-act--arrival { display:flex; flex-direction:column; justify-content:space-between; gap:8px; }
+  html[data-motion] body[data-surface=home] .signal-opening-copy { padding-top:0; }
+  html[data-motion] body[data-surface=home] .signal-opening-copy h2 { font-size:30px; margin:8px 0; }
+  html[data-motion] body[data-surface=home] .signal-opening-actions { margin-top:8px; gap:4px 12px; }
+  html[data-motion] body[data-surface=home] .signal-beacon { position:relative; inset:auto; margin:0 0 8px; min-width:176px; padding:8px 12px; }
+  html[data-motion] body[data-surface=home] .signal-beacon strong { font-size:22px; }
+  html[data-motion] body[data-surface=home] .signal-archive-stamp { display:none; }
+  html[data-motion] body[data-surface=home] :is(.signal-reveal-desk,.signal-carry-desk) { width:100%; padding:0; }
+  html[data-motion] body[data-surface=home] .signal-reveal-desk > header { margin-bottom:6px; }
+  html[data-motion] body[data-surface=home] .signal-reveal-desk > header h2 { margin:4px 0; font-size:26px; }
+  html[data-motion] body[data-surface=home] .signal-reveal-desk .signal-record { padding:8px 0 0; }
+  html[data-motion] body[data-surface=home] .signal-coordinate { margin-bottom:4px; }
+  html[data-motion] body[data-surface=home] .signal-reveal-desk .signal-record-heading h3 { font-size:20px; }
+  html[data-motion] body[data-surface=home] .signal-aperture.delta-row { min-height:0; padding:12px 0; }
+  html[data-motion] body[data-surface=home] .signal-value { gap:6px; }
+  html[data-motion] body[data-surface=home] .signal-value > strong { font-size:32px; }
+  html[data-motion] body[data-surface=home] .signal-reading { gap:4px 8px; padding-bottom:4px; font-size:10px; }
+  html[data-motion] body[data-surface=home] .signal-scrub { margin-top:0; }
+  html[data-motion] body[data-surface=home] .signal-reveal-desk .signal-record-footer { padding:0; margin:0; }
+  html[data-motion] body[data-surface=home] .signal-reveal-actions { gap:4px 8px; margin-top:4px; }
+  html[data-motion] body[data-surface=home] .signal-carry-desk h2 { margin:8px 0; font-size:28px; }
+  html[data-motion] body[data-surface=home] .signal-carried-record { margin-top:10px; padding:10px 0; gap:16px; }
+  html[data-motion] body[data-surface=home] .signal-carried-record > div { gap:6px; }
+  html[data-motion] body[data-surface=home] .signal-carry-explore { margin-top:0; }
+}
+@keyframes passage-word-arrive {
+  from { clip-path:inset(0 0 100%); transform:translate3d(0,.45em,0) rotateX(-35deg) skewX(-7deg); }
+  to { clip-path:inset(-.25em); transform:none; }
+}
+@media (max-width:700px) and (max-height:650px) {
+  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:26px; margin:5px 0; }
+  html[data-motion] .rift-atlas--entrance [data-passage-description] { font-size:11px; }
+  html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:6px; padding-block:7px; }
+  html[data-motion] body[data-surface=home] .signal-reveal-desk > header h2 { display:none; }
+  html[data-motion] body[data-surface=home] .signal-carry-desk .signal-opening-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  html[data-motion] body[data-surface=home] .signal-carry-desk .signal-primary-action { padding-inline:8px; font-size:10px; gap:6px; }
+}
+@media (max-width:700px) and (max-height:520px) {
+  html[data-motion] body[data-surface=home] #main .rift-atlas--entrance { grid-template-rows:auto minmax(0,1fr) 44px; gap:4px; }
+  html[data-motion] .rift-atlas--entrance .passage-personal { display:none; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument { min-height:44px; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument label { height:44px; grid-template-rows:44px; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument label > span { display:none; }
+}
+/* Rotation changes the composition, rather than stacking two full scenes. */
+@media (max-width:1000px) and (max-height:480px) and (orientation:landscape) {
+  html[data-motion] body[data-surface=home] #main .rift-atlas--entrance { grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"copy visual" "copy controls"; grid-template-rows:minmax(0,1fr) 44px; gap:4px 20px; }
+  html[data-motion] .rift-atlas--entrance .passage-reading { align-self:center; }
+  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:26px; margin:5px 0; min-height:0; max-width:none; }
+  html[data-motion] .rift-atlas--entrance [data-passage-description] { font-size:11px; max-width:none; line-height:1.4; }
+  html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:6px; padding-block:7px; }
+  html[data-motion] .rift-atlas--entrance .passage-personal { display:none; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument { min-height:44px; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument label { height:44px; grid-template-rows:44px; }
+  html[data-motion] .rift-atlas--entrance .passage-instrument label > span { display:none; }
+}
+@media (max-width:1000px) and (max-height:360px) and (orientation:landscape) {
+  html[data-motion] body.rift-shell[data-surface=home] { --journey-dock-clearance:calc(var(--journey-dock-height) + var(--journey-dock-bottom) + 8px); }
+  html[data-motion] body.rift-shell[data-surface=home] .journey-header { height:52px; grid-template-rows:44px; padding-block:4px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main { padding-top:4px; }
+  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:22px; margin-block:4px; }
+  html[data-motion] .rift-atlas--entrance .passage-reading .journey-eyebrow { font-size:7px; line-height:1.4; }
+  html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:4px; }
+}
+
+/* Small utility scenes keep intrinsic height. Disclosures, a keyboard or
+   enlarged text can still grow the document when their content needs it. */
+body.rift-shell[data-journey-ready] .journey-missing .journey-lost-panel { padding-top:clamp(8px,3dvh,24px); }
+@media (max-width:700px) {
+  body.rift-shell .gateway-composition { padding:12px; }
+  body.rift-shell .gateway-heading { margin-bottom:8px; }
+  body.rift-shell .gateway-heading h1 { font-size:30px; margin:4px 0; }
+  body.rift-shell .gateway-lookup-scene { margin-block:0; }
+  body.rift-shell .lookup-form { grid-template-columns:minmax(0,1fr) auto; margin-top:4px; padding-block:4px; gap:6px; }
+  body.rift-shell .lookup-form .player-field { gap:4px; }
+  body.rift-shell .lookup-form :is(input,select,button) { min-height:44px; }
+  body.rift-shell .lookup-status:empty { display:none; }
+  body.rift-shell :is(.gateway-destinations,.gateway-footnote) { margin-top:4px; }
+  body.rift-shell .gateway-footnote { align-items:center; gap:8px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry { padding:12px; gap:12px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-lookup { margin-top:10px; gap:8px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .journey-connection-mark { display:none; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .journey-connection ol { display:flex; justify-content:space-between; gap:8px; margin:0; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .journey-connection li { gap:5px; font-size:10px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .journey-connection li svg { width:16px; height:16px; }
+  body.rift-shell .recall-workspace:has(.notebook-empty-orbit) .notebook-empty-orbit { padding:12px 0; }
+  body.rift-shell .notebook-empty-orbit .notebook-empty-mark { width:56px; height:56px; margin-bottom:12px; }
+}
+@media (max-width:700px) and (max-height:650px) {
+  body.rift-shell .player-gateway:not(:has(.remembered-player)) .gateway-lookup-scene[open] > summary { display:none; }
+  body.rift-shell .gateway-heading > :is(.player-kicker,p:last-child) { display:none; }
+  body.rift-shell .gateway-composition { padding:10px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry-preview { display:none; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-header > p:last-child { display:none; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry h2 { font-size:24px; margin:0 0 8px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry > div > p { font-size:12px; line-height:1.4; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-field { gap:4px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-lookup :is(input,select,button) { min-height:44px; padding-block:8px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-header { padding-bottom:0; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry { padding:8px; }
+  body.rift-shell[data-journey-ready] #main:has(.notebook-empty-orbit) .journey-chapters { min-height:53px; }
+  body.rift-shell #main:has(.notebook-empty-orbit) .journey-scene-controls { margin-bottom:0; }
+  body.rift-shell .recall-workspace:has(.notebook-empty-orbit) .recall-tagline { display:none; }
+  body.rift-shell .recall-notes-scene:has(.notebook-empty-orbit) { padding:12px; }
+  /* Keep the section's heading for assistive technology. The empty state
+     already supplies its visible title, rather than a second stacked heading. */
+  body.rift-shell .recall-notes-scene:has(.notebook-empty-orbit) > .recall-scene-heading { position:absolute; width:1px; height:1px; margin:0; padding:0; border:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  body.rift-shell .recall-notes-scene:has(.notebook-empty-orbit) .recall-library-content { padding-top:0; }
+  body.rift-shell .notebook-empty-orbit .notebook-empty-mark { display:none; }
+  body.rift-shell .notebook-empty-orbit h3 { font-size:20px; line-height:1.2; margin:4px 0; }
+  body.rift-shell .notebook-empty-orbit p { font-size:12px; line-height:1.4; }
+  body.rift-shell .notebook-empty-orbit .recall-button { margin-top:10px; }
+}

@@ -60,7 +60,7 @@ jobs:
       - name: Verify homepage composition and reported browser regressions
         run: >
           pnpm exec playwright test --config=playwright.player.config.ts
-          --grep 'one consistent dock|one homepage|champion preview stays pinned|homepage My game|one shared scene frames|every route family|390px pool:'
+          --grep 'viewport scene|one consistent dock|one homepage|champion preview stays pinned|homepage My game|one shared scene frames|every route family|390px pool:'
         env:
           CI: "true"
       - name: Retain homepage geometry and visual evidence
@@ -72,6 +72,7 @@ jobs:
             player-visuals/home-*.png
             player-visuals/champions-*.png
             player-visuals/dock-*.png
+            player-visuals/viewport-*
             test-results/
           if-no-files-found: ignore
           retention-days: 7
