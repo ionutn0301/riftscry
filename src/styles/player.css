@@ -601,7 +601,7 @@
 @media (max-height: 640px) and (max-width: 760px) {
   .player-gateway:has(.remembered-player) .gateway-heading > p:last-child { display: none; }
   .player-gateway:has(.remembered-player) .gateway-heading h1 { margin-bottom: 0; }
-  .player-gateway:has(.remembered-player) .gateway-composition { padding-bottom: 0; }
+  .player-gateway:has(.remembered-player) .gateway-composition { padding-bottom: 12px; }
   .remembered-player { margin-top: 8px; }
   .remembered-player .player-kicker { display: none; }
 }
