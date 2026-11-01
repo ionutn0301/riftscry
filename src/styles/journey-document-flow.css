@@ -1,5 +1,5 @@
-/* A chapter changes the destination. Its evidence keeps ordinary document flow.
-   There is one vertical scroll, including on short screens and at enlarged text. */
+/* Evidence uses ordinary document flow. Compact scenes fit the viewport
+   without creating a spare scrolling surface. */
 html:has(body.rift-shell[data-journey-ready]) {
   scroll-padding-top: calc(var(--world-header-height) + 16px);
   scroll-padding-bottom: var(--journey-dock-clearance);
