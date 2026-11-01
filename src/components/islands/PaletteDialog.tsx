@@ -20,17 +20,24 @@ export default function PaletteDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const [entries, setEntries] = useState<SearchEntry[]>(cached ?? []);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">(cached ? "ready" : "loading");
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    if (cached) return;
-    fetch("/search-index.json")
-      .then((r) => r.json())
+    if (cached) { setLoadState("ready"); return; }
+    const controller = new AbortController();
+    setLoadState("loading");
+    fetch("/search-index.json", { signal: controller.signal })
+      .then(r => { if (!r.ok) throw new Error("Search unavailable"); return r.json(); })
       .then((data: SearchEntry[]) => {
+        if (!Array.isArray(data)) throw new Error("Search unavailable");
         cached = data;
         setEntries(data);
+        setLoadState("ready");
       })
-      .catch(() => setEntries([]));
-  }, []);
+      .catch(() => { if (!controller.signal.aborted) setLoadState("error"); });
+    return () => controller.abort();
+  }, [attempt]);
 
   return (
     <Command.Dialog
@@ -45,11 +52,13 @@ export default function PaletteDialog({
         <span className="palette-caret" aria-hidden="true">
           Δ
         </span>
-        <Command.Input placeholder="Champion, patch, item, system…" />
+        <Command.Input aria-label="Search champions, patches, items, and systems" placeholder="Champion, patch, item, system…" />
         <button type="button" className="palette-close" aria-label="Close search" onClick={() => onOpenChange(false)}>Close</button>
       </div>
-      <Command.List>
-        <Command.Empty>Nothing on the ledger for that.</Command.Empty>
+      <Command.List aria-busy={loadState === "loading"}>
+        {loadState === "loading" && <div className="palette-status" role="status">Opening the archive…</div>}
+        {loadState === "error" && <div className="palette-status" role="alert"><p>Search is temporarily unavailable.</p><div><button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</button><a href="/champions">Browse champions ↗</a></div></div>}
+        {loadState === "ready" && <Command.Empty>No matches. Try another champion, item, or patch.</Command.Empty>}
         {GROUPS.map((g) => {
           const group = entries.filter((e) => e.type === g.type);
           if (group.length === 0) return null;

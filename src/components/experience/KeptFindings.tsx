@@ -14,14 +14,14 @@ export default function KeptFindings() {
   }, []);
   return <section className="kept-collection" aria-label="Kept findings">
     <h3>Findings you kept</h3>
-    <p>Up to 50 findings on this device, across champions and dates. Open the dated record to check the current archive.</p>
+    {findings.length > 0 && <p>Up to 50 findings on this device, with their original patch and source.</p>}
     {findings.length ? <ul>{findings.map((finding) => <li key={finding.id}>
       <a href={finding.href}><strong>{finding.name} · {finding.label}</strong><span>{finding.date} · Patch {finding.patch}</span><span>{finding.text}</span></a>
       <button type="button" onClick={() => {
         if (writeFindings(findings.filter((item) => item.id !== finding.id))) { setRemoved(finding); setStatus('Finding removed. You can restore it.'); }
         else setStatus('Storage unavailable; your collection was not changed.');
       }} aria-label={`Remove ${finding.name} ${finding.label}`}>Remove</button>
-    </li>)}</ul> : <p>No findings kept yet. <a href="/explore#perspective">Explore a champion’s records</a>.</p>}
+    </li>)}</ul> : <div className="kept-empty"><p>No findings kept yet. Open a champion’s record and keep a change worth remembering.</p><a className="kept-empty-action" href="/explore#change">Find your first change <span aria-hidden="true">↗</span></a></div>}
     {removed && <button type="button" onClick={() => {
       const current = readFindings();
       if (current.length >= 50) { setStatus('Remove a finding before restoring this one.'); return; }

@@ -102,14 +102,19 @@ function PlayerEntry({ onChoose }: { onChoose: (player: RecentPlayer) => void })
   const id = useId();
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
+  const [invalidId, setInvalidId] = useState(false);
   const retrySeconds = usePlayerCooldown();
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy || retrySeconds) return;
     const form = new FormData(event.currentTarget), riotId = String(form.get('riotId') ?? '').trim();
     const separator = riotId.lastIndexOf('#'), name = riotId.slice(0, separator).trim(), tag = riotId.slice(separator + 1).trim();
-    if (separator < 1 || name.length < 3 || name.length > 32 || tag.length < 2 || tag.length > 16) { setProblem('Enter your full Riot ID, including #tagline.'); return; }
-    setProblem(''); setBusy(true);
+    if (separator < 1 || name.length < 3 || name.length > 32 || tag.length < 2 || tag.length > 16) {
+      setProblem('Enter your full Riot ID, including #tagline.'); setInvalidId(true);
+      (event.currentTarget.elements.namedItem('riotId') as HTMLInputElement)?.focus();
+      return;
+    }
+    setInvalidId(false); setProblem(''); setBusy(true);
     try {
       const platform = String(form.get('platform'));
       const account = await fetcher<Account>(api('lookup', { name, tag, platform }));
@@ -120,7 +125,7 @@ function PlayerEntry({ onChoose }: { onChoose: (player: RecentPlayer) => void })
     finally { setBusy(false); }
   }
   return <form className="automatic-lookup" onSubmit={submit} aria-label="Get an automatic player briefing" aria-busy={busy}>
-    <div className="automatic-field"><label htmlFor={`${id}-riot`}>Riot ID</label><input id={`${id}-riot`} name="riotId" placeholder="Game name#TAG" autoComplete="off" spellCheck={false} required maxLength={50} disabled={busy} aria-describedby={`${id}-status`} /></div>
+    <div className="automatic-field"><label htmlFor={`${id}-riot`}>Riot ID</label><input id={`${id}-riot`} name="riotId" placeholder="Game name#TAG" autoComplete="off" spellCheck={false} required maxLength={50} disabled={busy} aria-describedby={`${id}-status`} aria-invalid={invalidId || undefined} onInput={() => { if (invalidId) { setInvalidId(false); setProblem(''); } }} /></div>
     <div className="automatic-field"><label htmlFor={`${id}-server`}>Server</label><select id={`${id}-server`} name="platform" defaultValue="euw1" disabled={busy}>{Object.keys(platforms).map(platform => <option key={platform} value={platform}>{serverNames[platform] ?? platform.toUpperCase()}</option>)}</select></div>
     <button type="submit" className="automatic-button automatic-button--primary" disabled={busy || retrySeconds > 0}><PlayerIcon name={busy ? 'clock' : 'sparkles'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Finding your games…' : 'Get my briefing'}</button>
     <p className="automatic-lookup-status" id={`${id}-status`} role={problem ? 'alert' : 'status'}>{problem || (busy ? 'Looking up your player…' : 'Remembered on this browser.')}</p>

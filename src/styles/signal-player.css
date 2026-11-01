@@ -261,7 +261,7 @@ html:not([data-motion]) .automatic-loading { display:none; }
   .rift-shell .identity-ranks { font-size: .63rem; }
   .rift-shell .identity-actions button { min-height: 44px; padding: .5rem .65rem; }
   .rift-shell .profile-hub .mode-families { gap: .3rem; }
-  .rift-shell .profile-hub .mode-families button { min-height: 46px; gap: .25rem; font-size: .64rem; padding: .4rem .2rem; }
+  .rift-shell .profile-hub .mode-families button { min-height: 46px; gap: .25rem; font-size:11px; padding:.4rem .2rem; }
   .rift-shell .mode-queue-choice { width: 100%; flex-wrap: wrap; }
   .rift-shell .profile-hub .mode-queue-choice select { width: 100%; min-width: 0; font-size: 16px; }
   .rift-shell .profile-filter-fields { padding: .7rem; }
@@ -426,3 +426,23 @@ html:not([data-motion]) .automatic-loading { display:none; }
 .match-primary-actions > button { display:inline-flex; align-items:center; gap:12px; min-height:48px; padding:12px 18px; background:#c2ebd0; color:#082222; border:1px solid #c2ebd0; font-size:13px; }
 .match-primary-actions > button:disabled { opacity:.6; }
 .match-primary-actions > a { display:inline-flex; gap:10px; align-items:center; min-height:44px; font-size:12px; color:#c1ddcf; }
+
+/* A closed returning-player station fits phone landscape without placing
+   its privacy disclosure beneath the persistent dock. Expanded forms use
+   ordinary document flow so every field remains reachable. */
+@media (max-width:1000px) and (max-height:480px) and (orientation:landscape) {
+  body.rift-shell .player-gateway:has(.remembered-player) .gateway-composition:not(:has(details[open])) { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"player privacy" "lookup destinations"; gap:4px 12px; }
+  body.rift-shell .player-gateway:has(.remembered-player) .remembered-player { grid-area:player; min-width:0; }
+  body.rift-shell .player-gateway:has(.remembered-player) .gateway-lookup-scene { grid-area:lookup; }
+  body.rift-shell .player-gateway:has(.remembered-player) .gateway-destinations { grid-area:destinations; }
+  body.rift-shell .player-gateway:has(.remembered-player) .gateway-footnote { grid-area:privacy; justify-content:flex-end; }
+  body.rift-shell .player-gateway:has(.remembered-player) .gateway-footnote > span { display:none; }
+}
+.rift-shell .memory-empty-action { display:inline-flex; align-items:center; gap:12px; min-height:44px; padding:10px 14px; margin-top:14px; border:1px solid var(--line-strong); border-radius:4px; color:var(--world-signal); font-size:13px; }
+.rift-shell :is(.lookup-form,.automatic-lookup) input[aria-invalid=true] { border-color:#edb3a1; box-shadow:0 0 0 1px #edb3a14d; }
+@media (max-width:360px) {
+  .rift-shell .profile-hub .mode-families { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .rift-shell .profile-hub .mode-families button { flex-direction:row; gap:6px; min-height:44px; padding:6px 4px; }
+  .rift-shell .profile-hub .profile-controls { align-items:start; }
+  .rift-shell .profile-hub .profile-filter-details > summary { min-height:44px; font-size:11px; }
+}

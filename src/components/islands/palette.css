@@ -128,3 +128,8 @@
   .palette [cmdk-input] { font-size: 16px; }
   .palette [cmdk-item] { column-gap: 12px; row-gap: 4px; }
 }
+
+.palette-status { padding:24px; color:#c5d7d2; font-size:14px; line-height:1.6; }
+.palette-status > div { display:flex; flex-wrap:wrap; gap:12px 24px; margin-top:16px; }
+.palette-status :is(a,button) { display:inline-flex; align-items:center; min-height:44px; font-size:13px; }
+.palette-status button { padding:8px 16px; border:1px solid #89b8a566; border-radius:4px; color:#dcf4e6; background:#19382f; }
