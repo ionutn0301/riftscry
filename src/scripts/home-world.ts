@@ -28,7 +28,10 @@ function mount(film:HTMLElement) {
     const box=world.getBoundingClientRect();width=Math.max(1,box.width);height=Math.max(1,box.height);
     const dpr=Math.min(devicePixelRatio||1,1.5);
     canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);request();
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    // Resizing clears a canvas immediately. Repaint inside the observer's
+    // pre-paint turn rather than exposing a blank frame until the next RAF.
+    cancelAnimationFrame(frame);frame=0;draw(performance.now());
   }
   function draw(now:number){
     frame=0;

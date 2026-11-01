@@ -86,3 +86,22 @@ test('cinematic home remains useful when the graphics context is unavailable',as
   await expect(page.locator('[data-home-explore]')).toHaveAttribute('href',/\/explore\?champion=/);
   expect(errors).toEqual([]);
 });
+
+
+test('cinematic home repaints viewport changes before a blank canvas can flash',async({page})=>{
+  await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/');await readyWorld(page);
+  await expect(world(page)).toHaveAttribute('data-film-paint','ready');
+  await page.evaluate(()=>{
+    const canvas=document.querySelector<HTMLCanvasElement>('[data-home-world-canvas]')!;
+    (window as any).__resizePaints=[];
+    new ResizeObserver(()=>{const pixel=[...canvas.getContext('2d')!.getImageData(0,0,1,1).data];(window as any).__resizePaints.push({width:innerWidth,height:innerHeight,pixel});}).observe(canvas);
+  });
+  for(const viewport of [{width:390,height:660},{width:844,height:390},{width:390,height:844}]){
+    await page.setViewportSize(viewport);
+    await expect.poll(()=>page.evaluate(({width,height})=>{
+      const sample=(window as any).__resizePaints.findLast((p:any)=>p.width===width&&p.height===height);
+      return sample?sample.pixel.slice(0,3).some((value:number)=>value>0):false;
+    },viewport)).toBe(true);
+  }
+  expect(await page.evaluate(()=>(window as any).__resizePaints.every((p:any)=>p.pixel[3]===255&&p.pixel.slice(0,3).some((n:number)=>n>0)))).toBe(true);
+});
