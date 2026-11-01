@@ -197,8 +197,9 @@ html[data-journey-crossing='enter'],html[data-journey-crossing='return'] { --cro
 @keyframes signal-scene-arrive { from { opacity: 0; transform: translate3d(var(--scene-travel-x),10px,0); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 1100px) {
-  .journey-header { gap: 20px; }
-  .journey-primary { gap: 24px; }
+  .journey-header { grid-template-columns:1fr auto; gap:20px; }
+  .journey-header .journey-primary { display:none; }
+  .journey-header .world-utilities { grid-column:-2 / -1; }
   .world-utilities { gap: 10px; }
   .journey-search-trigger kbd { display: none; }
   /* The persistent dock owns the menu on phones and tablets, in either orientation. */

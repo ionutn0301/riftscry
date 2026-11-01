@@ -21,6 +21,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
       const headerMenu=page.locator('.journey-header [data-map-open]');
       if(viewport.width<=1100){
         await expect(headerMenu).toBeHidden();
+        await expect(page.locator('.journey-header .journey-primary')).toBeHidden();
         await expect(page.locator('[aria-controls="rift-map-dialog"]:visible')).toHaveCount(1);
       }else await expect(headerMenu).toBeVisible();
       await expect(chrome).toBeVisible();await expect(chrome).toHaveCSS('position','fixed');
