@@ -10,6 +10,7 @@
   --journey-line: #accdce30; --journey-muted: #9fb7bd; --journey-bright: #edf1e9;
   --journey-ease: cubic-bezier(.16,1,.3,1); --world-ease: var(--journey-ease);
   --scene-gutter: clamp(18px,3.5vw,64px);
+  --panel-inset: clamp(16px,1.8vw,24px);
   --journey-dock-height: 68px; --journey-dock-bottom: max(12px,env(safe-area-inset-bottom));
   --journey-dock-clearance: calc(var(--journey-dock-height) + var(--journey-dock-bottom) + 24px);
 }

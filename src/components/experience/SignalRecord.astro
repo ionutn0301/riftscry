@@ -32,7 +32,7 @@ const { entries, label, patchId, sourceUrl, championId, inspectHref } = Astro.pr
             <span class="signal-crossing" aria-hidden="true"><i></i><b>→</b><i></i></span>
             <div class="signal-value signal-value--after"><span>After</span><strong class="after num">{change.after}</strong></div>
           </div>
-          <div class="signal-reading"><span>{change.unit || 'Exact archived values'}</span>{delta && <strong>{delta}</strong>}{(change.direction === 'buff' || change.direction === 'nerf') && <span class={`signal-direction signal-direction--${change.direction}`}>{change.direction === 'buff' ? '▲ Buff' : '▼ Nerf'}</span>}</div>
+          <div class="signal-reading"><span data-signal-unit={change.unit ? true : undefined}>{change.unit || 'Exact archived values'}</span>{delta && <strong>{delta}</strong>}{(change.direction === 'buff' || change.direction === 'nerf') && <span class={`signal-direction signal-direction--${change.direction}`}>{change.direction === 'buff' ? '▲ Buff' : '▼ Nerf'}</span>}</div>
           <div class="signal-scrub" data-signal-scrub hidden>
             <button type="button" data-signal-set="0" aria-pressed="false">Before</button>
             <input type="range" min="0" max="100" value="100" data-signal-range aria-label={`Focus before or after: ${change.label}`} aria-valuetext={`After: ${change.after}`} data-before-value={change.before} data-after-value={change.after} />
