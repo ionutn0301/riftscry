@@ -17,6 +17,7 @@ function mount(film:HTMLElement) {
   const media=matchMedia('(prefers-reduced-motion: reduce)');
   let reduced=document.documentElement.dataset.motion==='reduced'||media.matches,width=0,height=0,frame=0,last=0,painted=0;
   let current=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas')),target=current;
+  let activeScene=ids[Math.round(current)];
   let flightAt=performance.now();
   let lookX=0,lookY=0,pointerX=0,pointerY=0,wheel=0,wheelAt=0,lockedUntil=0;
   let gesture:{x:number;y:number;id:number}|null=null;
@@ -70,11 +71,12 @@ function mount(film:HTMLElement) {
   }
   function scene(){
     const index=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas'));
+    const changed=ids[index]!==activeScene;activeScene=ids[index];
     // Reading a scene can leave the renderer idle. Start the next travel
     // clock now so its first frame cannot jump ahead by the entire idle gap.
     target=index;flightAt=performance.now();last=flightAt;depth.textContent=labels[index]!;world.dataset.filmScene=ids[index];
     if(reduced)current=target;
-    heading();request();
+    if(changed||reduced)heading();request();
   }
   function go(direction:number){
     const index=ids.indexOf(film.dataset.journeyActive??'atlas'),next=ids[index+direction];

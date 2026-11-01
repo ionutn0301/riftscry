@@ -105,3 +105,14 @@ test('cinematic home repaints viewport changes before a blank canvas can flash',
   }
   expect(await page.evaluate(()=>(window as any).__resizePaints.every((p:any)=>p.pixel[3]===255&&p.pixel.slice(0,3).some((n:number)=>n>0)))).toBe(true);
 });
+
+
+test('cinematic home keeps reading stable when the current scene is selected again',async({page})=>{
+  await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/');await readyWorld(page);
+  await page.locator('[data-journey-tab="atlas"]').click();
+  const running=(selector:string)=>page.locator(selector).evaluate(el=>el.getAnimations({subtree:true}).filter(a=>a.playState==='running').length);
+  expect(await running('#atlas h1')).toBe(0);
+  await page.locator('.atlas-follow-signal').click();
+  expect(await running('#signal h2')).toBeGreaterThan(0);
+  await expect(page.locator('#signal h2')).toHaveAccessibleName('Choose a champion.');
+});
