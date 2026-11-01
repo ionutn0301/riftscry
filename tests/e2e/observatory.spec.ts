@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { Patch } from '../../src/lib/schema';
@@ -73,7 +74,7 @@ test('without WebGL the environment, personal entry and exact archive journey re
   await expect.poll(() => environment.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   const personal = page.locator('#signal [data-home-personal]');
   await expect(personal).toHaveJSProperty('href', new URL('/next-game', page.url()).href); await unobstructed(personal);
-  await page.locator('[data-map-open]').click();
+  await mapControl(page).click();
   const games = page.locator('#rift-map-dialog [data-station-link="players"]');
   await expect(games).toHaveJSProperty('href', new URL('/players', page.url()).href); await unobstructed(games);
   await page.locator('[data-map-close]').click();
@@ -129,7 +130,7 @@ test('entering, choosing and restoring scenes never creates unsolicited audio', 
   await page.locator('[data-home-choice]').nth(1).click();
   await page.locator('[data-journey-next]').click();
   await page.locator('[data-journey-prev]').click();
-  await page.locator('[data-map-open]').click(); await page.locator('[data-map-close]').click();
+  await mapControl(page).click(); await page.locator('[data-map-close]').click();
   await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
   await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
   await expect(page.locator('audio[autoplay], video[autoplay]')).toHaveCount(0);

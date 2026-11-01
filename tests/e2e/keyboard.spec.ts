@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Page } from "@playwright/test";
 import { openScene, readyWorld } from "./journey-test-helpers";
 
@@ -71,7 +72,7 @@ test.describe("keyboard-only exploration", () => {
     await expect(page.locator("[data-roster-query]")).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(rosterOpener).toBeFocused();
-    const mapOpener = page.locator("[data-map-open]");
+    const mapOpener = mapControl(page);
     await mapOpener.focus();
     await page.keyboard.press("Enter");
     await expect(page.locator('#rift-map-dialog [aria-current="page"]')).toBeFocused();
@@ -99,7 +100,7 @@ test.describe("keyboard-only exploration", () => {
     await page.goto("/explore");
     await ready(page);
     await expect(page.locator('astro-island[component-url*="CommandPalette"]')).not.toHaveAttribute("ssr", "");
-    await page.locator("[data-map-open]").focus();
+    await mapControl(page).focus();
     await page.keyboard.press("Enter");
     await page.locator("#rift-map-dialog [data-palette-trigger]").focus();
     await page.keyboard.press("Enter");

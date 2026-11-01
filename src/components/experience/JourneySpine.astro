@@ -11,7 +11,7 @@ const links = ['next-game','players','pool'].map(id=>journeyStations.find(item=>
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/></svg><span>Home</span>
   </a>
   {links.map((item,index)=><>
-    {index===1&&<a href="/champions" class="journey-dock-atlas" data-dock-atlas aria-label="Atlas" aria-current={active==='atlas'?'location':undefined} aria-haspopup="dialog" aria-expanded="false" aria-controls="rift-map-dialog"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="m14 1 13 13-13 13L1 14 14 1Z"/><path d="m14 8 6 6-6 6-6-6 6-6Z"/></svg><span>Atlas</span></a>}
+    {index===1&&<a href="/champions" class="journey-dock-atlas" data-dock-atlas aria-label="Atlas" aria-keyshortcuts="Alt+M" aria-current={active==='atlas'?'location':undefined} aria-haspopup="dialog" aria-expanded="false" aria-controls="rift-map-dialog"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="m14 1 13 13-13 13L1 14 14 1Z"/><path d="m14 8 6 6-6 6-6-6 6-6Z"/></svg><span>Atlas</span></a>}
     <a href={item.href} data-station-link={item.id} data-spine-station={item.id} aria-current={active===item.id?'page':undefined}><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={item.glyph}/></svg><span>{item.label}</span></a>
   </>)}
 </nav>

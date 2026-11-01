@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { Patch } from '../../src/lib/schema';
@@ -44,7 +45,7 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) te
 for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] as const) test(`the map keeps five destinations and specialist tools reachable at ${width}×${height}`, async ({ page }) => {
   await page.setViewportSize({ width, height });
   await page.goto('/'); await readySignal(page);
-  const opener = page.getByRole('button', { name: 'Open the Rift map', exact: true });
+  const opener = mapControl(page);
   await reachableTarget(opener, page); await opener.click();
   const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   const links = map.locator('.signal-destinations [data-station-link]');

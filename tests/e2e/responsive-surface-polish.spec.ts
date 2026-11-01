@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { expect, test, type Page } from '@playwright/test';
 
 async function readyJourney(page: Page) {
@@ -88,7 +89,7 @@ for (const [width, height] of [[1366, 768], [1280, 800], [1920, 850], [1440, 900
     await page.setViewportSize({ width, height });
     await page.goto('/explore', { waitUntil: 'domcontentloaded' });
     await readyJourney(page);
-    await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+    await mapControl(page).click();
     const dialog = page.locator('#rift-map-dialog');
     const destinations = dialog.locator('[data-world-link]');
     await expect(destinations).toHaveCount(5);

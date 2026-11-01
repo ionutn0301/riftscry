@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { readdirSync, readFileSync } from 'node:fs';
 import { installFixtures, profilePath, query, recentAramWin, visualMatches } from './fixtures';
@@ -64,7 +65,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         if (!canvasColor) canvasColor = color;
         expect(color, 'The page canvas should retain the shared theme between destinations').toBe(canvasColor);
         for (const control of [
-          header.getByRole('button', { name: 'Open the Rift map', exact: true }),
+          mapControl(page),
           header.getByRole('button', { name: 'Search the archive', exact: true }),
           header.locator('[data-motion-toggle]'),
         ]) {
@@ -86,7 +87,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.setViewportSize(viewport);
     await page.goto('/champions');
     await settled(page);
-    const open = page.getByRole('button', { name: 'Open the Rift map', exact: true });
+    const open = mapControl(page);
     await open.click();
     const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
     await expect(map).toBeVisible();
@@ -95,15 +96,15 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await expect(page).toHaveURL(/\/notebook$/);
     await settled(page);
     await expect(page.locator('body')).toHaveAttribute('data-surface', 'notebook');
-    await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+    await mapControl(page).click();
     await expect(map.locator('[data-world-link][aria-current="page"]')).toHaveAttribute('data-world-link', 'pool');
     await expect(map.locator('[data-world-link="next-game"]')).not.toHaveAttribute('aria-current', 'page');
     await page.keyboard.press('Escape');
     await expect(map).not.toBeVisible();
-    await expect(page.getByRole('button', { name: 'Open the Rift map', exact: true })).toBeFocused();
+    await expect(mapControl(page)).toBeFocused();
     await page.goBack();
     await expect(page).toHaveURL(/\/champions$/);
-    await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+    await mapControl(page).click();
     await expect(map.locator('a[aria-current="page"]')).toHaveAttribute('href', '/champions');
   });
 }

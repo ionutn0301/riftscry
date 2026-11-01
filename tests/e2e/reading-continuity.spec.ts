@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { expect, test } from '@playwright/test';
 import { openScene, readyJourney, readyWorld, unobstructed } from './journey-test-helpers';
 
@@ -17,11 +18,11 @@ test('continue restores the selected champion record and exact query after anoth
   const expected = new URL(page.url());
   const exactReading = expected.pathname + expected.search + expected.hash;
 
-  await page.locator('[data-map-open]').click();
+  await mapControl(page).click();
   await page.locator('#rift-map-dialog [data-world-link="patches"]').click();
   await readyWorld(page);
   await expect(page).toHaveURL(url => url.pathname === '/patches');
-  await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+  await mapControl(page).click();
   const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   const resume = map.getByRole('link', { name: 'Continue Ahri Patch History', exact: true });
   await expect(resume).toBeVisible();
@@ -36,7 +37,7 @@ test('continue restores the selected champion record and exact query after anoth
   await expect(page.locator('[data-history-record]:visible')).toHaveCount(1);
   await expect(selected.getByRole('link', { name: /^Original source/ })).toHaveAttribute('href', /^https:\/\/www\.leagueoflegends\.com\//);
 
-  await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+  await mapControl(page).click();
   await expect(map.locator('[data-reading-resume]')).toBeHidden();
   await expect(map.locator('[data-map-explore]')).toBeVisible();
   expect(errors).toEqual([]);
@@ -51,10 +52,10 @@ test('scene navigation leaves Explore’s selected interval and record in charge
   await expect(page).toHaveURL(url => url.hash === '#history');
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('riftscry:resume') ?? '{}').href)).toBe(exactReading);
 
-  await page.locator('[data-map-open]').click();
+  await mapControl(page).click();
   await page.locator('#rift-map-dialog [data-world-link="champions"]').click();
   await readyWorld(page);
-  await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+  await mapControl(page).click();
   const resume = page.locator('#rift-map-dialog [data-reading-resume]');
   await expect(resume).toHaveAttribute('href', exactReading);
   await resume.click();
@@ -72,7 +73,7 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   await page.setViewportSize({ width: 568, height: 320 });
   await page.goto('/champions');
   await readyWorld(page);
-  await page.getByRole('button', { name: 'Open the Rift map', exact: true }).click();
+  await mapControl(page).click();
   const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   await expect(map).toBeVisible();
   const destinations = map.locator('[data-world-link], .journey-map-footer a');

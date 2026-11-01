@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { stationaryWorld, unobstructed } from './journey-test-helpers';
 import { test, expect, type Page } from "@playwright/test";
 import type { JourneyModel } from '../../src/lib/voyage-data';
@@ -35,7 +36,7 @@ async function expectOpeningBounds(page: Page) {
   await unobstructed(page.locator('[data-record-source]'));
   await unobstructed(page.locator('.voyage-station-heading h1'));
   await unobstructed(page.locator('[data-roster-open]'));
-  await expect(page.locator('[data-map-open]')).toBeInViewport({ratio:1});
+  await expect(mapControl(page)).toBeInViewport({ratio:1});
 }
 
 test('three focused scenes expose real evidence with one document scroll', async ({page}) => {
@@ -232,7 +233,7 @@ test("Rift map has real destinations, restores focus and hands search out of its
   await page.goto("/explore");
   await ready(page);
   await expect(page.locator('astro-island[component-url*="CommandPalette"]')).not.toHaveAttribute("ssr", "");
-  const opener = page.locator("[data-map-open]");
+  const opener = mapControl(page);
   await opener.click();
   const map = page.locator("#rift-map-dialog");
   await expect(map).toBeVisible();
@@ -289,10 +290,10 @@ for (const [path,surface,current] of readingRoutes) {
       await page.goBack();
     }
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-    await page.locator('[data-map-open]').click();
+    await mapControl(page).click();
     await expect(page.locator('#rift-map-dialog')).toBeVisible();
     if(current) await expect(page.locator('#rift-map-dialog [aria-current="page"]')).toHaveAttribute('href',current);
     await page.locator('[data-map-close]').click();
-    await expect(page.locator('[data-map-open]')).toBeFocused();
+    await expect(mapControl(page)).toBeFocused();
   });
 }

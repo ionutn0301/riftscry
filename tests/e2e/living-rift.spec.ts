@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { Patch } from '../../src/lib/schema';
@@ -195,7 +196,7 @@ test('the destination menu keeps native links and restores the filtered return',
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/champions?q=Ahri&role=mid');
   await ready(page);
-  const open = page.getByRole('button', { name: 'Open the Rift map', exact: true });
+  const open = mapControl(page);
   await open.click();
   const map = page.getByRole('dialog', { name: 'Where next?', exact: true });
   await expect(map).toBeVisible();

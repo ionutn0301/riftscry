@@ -1,3 +1,4 @@
+import {mapControl} from '../shared/navigation';
 import { test, expect, type Page } from "@playwright/test";
 import { openScene, readyWorld } from "./journey-test-helpers";
 
@@ -106,7 +107,7 @@ test("reduced motion keeps chapter links, dates and the map available on every v
   await expect(page.locator("#history")).toBeVisible();
   await expect(page.locator("[data-period-older]")).toBeEnabled();
   await expect(page.locator("[data-period-newer]")).toBeEnabled();
-  await page.locator("[data-map-open]").click();
+  await mapControl(page).click();
   await expect(page.locator("#rift-map-dialog")).toBeVisible();
   await page.locator('#rift-map-dialog [data-world-link="pool"]').click();
   await expect(page).toHaveURL(url => url.pathname === "/pool");
@@ -124,7 +125,7 @@ test("a short landscape viewport keeps controls reachable without horizontal ove
   await expect(page.locator("[data-roster-query]")).toBeVisible();
   await page.locator("[data-roster-close]").click();
   await expect(page.locator("#voyage-roster")).not.toBeVisible();
-  await page.locator("[data-map-open]").click();
+  await mapControl(page).click();
   await page.locator('#rift-map-dialog [data-world-link="pool"]').click();
   await expect(page).toHaveURL(url => url.pathname === "/pool");
 });
