@@ -7,6 +7,11 @@ on:
 
 jobs:
   surface-regressions:
+    name: surface-regressions (${{ matrix.project }})
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [desktop, mobile, mobile-chromium]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -28,6 +33,7 @@ jobs:
           tests/e2e/reading-continuity.spec.ts tests/e2e/responsive-surface-polish.spec.ts
           tests/e2e/single-scroll-contract.spec.ts tests/e2e/briefing-report-composition.spec.ts
           tests/e2e/voyage-layout.spec.ts tests/e2e/voyage.spec.ts tests/e2e/connected-observatory.spec.ts
+          --project=${{ matrix.project }}
           --grep 'reveal, keep and carry|reduced motion keeps|long Continue|Rift map has no|champion search stays|phone chapter controls|populated briefing|chapter (history|return) layout at 390|reading destination|patch stations retain|Explore presents|keyboard scene navigation'
         env:
           CI: "true"
@@ -35,7 +41,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surface-regressions
+          name: surface-regressions-${{ matrix.project }}
           path: |
             player-visuals/
             test-results/

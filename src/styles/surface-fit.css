@@ -33,3 +33,10 @@ body.rift-shell #rift-map-dialog [data-reading-subject] { min-width:0; }
   body.rift-shell #voyage-roster .voyage-roster-results button { min-height:44px; }
   body.rift-shell #voyage-roster [data-roster-status] { font-size:10px; line-height:1.4; margin:0; }
 }
+/* Keep the chapter camera inside its own width. A lateral yaw used to push
+   controls past the viewport; WebKit retained that overflow after the motion. */
+.rift-shell[data-journey-ready] [data-journey-panel] { transform-origin:50% 0; }
+@keyframes rift-chapter-open {
+  from { transform:perspective(1400px) translate3d(0,8px,-65px) rotateX(-2deg); }
+  to { transform:none; }
+}
