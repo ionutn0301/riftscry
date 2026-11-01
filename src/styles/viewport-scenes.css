@@ -10,7 +10,10 @@
   html[data-motion] .rift-atlas--entrance .passage-reading { padding:0; }
   html[data-motion] .rift-atlas--entrance .journey-eyebrow { margin:0; }
   html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:clamp(28px,7.7vw,38px); line-height:1.12; min-height:2.24em; margin:8px 0; max-width:19ch; }
-  html[data-motion] .rift-atlas--entrance .kinetic-word-mask { vertical-align:baseline; }
+  /* Clip the moving word itself. Overflow on a nested inline-block mask can
+     cut off its final baseline when the title rewraps on a short phone. */
+  html[data-motion] .rift-atlas--entrance .kinetic-word-mask { overflow:visible; padding:0; margin:0; vertical-align:baseline; }
+  html[data-motion] .rift-atlas--entrance .kinetic-word { clip-path:inset(-.25em); animation-name:passage-word-arrive; }
   html[data-motion] .rift-atlas--entrance [data-passage-description] { min-height:0; margin:0; line-height:1.5; }
   html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:10px; min-height:44px; }
   html[data-motion] .rift-atlas--entrance .passage-personal { margin:4px 0 0; min-height:16px; line-height:16px; }
@@ -55,6 +58,10 @@
   html[data-motion] body[data-surface=home] .signal-carried-record { margin-top:10px; padding:10px 0; gap:16px; }
   html[data-motion] body[data-surface=home] .signal-carried-record > div { gap:6px; }
   html[data-motion] body[data-surface=home] .signal-carry-explore { margin-top:0; }
+}
+@keyframes passage-word-arrive {
+  from { clip-path:inset(0 0 100%); transform:translate3d(0,.45em,0) rotateX(-35deg) skewX(-7deg); }
+  to { clip-path:inset(-.25em); transform:none; }
 }
 @media (max-width:700px) and (max-height:650px) {
   html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:26px; margin:5px 0; }

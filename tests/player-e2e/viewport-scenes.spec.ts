@@ -33,6 +33,11 @@ async function measure(page:Page){
       collisions:portalRegions.flatMap((a,i)=>portalRegions.slice(i+1).filter(b=>Math.min(a.rect.right,b.rect.right)-Math.max(a.rect.left,b.rect.left)>1&&Math.min(a.rect.bottom,b.rect.bottom)-Math.max(a.rect.top,b.rect.top)>1).map(b=>`${a.selector} overlaps ${b.selector}`)),
       titleTop:document.querySelector('#atlas .passage-reading')?.getBoundingClientRect().top,
       headerBottom:header.bottom,
+      clippedWords:[...document.querySelectorAll<HTMLElement>('#atlas .kinetic-word')].flatMap(word=>{
+        if(!word.getClientRects().length)return [];
+        const r=word.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+        return hit&&word.contains(hit)?[]:[word.textContent];
+      }),
       regions:[...document.querySelectorAll<HTMLElement>('#main,.passage-reading,.passage-viewport,.passage-instrument,.atlas-arrival-footer,.gateway-composition,.automatic-entry,.recall-library-section')].filter(el=>el.getClientRects().length).map(el=>({name:el.className,top:el.getBoundingClientRect().top,height:el.getBoundingClientRect().height})),
     };
   });
@@ -49,14 +54,19 @@ const phones=[{width:320,height:480},{width:320,height:568},{width:359,height:60
 for(const viewport of phones){
   test(`${viewport.width}×${viewport.height}: viewport scene keeps all five home destinations above the dock without scrolling`,async({page})=>{
     await page.setViewportSize(viewport);await installFixtures(page);
-    await page.addInitScript(player=>localStorage.setItem('riftscry:recent-player:v1',JSON.stringify(player)),{platform,puuid,name:'Jhinghis Han with a long player name#EUNE'});
+    await page.addInitScript(player=>{
+      localStorage.setItem('riftscry:recent-player:v1',JSON.stringify(player));
+      localStorage.setItem('riftscry:resume',JSON.stringify({href:'/champion/ahri',label:'Ahri: a saved champion reading with a long title',updatedAt:'2026-11-01T00:00:00.000Z'}));
+    },{platform,puuid,name:'Jhinghis Han with a long player name#EUNE'});
     await page.goto('/');await ready(page);
+    await expect(page.locator('[data-home-reading]')).toBeVisible();
     for(let i=0;i<5;i++){
       const metrics=await record(page,`home-${viewport.width}x${viewport.height}-${i}`);
       expect.soft(metrics.scroll,JSON.stringify(metrics)).toBeLessThanOrEqual(1);
       expect.soft(metrics.horizontal).toBeLessThanOrEqual(1);
       expect.soft(metrics.clipped).toEqual([]);expect.soft(metrics.nested).toEqual([]);
       expect.soft(metrics.collisions).toEqual([]);
+      expect.soft(metrics.clippedWords).toEqual([]);
       expect.soft(metrics.titleTop).toBeGreaterThanOrEqual(metrics.headerBottom);
       await expect(page.locator('#atlas [data-passage-enter]')).toBeInViewport({ratio:1});
       if(i<4)await page.locator('#atlas [data-passage-step="1"]').click();
