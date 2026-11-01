@@ -116,3 +116,19 @@ test('cinematic home keeps reading stable when the current scene is selected aga
   expect(await running('#signal h2')).toBeGreaterThan(0);
   await expect(page.locator('#signal h2')).toHaveAccessibleName('Choose a champion.');
 });
+
+test('painted environment keeps the artwork intact and remains useful if its image fails',async({page})=>{
+  await page.route('**/images/league/iceborn-vaults.webp',route=>route.abort());
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.goto('/');await readyWorld(page);
+  await expect(world(page)).toHaveAttribute('data-art-direction','painted');
+  await expect(world(page)).toHaveAttribute('data-film-paint','fallback');
+  await expect(page.locator('[data-home-world-canvas]')).toBeHidden();
+  await expect(page.locator('[data-home-world] svg polygon')).toHaveCount(0);
+  await page.locator('.atlas-follow-signal').click();
+  await page.locator('[data-home-reveal]').click();
+  const signal=(await homeSignals(page))[0]!;
+  await expect(page.locator('[data-home-record]:not([hidden]) .after')).toHaveText(signal.after);
+  await page.locator('[data-home-keep]').click();await expect(page.locator('#carry')).toBeVisible();
+  expect(errors).toEqual([]);
+});

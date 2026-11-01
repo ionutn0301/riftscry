@@ -136,7 +136,7 @@ html[data-motion] #main:has([data-journey-panel] ~ [data-journey-panel]) .journe
 /* The environment supports the subject. It never covers or intercepts content. */
 .rift-shell .rift-scene__landscape { opacity: .72; }
 .rift-shell .rift-scene__landscape img { filter: saturate(.55) brightness(.76); }
-.rift-shell .rift-scene__object { opacity: .23; transition: opacity .6s var(--journey-ease), left 1s var(--journey-ease), top 1s var(--journey-ease); }
+.rift-shell .rift-scene__object { opacity: .1; transition: opacity .6s var(--journey-ease), left 1s var(--journey-ease), top 1s var(--journey-ease); }
 .rift-shell .rift-scene[data-rift-preview] .rift-scene__object { left: var(--rift-object-x); top: var(--rift-object-y); width: min(calc(70vw * var(--rift-object-size)),calc(110svh * var(--rift-object-size))); opacity: .28; filter: none; }
 .rift-shell .rift-scene__reading-light,.rift-shell .rift-scene[data-rift-preview] .rift-scene__reading-light { background: linear-gradient(90deg,#061017da,#0610178c 55%,#06101722),linear-gradient(0deg,#061017de,transparent 45%); }
 .rift-shell[data-surface='home'] .rift-scene__object { opacity: .12; }

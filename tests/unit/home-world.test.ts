@@ -1,36 +1,38 @@
 import {describe,it,expect} from 'vitest';
-import {filmCamera,homeWorld,homeLandmarks,projectHomePoint,projectHomeWorld,type Vec3} from '../../src/lib/home-world';
-describe('a continuous home world',()=>{
-  it('moves the camera through space without mutating the world, including reverse travel',()=>{
-    const geometry=JSON.stringify(homeWorld),poses=[0,1,2,3].map(p=>filmCamera(p));
-    expect(new Set(poses.map(p=>p.position.join(','))).size).toBe(4);
-    expect(poses[0]!.position[2]-poses[3]!.position[2]).toBeGreaterThan(100);
-    for(const p of [0,.4,.8,1,1.7,2,2.8,3,2.6,1.1,0])projectHomeWorld(filmCamera(p),390,600);
-    expect(JSON.stringify(homeWorld)).toBe(geometry);
+import {filmCamera,frameHomeArt} from '../../src/lib/home-world';
+describe('the painted home camera',()=>{
+  it('visits distinct framings, supports reverse travel and clamps scene bounds',()=>{
+    const poses=[0,1,2,3].map(p=>filmCamera(p));
+    expect(new Set(poses.map(p=>JSON.stringify(p))).size).toBe(4);
     expect(filmCamera(-1)).toEqual(poses[0]);expect(filmCamera(8)).toEqual(poses[3]);
-  });
-  it('keeps projection finite through the Rift landmarks and changing aspect ratio',()=>{
-    for(const size of [[1440,700],[390,590],[568,132]])for(let p=0;p<=3;p+=.12){
-      const faces=projectHomeWorld(filmCamera(p),size[0]!,size[1]!);
-      expect(faces.length).toBeGreaterThan(30);
-      expect(faces.every(f=>f.points.length>=3&&f.points.every(point=>point.every(Number.isFinite)))).toBe(true);
-      expect(faces.every((f,i)=>!i||faces[i-1]!.depth>=f.depth)).toBe(true);
+    for(const p of [0,.4,.8,1,1.7,2,2.8,3,2.6,1.1,0]){
+      const camera=filmCamera(p);
+      expect(camera.zoom).toBeGreaterThanOrEqual(1);expect(camera.zoom).toBeLessThanOrEqual(1.2);
     }
   });
-  it('frames a distinct League landmark at each reading pose on desktop and portrait',()=>{
-    expect(new Set(homeWorld.map(face=>face.feature))).toEqual(new Set(['terrain','river','jungle','nexus','turret','ward','dragon','baron']));
-    for(const [i,landmark] of homeLandmarks.entries())for(const [width,height] of [[1440,700],[390,590]]){
-      const point=projectHomePoint(landmark.position,filmCamera(i),width!,height!);
-      expect(point).not.toBeNull();
-      expect(point!.x).toBeGreaterThan(width!*.15);expect(point!.x).toBeLessThan(width!*.9);
-      expect(point!.y).toBeGreaterThan(height!*.2);expect(point!.y).toBeLessThan(height!*.9);
+  it('covers every viewport throughout travel and rotation without revealing an image edge',()=>{
+    for(const [width,height] of [[1440,700],[390,590],[568,132],[320,480],[1920,250]])for(let p=0;p<=3;p+=.08){
+      for(const look of [-.5,0,.5]){
+        const frame=frameHomeArt(filmCamera(p,look,look),width!,height!);
+        expect(Object.values(frame).every(Number.isFinite)).toBe(true);
+        expect(frame.x).toBeLessThanOrEqual(0);expect(frame.y).toBeLessThanOrEqual(0);
+        expect(frame.x+frame.width).toBeGreaterThanOrEqual(width!-1e-8);
+        expect(frame.y+frame.height).toBeGreaterThanOrEqual(height!-1e-8);
+      }
     }
   });
-  it('uses perspective parallax, with larger motion in nearby scenery',()=>{
-    const camera={position:[0,0,0] as Vec3,target:[0,0,-1] as Vec3,lens:50,roll:0};
-    const moved={...camera,position:[1,0,0] as Vec3,target:[1,0,-1] as Vec3};
-    const displacement=(point:Vec3)=>Math.abs(projectHomePoint(point,camera,1000,700)!.x-projectHomePoint(point,moved,1000,700)!.x);
-    expect(displacement([2,0,-5])).toBeGreaterThan(displacement([2,0,-50])*9);
-    expect(projectHomePoint([0,0,1],camera,1000,700)).toBeNull();
+  it('keeps framing continuous across scene boundaries in either direction',()=>{
+    for(const p of [1,2]){
+      const before=filmCamera(p-.0001),after=filmCamera(p+.0001);
+      for(const key of ['x','y','zoom'] as const)expect(Math.abs(before[key]-after[key])).toBeLessThan(.00001);
+    }
+  });
+  it('preserves the original artwork proportions and bounds pointer movement',()=>{
+    const frame=frameHomeArt(filmCamera(2),390,660,1920,967);
+    expect(frame.width/frame.height).toBeCloseTo(1920/967,10);
+    expect(filmCamera(1,100,-100)).toEqual(filmCamera(1,.5,-.5));
+    const still=filmCamera(1),look=filmCamera(1,.5,.5);
+    expect(Math.abs(look.x-still.x)).toBeLessThan(.005);
+    expect(Math.abs(look.y-still.y)).toBeLessThan(.003);
   });
 });
