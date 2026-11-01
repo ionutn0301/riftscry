@@ -24,6 +24,15 @@ jobs:
         run: pnpm exec playwright test --config=playwright.player.config.ts transition-composition.spec.ts
         env:
           CI: "true"
+      - name: Build static loading and native-link fallbacks
+        run: pnpm build
+      - name: Verify pending scripts, failed art and no-JavaScript navigation
+        run: >
+          pnpm exec playwright test --project=desktop
+          tests/e2e/interaction-stability.spec.ts tests/e2e/rift-atlas.spec.ts tests/e2e/companion-home.spec.ts
+          --grep 'failed imagery leaves|all five destinations are genuine usable links|all acts expose exact source evidence'
+        env:
+          CI: "true"
       - name: Retain transition videos and sampled paint layers
         if: always()
         uses: actions/upload-artifact@v4
