@@ -34,7 +34,8 @@ for (const preference of ['device', 'saved'] as const) test(`${preference} reduc
   await expect(environment).toHaveAttribute('data-rift-renderer', 'static');
   await expect(environment).toHaveAttribute('data-rift-motion', 'still');
   await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
-  await expect(page.locator('[data-rift-scene-static]')).toBeVisible();
+  await expect(page.locator('[data-home-world]')).toHaveAttribute('data-film-motion','reduced');
+  await expect(page.locator('[data-home-world-canvas]')).toBeVisible();
   const subject = await page.locator('[data-home-signals]').getAttribute('data-home-subject');
   await page.locator('[data-journey-next]').click();
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'reveal');
@@ -67,7 +68,7 @@ test('without WebGL the environment, personal entry and exact archive journey re
   await page.goto('/'); await readySignal(page);
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-renderer', 'static');
   await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
-  const environment = page.locator('.rift-scene__landscape img');
+  const environment = page.locator('.home-world-horizon img');
   await expect(environment).toBeVisible();
   await expect.poll(() => environment.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   const personal = page.locator('#signal [data-home-personal]');
@@ -86,8 +87,8 @@ test.describe('the signal journey before JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('static atmosphere, native destinations and exact source records are available immediately', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('#atlas [data-passage-still]')).toBeVisible();
-    const environment = page.locator('.rift-scene__landscape img');
+    await expect(page.locator('[data-home-world-still]')).toBeVisible();
+    const environment = page.locator('.home-world-horizon img');
     await expect(environment).toBeVisible();
     await expect.poll(() => environment.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     const links = page.locator('.world-nojs-nav a');

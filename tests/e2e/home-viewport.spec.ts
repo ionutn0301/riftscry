@@ -17,7 +17,7 @@ async function sceneFits(page: Page) {
   // The arrival stays compact. Exact evidence can grow in the document; its
   // artwork remains bounded while every source and action stays reachable.
   if (await panel.getAttribute('id') === 'signal') expect(hero.height, 'The opening must fit the screen').toBeLessThanOrEqual(viewport.height + 1);
-  const art = (await page.locator('.signal-subject-visual').boundingBox())!;
+  const art = (await page.locator('[data-home-world]').boundingBox())!;
   expect(art.height, 'Artwork must not grow with the evidence document').toBeLessThanOrEqual(viewport.height + 1);
   expect(header.y).toBeGreaterThanOrEqual(-1);
   if (viewport.height > 620) {
@@ -43,7 +43,7 @@ for (const [width, height] of sizes) for (const state of ['new', 'returning'] as
   else await expect(page.locator('[data-home-return]')).toBeHidden();
   await arrival.locator('h2').scrollIntoViewIfNeeded();
   await expect(arrival.locator('h2')).toBeInViewport({ ratio: 0.99 });
-  for (const selector of ['[data-home-reveal]', '[data-home-personal]', '[data-home-beacon]']) await reachableTarget(arrival.locator(selector), page);
+  for (const selector of ['[data-home-reveal]', '[data-home-personal]']) await reachableTarget(arrival.locator(selector), page);
   if (await arrival.locator('[data-home-context]').isVisible()) await reachableTarget(arrival.locator('[data-home-context]'), page);
   for (const choice of await page.locator('[data-home-choice]').all()) await reachableTarget(choice, page);
   await reachableTarget(page.locator('.signal-cast-all'), page);
@@ -73,7 +73,7 @@ test('the active signal refits after a returning player rotates portrait and lan
     const arrival = await openScene(page, 'signal');
     await expect(page.locator('[data-home-return]')).toContainText(player.name);
     await reachableTarget(arrival.locator('[data-home-personal]'), page);
-    await reachableTarget(arrival.locator('[data-home-beacon]'), page);
+    if(await arrival.locator('[data-home-beacon]').isVisible())await reachableTarget(arrival.locator('[data-home-beacon]'), page);
     await sceneFits(page);
     const reveal = await openScene(page, 'reveal');
     await reachableTarget(reveal.locator('[data-home-keep]'), page);

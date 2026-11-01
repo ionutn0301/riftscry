@@ -124,13 +124,14 @@ function discover() {
     button.type = 'button'; button.id = `journey-tab-${panel.id}`;
     button.dataset.journeyTab = panel.id;
     button.setAttribute('role', 'tab'); button.setAttribute('aria-controls', panel.id);
-    button.textContent = panel.dataset.journeyLabel ?? panel.querySelector('h2')?.textContent ?? 'Scene';
+    button.textContent = panel.dataset.journeyShortLabel ?? panel.dataset.journeyLabel ?? panel.querySelector('h2')?.textContent ?? 'Scene';
     // Show compact markers on phones, with complete accessible scene names.
     button.dataset.sceneNumber = String(panels.indexOf(panel) + 1).padStart(2, '0');
-    button.setAttribute('aria-label', (button.textContent ?? panel.id).trim());
+    button.setAttribute('aria-label', (panel.dataset.journeyLabel ?? button.textContent ?? panel.id).trim());
     fragment.append(button);
   }
   tabs?.replaceChildren(fragment);
+  tabs?.style.setProperty('--journey-scene-count',String(panels.length));
   // Keep a single-scene tab as its accessible label, but don't add a redundant control row.
   if (controls) controls.hidden = panels.length < 2;
   const requested = containingPanel(hashId())?.id ? hashId()

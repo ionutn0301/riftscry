@@ -2,12 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import SignalJourney from '../components/experience/SignalJourney.astro';
 ---
-<Layout surface="home" title="RiftScry — Every game leaves a ripple." description="Enter the Rift atlas. Explore your games, reveal champion changes, and find your next move in one connected League of Legends journey.">
+<Layout surface="home" title="RiftScry — Every game leaves a ripple." description="Journey through the Rift. Follow a real champion change, keep a finding, and turn your recent games into a useful next move.">
   <script is:inline>
     // Existing shared journey links and saved reading places still reach their
     // original chapter after the companion becomes the front door.
     const previousJourney = new URL(location.href);
-    const journeyChapters = ['#arrival', '#perspective', '#change', '#history', '#return', '#subject', '#evidence', '#ending', '#opening'];
+    const journeyChapters = ['#perspective', '#change', '#history', '#return', '#subject', '#evidence', '#ending', '#opening'];
     if (['champion', 'patch', 'older', 'newer', 'event', 'seen', 'beat', 'focus'].some((key) => previousJourney.searchParams.has(key)) || journeyChapters.includes(previousJourney.hash)) {
       location.replace('/explore' + previousJourney.search + previousJourney.hash);
     }

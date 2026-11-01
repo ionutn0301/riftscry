@@ -28,7 +28,10 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     const reading=readReturnState().resume;
     const trail=host.querySelector<HTMLAnchorElement>('[data-home-reading]');
     if(trail){
-      trail.hidden=!reading;trail.href=reading?.href??'/explore#change';
+      trail.hidden=!reading||Boolean(readRecentPlayer());
+      const briefing=host.querySelector<HTMLElement>('[data-home-briefing]');
+      if(briefing)briefing.hidden=Boolean(reading)&&!readRecentPlayer();
+      trail.href=reading?.href??'/explore#change';
       const label=trail.querySelector('[data-home-reading-label]');
       if(label)label.textContent=reading?.label??'Resume exploring';
       if(reading)trail.setAttribute('aria-label',`Resume ${reading.label}`);else trail.removeAttribute('aria-label');
@@ -69,7 +72,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     text('[data-home-carry-name]', `${current.championName} / ${current.abilityName}`);
     text('[data-home-carry-value]', `${current.before} → ${current.after}`);
     text('[data-home-carry-label]', `${current.label} · Patch ${current.patchId}`);
-    text('[data-home-explore]', `Continue with ${current.championName} ↗`);
+    text('[data-home-explore-label]', `Continue with ${current.championName} ↗`);
     text('[data-home-keep-status]', '');
     href('[data-home-trace]', current.explore.replace('#change', '#history'));
     href('[data-home-explore]', current.explore);
@@ -111,6 +114,9 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
     href('[data-home-personal]', selected ? briefingLink(selected) : '/next-game');
     const entry = host.querySelector<HTMLAnchorElement>('.signal-act--arrival [data-home-personal]');
     if (entry) entry.textContent = selected ? 'Continue my briefing →' : 'Use my games →';
+    text('[data-home-briefing-label]',selected?'Continue briefing':'My briefing');
+    host.querySelector('[data-home-briefing]')?.setAttribute('aria-label',selected?`Continue briefing for ${selected.name||'your player'}`:'Open my briefing');
+    resume();
     if (selected) {
       hint.textContent = `Ready when you are, ${selected.name || 'summoner'}.`;
     } else hint.textContent = '';
@@ -144,7 +150,7 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   // A URL records the actual opening subject so Back restores it exactly.
   const initialUrl = new URL(location.href);
   initialUrl.searchParams.set('signal', current.championId);
-  if (!initialUrl.hash && !requested) initialUrl.hash = 'atlas';
+  if (!initialUrl.hash && !requested) initialUrl.hash = 'arrival';
   history.replaceState(history.state, '', initialUrl.pathname + initialUrl.search + initialUrl.hash);
   player(); artworkState();
 }

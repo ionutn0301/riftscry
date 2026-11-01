@@ -2,12 +2,13 @@ import { test, expect } from '@playwright/test';
 import { readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
 import {navigateStation} from '../player-e2e/navigation-controls';
 
-test('the atlas is the entrance and a native round trip retains its place', async ({ page }) => {
+test('the homepage is distinct from Atlas and a native round trip retains its place', async ({ page }) => {
   const requests: string[] = [];
   page.on('request', request => { if (request.url().includes('/api/player/')) requests.push(request.url()); });
   await page.goto('/'); await readyWorld(page);
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'atlas');
-  await expect(page.locator('#atlas [data-atlas-portal]')).toHaveCount(5);
+  await expect(page.locator('#main [data-rift-atlas]')).toHaveCount(0);
+  await expect(page.locator('#rift-map-dialog [data-atlas-portal]')).toHaveCount(5);
   await expect(page.locator('.journey-dock a')).toHaveCount(5);
   await expect(page.locator('main h1')).toContainText('ripple.');
   await navigateStation(page,'champions');
@@ -39,10 +40,11 @@ for (const [width,height] of [[320,568],[390,844],[568,320],[1440,900]] as const
 test('directional keyboard exploration enters the focused place and Escape returns focus', async ({ page, isMobile }) => {
   test.skip(isMobile,'Desktop keyboard path; touch targets are checked above.');
   await page.goto('/'); await readyWorld(page);
-  const beacon = page.locator('#atlas [data-atlas-portal="next-game"]');
+  await page.locator('[data-map-open]').click();
+  const beacon = page.locator('#rift-map-dialog [data-atlas-portal="next-game"]');
   await beacon.focus(); await page.keyboard.press('ArrowRight');
   await expect(beacon).not.toBeFocused();
-  const href = await page.locator('#atlas [data-atlas-portal]:focus').getAttribute('href');
+  const href = await page.locator('#rift-map-dialog [data-atlas-portal]:focus').getAttribute('href');
   await page.keyboard.press('Enter'); await readyWorld(page);
   expect(new URL(page.url()).pathname).toBe(new URL(href!,page.url()).pathname);
   await page.locator('[data-map-open]').click();
@@ -64,7 +66,8 @@ test('an explicit signal link still opens the evidence journey', async ({ page }
 test('the destination range moves the same object continuously and keeps direct entry ready',async({page})=>{
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto('/');await readyWorld(page);
-  const passage=page.locator('#atlas [data-passage]');
+  await page.locator('[data-map-open]').click();
+  const passage=page.locator('#rift-map-dialog [data-passage]');
   await expect(passage).toHaveAttribute('data-passage-painted','true');
   const shape=await passage.locator('[data-passage-aperture]').getAttribute('d');
   const range=passage.locator('[data-passage-range]');await range.focus();await page.keyboard.press('End');
@@ -81,7 +84,8 @@ test('the destination range moves the same object continuously and keeps direct 
 test('dragging the object changes its camera without navigating or requiring a tutorial',async({page,isMobile})=>{
   test.skip(isMobile,'The range and native links cover touch projects; this checks a real captured pointer drag.');
   await page.setViewportSize({width:390,height:844});await page.goto('/');await readyWorld(page);
-  const passage=page.locator('#atlas [data-passage]'),viewport=passage.locator('[data-passage-gesture]');
+  await page.locator('[data-map-open]').click();
+  const passage=page.locator('#rift-map-dialog [data-passage]'),viewport=passage.locator('[data-passage-gesture]');
   await viewport.scrollIntoViewIfNeeded();const box=(await viewport.boundingBox())!;
   const x=box.x+box.width*.8,y=box.y+box.height*.38;
   await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x-box.width*.65,y,{steps:16});await page.mouse.up();
@@ -94,8 +98,8 @@ test.describe('native atlas without scripts', () => {
   test.use({javaScriptEnabled:false});
   test('all five destinations are genuine usable links', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('#atlas [data-atlas-portal]')).toHaveCount(5);
-    await page.locator('#atlas [data-atlas-portal="patches"]').click();
+    await expect(page.locator('#rift-map-dialog [data-atlas-portal]')).toHaveCount(5);
+    await page.getByRole('navigation',{name:'RiftScry destinations'}).getByRole('link',{name:'Patches',exact:true}).click();
     await expect(page).toHaveURL(/\/patches\/?$/);
     await expect(page.locator('main h1')).toBeVisible();
   });
