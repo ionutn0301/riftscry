@@ -224,3 +224,7 @@ html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .sig
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-record strong { font-size:32px; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carry-desk .signal-opening-actions { margin-top:12px; }
 }
+@media (max-width:700px) {
+  /* The returning-player action stays readable over every champion portrait. */
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-opening-copy .signal-opening-actions { background:#07141be8; }
+}
