@@ -1,11 +1,11 @@
 import {expect,test,type Page} from '@playwright/test';
-import {mkdir} from 'node:fs/promises';
+import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,platform,profilePath} from './fixtures';
 
 test.use({video:'on'});
 
 const probeKey='riftscry:test:crossing-paint';
-type Sample={time:number;layers:{name:string;display:string;opacity:number}[]};
+type Sample={time:number;clip:string;panelClipped:boolean;mobilePrimaryVisible:boolean;layers:{name:string;display:string;opacity:number}[]};
 type Crossing={id:string;path:string;ready:boolean;finished:boolean;skipped:boolean;cinematic:boolean;samples:Sample[]};
 
 async function observeCrossings(page:Page){
@@ -25,7 +25,12 @@ async function observeCrossings(page:Page){
         if(record.finished)return;
         if(time-last>=60){
           last=time;
-          record.samples.push({time,layers:['root','journey-stage','journey-header','journey-navigation','player-identity'].map(name=>{
+          const primary=document.querySelector('.journey-primary');
+          record.samples.push({time,
+            clip:getComputedStyle(document.documentElement,'::view-transition-new(journey-stage)').clipPath,
+            panelClipped:[...document.querySelectorAll('[data-journey-panel]')].some(panel=>panel.getClientRects().length>0&&getComputedStyle(panel).clipPath!=='none'),
+            mobilePrimaryVisible:innerWidth<=700&&Boolean(primary?.getClientRects().length),
+            layers:['root','journey-stage','journey-header','journey-navigation','player-identity'].map(name=>{
             const style=getComputedStyle(document.documentElement,`::view-transition-old(${name})`);
             return {name,display:style.display,opacity:Number(style.opacity)};
           })});save();
@@ -35,7 +40,7 @@ async function observeCrossings(page:Page){
       save();
       void transition.ready.then(()=>{
         record.ready=true;
-        record.cinematic=document.getAnimations().some(animation=>animation instanceof CSSAnimation&&animation.animationName==='rift-cut-open');
+        record.cinematic=document.getAnimations().some(animation=>animation instanceof CSSAnimation&&animation.animationName==='rift-camera-arrive');
         sample(performance.now());
       },()=>{record.skipped=true;save();});
       void transition.finished.then(()=>{record.finished=true;cancelAnimationFrame(frame);save();});
@@ -61,6 +66,9 @@ async function crossing(page:Page,path:string){
     expect(layer.display==='none'||layer.opacity===0,
       `${path}: stale ${layer.name} text remained paintable at ${sample.time}ms`).toBe(true);
   }
+  expect(latest.samples.every(sample=>sample.clip==='none'),'Camera travel must not slice the incoming text').toBe(true);
+  expect(latest.samples.some(sample=>sample.panelClipped),'Chapter arrival must not slice the incoming text either').toBe(false);
+  expect(latest.samples.some(sample=>sample.mobilePrimaryVisible),'Desktop navigation must never flash on a phone').toBe(false);
   expect(await page.locator('.gateway-heading,.profile-identity-copy').evaluateAll(elements=>
     elements.every(element=>getComputedStyle(element).viewTransitionName==='none'))).toBe(true);
 }
@@ -94,7 +102,9 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
       await page.locator('.world-brand').click();await crossing(page,'/');
       await mkdir('player-visuals',{recursive:true});
       await page.screenshot({path:`player-visuals/transition-return-${viewport.width}.png`,animations:'disabled',fullPage:true});
-      await info.attach('native-crossing-frames',{body:JSON.stringify(await records(page)),contentType:'application/json'});
+      const evidence=JSON.stringify(await records(page));
+      await writeFile(`player-visuals/transition-frames-${viewport.width}.json`,evidence);
+      await info.attach('native-crossing-frames',{body:evidence,contentType:'application/json'});
       expect(errors).toEqual([]);
     });
   });

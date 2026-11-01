@@ -83,15 +83,18 @@ body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibili
 .rift-shell .rift-scene__reading-light { background:linear-gradient(90deg,#061016ee,#061016b8 47%,#06101666),linear-gradient(0deg,#061016ef,transparent 64%); }
 /* Travel opens a cut through the world. No whole-scene opacity fade. */
 .rift-shell[data-journey-ready] [data-journey-panel] { animation:rift-chapter-open .65s var(--journey-ease) both; }
-@keyframes rift-chapter-open { from { clip-path:inset(0 0 0 12%); transform:perspective(1400px) translate3d(var(--scene-travel-x),8px,-65px) rotateY(-3deg); } to { clip-path:inset(0); transform:none; } }
+@keyframes rift-chapter-open { from { transform:perspective(1400px) translate3d(var(--scene-travel-x),8px,-65px) rotateY(-3deg); } to { transform:none; } }
+/* The document camera owns initial arrival. Do not start a second chapter or
+   heading reveal after hydration while the browser is already moving the page. */
+.rift-shell[data-journey-ready] [data-journey-travel=arrive] :is([data-journey-panel],[data-kinetic-heading]) { animation:none; }
 .rift-shell :is(.journey-champion-art picture,.roster-lens-media) { border:0; }
 .rift-shell :is(.automatic-panel,.recall-panel) { background:#08171eb3; }
 .rift-shell .journey-reader-header { border-bottom:1px solid #badac51a; margin-bottom:24px; }
 @media (max-width:900px) { .passage-reading h2 { font-size:36px; }.journey-spine a { padding-inline:14px; } }
 @media (max-width:700px) {
   :root { --world-header-height:64px; }
-  body.rift-shell[data-journey-ready] .journey-header { grid-template-columns:1fr auto; grid-template-rows:52px; padding-block:max(6px,env(safe-area-inset-top)) 4px; }
-  body.rift-shell[data-journey-ready] .journey-primary { display:none; }
+  body.rift-shell .journey-header { grid-template-columns:1fr auto; grid-template-rows:52px; padding-block:max(6px,env(safe-area-inset-top)) 4px; }
+  body.rift-shell .journey-primary { display:none; }
   .world-utilities { gap:4px; }.world-brand img { width:120px; }
   .journey-map-trigger > span:last-child { display:none; }
   .rift-passage,.journey-map .rift-passage { height:auto; min-height:0; grid-template-columns:minmax(0,1fr); grid-template-rows:auto clamp(220px,34svh,360px) 72px auto; grid-template-areas:"copy" "visual" "controls" "stops"; gap:8px 0; }

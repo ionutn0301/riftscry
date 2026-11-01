@@ -175,8 +175,10 @@ html[data-journey-crossing='enter'],html[data-journey-crossing='return'] { --cro
 ::view-transition-group(journey-world) { z-index: 0; }
 ::view-transition-group(journey-stage) { z-index: 1; }
 ::view-transition-group(journey-header),::view-transition-group(journey-navigation) { z-index: 2; }
-::view-transition-new(journey-stage) { animation: rift-cut-open .7s var(--journey-ease) both; }
-@keyframes rift-cut-open { from { clip-path: inset(0 50%); transform: perspective(1400px) translate3d(var(--crossing-enter-x),0,-120px) rotateY(-4deg); } to { clip-path: inset(0); transform: none; } }
+/* Move the readable page as one camera plane. An aperture across the copy
+   briefly slices glyphs even when the outgoing snapshot is already gone. */
+::view-transition-new(journey-stage) { animation: rift-camera-arrive .7s var(--journey-ease) both; }
+@keyframes rift-camera-arrive { from { transform: perspective(1400px) translate3d(var(--crossing-enter-x),0,-120px) rotateY(-4deg); } to { transform: none; } }
 @keyframes signal-scene-arrive { from { opacity: 0; transform: translate3d(var(--scene-travel-x),10px,0); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 1100px) {

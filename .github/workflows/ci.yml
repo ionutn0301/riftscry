@@ -30,7 +30,7 @@ jobs:
         with:
           name: transition-composition
           path: |
-            player-visuals/transition-*.png
+            player-visuals/transition-*
             test-results/
           retention-days: 7
 
