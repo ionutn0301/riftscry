@@ -8,6 +8,7 @@ test('appearance themes work with device reduced motion and persist across the p
   const trigger=page.locator('[data-theme-toggle]');
   await expect(trigger).toBeEnabled();await trigger.click();
   const panel=page.locator('[data-appearance-panel]');await expect(panel).toBeVisible();
+  const bounds=(await panel.boundingBox())!;expect(bounds.x).toBeGreaterThanOrEqual(12);expect(bounds.x+bounds.width).toBeLessThanOrEqual(378);
   await expect(page.locator('[data-motion-toggle]')).toBeDisabled();
   await expect(page.locator('[data-motion-hint]')).toHaveText('Your device has reduced motion enabled.');
   await page.locator('[data-theme-choice][value=ember]').check();
@@ -28,6 +29,7 @@ test('appearance themes work with device reduced motion and persist across the p
     await page.goto(path,{waitUntil:'domcontentloaded'});
     await expect(page.locator('html')).toHaveAttribute('data-theme','ember');
     await expect(page.locator('[data-theme-toggle]')).toBeEnabled();
+    await expect.poll(()=>page.evaluate(()=>(window as any).__paintedThemes.length)).toBeGreaterThan(0);
     expect(await page.evaluate(()=>(window as any).__paintedThemes.every((theme:string)=>theme==='ember'))).toBe(true);
   }
   await page.reload();await expect(page.locator('html')).toHaveAttribute('data-theme','ember');

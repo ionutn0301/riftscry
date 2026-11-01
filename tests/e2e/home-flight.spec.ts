@@ -137,7 +137,10 @@ test('appearance themes stay interactive on reduced-motion devices and survive n
   await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/');await readyWorld(page);
   const trigger=page.locator('[data-theme-toggle]');await expect(trigger).toBeEnabled();await trigger.click();
   await expect(page.locator('[data-appearance-panel]')).toBeVisible();
+  const pickerBounds=(await page.locator('[data-appearance-panel]').boundingBox())!;expect(pickerBounds.x).toBeGreaterThanOrEqual(12);
   await page.locator('[data-theme-choice][value=obsidian]').check();
+  await expect(page.locator('[data-appearance-panel]')).toHaveCSS('background-color','rgb(27, 27, 33)');
+  await expect(page.locator('[data-theme-choice][value=obsidian]')).toBeChecked();
   await expect(page.locator('html')).toHaveAttribute('data-theme','obsidian');
   await expect(page.locator('[data-motion-toggle]')).toBeDisabled();
   await expect(page.locator('[data-motion-hint]')).toHaveText('Your device has reduced motion enabled.');
