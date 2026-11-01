@@ -1,5 +1,5 @@
 import { Command } from "cmdk";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import type { SearchEntry } from "../../lib/search-index";
 import "./palette.css";
 
@@ -19,18 +19,30 @@ export default function PaletteDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const searchHintId = useId();
   const [entries, setEntries] = useState<SearchEntry[]>(cached ?? []);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">(cached ? "ready" : "loading");
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    if (cached) return;
-    fetch("/search-index.json")
-      .then((r) => r.json())
+    if (cached) { setLoadState("ready"); return; }
+    const controller = new AbortController();
+    let active = true;
+    const timeout = window.setTimeout(() => controller.abort(), 12_000);
+    setLoadState("loading");
+    fetch("/search-index.json", { signal: controller.signal })
+      .then(r => { if (!r.ok) throw new Error("Search unavailable"); return r.json(); })
       .then((data: SearchEntry[]) => {
+        if (!Array.isArray(data)) throw new Error("Search unavailable");
+        if (!active) return;
         cached = data;
         setEntries(data);
+        setLoadState("ready");
       })
-      .catch(() => setEntries([]));
-  }, []);
+      .catch(() => { if (active) setLoadState("error"); })
+      .finally(() => window.clearTimeout(timeout));
+    return () => { active = false; window.clearTimeout(timeout); controller.abort(); };
+  }, [attempt]);
 
   return (
     <Command.Dialog
@@ -45,11 +57,14 @@ export default function PaletteDialog({
         <span className="palette-caret" aria-hidden="true">
           Δ
         </span>
-        <Command.Input placeholder="Champion, patch, item, system…" />
+        <span className="sr-only" id={searchHintId}>Search champions, patches, items, and systems.</span>
+        <Command.Input aria-describedby={searchHintId} placeholder="Champion, patch, item, system…" />
         <button type="button" className="palette-close" aria-label="Close search" onClick={() => onOpenChange(false)}>Close</button>
       </div>
-      <Command.List>
-        <Command.Empty>Nothing on the ledger for that.</Command.Empty>
+      <Command.List aria-busy={loadState === "loading"}>
+        {loadState === "loading" && <div className="palette-status" role="status">Opening the archive…</div>}
+        {loadState === "error" && <div className="palette-status" role="alert"><p>Search is temporarily unavailable.</p><div><button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</button><a href="/champions">Browse champions ↗</a></div></div>}
+        {loadState === "ready" && <Command.Empty>No matches. Try another champion, item, or patch.</Command.Empty>}
         {GROUPS.map((g) => {
           const group = entries.filter((e) => e.type === g.type);
           if (group.length === 0) return null;

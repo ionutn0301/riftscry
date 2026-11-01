@@ -178,7 +178,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       </section>}
       </section>
 
-      <section id="match-evidence" className="match-evidence-scene" data-journey-panel data-journey-label="Evidence" data-journey-world="patch">
+      <section id="match-evidence" className="match-evidence-scene" data-journey-panel data-journey-label="Evidence" data-journey-short-label="Events" data-journey-world="patch">
       <section className="purchase-evidence" aria-labelledby="purchase-evidence-heading">
         <div className="player-actions"><h2 id="purchase-evidence-heading">Purchase evidence</h2>
           <button className="player-button-secondary" onClick={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} disabled={timelineLoading || retrySeconds > 0 || (!!timeline && !timelineError)}><PlayerIcon name="clock" />{retrySeconds && !timeline ? `Retry in ${retrySeconds}s` : timelineLoading ? 'Loading…' : timelineError ? 'Retry timeline' : timeline ? 'Timeline loaded' : 'Open timeline'}</button>
@@ -195,7 +195,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
 
       <details ref={evidenceDetails} className="supporting-evidence"><summary><PlayerIcon name="info" /> Supporting facts</summary><p className="player-help">Recorded events show what happened, not why a decision worked.</p>{shown.facts.map(fact => <p id={`fact-${fact.id}`} tabIndex={-1} key={fact.id}><strong>{evidenceLabel(fact)}:</strong> {fact.text}</p>)}</details>
       </section>
-      <section id="match-memory" className="match-memory-scene" data-journey-panel data-journey-label="Build Memory" data-journey-world="notebook">
+      <section id="match-memory" className="match-memory-scene" data-journey-panel data-journey-label="Build Memory" data-journey-short-label="Notes" data-journey-world="notebook">
       <BuildMemory player={`${platform}:${puuid}`} puuid={puuid} platform={platform} source={match} metadata={items} draft={draft} onDraftConsumed={() => setDraft(undefined)} />
       </section>
     </>}

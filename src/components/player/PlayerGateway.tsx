@@ -27,6 +27,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [invalidId, setInvalidId] = useState(false);
   const [view, setView] = useState<PlayerView>(initialView === 'builds' || initialView === 'memory' ? initialView : 'history');
   const [remembered, setRemembered] = useState<RememberedPlayer | null>(null);
   const retrySeconds = usePlayerCooldown();
@@ -54,10 +55,13 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
     const separator = riotId.lastIndexOf('#');
     const gameName = riotId.slice(0, separator).trim();
     const tag = riotId.slice(separator + 1).trim();
-    if (separator < 1 || !gameName || !tag) {
+    if (separator < 1 || gameName.length < 3 || gameName.length > 32 || tag.length < 2 || tag.length > 16) {
       setMessage('Enter your full Riot ID, including #tagline.');
+      setInvalidId(true);
+      (event.currentTarget.elements.namedItem('riotId') as HTMLInputElement)?.focus();
       return;
     }
+    setInvalidId(false);
     setBusy(true);
     setMessage('');
     try {
@@ -88,7 +92,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
       <form onSubmit={lookup} className="lookup-form" aria-label="Find a League of Legends player" aria-busy={busy}>
         <div className="player-field lookup-identity">
           <label htmlFor={`${id}-riot-id`}>Riot ID</label>
-          <input id={`${id}-riot-id`} name="riotId" placeholder="Game name#TAG" required maxLength={50} defaultValue={name} autoComplete="off" spellCheck={false} disabled={!ready || busy} aria-describedby={`${id}-lookup-status`} />
+          <input id={`${id}-riot-id`} name="riotId" placeholder="Game name#TAG" required maxLength={50} defaultValue={name} autoComplete="off" spellCheck={false} disabled={!ready || busy} aria-describedby={`${id}-lookup-status`} aria-invalid={invalidId || undefined} onInput={() => { if (invalidId) { setInvalidId(false); setMessage(''); } }} />
         </div>
         <div className="player-field lookup-server">
           <label htmlFor={`${id}-server`}>Server</label>

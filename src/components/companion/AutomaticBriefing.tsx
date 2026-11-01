@@ -102,14 +102,19 @@ function PlayerEntry({ onChoose }: { onChoose: (player: RecentPlayer) => void })
   const id = useId();
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
+  const [invalidId, setInvalidId] = useState(false);
   const retrySeconds = usePlayerCooldown();
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy || retrySeconds) return;
     const form = new FormData(event.currentTarget), riotId = String(form.get('riotId') ?? '').trim();
     const separator = riotId.lastIndexOf('#'), name = riotId.slice(0, separator).trim(), tag = riotId.slice(separator + 1).trim();
-    if (separator < 1 || name.length < 3 || name.length > 32 || tag.length < 2 || tag.length > 16) { setProblem('Enter your full Riot ID, including #tagline.'); return; }
-    setProblem(''); setBusy(true);
+    if (separator < 1 || name.length < 3 || name.length > 32 || tag.length < 2 || tag.length > 16) {
+      setProblem('Enter your full Riot ID, including #tagline.'); setInvalidId(true);
+      (event.currentTarget.elements.namedItem('riotId') as HTMLInputElement)?.focus();
+      return;
+    }
+    setInvalidId(false); setProblem(''); setBusy(true);
     try {
       const platform = String(form.get('platform'));
       const account = await fetcher<Account>(api('lookup', { name, tag, platform }));
@@ -120,7 +125,7 @@ function PlayerEntry({ onChoose }: { onChoose: (player: RecentPlayer) => void })
     finally { setBusy(false); }
   }
   return <form className="automatic-lookup" onSubmit={submit} aria-label="Get an automatic player briefing" aria-busy={busy}>
-    <div className="automatic-field"><label htmlFor={`${id}-riot`}>Riot ID</label><input id={`${id}-riot`} name="riotId" placeholder="Game name#TAG" autoComplete="off" spellCheck={false} required maxLength={50} disabled={busy} aria-describedby={`${id}-status`} /></div>
+    <div className="automatic-field"><label htmlFor={`${id}-riot`}>Riot ID</label><input id={`${id}-riot`} name="riotId" placeholder="Game name#TAG" autoComplete="off" spellCheck={false} required maxLength={50} disabled={busy} aria-describedby={`${id}-status`} aria-invalid={invalidId || undefined} onInput={() => { if (invalidId) { setInvalidId(false); setProblem(''); } }} /></div>
     <div className="automatic-field"><label htmlFor={`${id}-server`}>Server</label><select id={`${id}-server`} name="platform" defaultValue="euw1" disabled={busy}>{Object.keys(platforms).map(platform => <option key={platform} value={platform}>{serverNames[platform] ?? platform.toUpperCase()}</option>)}</select></div>
     <button type="submit" className="automatic-button automatic-button--primary" disabled={busy || retrySeconds > 0}><PlayerIcon name={busy ? 'clock' : 'sparkles'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Finding your games…' : 'Get my briefing'}</button>
     <p className="automatic-lookup-status" id={`${id}-status`} role={problem ? 'alert' : 'status'}>{problem || (busy ? 'Looking up your player…' : 'Remembered on this browser.')}</p>
@@ -204,7 +209,7 @@ function AutomaticReport({ player, queue, champion, archive, onChangePlayer, onC
 </>}
     </section>
     {report.latest && <>
-      <section className="automatic-changes" id="changes" data-journey-panel data-journey-label="Changes" data-journey-world="champion" aria-labelledby={`${id}-changes`}><header className="automatic-section-heading"><div><p className="automatic-eyebrow">PERSONAL PATCH CATCH-UP</p><h2 id={`${id}-changes`}>Since you last played.</h2><p>Newer records for the champions and items you played.</p></div><span className="automatic-archive-tag">Archive through {archive[0]?.id ?? 'unknown'}</span></header><div className="automatic-change-grid">{report.champions.map((context, index) => <ChampionChanges key={context.key} context={context} sourceHref={sourceHref(context.latestMatch)} expanded={context.patchStatus === 'changed' && index === 0} />)}</div><p className="automatic-fineprint automatic-coverage">Based on each champion’s latest imported game in that exact mode. Archive and item coverage are partial; mode-specific rules can also matter.</p>{report.champions.length>0&&<JourneyHandoff href="#impact" cue="Next · Your build" label="See what the patch changes for your items"/>}</section>
+      <section className="automatic-changes" id="changes" data-journey-panel data-journey-label="Changes" data-journey-short-label="Patch" data-journey-world="champion" aria-labelledby={`${id}-changes`}><header className="automatic-section-heading"><div><p className="automatic-eyebrow">PERSONAL PATCH CATCH-UP</p><h2 id={`${id}-changes`}>Since you last played.</h2><p>Newer records for the champions and items you played.</p></div><span className="automatic-archive-tag">Archive through {archive[0]?.id ?? 'unknown'}</span></header><div className="automatic-change-grid">{report.champions.map((context, index) => <ChampionChanges key={context.key} context={context} sourceHref={sourceHref(context.latestMatch)} expanded={context.patchStatus === 'changed' && index === 0} />)}</div><p className="automatic-fineprint automatic-coverage">Based on each champion’s latest imported game in that exact mode. Archive and item coverage are partial; mode-specific rules can also matter.</p>{report.champions.length>0&&<JourneyHandoff href="#impact" cue="Next · Your build" label="See what the patch changes for your items"/>}</section>
       <PatchImpact contexts={report.champions} player={player} selectedChampion={champion} sourceHref={sourceHref} />
       {latest && <AutomaticLoadout key={latest.metadata.matchId} match={latest} player={player} sourceHref={sourceHref(latest)} />}
 
@@ -232,5 +237,5 @@ function AutomaticLoadout({ match, player, sourceHref }: { match: Match; player:
   const items = [person.item0, person.item1, person.item2, person.item3, person.item4, person.item5, person.item6].filter(id => Number.isInteger(id) && id > 0);
   const mode = modeForMatch(match);
   const runes = mode.runeSetup ? [...new Set(person.perks?.styles.flatMap(style => style.selections.map(selection => selection.perk)) ?? [])] : [];
-  return <section id="loadout" data-journey-panel data-journey-label="Loadout" data-journey-world="match" className="automatic-loadout automatic-panel" aria-labelledby="automatic-loadout-heading"><header className="automatic-section-heading"><div><p className="automatic-eyebrow"><PlayerIcon name="build" size={16} /> AUTOMATICALLY FOUND</p><h2 id="automatic-loadout-heading">Your last {championDisplayName(person.championName)} loadout.</h2><p>{mode.label} · {date(match.info.gameCreation)} · {count(person.kills)}/{count(person.deaths)}/{count(person.assists)}</p></div></header>{items.length ? <ul className="automatic-items" aria-label="Recorded final loadout">{items.map((id, index) => <li key={`${id}:${index}`}>{compatible?.version && <img src={`https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(compatible.version)}/img/item/${id}.png`} width="40" height="40" alt="" loading="lazy" onError={event => { event.currentTarget.hidden = true; }} />}<span>{compatible?.data[id]?.name ?? `Item ${id}`}</span></li>)}</ul> : <p>No final items were recorded in this game.</p>}{runes.length > 0 && <p className="automatic-runes"><strong>Recorded runes</strong>{runes.map(id => compatible?.runes?.[id]?.name ?? `Rune ${id}`).join(' · ')}</p>}<p className="automatic-fineprint">Recorded final inventory, not purchase order or a recommended build.{error || (metadata && !compatible) ? ' Compatible item names are unavailable; IDs are shown.' : ''}</p><JourneyHandoff href={sourceHref} cue="Next · Match review" label="Inspect the match"/></section>;
+  return <section id="loadout" data-journey-panel data-journey-label="Loadout" data-journey-short-label="Build" data-journey-world="match" className="automatic-loadout automatic-panel" aria-labelledby="automatic-loadout-heading"><header className="automatic-section-heading"><div><p className="automatic-eyebrow"><PlayerIcon name="build" size={16} /> AUTOMATICALLY FOUND</p><h2 id="automatic-loadout-heading">Your last {championDisplayName(person.championName)} loadout.</h2><p>{mode.label} · {date(match.info.gameCreation)} · {count(person.kills)}/{count(person.deaths)}/{count(person.assists)}</p></div></header>{items.length ? <ul className="automatic-items" aria-label="Recorded final loadout">{items.map((id, index) => <li key={`${id}:${index}`}>{compatible?.version && <img src={`https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(compatible.version)}/img/item/${id}.png`} width="40" height="40" alt="" loading="lazy" onError={event => { event.currentTarget.hidden = true; }} />}<span>{compatible?.data[id]?.name ?? `Item ${id}`}</span></li>)}</ul> : <p>No final items were recorded in this game.</p>}{runes.length > 0 && <p className="automatic-runes"><strong>Recorded runes</strong>{runes.map(id => compatible?.runes?.[id]?.name ?? `Rune ${id}`).join(' · ')}</p>}<p className="automatic-fineprint">Recorded final inventory, not purchase order or a recommended build.{error || (metadata && !compatible) ? ' Compatible item names are unavailable; IDs are shown.' : ''}</p><JourneyHandoff href={sourceHref} cue="Next · Match review" label="Inspect the match"/></section>;
 }

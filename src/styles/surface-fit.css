@@ -24,7 +24,7 @@ body.rift-shell #rift-map-dialog [data-reading-subject] { min-width:0; }
 /* Keep every scene name visible and tappable on narrow documents. */
 @media (max-width:700px) {
   body.rift-shell #main .journey-scene-tabs { display:grid; grid-template-columns:repeat(var(--journey-scene-count,3),minmax(0,1fr)); overflow:visible; gap:2px; }
-  body.rift-shell #main .journey-scene-tabs button { min-width:0; min-height:44px; white-space:normal; overflow-wrap:anywhere; padding:4px; font-size:10px; line-height:1.25; }
+  body.rift-shell #main .journey-scene-tabs button { min-width:0; min-height:44px; white-space:normal; overflow-wrap:normal; word-break:normal; padding:4px 2px; font-size:11px; line-height:1.3; }
 }
 @media (max-width:700px) {
   body.rift-shell #voyage-roster .journey-eyebrow { display:none; }
