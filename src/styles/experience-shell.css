@@ -81,6 +81,7 @@ html[data-motion=reduced] :is(.kinetic-word,[data-kinetic-heading]) { animation:
 .signal-thread > span:last-child { color: #8eb9aa; font-size: 12px; }
 /* One fixed global dock, with the same five targets on every destination. */
 .journey-chrome { position:fixed; z-index:60; left:50%; bottom:var(--journey-dock-bottom); transform:translateX(-50%); width:min(520px,calc(100% - 24px)); height:var(--journey-dock-height); margin:0; padding:4px; border:1px solid #b9d9ce35; border-radius:22px; background:#09161deb; backdrop-filter:blur(18px); box-shadow:0 12px 40px #0007,inset 0 1px #e3f4ea0a; }
+html:not([data-motion]) .journey-chrome { position:relative; left:auto; bottom:auto; transform:none; margin:16px auto; }
 .journey-dock { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; height:100%; width:100%; }
 .journey-dock > :is(a,button) { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; min-width:0; min-height:44px; padding:4px 2px 7px; border:0; border-radius:16px; background:transparent; color:#9bb1b6; font:500 10px/1.2 'General Sans',sans-serif; white-space:nowrap; text-decoration:none; transition:background-color .2s,color .2s; }
 .journey-dock svg { width:20px; height:20px; flex:none; stroke:currentColor; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
