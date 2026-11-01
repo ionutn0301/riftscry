@@ -3,11 +3,11 @@ body[data-surface=home]:has([data-home-film]) > .rift-scene { visibility:hidden;
 [data-home-film] { position:relative; isolation:isolate; }
 [data-home-film] .home-world { position:absolute; inset:0; z-index:-1; overflow:hidden; pointer-events:none; background:#07151d; }
 .home-world :is(canvas,.home-world-still,.home-world-horizon,.home-world-light,.home-world-shade) { position:absolute; inset:0; width:100%; height:100%; }
-.home-world-horizon img { width:100%; height:100%; object-fit:cover; opacity:.22; }
+.home-world-horizon img { width:100%; height:100%; object-fit:cover; opacity:.3; }
 .home-world-still { opacity:.88; }
 .home-world canvas { opacity:.88; }
 .home-world[data-film-paint=ready] .home-world-still { visibility:hidden; }
-.home-world-light { background:radial-gradient(ellipse at 62% 35%,#bce6ce12,transparent 45%); mix-blend-mode:screen; }
+.home-world-light { background:radial-gradient(ellipse at 62% 52%,#51c6d317,transparent 55%); mix-blend-mode:screen; }
 .home-world-shade { background:linear-gradient(90deg,#061018ee 0%,#0610189c 28%,transparent 65%),linear-gradient(0deg,#061018,transparent 20%,transparent 85%,#06101866); }
 .home-world-coordinate,.home-world-depth { position:absolute; bottom:24px; color:#bdd3cc; font:8px/1.5 'Spline Sans Mono',monospace; letter-spacing:.15em; }
 .home-world-coordinate { right:24px; writing-mode:vertical-rl; }

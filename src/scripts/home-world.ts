@@ -1,4 +1,4 @@
-import { filmCamera, projectHomeWorld } from '../lib/home-world';
+import { filmCamera, homeLandmarks, projectHomePoint, projectHomeWorld } from '../lib/home-world';
 import { prepareKineticTitle } from './kinetic-type';
 
 const film = document.querySelector<HTMLElement>('[data-home-film]');
@@ -13,7 +13,7 @@ function mount(film:HTMLElement) {
   const abort=new AbortController(),listen={signal:abort.signal};
   const ids=['atlas','signal','reveal','carry'];
   const depth=world.querySelector<HTMLElement>('[data-film-depth]')!;
-  const labels=['00 / THE APPROACH','01 / THE ECHOES','02 / THE SHIFT','03 / THE HORIZON'];
+  const labels=['01 / BLUE NEXUS','02 / THE JUNGLE','03 / DRAGON PIT','04 / BARON NASHOR'];
   const media=matchMedia('(prefers-reduced-motion: reduce)');
   let reduced=document.documentElement.dataset.motion==='reduced'||media.matches,width=0,height=0,frame=0,last=0,painted=0;
   let current=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas')),target=current;
@@ -45,13 +45,25 @@ function mount(film:HTMLElement) {
     const camera=filmCamera(current,lookX,lookY);
     const sky=ctx.createLinearGradient(0,0,0,height);sky.addColorStop(0,'#07121c');sky.addColorStop(.5,'#16353f');sky.addColorStop(1,'#061016');
     ctx.fillStyle=sky;ctx.fillRect(0,0,width,height);
-    // One immutable canyon is reprojected from the travelling camera.
+    // One immutable Rift is reprojected from the travelling camera.
     for(const face of projectHomeWorld(camera,width,height)){
       ctx.beginPath();face.points.forEach(([x,y],index)=>index?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();
       ctx.fillStyle=face.fill;ctx.fill();
       // Seal nearby subpixel seams; distance fog lets the far mesh skip strokes.
       if(face.depth<35){ctx.strokeStyle=face.fill;ctx.lineWidth=.65;ctx.stroke();}
     }
+    // Light stays attached to the Nexus, ward and monster pits as the camera moves.
+    // Gradients are painted into the same frame; no animated filters or asset swaps.
+    ctx.save();ctx.globalCompositeOperation='screen';
+    for(const [i,landmark] of homeLandmarks.entries()){
+      const point=projectHomePoint(landmark.position,camera,width,height);
+      if(!point||point.x<0||point.x>width||point.y<0||point.y>height)continue;
+      const radius=Math.min(width,height)*Math.min(.24,9/point.depth);
+      const light=ctx.createRadialGradient(point.x,point.y,0,point.x,point.y,radius);
+      light.addColorStop(0,['#2fc9ff48','#9ce99622','#ffae4926','#ba71ff38'][i]!);light.addColorStop(1,'#07121c00');
+      ctx.fillStyle=light;ctx.fillRect(point.x-radius,point.y-radius,radius*2,radius*2);
+    }
+    ctx.restore();
     if(canvas.hidden){canvas.hidden=false;world.dataset.filmPaint='ready';}
     if(now-painted>90||current===target){
       painted=now;world.dataset.filmProgress=current.toFixed(4);
