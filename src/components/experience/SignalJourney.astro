@@ -28,7 +28,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
         <a class="signal-secondary-action home-reading-link" href="/explore#change" data-home-reading hidden><span data-home-reading-label>Resume exploring</span><span aria-hidden="true">↗</span></a>
       </div>
     </div>
-    <p class="home-travel-hint"><span aria-hidden="true">↓</span> Swipe or use the scenes below</p>
+    <p class="home-travel-hint"><span aria-hidden="true">↓</span> <span class="home-travel-desktop">Scroll to travel</span><span class="home-travel-touch">Swipe to travel</span> · or choose a scene</p>
   </section>
 
   <section id="signal" class="signal-act signal-act--arrival" data-journey-panel data-journey-label="Find a signal" data-journey-short-label="Echoes" data-journey-world="home" aria-labelledby="signal-title">
@@ -39,7 +39,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
     <span class="signal-art-coordinate" aria-hidden="true">R / S — <span data-home-coordinate>01</span></span>
   </figure>
     <div class="signal-opening-copy"><p class="journey-eyebrow"><i aria-hidden="true"></i>02 / THE ECHOES</p><h2 id="signal-title">Choose a <em>champion.</em></h2><p class="signal-opening-caption">Three champions. Three real echoes from the archive.</p>
-      <div class="signal-opening-actions"><a class="signal-primary-action" href="#reveal" data-home-reveal><span>Reveal the change</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/next-game" data-home-personal data-station-link="next-game">Use my games <span aria-hidden="true">→</span></a></div>
+      <div class="signal-opening-actions"><a class="signal-primary-action" href="#reveal" data-home-reveal><span>Reveal change</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/next-game" data-home-personal data-station-link="next-game">Use my games <span aria-hidden="true">→</span></a></div>
       <p class="signal-return-hint" data-home-return hidden></p>
       <a class="signal-return-hint signal-secondary-action" href="/explore#change" data-home-context hidden></a>
     </div>

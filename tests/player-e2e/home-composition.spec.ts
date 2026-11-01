@@ -67,6 +67,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
         if(!await action.isVisible())continue;
         const box=(await action.boundingBox())!;
         expect(box.height).toBeGreaterThanOrEqual(43.99);expect(box.y+box.height).toBeLessThanOrEqual(dock.y-8);
+        expect(await action.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||Boolean(hit&&el.contains(hit));})).toBe(true);
       }
       expect(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeLessThanOrEqual(1);
     }
