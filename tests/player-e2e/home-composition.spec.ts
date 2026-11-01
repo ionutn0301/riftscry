@@ -31,7 +31,7 @@ test.describe('Mobile chapter focus',()=>{
     await mkdir('player-visuals',{recursive:true});
     await page.screenshot({path:'player-visuals/home-focused-chapter-390x844.png',fullPage:true});
 
-    const entry=atlas.locator('[data-passage-enter]');
+    const entry=atlas.locator('[data-home-briefing]');
     await entry.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
     await expect(entry).toBeFocused();
     expect(await entry.evaluate(element=>element.matches(':focus-visible'))).toBe(true);
@@ -53,16 +53,22 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
     await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
     const requests=await installFixtures(page);await page.goto('/');
     await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');await page.evaluate(()=>document.fonts.ready);
-    const entrance=page.locator('#atlas [data-passage]');
     await expect(page.locator('main h1')).toHaveCount(1);await expect(page.locator('#atlas h2')).toHaveCount(0);
     await expect(page.locator('.journey-chrome')).toBeVisible();
-    await expect(page.locator('#atlas .passage-stops')).toBeHidden();
-    await expect(page.locator('#atlas [data-passage-enter]')).toHaveCount(1);
-    for(let i=0;i<5;i++){
-      await separated(entrance);
-      const bounds=await entrance.locator('[data-passage-title]').boundingBox();
+    await expect(page.locator('#main [data-rift-atlas]')).toHaveCount(0);
+    await expect(page.locator('[data-home-world]')).toHaveAttribute('data-film-paint','ready');
+    for(const id of ['atlas','signal','reveal','carry']){
+      await page.locator(`[data-journey-tab="${id}"]`).click();
+      await expect(page.locator('[data-journey-panel]:visible')).toHaveCount(1);
+      const bounds=await page.locator(`#${id}`).boundingBox();
       expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(viewport.width+1);
-      if(i<4)await entrance.locator('[data-passage-step="1"]').click();
+      const dock=(await page.locator('.journey-chrome').boundingBox())!;
+      for(const action of await page.locator(`#${id} a,#${id} button`).all()){
+        if(!await action.isVisible())continue;
+        const box=(await action.boundingBox())!;
+        expect(box.height).toBeGreaterThanOrEqual(43.99);expect(box.y+box.height).toBeLessThanOrEqual(dock.y-8);
+      }
+      expect(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeLessThanOrEqual(1);
     }
     expect(requests).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
     await page.locator('[data-map-open]').click();const menu=page.locator('#rift-map-dialog [data-passage]');await separated(menu);
@@ -70,9 +76,8 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
       await stop.scrollIntoViewIfNeeded();await expect(stop).toBeInViewport({ratio:.99});
     }
     await page.locator('[data-map-close]').click();
-    await entrance.locator('[data-passage-range]').focus();await page.keyboard.press('Home');
-    await expect(entrance.locator('h1')).toHaveAccessibleName('Every game leaves a ripple.');
-    await entrance.locator('[data-passage-gesture]').click();
+    await page.locator('[data-journey-tab="atlas"]').click();
+    await expect(page.locator('#atlas h1')).toHaveAccessibleName('Every game leaves a ripple.');
     await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
     await mkdir('player-visuals',{recursive:true});await page.screenshot({path:`player-visuals/home-${viewport.width}x${viewport.height}.png`,fullPage:true});
   });

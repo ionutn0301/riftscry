@@ -21,7 +21,7 @@ test('failed imagery leaves a native entrance and exact evidence before and afte
     await page.goto('/', { waitUntil: 'commit' });
     await expect(choices).toHaveCount(3);
     await expect(home.locator('#atlas')).toBeVisible();
-    await expect(home.locator('#atlas [data-passage-enter]')).toBeVisible();
+    await expect(home.locator('#atlas .atlas-follow-signal')).toBeVisible();
     await expect(home.locator('.signal-subject-visual')).toBeHidden();
     await expect(home.locator('.signal-cast')).toBeHidden();
     await expect(home.locator('#signal-title')).toContainText('Choose a champion.');

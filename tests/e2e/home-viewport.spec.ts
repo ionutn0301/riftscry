@@ -17,7 +17,7 @@ async function sceneFits(page: Page) {
   // The arrival stays compact. Exact evidence can grow in the document; its
   // artwork remains bounded while every source and action stays reachable.
   if (await panel.getAttribute('id') === 'signal') expect(hero.height, 'The opening must fit the screen').toBeLessThanOrEqual(viewport.height + 1);
-  const art = (await page.locator('.signal-subject-visual').boundingBox())!;
+  const art = (await page.locator('[data-home-world]').boundingBox())!;
   expect(art.height, 'Artwork must not grow with the evidence document').toBeLessThanOrEqual(viewport.height + 1);
   expect(header.y).toBeGreaterThanOrEqual(-1);
   if (viewport.height > 620) {

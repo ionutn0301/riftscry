@@ -13,7 +13,7 @@ const patchIds = readdirSync(patchDirectory).filter(file => file.endsWith('.json
 const latestPatchId = patchIds[0]!;
 const previousPatchId = patchIds[1]!;
 const routes = [
-  { path: '/', surface: 'home', action: '#atlas [data-passage-enter]' },
+  { path: '/', surface: 'home', action: '#atlas .atlas-follow-signal' },
   { path: '/explore', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },

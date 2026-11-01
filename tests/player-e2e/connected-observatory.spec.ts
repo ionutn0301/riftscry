@@ -4,7 +4,7 @@ import { installFixtures, platform, profilePath, puuid, query, recentAramWin, vi
 // The development runtime serves the SSR player/profile/match documents.
 // All player responses are existing synthetic fixtures, never a live account.
 const routes = [
-  { path: '/', surface: 'home', action: '#atlas [data-passage-enter]' },
+  { path: '/', surface: 'home', action: '#atlas .atlas-follow-signal' },
   { path: '/explore#perspective', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },

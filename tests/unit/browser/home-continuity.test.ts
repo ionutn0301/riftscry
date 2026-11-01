@@ -30,7 +30,7 @@ async function mount(href = '/') {
   history.replaceState(null, '', href);
   document.body.innerHTML = `
     <main data-home-signals>
-      <a data-home-reading hidden><strong data-home-reading-label></strong></a>
+      <a data-home-briefing data-home-personal href="/next-game"><span data-home-briefing-label></span></a><a data-home-reading hidden><strong data-home-reading-label></strong></a>
       <picture><source data-home-portrait><img data-home-art></picture><span data-home-art-fallback hidden></span>
       <section class="signal-act--arrival"><a data-home-personal href="/next-game"></a><p data-home-return hidden></p><a data-home-context hidden href="/explore#change"></a></section>
       ${signals.map(signal => `<a data-home-choice="${signal.championId}" href="${signal.explore}">${signal.championName}</a><div data-home-record="${signal.championId}"></div>`).join('')}
@@ -65,7 +65,11 @@ describe('home context continuity in the actual script', () => {
     localStorage.setItem('riftscry:resume',JSON.stringify({href:prior.href,label:'Ahri — exact historical record',updatedAt:'2026-10-31T12:00:00Z'}));
     await mount('/');
     const trail=document.querySelector<HTMLAnchorElement>('[data-home-reading]')!;
-    expect(trail.hidden).toBe(false);expect(trail.getAttribute('href')).toBe(prior.href);expect(trail.textContent).toContain('exact historical record');
+    expect(trail.hidden).toBe(true);
+    const briefing=document.querySelector<HTMLAnchorElement>('[data-home-briefing]')!;
+    expect(briefing.hidden).toBe(false);expect(briefing.href).toContain('puuid=');
+    localStorage.removeItem('riftscry:recent-player:v1');window.dispatchEvent(new StorageEvent('storage',{key:'riftscry:recent-player:v1'}));
+    expect(trail.hidden).toBe(false);expect(briefing.hidden).toBe(true);expect(trail.getAttribute('href')).toBe(prior.href);expect(trail.textContent).toContain('exact historical record');
     expect(localStorage.getItem('riftscry:kept-findings')).toBeNull();expect(localStorage.getItem('riftscry:last-reviewed-patch')).toBeNull();
     localStorage.clear();window.dispatchEvent(new StorageEvent('storage',{key:null}));
     expect(trail.hidden).toBe(true);

@@ -7,7 +7,7 @@ const active = ['champions','patches'].includes(station) ? 'atlas' : station;
 const links = ['next-game','players','pool'].map(id=>journeyStations.find(item=>item.id===id)!);
 ---
 <nav class="journey-spine journey-dock" aria-label="Journey destinations">
-  <a href="/#atlas" class="journey-spine-home" aria-current={active === 'home' ? 'page' : undefined}>
+  <a href="/#arrival" class="journey-spine-home" aria-current={active === 'home' ? 'page' : undefined}>
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/></svg><span>Home</span>
   </a>
   {links.map((item,index)=><>

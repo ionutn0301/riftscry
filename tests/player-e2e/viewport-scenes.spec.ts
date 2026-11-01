@@ -16,7 +16,7 @@ async function measure(page:Page){
       // The chapter rail scrolls horizontally; its selected tab and both
       // arrow controls must fit. Inactive tabs can be outside that rail.
       .filter(el=>!el.closest('[data-journey-tabs]')||el.getAttribute('aria-selected')==='true');
-    const portalRegions=['#atlas .passage-reading','#atlas .passage-viewport','#atlas .passage-instrument','#atlas .atlas-arrival-footer'].flatMap(selector=>{
+    const portalRegions=['#atlas .home-approach-copy','#atlas .home-travel-hint'].flatMap(selector=>{
       const el=document.querySelector<HTMLElement>(selector);
       return el?.getClientRects().length?[{selector,rect:el.getBoundingClientRect()}]:[];
     });
@@ -31,7 +31,7 @@ async function measure(page:Page){
       }),
       nested:[...document.querySelectorAll<HTMLElement>('#main,#main *')].filter(el=>el.clientHeight>0&&/^(auto|scroll)$/.test(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+1).map(el=>el.className),
       collisions:portalRegions.flatMap((a,i)=>portalRegions.slice(i+1).filter(b=>Math.min(a.rect.right,b.rect.right)-Math.max(a.rect.left,b.rect.left)>1&&Math.min(a.rect.bottom,b.rect.bottom)-Math.max(a.rect.top,b.rect.top)>1).map(b=>`${a.selector} overlaps ${b.selector}`)),
-      titleTop:document.querySelector('#atlas .passage-reading')?.getBoundingClientRect().top,
+      titleTop:document.querySelector('[data-home-film] [data-journey-panel]:not([hidden])')?.getBoundingClientRect().top,
       headerBottom:header.bottom,
       clippedWords:[...document.querySelectorAll<HTMLElement>('#atlas .kinetic-word')].flatMap(word=>{
         if(!word.getClientRects().length)return [];
@@ -52,15 +52,17 @@ async function record(page:Page,name:string){
 }
 const phones=[{width:320,height:480},{width:320,height:568},{width:359,height:603},{width:390,height:660},{width:390,height:844},{width:430,height:932},{width:568,height:320},{width:683,height:384},{width:844,height:390}];
 for(const viewport of phones){
-  test(`${viewport.width}×${viewport.height}: viewport scene keeps all five home destinations above the dock without scrolling`,async({page})=>{
+  test(`${viewport.width}×${viewport.height}: viewport scene keeps all four home scenes above the dock without scrolling`,async({page})=>{
     await page.setViewportSize(viewport);await installFixtures(page);
     await page.addInitScript(player=>{
       localStorage.setItem('riftscry:recent-player:v1',JSON.stringify(player));
       localStorage.setItem('riftscry:resume',JSON.stringify({href:'/champion/ahri',label:'Ahri: a saved champion reading with a long title',updatedAt:'2026-11-01T00:00:00.000Z'}));
     },{platform,puuid,name:'Jhinghis Han with a long player name#EUNE'});
     await page.goto('/');await ready(page);
-    await expect(page.locator('[data-home-reading]')).toBeVisible();
-    for(let i=0;i<5;i++){
+    await expect(page.locator('[data-home-reading]')).toBeHidden();
+    await expect(page.locator('[data-home-briefing]')).toContainText('Continue briefing');
+    for(const [i,id] of ['atlas','signal','reveal','carry'].entries()){
+      await page.locator(`[data-journey-tab="${id}"]`).click();
       const metrics=await record(page,`home-${viewport.width}x${viewport.height}-${i}`);
       expect.soft(metrics.scroll,JSON.stringify(metrics)).toBeLessThanOrEqual(1);
       expect.soft(metrics.horizontal).toBeLessThanOrEqual(1);
@@ -68,8 +70,7 @@ for(const viewport of phones){
       expect.soft(metrics.collisions).toEqual([]);
       expect.soft(metrics.clippedWords).toEqual([]);
       expect.soft(metrics.titleTop).toBeGreaterThanOrEqual(metrics.headerBottom);
-      await expect(page.locator('#atlas [data-passage-enter]')).toBeInViewport({ratio:1});
-      if(i<4)await page.locator('#atlas [data-passage-step="1"]').click();
+      await expect(page.locator(`[data-journey-tab="${id}"]`)).toBeInViewport({ratio:1});
     }
     await page.mouse.move(20,120);await page.mouse.wheel(0,600);
     await page.evaluate(()=>window.scrollTo({top:1000,behavior:'instant'}));

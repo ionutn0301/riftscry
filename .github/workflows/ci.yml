@@ -6,6 +6,35 @@ on:
   pull_request:
 
 jobs:
+  home-flight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium webkit
+      - name: Verify camera travel, native history, touch and reduced motion
+        run: pnpm exec playwright test tests/e2e/home-flight.spec.ts
+        env:
+          CI: "true"
+      - name: Retain scene frames, camera samples and full motion video
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-flight
+          path: |
+            player-visuals/flight-*
+            test-results/
+          retention-days: 7
+
   briefing-composition:
     runs-on: ubuntu-latest
     timeout-minutes: 10
