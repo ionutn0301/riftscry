@@ -16,6 +16,7 @@
   html[data-motion] .rift-atlas--entrance .kinetic-word { clip-path:inset(-.25em); animation-name:passage-word-arrive; }
   html[data-motion] .rift-atlas--entrance [data-passage-description] { min-height:0; margin:0; line-height:1.5; }
   html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:10px; min-height:44px; }
+  html[data-motion] .rift-atlas--entrance .passage-enter > span:last-child { line-height:1; }
   html[data-motion] .rift-atlas--entrance .passage-personal { margin:4px 0 0; min-height:16px; line-height:16px; }
   html[data-motion] .rift-atlas--entrance .passage-instrument { min-height:64px; }
   html[data-motion] .rift-atlas--entrance .passage-instrument label { height:64px; grid-template-rows:20px 44px; }
@@ -82,8 +83,8 @@
 @media (max-width:1000px) and (max-height:480px) and (orientation:landscape) {
   html[data-motion] body[data-surface=home] #main .rift-atlas--entrance { grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"copy visual" "copy controls"; grid-template-rows:minmax(0,1fr) 44px; gap:4px 20px; }
   html[data-motion] .rift-atlas--entrance .passage-reading { align-self:center; }
-  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:26px; margin:5px 0; }
-  html[data-motion] .rift-atlas--entrance [data-passage-description] { font-size:11px; }
+  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:26px; margin:5px 0; min-height:0; max-width:none; }
+  html[data-motion] .rift-atlas--entrance [data-passage-description] { font-size:11px; max-width:none; line-height:1.4; }
   html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:6px; padding-block:7px; }
   html[data-motion] .rift-atlas--entrance .passage-personal { display:none; }
   html[data-motion] .rift-atlas--entrance .passage-instrument { min-height:44px; }
@@ -93,7 +94,10 @@
 @media (max-width:1000px) and (max-height:360px) and (orientation:landscape) {
   html[data-motion] body.rift-shell[data-surface=home] { --journey-dock-clearance:calc(var(--journey-dock-height) + var(--journey-dock-bottom) + 8px); }
   html[data-motion] body.rift-shell[data-surface=home] .journey-header { height:52px; grid-template-rows:44px; padding-block:4px; }
-  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:22px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main { padding-top:4px; }
+  html[data-motion] .rift-atlas--entrance .passage-reading h1 { font-size:22px; margin-block:4px; }
+  html[data-motion] .rift-atlas--entrance .passage-reading .journey-eyebrow { font-size:7px; line-height:1.4; }
+  html[data-motion] .rift-atlas--entrance .passage-enter { margin-top:4px; }
 }
 
 /* Small utility scenes keep intrinsic height. Disclosures, a keyboard or
