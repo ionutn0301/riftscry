@@ -29,6 +29,7 @@ motionButton?.addEventListener('click', () => {
 
 const map = document.querySelector<HTMLDialogElement>('#rift-map-dialog');
 const trigger = document.querySelector<HTMLButtonElement>('[data-map-open]');
+const mapTriggers = [...document.querySelectorAll<HTMLElement>('[data-map-open],[data-dock-atlas]')];
 const readingLink = map?.querySelector<HTMLAnchorElement>('[data-reading-shortcut]');
 const readingLocation = () => location.pathname + location.search + location.hash;
 function updateReadingLink() {
@@ -81,6 +82,7 @@ function openMap(event?: Event) {
       : trigger;
   mapReturnPosition = { href: location.href, x: scrollX, y: scrollY };
   map.showModal();
+  mapTriggers.forEach(button => button.setAttribute('aria-expanded','true'));
   const navigation = map.querySelector<HTMLElement>('.signal-destinations');
   const current = map.querySelector<HTMLAnchorElement>('[aria-current="page"]');
   navigation?.scrollTo({ top: 0, behavior: 'instant' });
@@ -92,9 +94,14 @@ function openMap(event?: Event) {
     if (hiddenBelow > 0) navigation.scrollBy({ top: hiddenBelow + 4, behavior: 'instant' });
   }
 }
-trigger?.addEventListener('click', openMap);
+mapTriggers.forEach(button => button.addEventListener('click', event => {
+  if (button instanceof HTMLAnchorElement && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
+  if (!map || typeof map.showModal !== 'function') return;
+  event.preventDefault(); openMap(event);
+}));
 document.querySelector('[data-map-close]')?.addEventListener('click', () => map?.close());
 map?.addEventListener('close', () => {
+  mapTriggers.forEach(button => button.setAttribute('aria-expanded','false'));
   if (mapOpener?.isConnected) mapOpener.focus({ preventScroll: true });
   else trigger?.focus({ preventScroll: true });
   const position = mapReturnPosition;

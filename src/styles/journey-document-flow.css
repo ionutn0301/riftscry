@@ -2,7 +2,7 @@
    There is one vertical scroll, including on short screens and at enlarged text. */
 html:has(body.rift-shell[data-journey-ready]) {
   scroll-padding-top: calc(var(--world-header-height) + 16px);
-  scroll-padding-bottom: 146px;
+  scroll-padding-bottom: var(--journey-dock-clearance);
 }
 body.rift-shell[data-journey-ready] {
   height: auto; min-height: 100svh; overflow-x: clip; overflow-y: visible;
@@ -12,7 +12,7 @@ body.rift-shell[data-journey-ready] .rift-site-shell {
 }
 body.rift-shell[data-journey-ready] #main {
   display: block; flex: 1 0 auto; min-height: 0; overflow: visible;
-  padding-block: clamp(8px,1.5vh,18px) 36px;
+  padding-block: clamp(8px,1.5vh,18px) var(--journey-dock-clearance);
 }
 body.rift-shell[data-journey-ready] #main [data-journey-deck] {
   display: flex; flex-direction: column; height: auto; min-height: 0; overflow: visible;
@@ -20,7 +20,7 @@ body.rift-shell[data-journey-ready] #main [data-journey-deck] {
 body.rift-shell[data-journey-ready] #main [data-journey-panel] {
   flex: 0 0 auto; height: auto; min-height: 0; max-height: none; overflow: visible;
   overscroll-behavior: auto; min-width: 0;
-  scroll-margin-top:calc(var(--world-header-height) + 160px);
+  scroll-margin-top:calc(var(--world-header-height) + 16px);
 }
 /* Newly committed React chapters wait for one atomic registration. They must
    never flash together while the scene observer catches up. */
@@ -28,10 +28,6 @@ body.rift-shell[data-journey-ready] #main [data-journey-panel]:not([data-journey
 body.rift-shell[data-journey-ready] .journey-header {
   position: sticky; top: 0; z-index: 50;
   background: linear-gradient(#071016f0,#071016c9); backdrop-filter: blur(14px);
-}
-body.rift-shell[data-journey-ready] .journey-chrome {
-  position: sticky; bottom: 0; z-index: 50;
-  background: linear-gradient(#071016ec,#071016fa); backdrop-filter: blur(16px);
 }
 body.rift-shell[data-journey-ready] #main :is(
   .journey-record-canvas,.journey-record-selector,.journey-patch-stops,
@@ -44,7 +40,7 @@ body.rift-shell[data-journey-ready] :is(.journey-record-selector,.journey-patch-
   overflow-x: visible; flex-wrap: wrap; align-content: start;
 }
 body.rift-shell[data-journey-ready] #main :is(a,button,input,select,summary) {
-  scroll-margin-block: calc(var(--world-header-height) + 14px) 146px;
+  scroll-margin-block: calc(var(--world-header-height) + 14px) var(--journey-dock-clearance);
 }
 body.rift-shell[data-journey-ready] :is(input,select,textarea) { font-size: max(16px,1em); }
 body.rift-shell[data-journey-ready] .signal-journey {
@@ -83,7 +79,6 @@ body.rift-shell .voyage-roster-shell > footer { margin: 0; padding-top: 4px; gap
   .signal-carry-desk { width: 100%; padding: 16px 0; }
 }
 @media (max-height:620px) {
-  body.rift-shell[data-journey-ready] .journey-chrome { position: relative; bottom: auto; }
   body.rift-shell[data-journey-ready] #main .signal-journey .signal-act { min-height: 250px; }
   .signal-reveal-desk { padding-block: 4px; }
   .signal-reveal-desk > header { margin-bottom: 8px; }

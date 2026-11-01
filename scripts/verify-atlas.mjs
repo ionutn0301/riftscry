@@ -14,7 +14,10 @@ for (const file of pages) {
   const document = parse(await readFile(file,'utf8'));
   if (!document.querySelector('body.rift-shell')) continue;
   const assert = (condition,message) => { if (!condition) throw new Error(file + ': ' + message); };
-  assert(document.querySelectorAll('.journey-spine a').length === 6,'missing connected route path');
+  assert(document.querySelectorAll('.journey-dock a').length === 5,'expected one consistent five-destination dock');
+  assert(document.querySelector('.journey-dock [data-dock-atlas][aria-controls="rift-map-dialog"]'),'missing secondary atlas navigation');
+  assert(document.querySelector('#main [data-journey-controls]'),'missing inline chapter navigation');
+  assert(document.querySelectorAll('.journey-chrome [data-journey-controls],.journey-chrome [data-signal-thread]').length===0,'global dock contains stacked contextual controls');
   assert(document.querySelectorAll('#rift-map-dialog [data-atlas-portal]').length === 5,'missing atlas destinations');
   assert(document.querySelector('#rift-map-dialog [data-passage-aperture][d]'),'missing shared morphing aperture');
   assert(document.querySelector('#rift-map-dialog [data-passage-range]'),'missing non-gesture camera control');
