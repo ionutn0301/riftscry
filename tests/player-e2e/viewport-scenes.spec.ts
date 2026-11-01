@@ -12,7 +12,10 @@ async function measure(page:Page){
     const header=document.querySelector('.journey-header')!.getBoundingClientRect();
     const dock=document.querySelector('.journey-chrome')!.getBoundingClientRect();
     const targets=[...document.querySelectorAll<HTMLElement>('#main a,#main button,#main input,#main select')]
-      .filter(el=>el.getClientRects().length&&!el.closest('[hidden]'));
+      .filter(el=>el.getClientRects().length&&!el.closest('[hidden]'))
+      // The chapter rail scrolls horizontally; its selected tab and both
+      // arrow controls must fit. Inactive tabs can be outside that rail.
+      .filter(el=>!el.closest('[data-journey-tabs]')||el.getAttribute('aria-selected')==='true');
     return {
       scroll:document.documentElement.scrollHeight-innerHeight,
       horizontal:document.documentElement.scrollWidth-innerWidth,

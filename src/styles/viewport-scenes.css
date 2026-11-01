@@ -1,7 +1,6 @@
 /* Size the entrance from the visible browser viewport. The artwork flexes;
    copy and touch targets keep their intrinsic size. No body scroll lock. */
 @media (max-width:700px), (max-width:1000px) and (max-height:480px) {
-  html[data-motion]:has(body[data-surface=home]) { scrollbar-gutter:auto; }
   html[data-motion] body.rift-shell[data-surface=home] { min-height:100dvh; }
   html[data-motion] body[data-surface=home] .rift-site-shell { height:100dvh; min-height:0; }
   html[data-motion] body[data-surface=home] #main { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; padding-block:6px var(--journey-dock-clearance); }
@@ -21,9 +20,9 @@
   html[data-motion] body[data-surface=home] .atlas-arrival-footer .atlas-reading-link { width:auto; max-width:45%; border:0; }
 
   /* The other home chapters use the same stage and one compact portrait rail. */
-  html[data-motion] body[data-surface=home] #main .journey-chapters { flex:none; min-height:53px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main .journey-chapters { flex:none; min-height:53px; }
   html[data-motion] body[data-surface=home] .journey-scene-controls { margin-bottom:0; }
-  html[data-motion] body[data-surface=home] #main .signal-act { flex:1 1 auto; min-height:0; padding:0; border:0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main .signal-act { flex:1 1 auto; min-height:0; padding:0; border:0; }
   html[data-motion] body[data-surface=home] .signal-cast { display:flex; flex:none; gap:8px; padding-top:4px; }
   html[data-motion] body[data-surface=home] .signal-cast > div { flex:1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px; }
   html[data-motion] body[data-surface=home] .signal-cast > div > a { flex-direction:column; gap:2px; padding:3px 1px; min-height:48px; }
@@ -117,4 +116,18 @@ body.rift-shell[data-journey-ready] .journey-missing .journey-lost-panel { paddi
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry > div > p { font-size:12px; line-height:1.4; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-field { gap:4px; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-lookup :is(input,select,button) { min-height:44px; padding-block:8px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-header { padding-bottom:6px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry { padding:8px; }
+  body.rift-shell[data-journey-ready] #main:has(.notebook-empty-orbit) .journey-chapters { min-height:53px; }
+  body.rift-shell #main:has(.notebook-empty-orbit) .journey-scene-controls { margin-bottom:0; }
+  body.rift-shell .recall-workspace:has(.notebook-empty-orbit) .recall-tagline { display:none; }
+  body.rift-shell .recall-notes-scene:has(.notebook-empty-orbit) { padding:12px; }
+  /* Keep the section's heading for assistive technology. The empty state
+     already supplies its visible title, rather than a second stacked heading. */
+  body.rift-shell .recall-notes-scene:has(.notebook-empty-orbit) > .recall-scene-heading { position:absolute; width:1px; height:1px; margin:0; padding:0; border:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  body.rift-shell .recall-notes-scene:has(.notebook-empty-orbit) .recall-library-content { padding-top:0; }
+  body.rift-shell .notebook-empty-orbit .notebook-empty-mark { display:none; }
+  body.rift-shell .notebook-empty-orbit h3 { font-size:20px; line-height:1.2; margin:4px 0; }
+  body.rift-shell .notebook-empty-orbit p { font-size:12px; line-height:1.4; }
+  body.rift-shell .notebook-empty-orbit .recall-button { margin-top:10px; }
 }
