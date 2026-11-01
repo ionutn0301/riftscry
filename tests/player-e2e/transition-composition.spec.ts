@@ -1,6 +1,7 @@
 import {expect,test,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,platform,profilePath} from './fixtures';
+import {navigateStation} from './navigation-controls';
 
 test.use({video:'on'});
 
@@ -92,10 +93,10 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
       }
       await page.goto('/');await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
       await expect(page.locator('html')).toHaveAttribute('data-motion','full');
-      await page.locator('#atlas [data-station-link="champions"]').click();await crossing(page,'/champions');
+      await navigateStation(page,'champions');await crossing(page,'/champions');
       await page.locator('[data-roster-search]').fill('Ahri');
       await page.locator('[data-roster-key="Ahri"] a').click();await crossing(page,'/champion/ahri');
-      await page.locator('.journey-spine [data-spine-station="patches"]').click();await crossing(page,'/patches');
+      await navigateStation(page,'patches');await crossing(page,'/patches');
       await page.locator('.journey-spine [data-spine-station="players"]').click();await crossing(page,'/players');
       await page.getByLabel('Riot ID',{exact:true}).fill('Fixture Player#TEST');
       await page.getByLabel('Server',{exact:true}).selectOption(platform);

@@ -2,9 +2,16 @@
 import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 interface Props { surface: string }
 const { surface } = Astro.props;
-const active = stationForSurface(surface);
+const station = stationForSurface(surface);
+const active = ['champions','patches'].includes(station) ? 'atlas' : station;
+const links = ['next-game','players','pool'].map(id=>journeyStations.find(item=>item.id===id)!);
 ---
-<nav class="journey-spine" aria-label="Journey destinations">
-  <a href="/#atlas" class="journey-spine-home" aria-label="Return to the Rift atlas" aria-current={active === 'home' ? 'page' : undefined}><span aria-hidden="true">◇</span><small>The Rift</small></a>
-  {journeyStations.map(station => <a href={station.href} data-station-link={station.id} data-spine-station={station.id} aria-current={active === station.id ? 'page' : undefined} style={`--station-color:${station.color}`}><i aria-hidden="true"></i><small>{station.label}</small><span class="sr-only"> — {station.place}</span></a>)}
+<nav class="journey-spine journey-dock" aria-label="Journey destinations">
+  <a href="/#atlas" class="journey-spine-home" aria-current={active === 'home' ? 'page' : undefined}>
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/></svg><span>Home</span>
+  </a>
+  {links.map((item,index)=><>
+    {index===1&&<a href="/champions" class="journey-dock-atlas" data-dock-atlas aria-label="Atlas" aria-current={active==='atlas'?'location':undefined} aria-haspopup="dialog" aria-expanded="false" aria-controls="rift-map-dialog"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="m14 1 13 13-13 13L1 14 14 1Z"/><path d="m14 8 6 6-6 6-6-6 6-6Z"/></svg><span>Atlas</span></a>}
+    <a href={item.href} data-station-link={item.id} data-spine-station={item.id} aria-current={active===item.id?'page':undefined}><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={item.glyph}/></svg><span>{item.label}</span></a>
+  </>)}
 </nav>

@@ -6,6 +6,7 @@ import "../styles/rift-atlas.css";
 import Wayfinder from "../components/experience/JourneyWayfinder.astro";
 import RiftScene from "../components/experience/RiftScene.astro";
 import JourneyChrome from "../components/experience/JourneyChrome.astro";
+import JourneyChapters from "../components/experience/JourneyChapters.astro";
 import CommandPalette from "../components/islands/CommandPalette";
 import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
 import displayUrl from "../assets/fonts/ClashDisplay-Variable.woff2?url";
@@ -89,7 +90,7 @@ const surface = requestedSurface ?? inferredSurface;
     <RiftScene surface={surface} />
     <div class="rift-site-shell">
       <Wayfinder surface={surface} />
-      <main id="main"><slot /></main>
+      <main id="main"><JourneyChapters /><slot /></main>
       <JourneyChrome surface={surface} />
     </div>
     <CommandPalette client:load />

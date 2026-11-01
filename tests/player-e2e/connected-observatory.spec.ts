@@ -61,17 +61,15 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       expect(geometry.width).toBeGreaterThan(0);
       expect(geometry.height).toBeGreaterThan(100);
       const panelCount = await page.locator('[data-journey-panel]').count();
-      if (panelCount > 1) await expect(page.locator('[data-journey-controls]')).toBeVisible();
+      if (panelCount > 1 && route.surface!=='home') await expect(page.locator('#main [data-journey-controls]')).toBeVisible();
       // Single-task destinations do not need an extra scene-navigation row;
       // their panel still has an accessible name and the same main navigation.
       await expect(panel).toHaveAttribute('role', 'tabpanel');
       await expect(panel).toHaveAccessibleName(/\S/);
-      const mobile=viewport.width<=700;
-      const home=route.surface==='home';
-      const navigation = home?page.locator('#atlas .passage-stops'):page.getByRole('navigation', { name: mobile?'Journey destinations':'Main navigation', exact: true });
-      await expect(navigation.getByRole('link')).toHaveCount(home?5:mobile?6:3);
-      for (const name of home||mobile?['next-game','players','champions','patches','pool']:['Discover','My game','Saved']) {
-        const destination = home?navigation.locator('[data-station-link="'+name+'"]'):mobile?navigation.locator('[data-spine-station="'+name+'"]'):navigation.getByRole('link', { name, exact: true });
+      const navigation = page.getByRole('navigation', { name:'Journey destinations', exact: true });
+      await expect(navigation.getByRole('link')).toHaveCount(5);
+      for (const name of ['Home','Briefing','Atlas','Games','Saved']) {
+        const destination = navigation.getByRole('link', { name, exact: true });
         await reachable(destination);
         expect((await destination.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       }

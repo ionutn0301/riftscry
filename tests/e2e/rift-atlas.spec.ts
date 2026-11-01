@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
+import {navigateStation} from '../player-e2e/navigation-controls';
 
 test('the atlas is the entrance and a native round trip retains its place', async ({ page }) => {
   const requests: string[] = [];
@@ -7,11 +8,11 @@ test('the atlas is the entrance and a native round trip retains its place', asyn
   await page.goto('/'); await readyWorld(page);
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id', 'atlas');
   await expect(page.locator('#atlas [data-atlas-portal]')).toHaveCount(5);
-  await expect(page.locator('.journey-spine a')).toHaveCount(6);
+  await expect(page.locator('.journey-dock a')).toHaveCount(5);
   await expect(page.locator('main h1')).toContainText('ripple.');
-  await page.locator('#atlas [data-atlas-portal="champions"]').click();
+  await navigateStation(page,'champions');
   await readyWorld(page); await expect(page).toHaveURL(/\/champions\/?$/);
-  await expect(page.locator('.journey-spine [aria-current="page"]')).toHaveAttribute('data-spine-station','champions');
+  await expect(page.locator('[data-dock-atlas]')).toHaveAttribute('aria-current','location');
   await page.goBack(); await readyWorld(page);
   await expect(page.locator('[data-journey-panel]:visible')).toHaveAttribute('id','atlas');
   await page.reload(); await readyWorld(page);
@@ -24,7 +25,7 @@ for (const [width,height] of [[320,568],[390,844],[568,320],[1440,900]] as const
     await page.setViewportSize({width,height});
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.goto('/'); await readyWorld(page);
-    for (const portal of await page.locator('#atlas [data-atlas-portal]').all()) await unobstructed(portal);
+    for (const portal of await page.locator('.journey-dock a').all()) await unobstructed(portal);
     await stationaryWorld(page);
     await page.locator('[data-map-open]').click();
     const map = page.locator('#rift-map-dialog');

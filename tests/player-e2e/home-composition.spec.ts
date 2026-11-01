@@ -55,7 +55,8 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
     await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');await page.evaluate(()=>document.fonts.ready);
     const entrance=page.locator('#atlas [data-passage]');
     await expect(page.locator('main h1')).toHaveCount(1);await expect(page.locator('#atlas h2')).toHaveCount(0);
-    await expect(page.locator('.journey-chrome')).toBeHidden();
+    await expect(page.locator('.journey-chrome')).toBeVisible();
+    await expect(page.locator('#atlas .passage-stops')).toBeHidden();
     await expect(page.locator('#atlas [data-passage-enter]')).toHaveCount(1);
     for(let i=0;i<5;i++){
       await separated(entrance);

@@ -1,22 +1,10 @@
 ---
-import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 import SiteFooter from '../SiteFooter.astro';
 import JourneySpine from './JourneySpine.astro';
 interface Props { surface: string }
 const { surface } = Astro.props;
-const station = journeyStations.find(item => item.id === stationForSurface(surface));
 ---
 <footer class="journey-chrome" data-journey-chrome>
-  <a class="signal-thread" href="/explore#change" data-signal-thread aria-label="Continue exploring a change"><span class="signal-thread-mark" aria-hidden="true">◇</span><span><small data-signal-thread-caption>{station?.label ?? 'THE SPACE BETWEEN GAMES'}</small><strong data-signal-thread-name>Find your signal</strong></span><span aria-hidden="true">↗</span></a>
-  <div class="journey-scene-controls" data-journey-controls hidden>
-    <span class="journey-current-scene" data-journey-current-label></span>
-    <span class="journey-scene-coordinate"><span data-journey-position>01</span><span aria-hidden="true">/</span><span data-journey-count>01</span></span>
-    <button class="journey-scene-arrow" type="button" data-journey-prev aria-label="Previous scene">←</button>
-    <div class="journey-scene-tabs" data-journey-tabs role="tablist" aria-label="Scenes in this destination"></div>
-    <button class="journey-scene-arrow" type="button" data-journey-next aria-label="Next scene">→</button>
-  </div>
-  <div class="journey-trail-end"><span class="journey-status-dot" aria-hidden="true"></span><span data-journey-caption>CHOOSE. REVEAL. CARRY.</span><button class="journey-about" type="button" data-about-open aria-haspopup="dialog" aria-controls="journey-about-dialog" aria-label="About RiftScry">ⓘ</button></div>
-  <p class="sr-only" role="status" aria-live="polite" data-journey-announcement></p>
   <JourneySpine surface={surface} />
 </footer>
 <dialog id="journey-about-dialog" class="journey-about-dialog" aria-labelledby="journey-about-title"><div><header><h2 id="journey-about-title">About RiftScry.</h2><button type="button" data-about-close aria-label="Close about">Close ×</button></header><SiteFooter /></div></dialog>
