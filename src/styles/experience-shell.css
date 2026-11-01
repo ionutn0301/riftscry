@@ -173,11 +173,13 @@ html[data-journey-crossing='enter'],html[data-journey-crossing='return'] { --cro
 ::view-transition-new(root),::view-transition-new(journey-world),::view-transition-new(journey-header),::view-transition-new(journey-navigation) { animation: none; }
 ::view-transition-group(journey-world),::view-transition-group(journey-header),::view-transition-group(journey-navigation),::view-transition-group(journey-stage) { animation-duration: .55s; animation-timing-function: var(--journey-ease); }
 ::view-transition-group(journey-world) { z-index: 0; }
-::view-transition-group(journey-stage) { z-index: 1; }
+/* Lists and profiles have different document heights and scroll positions.
+   Do not interpolate the old page's geometry through the new text raster. */
+::view-transition-group(journey-stage) { z-index: 1; animation: none; }
 ::view-transition-group(journey-header),::view-transition-group(journey-navigation) { z-index: 2; }
 /* Move the readable page as one camera plane. An aperture across the copy
    briefly slices glyphs even when the outgoing snapshot is already gone. */
-::view-transition-new(journey-stage) { animation: rift-camera-arrive .7s var(--journey-ease) both; }
+::view-transition-new(journey-stage) { transform-origin: 50% 0; animation: rift-camera-arrive .7s var(--journey-ease) both; }
 @keyframes rift-camera-arrive { from { transform: perspective(1400px) translate3d(var(--crossing-enter-x),0,-120px) rotateY(-4deg); } to { transform: none; } }
 @keyframes signal-scene-arrive { from { opacity: 0; transform: translate3d(var(--scene-travel-x),10px,0); } to { opacity: 1; transform: none; } }
 
