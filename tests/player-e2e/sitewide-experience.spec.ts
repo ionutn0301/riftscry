@@ -67,7 +67,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         for (const control of [
           mapControl(page),
           header.getByRole('button', { name: 'Search the archive', exact: true }),
-          header.locator('[data-motion-toggle]'),
+          header.locator('[data-theme-toggle]'),
         ]) {
           await expect(control).toBeInViewport({ ratio: 1 });
           await contained(control, viewport.width);
