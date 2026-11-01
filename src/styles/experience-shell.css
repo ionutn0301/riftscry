@@ -161,25 +161,23 @@ html[data-motion=reduced] .journey-handoff svg { transition:none; }
 .journey-header { view-transition-name: journey-header; }
 .journey-chrome { view-transition-name: journey-navigation; }
 #main { view-transition-name: journey-stage; }
-html { --crossing-enter-x: 40px; --crossing-exit-x: -24px; --crossing-enter-scale: .985; --crossing-exit-scale: 1.015; }
-html[data-journey-crossing='backward'] { --crossing-enter-x: -40px; --crossing-exit-x: 24px; }
-html[data-journey-crossing='enter'] { --crossing-enter-x: 0px; --crossing-exit-x: 0px; --crossing-enter-scale: .94; --crossing-exit-scale: 1.06; }
-html[data-journey-crossing='return'] { --crossing-enter-x: 0px; --crossing-exit-x: 0px; --crossing-enter-scale: 1.04; --crossing-exit-scale: .96; }
+html { --crossing-enter-x: 40px; }
+html[data-journey-crossing='backward'] { --crossing-enter-x: -40px; }
+html[data-journey-crossing='enter'],html[data-journey-crossing='return'] { --crossing-enter-x: 0px; }
 ::view-transition { pointer-events: none; }
-::view-transition-old(root),::view-transition-new(root) { animation: none; }
+/* Retire the outgoing snapshots atomically. A clipped exit with `both` fill
+   leaves a strip of old letters alive until the longest incoming animation
+   ends. Only the incoming page owns readable content during a crossing. */
+::view-transition-old(*) { display: none; animation: none; }
+::view-transition-new(*) { mix-blend-mode: normal; }
+::view-transition-new(root),::view-transition-new(journey-world),::view-transition-new(journey-header),::view-transition-new(journey-navigation) { animation: none; }
 ::view-transition-group(journey-world),::view-transition-group(journey-header),::view-transition-group(journey-navigation),::view-transition-group(journey-stage) { animation-duration: .55s; animation-timing-function: var(--journey-ease); }
 ::view-transition-group(journey-world) { z-index: 0; }
 ::view-transition-group(journey-stage) { z-index: 1; }
 ::view-transition-group(journey-header),::view-transition-group(journey-navigation) { z-index: 2; }
-::view-transition-old(journey-world),::view-transition-old(journey-header),::view-transition-old(journey-navigation) { animation: signal-dissolve .3s ease both; mix-blend-mode: normal; }
-::view-transition-new(journey-world),::view-transition-new(journey-header),::view-transition-new(journey-navigation) { animation: signal-emerge .55s ease both; mix-blend-mode: normal; }
-::view-transition-old(journey-stage) { animation: signal-depart .24s ease both; mix-blend-mode: normal; }
-::view-transition-new(journey-stage) { animation: signal-arrive .55s var(--journey-ease) both; mix-blend-mode: normal; }
-@keyframes signal-depart { to { opacity: 0; transform: translate3d(var(--crossing-exit-x),0,0) scale(var(--crossing-exit-scale)); } }
-@keyframes signal-arrive { from { opacity: 0; transform: translate3d(var(--crossing-enter-x),0,0) scale(var(--crossing-enter-scale)); } }
+::view-transition-new(journey-stage) { animation: rift-cut-open .7s var(--journey-ease) both; }
+@keyframes rift-cut-open { from { clip-path: inset(0 50%); transform: perspective(1400px) translate3d(var(--crossing-enter-x),0,-120px) rotateY(-4deg); } to { clip-path: inset(0); transform: none; } }
 @keyframes signal-scene-arrive { from { opacity: 0; transform: translate3d(var(--scene-travel-x),10px,0); } to { opacity: 1; transform: none; } }
-@keyframes signal-dissolve { to { opacity: 0; } }
-@keyframes signal-emerge { from { opacity: 0; } }
 
 @media (max-width: 1100px) {
   .journey-chrome { grid-template-columns: minmax(120px,1fr) auto; gap: 16px; }

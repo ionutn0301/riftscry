@@ -84,11 +84,6 @@ body[data-surface=home]:has(#atlas:not([hidden])) .rift-scene__object { visibili
 /* Travel opens a cut through the world. No whole-scene opacity fade. */
 .rift-shell[data-journey-ready] [data-journey-panel] { animation:rift-chapter-open .65s var(--journey-ease) both; }
 @keyframes rift-chapter-open { from { clip-path:inset(0 0 0 12%); transform:perspective(1400px) translate3d(var(--scene-travel-x),8px,-65px) rotateY(-3deg); } to { clip-path:inset(0); transform:none; } }
-::view-transition-old(journey-stage) { animation:rift-cut-away .3s ease-in both; }
-::view-transition-new(journey-stage) { animation:rift-cut-open .7s var(--journey-ease) both; }
-::view-transition-old(journey-world),::view-transition-new(journey-world) { animation:none; }
-@keyframes rift-cut-away { to { clip-path:inset(0 48%); transform:perspective(1400px) translateZ(90px) rotateY(4deg); } }
-@keyframes rift-cut-open { from { clip-path:inset(0 48%); transform:perspective(1400px) translateZ(-120px) rotateY(-4deg); } to { clip-path:inset(0); transform:none; } }
 .rift-shell :is(.journey-champion-art picture,.roster-lens-media) { border:0; }
 .rift-shell :is(.automatic-panel,.recall-panel) { background:#08171eb3; }
 .rift-shell .journey-reader-header { border-bottom:1px solid #badac51a; margin-bottom:24px; }

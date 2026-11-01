@@ -417,11 +417,8 @@
 @keyframes player-copy-arrival { from { opacity: .35; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes player-view-arrival { from { opacity: .5; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes player-search-line { 50% { opacity: .25; } }
-@supports (view-transition-name: player-identity) {
-  .gateway-heading, .profile-identity-copy { view-transition-name: player-identity; }
-  ::view-transition-old(player-identity) { animation: player-view-arrival 180ms ease-in reverse both; }
-  ::view-transition-new(player-identity) { animation: player-view-arrival 220ms ease-out both; }
-}
+/* Identity copy travels inside the shared page stage, rather than escaping
+   its camera cut in a separate text snapshot. */
 @media (max-width: 1100px) {
   .profile-arrival-body { gap: 40px; grid-template-columns: minmax(0, 1fr) minmax(260px, .8fr); }
   .profile-match-path { gap: 0; }
@@ -636,12 +633,8 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .player-workspace *, .player-workspace *::before, .player-workspace *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  ::view-transition-old(player-identity), ::view-transition-new(player-identity) { animation: none !important; }
-  ::view-transition-group(player-identity) { animation-duration: .01ms; }
 }
 html[data-motion="reduced"] .player-workspace *, html[data-motion="reduced"] .player-workspace *::before, html[data-motion="reduced"] .player-workspace *::after { animation: none !important; transition: none !important; }
-html[data-motion="reduced"]::view-transition-old(player-identity), html[data-motion="reduced"]::view-transition-new(player-identity) { animation: none !important; }
-html[data-motion="reduced"]::view-transition-group(player-identity) { animation-duration: .01ms; }
 
 /* Player captures share the browser-local Next game notebook. */
 .player-view-navigation { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 18px; }
