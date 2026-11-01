@@ -92,8 +92,8 @@ const surface = requestedSurface ?? inferredSurface;
     <div class="rift-site-shell">
       <Wayfinder surface={surface} />
       <main id="main"><JourneyChapters /><slot /></main>
-      <JourneyChrome surface={surface} />
     </div>
+    <JourneyChrome surface={surface} />
     <CommandPalette client:load />
     <script>
       import '../scripts/experience';
