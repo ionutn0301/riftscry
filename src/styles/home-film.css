@@ -198,3 +198,29 @@ html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] [dat
 /* Let the champion emerge from the world rather than sit in a framed picture. */
 html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-subject-window { inset:0; mask-image:radial-gradient(ellipse at 55% 48%,#000 30%,#000b 55%,transparent 76%); }
 html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-aperture-outline { display:none; }
+/* Short desktop windows use the same full story with a compact evidence desk.
+   Shrink decorative spacing and type before any source or action is crowded. */
+@media (min-width:1001px) and (max-height:740px) {
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .home-approach h1 { font-size:clamp(40px,5vw,68px); max-width:18ch; margin:12px 0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .home-approach-actions { margin-top:16px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] #signal { justify-content:flex-start; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-opening-copy { padding-top:20px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-opening-copy h2 { font-size:42px; margin:12px 0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] :is(.signal-reveal-desk,.signal-carry-desk) { padding:0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk > header { margin-bottom:8px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk h2 { font-size:32px; margin:6px 0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-record { padding:8px 0 4px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-coordinate { margin-bottom:5px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-record-heading h3 { font-size:24px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-aperture.delta-row { min-height:0; padding:14px 0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-value { gap:8px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-value > strong { font-size:44px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reading { padding-bottom:4px; font-size:10px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-record-footer { padding:0; margin:0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-actions { margin-top:4px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carry-desk h2 { font-size:42px; margin:10px 0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-record { margin-top:12px; padding:12px 0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-record > div { gap:8px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-record strong { font-size:32px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carry-desk .signal-opening-actions { margin-top:12px; }
+}
