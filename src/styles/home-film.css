@@ -281,6 +281,8 @@ html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] [dat
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-actions { margin-top:4px; gap:6px; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-actions :is(a,button) { min-height:44px; padding:6px 8px; font-size:10px; gap:6px; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-actions [aria-hidden] { font-size:18px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-crossing { padding:0; gap:0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-crossing i { display:none; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-record { padding:6px 0; gap:12px; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-mark { font-size:40px; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-record > div { gap:4px; }
@@ -295,6 +297,8 @@ html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] [dat
    leaving the complete comparison in the right column. */
 @media (max-width:1000px) and (max-height:360px) and (orientation:landscape) {
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk { row-gap:4px; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-aperture.delta-row { padding:2px 0; }
+  html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-carried-record { padding:4px 0; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk > header { align-self:center; margin:0; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk > header h2 { display:none; }
   html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk [data-home-record]:not([hidden]),html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk .signal-lens,html[data-motion] body.rift-shell[data-surface=home] #main [data-home-film] .signal-reveal-desk .signal-records { display:contents; }

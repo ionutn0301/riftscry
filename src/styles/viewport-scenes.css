@@ -135,6 +135,8 @@ body.rift-shell[data-journey-ready] .journey-missing .journey-lost-panel { paddi
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-lookup :is(input,select,button) { min-height:44px; padding-block:8px; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-header { padding-bottom:0; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry { padding:12px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry h2 { margin-bottom:4px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-lookup { margin-top:6px; }
   body.rift-shell[data-journey-ready] #main:has(.notebook-empty-orbit) .journey-chapters { min-height:53px; }
   body.rift-shell #main:has(.notebook-empty-orbit) .journey-scene-controls { margin-bottom:0; }
   body.rift-shell .recall-workspace:has(.notebook-empty-orbit) .recall-tagline { display:none; }

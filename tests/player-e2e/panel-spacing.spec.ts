@@ -82,6 +82,7 @@ for(const viewport of [{width:320,height:480},{width:320,height:568},{width:390,
         await page.locator(`[data-journey-tab="${scene}"]`).click();
         const panel=page.locator(`#${scene}`),desk=panel.locator('.signal-reveal-desk,.signal-carry-desk');
         const frame=(await panel.boundingBox())!,surface=(await desk.boundingBox())!;
+        for(const value of await desk.locator('.signal-value:visible').all())await expect(value).toHaveCSS('transform','none');
         const measures=await paintedSurfaces(page);
         const nodes=await desk.evaluate(el=>[...el.querySelectorAll<HTMLElement>('header,article,.signal-aperture,.signal-reading,footer,.signal-reveal-actions,.signal-carried-record,.signal-opening-actions')].filter(node=>node.checkVisibility()).map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {class:node.className,rect:{y:r.y,height:r.height},padding:s.padding,margin:s.margin};}));
         report.push({finding,scene,frame,surface,measures,nodes});
