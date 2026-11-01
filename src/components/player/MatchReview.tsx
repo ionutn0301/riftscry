@@ -195,7 +195,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
 
       <details ref={evidenceDetails} className="supporting-evidence"><summary><PlayerIcon name="info" /> Supporting facts</summary><p className="player-help">Recorded events show what happened, not why a decision worked.</p>{shown.facts.map(fact => <p id={`fact-${fact.id}`} tabIndex={-1} key={fact.id}><strong>{evidenceLabel(fact)}:</strong> {fact.text}</p>)}</details>
       </section>
-      <section id="match-memory" className="match-memory-scene" data-journey-panel data-journey-label="Build Memory" data-journey-short-label="Memory" data-journey-world="notebook">
+      <section id="match-memory" className="match-memory-scene" data-journey-panel data-journey-label="Build Memory" data-journey-short-label="Notes" data-journey-world="notebook">
       <BuildMemory player={`${platform}:${puuid}`} puuid={puuid} platform={platform} source={match} metadata={items} draft={draft} onDraftConsumed={() => setDraft(undefined)} />
       </section>
     </>}
