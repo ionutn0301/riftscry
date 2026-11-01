@@ -172,6 +172,7 @@ html[data-motion=reduced] .journey-handoff svg { transition:none; }
 @view-transition { navigation: auto; }
 .rift-scene { view-transition-name: journey-world; }
 .journey-header { view-transition-name: journey-header; }
+.journey-chrome { view-transition-name: journey-navigation; }
 #main { view-transition-name: journey-stage; }
 html { --crossing-enter-x: 40px; }
 html[data-journey-crossing='backward'] { --crossing-enter-x: -40px; }

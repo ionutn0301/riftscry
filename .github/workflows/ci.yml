@@ -6,6 +6,35 @@ on:
   pull_request:
 
 jobs:
+  briefing-composition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Verify populated briefing on the production build with full motion
+        run: pnpm exec playwright test tests/e2e/briefing-report-composition.spec.ts --project=desktop --project=mobile-chromium
+        env:
+          CI: "true"
+      - name: Retain briefing loading, report and dock evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: briefing-composition
+          path: |
+            player-visuals/briefing-*
+            test-results/
+          retention-days: 7
+
   transition-composition:
     runs-on: ubuntu-latest
     timeout-minutes: 15
