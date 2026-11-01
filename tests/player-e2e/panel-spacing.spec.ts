@@ -19,7 +19,13 @@ async function paintedSurfaces(page:Page){
     const ranges:DOMRect[]=[];const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
     while(walker.nextNode()){
       const node=walker.currentNode,parent=node.parentElement;
-      if(!node.textContent?.trim()||!parent?.checkVisibility()||parent.closest('script,style,[aria-hidden="true"],.visually-hidden,.sr-only'))continue;
+      if(!node.textContent?.trim()||!parent?.checkVisibility()||parent.closest('script,style,[aria-hidden="true"],.visually-hidden,[class*="sr-only"]'))continue;
+      let clipped=false;
+      for(let ancestor:HTMLElement|null=parent;ancestor&&ancestor!==el;ancestor=ancestor.parentElement){
+        const style=getComputedStyle(ancestor);
+        if(ancestor.offsetWidth<=1&&ancestor.offsetHeight<=1&&(style.overflow==='hidden'||style.clipPath!=='none')){clipped=true;break;}
+      }
+      if(clipped)continue;
       const range=document.createRange();range.selectNodeContents(node);
       ranges.push(...[...range.getClientRects()].filter(b=>b.width>0&&b.height>0));
     }
@@ -39,8 +45,25 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
       await page.goto(path!);await ready(page);
       if(name==='briefing')await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
       const surfaces=await paintedSurfaces(page);report.push({name,path,surfaces});
+      for(const card of await page.locator('.automatic-entry,.gateway-composition').all()){
+        if(!await card.isVisible())continue;
+        const padding=await card.evaluate(el=>{const s=getComputedStyle(el);return [s.paddingTop,s.paddingRight,s.paddingBottom,s.paddingLeft].map(parseFloat);});
+        expect.soft(Math.min(...padding),`${path}: filled cards need an inset on every edge`).toBeGreaterThanOrEqual(12);
+      }
       expect.soft(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),path).toBeLessThanOrEqual(1);
       await page.screenshot({path:`player-visuals/spacing-${viewport.width}-${name}.png`});
+      // Review the other active tasks as well as each route's entrance.
+      if(viewport.width===390||viewport.width===1440){
+        const scenes=await page.locator('[data-journey-tab]').evaluateAll(tabs=>tabs.map(tab=>tab.getAttribute('data-journey-tab')!));
+        for(const scene of scenes){
+          const tab=page.locator(`[data-journey-tab="${scene}"]`);
+          if(await tab.getAttribute('aria-selected')==='true')continue;
+          await tab.click();
+          report.push({name:`${name}/${scene}`,path,surfaces:await paintedSurfaces(page)});
+          await page.screenshot({path:`player-visuals/spacing-${viewport.width}-${name}-${scene}.png`});
+        }
+      }
+      await writeFile(`player-visuals/spacing-${viewport.width}-audit.json`,JSON.stringify(report,null,2));
     }
     await writeFile(`player-visuals/spacing-${viewport.width}-audit.json`,JSON.stringify(report,null,2));
   });
@@ -48,7 +71,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
 
 for(const viewport of [{width:320,height:480},{width:320,height:568},{width:390,height:844},{width:568,height:320},{width:683,height:384},{width:1366,height:600},{width:1440,height:900}]){
   test(`${viewport.width}×${viewport.height} panel spacing contains every home finding and action`,async({page})=>{
-    await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
+    await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:viewport.width===390?'no-preference':'reduce'});
     await installFixtures(page);await page.goto('/');await ready(page);await mkdir('player-visuals',{recursive:true});
     const findings=await page.locator('[data-home-choice]').evaluateAll(nodes=>nodes.map(el=>el.getAttribute('data-home-choice')!));
     expect(findings).toHaveLength(3);
@@ -59,7 +82,9 @@ for(const viewport of [{width:320,height:480},{width:320,height:568},{width:390,
         await page.locator(`[data-journey-tab="${scene}"]`).click();
         const panel=page.locator(`#${scene}`),desk=panel.locator('.signal-reveal-desk,.signal-carry-desk');
         const frame=(await panel.boundingBox())!,surface=(await desk.boundingBox())!;
-        const measures=await paintedSurfaces(page);report.push({finding,scene,frame,surface,measures});
+        const measures=await paintedSurfaces(page);
+        const nodes=await desk.evaluate(el=>[...el.querySelectorAll<HTMLElement>('header,article,.signal-aperture,.signal-reading,footer,.signal-reveal-actions,.signal-carried-record,.signal-opening-actions')].filter(node=>node.checkVisibility()).map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {class:node.className,rect:{y:r.y,height:r.height},padding:s.padding,margin:s.margin};}));
+        report.push({finding,scene,frame,surface,measures,nodes});
         // Capture before assertions so a failure remains visually reviewable.
         await page.screenshot({path:`player-visuals/spacing-home-${viewport.width}x${viewport.height}-${finding}-${scene}.png`});
         expect.soft(surface.y,`${finding} ${scene}: panel top`).toBeGreaterThanOrEqual(frame.y-1);

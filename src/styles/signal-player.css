@@ -324,7 +324,7 @@ html:not([data-motion]) .automatic-loading { display:none; }
 /* A 320px phone needs the lookup itself above the fold. All inputs retain
    44px hit targets and 16px text; spacing and heading scale instead. */
 @media (max-width: 380px) and (min-height: 481px) and (max-height: 650px) {
-  .rift-shell .gateway-composition { padding: .7rem .8rem; }
+  .rift-shell .gateway-composition { padding: 12px; }
   .rift-shell .gateway-heading { margin-bottom: .35rem; }
   .rift-shell .gateway-heading h1 { font-size: clamp(1.5rem, 7vw, 1.8rem); line-height: 1.08; margin: .2rem 0; }
   .rift-shell .gateway-heading > p:last-child { margin: 0; font-size: .69rem; line-height: 1.2; }
@@ -381,7 +381,7 @@ html:not([data-motion]) .automatic-loading { display:none; }
 .rift-shell .gateway-composition { scroll-padding-block: 8px; padding-bottom: max(16px, 1.2rem); }
 @media (max-height: 480px) {
   .rift-shell .player-gateway:has(.remembered-player) .gateway-heading { display: none; }
-  .rift-shell .gateway-composition { padding-block: 6px 14px; gap: 0; }
+  .rift-shell .gateway-composition { padding:12px; gap:0; }
   .rift-shell .remembered-player { margin: 0; }
   .rift-shell .gateway-footnote { margin: 0; padding: 0; }
 }
@@ -389,7 +389,7 @@ html:not([data-motion]) .automatic-loading { display:none; }
    320px-tall landscape view. Remove old inter-block margins, not controls. */
 @media (max-height: 480px) {
   .rift-shell .player-gateway:has(.remembered-player) :is(.gateway-lookup-scene,.gateway-destinations,.gateway-footnote) { margin-block: 0 !important; }
-  .rift-shell .player-gateway:has(.remembered-player) .gateway-composition { gap:0; padding-top:4px; padding-bottom:4px; }
+  .rift-shell .player-gateway:has(.remembered-player) .gateway-composition { gap:0; padding:12px; }
 }
 /* Scroll-to-focus needs breathing room so subpixel rounding never clips
    an interactive hit target at the scroll boundary. */

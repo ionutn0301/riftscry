@@ -126,7 +126,7 @@ body.rift-shell[data-journey-ready] .journey-missing .journey-lost-panel { paddi
 @media (max-width:700px) and (max-height:650px) {
   body.rift-shell .player-gateway:not(:has(.remembered-player)) .gateway-lookup-scene[open] > summary { display:none; }
   body.rift-shell .gateway-heading > :is(.player-kicker,p:last-child) { display:none; }
-  body.rift-shell .gateway-composition { padding:10px; }
+  body.rift-shell .gateway-composition { padding:12px; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry-preview { display:none; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-header > p:last-child { display:none; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry h2 { font-size:24px; margin:0 0 8px; }
@@ -134,7 +134,7 @@ body.rift-shell[data-journey-ready] .journey-missing .journey-lost-panel { paddi
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-field { gap:4px; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-lookup :is(input,select,button) { min-height:44px; padding-block:8px; }
   body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-header { padding-bottom:0; }
-  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry { padding:8px; }
+  body.rift-shell .automatic-workspace[data-briefing-state=entry] .automatic-entry { padding:12px; }
   body.rift-shell[data-journey-ready] #main:has(.notebook-empty-orbit) .journey-chapters { min-height:53px; }
   body.rift-shell #main:has(.notebook-empty-orbit) .journey-scene-controls { margin-bottom:0; }
   body.rift-shell .recall-workspace:has(.notebook-empty-orbit) .recall-tagline { display:none; }
