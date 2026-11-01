@@ -1,5 +1,4 @@
-import { filmCamera, homeLandmarks, projectHomePoint, projectHomeWorld } from '../lib/home-world';
-import { prepareKineticTitle } from './kinetic-type';
+import { filmCamera, frameHomeArt } from '../lib/home-world';
 
 const film = document.querySelector<HTMLElement>('[data-home-film]');
 if (film) mount(film);
@@ -10,10 +9,12 @@ function mount(film:HTMLElement) {
   // A server-rendered view remains useful when Canvas or client scripts fail.
   if(!context)return;
   const ctx=context;
+  const artwork=world.querySelector<HTMLImageElement>('[data-home-world-source]')!;
+  let artReady=false;
   const abort=new AbortController(),listen={signal:abort.signal};
   const ids=['atlas','signal','reveal','carry'];
   const depth=world.querySelector<HTMLElement>('[data-film-depth]')!;
-  const labels=['01 / BLUE NEXUS','02 / THE JUNGLE','03 / DRAGON PIT','04 / BARON NASHOR'];
+  const labels=['01 / BETWEEN GAMES','02 / THE CHAMPION','03 / THE EVIDENCE','04 / YOUR NEXT MOVE'];
   const media=matchMedia('(prefers-reduced-motion: reduce)');
   let reduced=document.documentElement.dataset.motion==='reduced'||media.matches,width=0,height=0,frame=0,last=0,painted=0;
   let current=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas')),target=current;
@@ -43,31 +44,16 @@ function mount(film:HTMLElement) {
       lookX+=(pointerX-lookX)*(1-Math.exp(-4*dt));lookY+=(pointerY-lookY)*(1-Math.exp(-4*dt));
     }
     const camera=filmCamera(current,lookX,lookY);
-    const sky=ctx.createLinearGradient(0,0,0,height);sky.addColorStop(0,'#07121c');sky.addColorStop(.5,'#16353f');sky.addColorStop(1,'#061016');
-    ctx.fillStyle=sky;ctx.fillRect(0,0,width,height);
-    // One immutable Rift is reprojected from the travelling camera.
-    for(const face of projectHomeWorld(camera,width,height)){
-      ctx.beginPath();face.points.forEach(([x,y],index)=>index?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();
-      ctx.fillStyle=face.fill;ctx.fill();
-      // Seal nearby subpixel seams; distance fog lets the far mesh skip strokes.
-      if(face.depth<35){ctx.strokeStyle=face.fill;ctx.lineWidth=.65;ctx.stroke();}
+    ctx.fillStyle='#0b1115';ctx.fillRect(0,0,width,height);
+    if(artReady){
+      const frame=frameHomeArt(camera,width,height,artwork.naturalWidth,artwork.naturalHeight);
+      ctx.drawImage(artwork,frame.x,frame.y,frame.width,frame.height);
+      // Keep the decoded native picture in place until its first complete paint.
+      if(canvas.hidden){canvas.hidden=false;world.dataset.filmPaint='ready';}
     }
-    // Light stays attached to the Nexus, ward and monster pits as the camera moves.
-    // Gradients are painted into the same frame; no animated filters or asset swaps.
-    ctx.save();ctx.globalCompositeOperation='screen';
-    for(const [i,landmark] of homeLandmarks.entries()){
-      const point=projectHomePoint(landmark.position,camera,width,height);
-      if(!point||point.x<0||point.x>width||point.y<0||point.y>height)continue;
-      const radius=Math.min(width,height)*Math.min(.24,9/point.depth);
-      const light=ctx.createRadialGradient(point.x,point.y,0,point.x,point.y,radius);
-      light.addColorStop(0,['#2fc9ff48','#9ce99622','#ffae4926','#ba71ff38'][i]!);light.addColorStop(1,'#07121c00');
-      ctx.fillStyle=light;ctx.fillRect(point.x-radius,point.y-radius,radius*2,radius*2);
-    }
-    ctx.restore();
-    if(canvas.hidden){canvas.hidden=false;world.dataset.filmPaint='ready';}
     if(now-painted>90||current===target){
       painted=now;world.dataset.filmProgress=current.toFixed(4);
-      world.dataset.filmCamera=camera.position.map(n=>n.toFixed(2)).join(',');
+      world.dataset.filmCamera=[camera.x,camera.y,camera.zoom].map(n=>n.toFixed(5)).join(',');
       world.dataset.filmTravelling=String(current!==target);
     }
     if(!reduced&&(current!==target||Math.abs(lookX-pointerX)+Math.abs(lookY-pointerY)>.001))request();
@@ -76,10 +62,9 @@ function mount(film:HTMLElement) {
     words.forEach(animation=>animation.cancel());words=[];
     if(reduced)return;
     const title=film.querySelector<HTMLElement>(`#${ids[Math.round(target)]} h1,#${ids[Math.round(target)]} h2`);
-    if(!title)return;prepareKineticTitle(title);
-    title.querySelectorAll<HTMLElement>('.kinetic-word').forEach((word,i)=>{
-      words.push(word.animate([{clipPath:'inset(0 0 100% 0)',transform:'translate3d(0,.35em,0) rotateX(-20deg)'},{clipPath:'inset(-.3em)',transform:'none'}],{duration:650,delay:Math.min(i,6)*35,easing:'cubic-bezier(.18,.7,.2,1)',fill:'backwards'}));
-    });
+    if(!title)return;
+    // A single short settling movement keeps words intact and reading immediate.
+    words.push(title.animate([{transform:'translateY(5px)'},{transform:'none'}],{duration:420,easing:'cubic-bezier(.18,.7,.2,1)'}));
   }
   function scene(){
     const index=Math.max(0,ids.indexOf(film.dataset.journeyActive??'atlas'));
@@ -136,5 +121,17 @@ function mount(film:HTMLElement) {
   window.addEventListener('pageshow',event=>{if(event.persisted){resize();scene();}},listen);
   window.addEventListener('pagehide',event=>{if(!event.persisted){abort.abort();observer.disconnect();preference.disconnect();cancelAnimationFrame(frame);words.forEach(a=>a.cancel());}},listen);
   const observer=new ResizeObserver(resize);observer.observe(world);
+  async function readyArtwork(){
+    if(artReady||abort.signal.aborted)return;
+    try{
+      await artwork.decode();
+      if(abort.signal.aborted)return;
+      artReady=artwork.complete&&artwork.naturalWidth>0;
+      if(artReady)resize();
+    }catch{world.dataset.filmPaint='fallback';}
+  }
+  artwork.addEventListener('load',()=>void readyArtwork(),listen);
+  artwork.addEventListener('error',()=>{world.dataset.filmPaint='fallback';},listen);
+  if(artwork.complete)void readyArtwork();
   world.dataset.filmMotion=reduced?'reduced':'full';resize();scene();
 }
