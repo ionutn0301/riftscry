@@ -67,6 +67,14 @@
 
 /* Scene contract. The shared shell owns travel, visibility and the viewport;
    these workspaces contribute only compact headings and the active task. */
+/* Keep the server-rendered briefing in the same shell while its island loads.
+   The legacy wrapper's extra header offset otherwise disappears on hydration. */
+body.rift-shell .automatic-workspace { display:flex; flex-direction:column; width:100%; height:auto; min-width:0; min-height:0; margin:0; padding:0; background:transparent; overflow:visible; }
+body.rift-shell .automatic-wrap { display:contents; }
+body.rift-shell[data-surface=next-game] #main { padding-block:clamp(8px,1.5vh,18px) var(--journey-dock-clearance); }
+html[data-motion] body[data-surface=next-game]:has(.automatic-loading,[data-briefing-report][aria-busy=true]) #main .journey-chapters { min-height:71px; }
+body.rift-shell .automatic-loading { width:min(100%,880px); margin-inline:auto; padding:24px; }
+html:not([data-motion]) .automatic-loading { display:none; }
 .rift-shell[data-journey-ready] :is(.automatic-workspace, .recall-workspace, .player-profile, .journey-match, .player-gateway) {
   display: flex;
   flex-direction: column;

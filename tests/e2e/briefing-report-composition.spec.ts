@@ -16,6 +16,12 @@ test.use({video:'on'});
 test.beforeEach(async({page})=>{await page.emulateMedia({reducedMotion:'no-preference'});});
 
 async function shell(page:Page){
+  // Named snapshot layers own paint until a native crossing finishes. Then
+  // the real dock must be immediately reachable, including on BFCache restore.
+  await expect.poll(()=>page.locator('.journey-chrome').evaluate(dock=>{
+    const r=dock.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+    return Boolean(hit&&dock.contains(hit));
+  })).toBe(true);
   const result=await page.evaluate(()=>{
     const dock=document.querySelector<HTMLElement>('.journey-chrome')!,r=dock.getBoundingClientRect();
     const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
@@ -83,4 +89,17 @@ test('populated briefing navigation paints the dock above the incoming page came
   await page.goBack();await expect(page.locator('#atlas')).toBeVisible();
   await page.goForward();await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
   await shell(page);
+});
+test('populated briefing keeps its navigation and compact shell before hydration',async({page},info)=>{
+  await page.setViewportSize({width:390,height:844});await installFixtures(page,{matches:records});
+  let release!:()=>void;const scripts=new Promise<void>(resolve=>{release=resolve;});
+  await page.route('**/_astro/*.js',async route=>{await scripts;await route.continue();});
+  await page.goto(path,{waitUntil:'commit'});
+  await expect(page.locator('.automatic-loading')).toBeVisible();
+  expect(await page.locator('.automatic-wrap').evaluate(el=>getComputedStyle(el).display)).toBe('contents');
+  const before=await shell(page);
+  await capture(page,`${info.project.name}-pending-scripts`);
+  release();await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
+  await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
+  const after=await shell(page);expect(after.height).toBe(before.height);expect(after.bottom).toBe(before.bottom);
 });

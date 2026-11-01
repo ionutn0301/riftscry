@@ -9,7 +9,7 @@ export default defineConfig({
   use: {
     baseURL,
     viewport: { width: 359, height: 603 },
-    reducedMotion: 'reduce',
+    contextOptions: { reducedMotion: 'reduce' },
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH

@@ -77,8 +77,8 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
 
   return <div className="automatic-workspace" data-journey-deck data-journey-hydrated={ready} data-journey-default="focus" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
     <div className="automatic-wrap">
-      <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your briefing.</h1>{!selection.player && <p>Your games become your next move.</p>}</header>
-      {!ready ? <p className="automatic-loading" role="status">Opening your briefing…</p> : selection.player ?
+      <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your briefing.</h1>{ready && !selection.player && <p>Your games become your next move.</p>}</header>
+      {!ready ? <section id="focus" className="automatic-loading automatic-panel automatic-empty" data-journey-panel data-journey-label="Focus" data-journey-world="next-game" role="status"><PlayerIcon name="clock" size={28} /><h2>Opening your briefing…</h2><p>Finding your latest games.</p></section> : selection.player ?
         <AutomaticReport key={`${selection.player.platform}:${selection.player.puuid}:${selection.queue}`} player={selection.player} queue={selection.queue} champion={selection.champion} archive={archive} onChangePlayer={changePlayer} onChangeScope={changeScope} /> :
         <section id="connect" data-journey-panel data-journey-label="Connect" data-journey-world="next-game" className="automatic-entry automatic-panel" aria-labelledby="automatic-entry-heading">
           <div>
