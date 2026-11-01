@@ -24,8 +24,9 @@ async function shell(page:Page){
   })).toBe(true);
   const result=await page.evaluate(()=>{
     const dock=document.querySelector<HTMLElement>('.journey-chrome')!,r=dock.getBoundingClientRect();
+    const header=document.querySelector<HTMLElement>('.journey-header')!.getBoundingClientRect();
     const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
-    return {height:r.height,bottom:innerHeight-r.bottom,position:getComputedStyle(dock).position,
+    return {height:r.height,bottom:innerHeight-r.bottom,position:getComputedStyle(dock).position,headerTop:header.top,scrollY,
       hit:Boolean(hit&&dock.contains(hit)),horizontal:document.documentElement.scrollWidth-innerWidth,
       active:[...document.querySelectorAll<HTMLElement>('[data-journey-panel]')].filter(el=>el.getClientRects().length>0).map(el=>el.id),
       navTransition:getComputedStyle(dock).viewTransitionName,
@@ -34,6 +35,7 @@ async function shell(page:Page){
   });
   expect.soft(result.height).toBe(68);expect.soft(result.bottom).toBeGreaterThanOrEqual(11);
   expect.soft(result.position).toBe('fixed');expect.soft(result.hit).toBe(true);
+  expect.soft(result.headerTop,'The header must not disappear as the briefing loads or scrolls').toBeGreaterThanOrEqual(-1);
   expect.soft(result.horizontal).toBeLessThanOrEqual(1);expect.soft(result.active).toHaveLength(1);
   await expect(page.locator('.journey-dock > [aria-current]')).toHaveAccessibleName('Briefing');
   return result;
