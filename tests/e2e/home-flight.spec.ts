@@ -64,7 +64,7 @@ test('cinematic home reverses in flight, restores Back and accepts wheel or touc
 
 test('cinematic home respects reduced motion and the live motion control',async({page})=>{
   await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/');await readyWorld(page);
-  await page.locator('[data-motion-toggle]').click();await expect(world(page)).toHaveAttribute('data-film-motion','reduced');
+  await page.locator('[data-theme-toggle]').click();await page.locator('[data-motion-toggle]').click();await page.locator('[aria-label="Close appearance"]').click();await expect(world(page)).toHaveAttribute('data-film-motion','reduced');
   await openScene(page,'carry');await expect.poll(()=>progress(page)).toBe(3);
   await expect(world(page)).toHaveAttribute('data-film-travelling','false');
   const still=await world(page).getAttribute('data-film-camera');
@@ -131,4 +131,24 @@ test('painted environment keeps the artwork intact and remains useful if its ima
   await expect(page.locator('[data-home-record]:not([hidden]) .after')).toHaveText(signal.after);
   await page.locator('[data-home-keep]').click();await expect(page.locator('#carry')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('appearance themes stay interactive on reduced-motion devices and survive navigation',async({page},info)=>{
+  await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/');await readyWorld(page);
+  const trigger=page.locator('[data-theme-toggle]');await expect(trigger).toBeEnabled();await trigger.click();
+  await expect(page.locator('[data-appearance-panel]')).toBeVisible();
+  const pickerBounds=(await page.locator('[data-appearance-panel]').boundingBox())!;expect(pickerBounds.x).toBeGreaterThanOrEqual(12);
+  await page.locator('[data-theme-choice][value=obsidian]').check();
+  await expect(page.locator('[data-appearance-panel]')).toHaveCSS('background-color','rgb(27, 27, 33)');
+  await expect(page.locator('[data-theme-choice][value=obsidian]')).toBeChecked();
+  await expect(page.locator('html')).toHaveAttribute('data-theme','obsidian');
+  await expect(page.locator('[data-motion-toggle]')).toBeDisabled();
+  await expect(page.locator('[data-motion-hint]')).toHaveText('Your device has reduced motion enabled.');
+  await mkdir('player-visuals',{recursive:true});await page.screenshot({path:`player-visuals/flight-${info.project.name}-appearance.png`});
+  await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
+  await page.goto('/champions');await readyWorld(page);
+  await expect(page.locator('html')).toHaveAttribute('data-theme','obsidian');
+  await page.locator('[data-theme-toggle]').click();await expect(page.locator('[data-theme-choice][value=obsidian]')).toBeChecked();
+  await page.locator('[data-theme-choice][value=frost]').check();await page.keyboard.press('Escape');
+  await expect(page.locator('html')).toHaveAttribute('data-theme','frost');
 });

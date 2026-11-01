@@ -16,7 +16,9 @@ function applyMotion() {
     motionButton.title = preference.matches ? 'Reduced motion follows your device preference.' : 'Choose how much motion you see.';
   }
   const label = motionButton?.querySelector('[data-motion-label]');
-  if (label) label.textContent = reduced ? 'Motion reduced' : 'Motion on';
+  if (label) label.textContent = reduced ? 'On' : 'Off';
+  const hint=document.querySelector('[data-motion-hint]');
+  if(hint)hint.textContent=preference.matches?'Your device has reduced motion enabled.':'Motion follows your saved preference.';
   window.dispatchEvent(new Event('riftscry:motion-change'));
 }
 applyMotion();

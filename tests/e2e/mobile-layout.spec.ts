@@ -70,7 +70,7 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     await page.goto("/explore", { waitUntil: "domcontentloaded" });
     await readyJourney(page);
 
-    const headerControls = page.locator(".world-brand:visible, .world-utilities > a:visible, [data-map-open]:visible, .world-utilities > [data-palette-trigger]:visible, [data-motion-toggle]:visible");
+    const headerControls = page.locator(".world-brand:visible, .world-utilities > a:visible, [data-map-open]:visible, .world-utilities > [data-palette-trigger]:visible, [data-theme-toggle]:visible");
     const controlBounds = await Promise.all((await headerControls.all()).map(bounds));
     for (let index = 0; index < controlBounds.length; index++) {
       const rect = controlBounds[index]!;
