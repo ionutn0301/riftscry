@@ -19,11 +19,11 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   <section id="atlas" class="home-approach" data-journey-panel data-journey-label="Approach the Rift" data-journey-short-label="Arrival" data-journey-world="home" aria-labelledby="atlas-title">
     <span id="arrival" class="home-arrival-anchor" aria-hidden="true"></span>
     <div class="home-approach-copy">
-      <p class="journey-eyebrow">01 / THE APPROACH</p>
+      <p class="journey-eyebrow">01 / SUMMONER’S RIFT</p>
       <h1 id="atlas-title">Every game leaves <em>a ripple.</em></h1>
-      <p class="home-approach-caption">Follow one change. Find your next move.</p>
+      <p class="home-approach-caption">Your League games. One useful next move.</p>
       <div class="home-approach-actions">
-        <a href="#signal" class="atlas-follow-signal signal-primary-action"><span>Enter the current</span><span aria-hidden="true">↗</span></a>
+        <a href="#signal" class="atlas-follow-signal signal-primary-action"><span>Enter the Rift</span><span aria-hidden="true">↗</span></a>
         <a href="/next-game" class="signal-secondary-action" data-home-briefing data-home-personal data-station-link="next-game"><span data-home-briefing-label>My briefing</span><span aria-hidden="true">→</span></a>
         <a class="signal-secondary-action home-reading-link" href="/explore#change" data-home-reading hidden><span data-home-reading-label>Resume exploring</span><span aria-hidden="true">↗</span></a>
       </div>
@@ -38,7 +38,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
     <figcaption><span data-home-subject>{first.championName}</span><small>RIOT GAMES ARTWORK</small></figcaption>
     <span class="signal-art-coordinate" aria-hidden="true">R / S — <span data-home-coordinate>01</span></span>
   </figure>
-    <div class="signal-opening-copy"><p class="journey-eyebrow"><i aria-hidden="true"></i>02 / THE ECHOES</p><h2 id="signal-title">Choose a <em>champion.</em></h2><p class="signal-opening-caption">Three champions. Three real echoes from the archive.</p>
+    <div class="signal-opening-copy"><p class="journey-eyebrow"><i aria-hidden="true"></i>02 / CHAMPIONS OF THE RIFT</p><h2 id="signal-title">Choose a <em>champion.</em></h2><p class="signal-opening-caption">{signals.map(signal => signal.championName).join(' · ')}. One real change to carry forward.</p>
       <div class="signal-opening-actions"><a class="signal-primary-action" href="#reveal" data-home-reveal><span>Reveal change</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/next-game" data-home-personal data-station-link="next-game">Use my games <span aria-hidden="true">→</span></a></div>
       <p class="signal-return-hint" data-home-return hidden></p>
       <a class="signal-return-hint signal-secondary-action" href="/explore#change" data-home-context hidden></a>
@@ -49,7 +49,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   </section>
 
   <section id="reveal" class="signal-act signal-act--reveal" data-journey-panel data-journey-label="Reveal the change" data-journey-short-label="Shift" data-journey-world="explore" aria-labelledby="signal-reveal-title">
-    <div class="signal-reveal-desk"><header><p class="journey-eyebrow">03 / THE SHIFT</p><h2 id="signal-reveal-title">See the <em>shift.</em></h2></header>
+    <div class="signal-reveal-desk"><header><p class="journey-eyebrow">03 / EVERY CHANGE MATTERS</p><h2 id="signal-reveal-title">See the <em>shift.</em></h2></header>
       {signals.map((signal,index) => <div data-home-record={signal.championId} hidden={index !== 0}><SignalRecord label={signal.championName} championId={signal.championId} entries={[{change:signal.record.change,ability:signal.ability,abilityName:signal.abilityName}]} patchId={signal.patchId} sourceUrl={signal.sourceUrl}/></div>)}
       <div class="signal-reveal-actions"><button class="signal-primary-action" type="button" data-home-keep hidden><span>Keep this finding</span><span aria-hidden="true">+</span></button><a class="signal-secondary-action" href={first.explore.replace('#change','#history')} data-home-trace>Trace it through time <span aria-hidden="true">↗</span></a></div>
       <p class="signal-keep-status" role="status" data-home-keep-status></p>
@@ -57,7 +57,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   </section>
 
   <section id="carry" class="signal-act signal-act--carry" data-journey-panel data-journey-label="Take it forward" data-journey-short-label="Carry" data-journey-world="pool" aria-labelledby="signal-carry-title">
-    <div class="signal-carry-desk"><p class="journey-eyebrow" data-home-carry-caption>04 / TAKE IT FORWARD</p><h2 id="signal-carry-title">Carry it <em>forward.</em></h2><a class="signal-carried-record" href={first.explore} data-home-explore><span class="signal-carried-mark" aria-hidden="true">◇</span><div><small data-home-carry-name>{first.championName} / {first.abilityName}</small><strong data-home-carry-value>{first.before} → {first.after}</strong><span data-home-carry-label>{first.label} · Patch {first.patchId}</span><span class="home-record-continue" data-home-explore-label>Continue with {first.championName} ↗</span></div></a><div class="signal-opening-actions"><a class="signal-primary-action" href="/next-game" data-home-personal data-station-link="next-game"><span>Find my next move</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/pool#findings">Open kept findings <span aria-hidden="true">→</span></a></div></div>
+    <div class="signal-carry-desk"><p class="journey-eyebrow" data-home-carry-caption>04 / BEFORE YOUR NEXT QUEUE</p><h2 id="signal-carry-title">Carry it <em>forward.</em></h2><a class="signal-carried-record" href={first.explore} data-home-explore><span class="signal-carried-mark" aria-hidden="true">◇</span><div><small data-home-carry-name>{first.championName} / {first.abilityName}</small><strong data-home-carry-value>{first.before} → {first.after}</strong><span data-home-carry-label>{first.label} · Patch {first.patchId}</span><span class="home-record-continue" data-home-explore-label>Continue with {first.championName} ↗</span></div></a><div class="signal-opening-actions"><a class="signal-primary-action" href="/next-game" data-home-personal data-station-link="next-game"><span>Find my next move</span><span aria-hidden="true">↗</span></a><a class="signal-secondary-action" href="/pool#findings">Open kept findings <span aria-hidden="true">→</span></a></div></div>
   </section>
 
 

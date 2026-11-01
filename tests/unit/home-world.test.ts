@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {filmCamera,homeWorld,projectHomePoint,projectHomeWorld,type Vec3} from '../../src/lib/home-world';
+import {filmCamera,homeWorld,homeLandmarks,projectHomePoint,projectHomeWorld,type Vec3} from '../../src/lib/home-world';
 describe('a continuous home world',()=>{
   it('moves the camera through space without mutating the world, including reverse travel',()=>{
     const geometry=JSON.stringify(homeWorld),poses=[0,1,2,3].map(p=>filmCamera(p));
@@ -9,12 +9,21 @@ describe('a continuous home world',()=>{
     expect(JSON.stringify(homeWorld)).toBe(geometry);
     expect(filmCamera(-1)).toEqual(poses[0]);expect(filmCamera(8)).toEqual(poses[3]);
   });
-  it('keeps projection finite while crossing the arches and changing aspect ratio',()=>{
+  it('keeps projection finite through the Rift landmarks and changing aspect ratio',()=>{
     for(const size of [[1440,700],[390,590],[568,132]])for(let p=0;p<=3;p+=.12){
       const faces=projectHomeWorld(filmCamera(p),size[0]!,size[1]!);
       expect(faces.length).toBeGreaterThan(30);
       expect(faces.every(f=>f.points.length>=3&&f.points.every(point=>point.every(Number.isFinite)))).toBe(true);
       expect(faces.every((f,i)=>!i||faces[i-1]!.depth>=f.depth)).toBe(true);
+    }
+  });
+  it('frames a distinct League landmark at each reading pose on desktop and portrait',()=>{
+    expect(new Set(homeWorld.map(face=>face.feature))).toEqual(new Set(['terrain','river','jungle','nexus','turret','ward','dragon','baron']));
+    for(const [i,landmark] of homeLandmarks.entries())for(const [width,height] of [[1440,700],[390,590]]){
+      const point=projectHomePoint(landmark.position,filmCamera(i),width!,height!);
+      expect(point).not.toBeNull();
+      expect(point!.x).toBeGreaterThan(width!*.15);expect(point!.x).toBeLessThan(width!*.9);
+      expect(point!.y).toBeGreaterThan(height!*.2);expect(point!.y).toBeLessThan(height!*.9);
     }
   });
   it('uses perspective parallax, with larger motion in nearby scenery',()=>{

@@ -3,11 +3,11 @@ import { filmCamera, projectHomeWorld } from '../../lib/home-world';
 const faces=projectHomeWorld(filmCamera(0),1440,900);
 ---
 <div class="home-world" data-home-world aria-hidden="true">
-  <picture class="home-world-horizon"><source media="(max-width:700px)" srcset="/images/voyage/rift-overlook-mobile.webp"/><img src="/images/voyage/rift-overlook.webp" alt="" width="1672" height="941" decoding="async" fetchpriority="high"/></picture>
+  <picture class="home-world-horizon"><img src="/images/league/summoners-rift.webp" alt="" width="1440" height="1130" decoding="async" fetchpriority="high"/></picture>
   <svg class="home-world-still" data-home-world-still viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" fill="none"><defs><linearGradient id="home-world-sky" x2="0" y2="1"><stop stop-color="#07121c"/><stop offset=".52" stop-color="#16353f"/><stop offset="1" stop-color="#061016"/></linearGradient></defs><path d="M0 0h1440v900H0z" fill="url(#home-world-sky)"/>{faces.map(face=><polygon points={face.points.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')} fill={face.fill}/>)}</svg>
   <canvas data-home-world-canvas hidden></canvas>
   <div class="home-world-light"></div><div class="home-world-shade"></div>
-  <span class="home-world-coordinate">R / S — THE SPACE BETWEEN GAMES</span>
-  <span class="home-world-depth" data-film-depth>00 / THE APPROACH</span>
+  <span class="home-world-coordinate">R / S — SUMMONER’S RIFT</span>
+  <span class="home-world-depth" data-film-depth>01 / BLUE NEXUS</span>
 </div>
 <script>import '../../scripts/home-world';</script>
