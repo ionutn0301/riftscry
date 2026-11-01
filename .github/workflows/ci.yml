@@ -72,7 +72,7 @@ jobs:
             player-visuals/home-*.png
             player-visuals/champions-*.png
             player-visuals/dock-*.png
-            player-visuals/viewport-*.png
+            player-visuals/viewport-*
             test-results/
           if-no-files-found: ignore
           retention-days: 7

@@ -1,5 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
-import {mkdir} from 'node:fs/promises';
+import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,platform,puuid,profilePath,visualMatches} from './fixtures';
 
 async function ready(page:Page){
@@ -11,11 +11,15 @@ async function measure(page:Page){
   return page.evaluate(()=>{
     const header=document.querySelector('.journey-header')!.getBoundingClientRect();
     const dock=document.querySelector('.journey-chrome')!.getBoundingClientRect();
-    const targets=[...document.querySelectorAll<HTMLElement>('#main a,#main button,#main input,#main select')]
+    const targets=[...document.querySelectorAll<HTMLElement>('#main a,#main button,#main input,#main select,#main h1')]
       .filter(el=>el.getClientRects().length&&!el.closest('[hidden]'))
       // The chapter rail scrolls horizontally; its selected tab and both
       // arrow controls must fit. Inactive tabs can be outside that rail.
       .filter(el=>!el.closest('[data-journey-tabs]')||el.getAttribute('aria-selected')==='true');
+    const portalRegions=['#atlas .passage-reading','#atlas .passage-viewport','#atlas .passage-instrument','#atlas .atlas-arrival-footer'].flatMap(selector=>{
+      const el=document.querySelector<HTMLElement>(selector);
+      return el?.getClientRects().length?[{selector,rect:el.getBoundingClientRect()}]:[];
+    });
     return {
       scroll:document.documentElement.scrollHeight-innerHeight,
       horizontal:document.documentElement.scrollWidth-innerWidth,
@@ -26,6 +30,9 @@ async function measure(page:Page){
           ? [{label:el.getAttribute('aria-label')||el.textContent?.trim(),top:r.top,bottom:r.bottom,header:header.bottom,dock:dock.top}] : [];
       }),
       nested:[...document.querySelectorAll<HTMLElement>('#main,#main *')].filter(el=>el.clientHeight>0&&/^(auto|scroll)$/.test(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+1).map(el=>el.className),
+      collisions:portalRegions.flatMap((a,i)=>portalRegions.slice(i+1).filter(b=>Math.min(a.rect.right,b.rect.right)-Math.max(a.rect.left,b.rect.left)>1&&Math.min(a.rect.bottom,b.rect.bottom)-Math.max(a.rect.top,b.rect.top)>1).map(b=>`${a.selector} overlaps ${b.selector}`)),
+      titleTop:document.querySelector('#atlas .passage-reading')?.getBoundingClientRect().top,
+      headerBottom:header.bottom,
       regions:[...document.querySelectorAll<HTMLElement>('#main,.passage-reading,.passage-viewport,.passage-instrument,.atlas-arrival-footer,.gateway-composition,.automatic-entry,.recall-library-section')].filter(el=>el.getClientRects().length).map(el=>({name:el.className,top:el.getBoundingClientRect().top,height:el.getBoundingClientRect().height})),
     };
   });
@@ -34,6 +41,7 @@ async function record(page:Page,name:string){
   await mkdir('player-visuals',{recursive:true});
   await page.screenshot({path:`player-visuals/viewport-${name}.png`,fullPage:true});
   const geometry=await measure(page);
+  await writeFile(`player-visuals/viewport-${name}.json`,JSON.stringify(geometry,null,2));
   await test.info().attach(name,{body:JSON.stringify(geometry,null,2),contentType:'application/json'});
   return geometry;
 }
@@ -48,6 +56,8 @@ for(const viewport of phones){
       expect.soft(metrics.scroll,JSON.stringify(metrics)).toBeLessThanOrEqual(1);
       expect.soft(metrics.horizontal).toBeLessThanOrEqual(1);
       expect.soft(metrics.clipped).toEqual([]);expect.soft(metrics.nested).toEqual([]);
+      expect.soft(metrics.collisions).toEqual([]);
+      expect.soft(metrics.titleTop).toBeGreaterThanOrEqual(metrics.headerBottom);
       await expect(page.locator('#atlas [data-passage-enter]')).toBeInViewport({ratio:1});
       if(i<4)await page.locator('#atlas [data-passage-step="1"]').click();
     }
