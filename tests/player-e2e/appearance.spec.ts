@@ -41,6 +41,10 @@ test('appearance themes support keyboard selection, storage updates and a return
   await page.keyboard.press('ArrowRight');await expect(page.locator('html')).toHaveAttribute('data-theme','obsidian');
   await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
   await expect(page.locator('body')).toHaveCSS('background-color','rgb(14, 14, 16)');
+  await trigger.click();await page.keyboard.press('Control+k');
+  await expect(page.locator('[data-appearance-panel]')).toBeHidden();
+  await expect(page.locator('[cmdk-input]')).toBeFocused();
+  await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
   await page.evaluate(()=>{localStorage.setItem('riftscry:theme','frost');dispatchEvent(new StorageEvent('storage',{key:'riftscry:theme'}));});
   await expect(page.locator('html')).toHaveAttribute('data-theme','frost');
   await page.evaluate(()=>{localStorage.setItem('riftscry:theme','obsidian');dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});

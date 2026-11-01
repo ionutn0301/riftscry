@@ -26,6 +26,15 @@ picker?.addEventListener('toggle',event=>{
   trigger?.setAttribute('aria-expanded',String(open));
   if(open)choices.find(choice=>choice.checked)?.focus({preventScroll:true});
 });
+// Search renders outside the native top layer. Close the picker before handoff.
+const closePicker=()=>{if(picker?.matches(':popover-open'))picker.hidePopover();};
+document.addEventListener('keydown',event=>{
+  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k')closePicker();
+},{capture:true});
+document.addEventListener('click',event=>{
+  if(event.target instanceof Element&&event.target.closest('[data-palette-trigger]'))closePicker();
+},{capture:true});
+window.addEventListener('pagehide',closePicker);
 window.addEventListener('storage',event=>{if(event.key===THEME_KEY||event.key===null)restore();});
 window.addEventListener('pageshow',event=>{if(event.persisted)restore();});
 restore();
