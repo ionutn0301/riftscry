@@ -109,7 +109,10 @@ test('page crossing respects reduced motion without leaving stale copy or page e
   await expect(page).toHaveURL(url=>url.pathname==='/players');
   await expect(page.getByLabel('Riot ID',{exact:true})).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-motion','reduced');
-  await expect.poll(async()=>(await records(page)).at(-1)?.skipped).toBe(true);
+  // Skipping in the outgoing document can prevent the incoming native object
+  // from being created at all. Both paths must render the destination quietly.
+  await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+  expect((await records(page)).every(record=>!record.cinematic&&(record.skipped||record.finished))).toBe(true);
   expect(await page.evaluate(()=>document.getAnimations().some(animation=>animation.playState==='running'))).toBe(false);
   expect(errors).toEqual([]);
 });
