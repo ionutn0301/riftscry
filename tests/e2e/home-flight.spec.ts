@@ -78,6 +78,7 @@ test('cinematic home remains useful when the graphics context is unavailable',as
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/');await readyWorld(page);
   await expect(page.locator('[data-home-world-still]')).toBeVisible();await expect(page.locator('[data-home-world-canvas]')).toBeHidden();
+  await expect(page.locator('.home-instrument-still')).toBeVisible();
   await page.locator('.atlas-follow-signal').click();await expect(page.locator('#signal')).toBeVisible();
   await page.locator('[data-home-reveal]').click();await expect(page.locator('#reveal')).toBeVisible();
   await expect(page.locator('[data-home-record]:not([hidden]) .before')).not.toBeEmpty();
@@ -117,20 +118,54 @@ test('cinematic home keeps reading stable when the current scene is selected aga
   await expect(page.locator('#signal h2')).toHaveAccessibleName('Choose a champion.');
 });
 
-test('painted environment keeps the artwork intact and remains useful if its image fails',async({page})=>{
+test('the instrument and exact evidence remain useful if the optional atmosphere image fails',async({page})=>{
   await page.route('**/images/league/iceborn-vaults.webp',route=>route.abort());
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto('/');await readyWorld(page);
-  await expect(world(page)).toHaveAttribute('data-art-direction','painted');
-  await expect(world(page)).toHaveAttribute('data-film-paint','fallback');
-  await expect(page.locator('[data-home-world-canvas]')).toBeHidden();
-  await expect(page.locator('[data-home-world] svg polygon')).toHaveCount(0);
+  await expect(world(page)).toHaveAttribute('data-art-direction','cartographic');
+  await expect(world(page)).toHaveAttribute('data-film-artwork','fallback');
+  await expect(world(page)).toHaveAttribute('data-film-paint','ready');
+  await expect(page.locator('[data-home-world-canvas]')).toBeVisible();
   await page.locator('.atlas-follow-signal').click();
   await page.locator('[data-home-reveal]').click();
   const signal=(await homeSignals(page))[0]!;
+  await expect(page.locator('[data-home-record]:not([hidden]) .before')).toHaveText(signal.before);
   await expect(page.locator('[data-home-record]:not([hidden]) .after')).toHaveText(signal.after);
+  await expect(page.locator('[data-home-record]:not([hidden])').getByRole('link',{name:/Original source/})).toHaveAttribute('href',signal.sourceUrl);
   await page.locator('[data-home-keep]').click();await expect(page.locator('#carry')).toBeVisible();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('riftscry:kept-findings')??'[]'))).toEqual([
+    expect.objectContaining({id:signal.record.id,text:`${signal.before} → ${signal.after}`,href:signal.explore}),
+  ]);
+  await expect(page.locator('[data-home-explore]')).toHaveAttribute('href',signal.explore);
   expect(errors).toEqual([]);
+});
+
+test('the instrument starts and accepts scene choices before the atmosphere image finishes loading',async({page})=>{
+  let releaseArtwork!:()=>void;
+  const pendingArtwork=new Promise<void>(resolve=>{releaseArtwork=resolve;});
+  let requested=false;
+  await page.route('**/images/league/iceborn-vaults.webp',async route=>{
+    requested=true;
+    await pendingArtwork;
+    await route.abort();
+  });
+  try{
+    await page.goto('/',{waitUntil:'domcontentloaded'});await readyWorld(page);
+    await expect.poll(()=>requested).toBe(true);
+    expect(await page.locator('[data-home-world-source]').evaluate((image:HTMLImageElement)=>image.complete)).toBe(false);
+    await expect(world(page)).toHaveAttribute('data-film-paint','ready');
+    await expect(page.locator('[data-home-world-canvas]')).toBeVisible();
+    await page.locator('.atlas-follow-signal').click();
+    await expect(page.locator('#signal')).toBeVisible();
+    await page.locator('[data-home-reveal]').click();
+    await expect(page.locator('#reveal')).toBeVisible();
+    const signal=(await homeSignals(page))[0]!;
+    await expect(page.locator('[data-home-record]:not([hidden]) .after')).toHaveText(signal.after);
+  }finally{
+    releaseArtwork();
+  }
+  await expect(world(page)).toHaveAttribute('data-film-artwork','fallback');
+  await expect(page.locator('[data-home-world-canvas]')).toBeVisible();
 });
 
 test('appearance themes stay interactive on reduced-motion devices and survive navigation',async({page},info)=>{

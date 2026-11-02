@@ -1,4 +1,5 @@
 import { filmCamera, frameHomeArt } from '../lib/home-world';
+import { drawRiftInstrument } from '../lib/rift-instrument';
 
 const film = document.querySelector<HTMLElement>('[data-home-film]');
 if (film) mount(film);
@@ -44,13 +45,18 @@ function mount(film:HTMLElement) {
       lookX+=(pointerX-lookX)*(1-Math.exp(-4*dt));lookY+=(pointerY-lookY)*(1-Math.exp(-4*dt));
     }
     const camera=filmCamera(current,lookX,lookY);
-    ctx.fillStyle='#0b1115';ctx.fillRect(0,0,width,height);
+    ctx.fillStyle='#080f12';ctx.fillRect(0,0,width,height);
     if(artReady){
       const frame=frameHomeArt(camera,width,height,artwork.naturalWidth,artwork.naturalHeight);
+      ctx.globalAlpha=.075;
       ctx.drawImage(artwork,frame.x,frame.y,frame.width,frame.height);
-      // Keep the decoded native picture in place until its first complete paint.
-      if(canvas.hidden){canvas.hidden=false;world.dataset.filmPaint='ready';}
+      ctx.globalAlpha=1;
     }
+    const choices=[...film.querySelectorAll<HTMLElement>('[data-home-choice]')];
+    const focus=Math.max(0,choices.findIndex(choice=>choice.dataset.homeChoice===film.dataset.homeSubject));
+    drawRiftInstrument(ctx,{width,height,progress:current,lookX,lookY,focus,reduced});
+    // The original vector world never waits for an image or a player request.
+    if(canvas.hidden){canvas.hidden=false;world.dataset.filmPaint='ready';}
     if(now-painted>90||current===target){
       painted=now;world.dataset.filmProgress=current.toFixed(4);
       world.dataset.filmCamera=[camera.x,camera.y,camera.zoom].map(n=>n.toFixed(5)).join(',');
@@ -114,12 +120,14 @@ function mount(film:HTMLElement) {
     }
   },listen);
   window.addEventListener('riftscry:journey-change',scene,listen);
+  window.addEventListener('riftscry:focus-change',request,listen);
+  const subject=new MutationObserver(request);subject.observe(film,{attributes:true,attributeFilter:['data-home-subject']});
   const motion=()=>{reduced=document.documentElement.dataset.motion==='reduced'||(!document.documentElement.dataset.motion&&media.matches);world.dataset.filmMotion=reduced?'reduced':'full';scene();};
   const preference=new MutationObserver(motion);preference.observe(document.documentElement,{attributes:true,attributeFilter:['data-motion']});
   media.addEventListener('change',motion,listen);
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else{last=performance.now();request();}},listen);
   window.addEventListener('pageshow',event=>{if(event.persisted){resize();scene();}},listen);
-  window.addEventListener('pagehide',event=>{if(!event.persisted){abort.abort();observer.disconnect();preference.disconnect();cancelAnimationFrame(frame);words.forEach(a=>a.cancel());}},listen);
+  window.addEventListener('pagehide',event=>{if(!event.persisted){abort.abort();observer.disconnect();preference.disconnect();subject.disconnect();cancelAnimationFrame(frame);words.forEach(a=>a.cancel());}},listen);
   const observer=new ResizeObserver(resize);observer.observe(world);
   async function readyArtwork(){
     if(artReady||abort.signal.aborted)return;
@@ -127,11 +135,11 @@ function mount(film:HTMLElement) {
       await artwork.decode();
       if(abort.signal.aborted)return;
       artReady=artwork.complete&&artwork.naturalWidth>0;
-      if(artReady)resize();
-    }catch{world.dataset.filmPaint='fallback';}
+      if(artReady){world.dataset.filmArtwork='ready';resize();}
+    }catch{world.dataset.filmArtwork='fallback';}
   }
   artwork.addEventListener('load',()=>void readyArtwork(),listen);
-  artwork.addEventListener('error',()=>{world.dataset.filmPaint='fallback';},listen);
+  artwork.addEventListener('error',()=>{world.dataset.filmArtwork='fallback';},listen);
   if(artwork.complete)void readyArtwork();
   world.dataset.filmMotion=reduced?'reduced':'full';resize();scene();
 }
