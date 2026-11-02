@@ -1,12 +1,10 @@
 import {test,expect,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,platform,puuid,profilePath,query,recentAramWin,visualMatches} from './fixtures';
+import {cinemaFitsViewport,readyCinema} from '../e2e/cinema-test-helpers';
+import {reachableTarget,readyWorld} from '../e2e/journey-test-helpers';
 
-async function ready(page:Page){
-  await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
-  await expect(page.locator('astro-island[client="load"][ssr]')).toHaveCount(0);
-  await page.evaluate(()=>document.fonts.ready);
-}
+const ready=readyWorld;
 async function capture(page:Page,name:string){
   await mkdir('player-visuals',{recursive:true});
   await page.screenshot({path:`player-visuals/ux-${name}.png`});
@@ -42,7 +40,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:1440
   test(`${viewport.width}px UX audit: chapter names stay whole and have complete accessible labels`,async({page})=>{
     test.setTimeout(90_000);await page.setViewportSize(viewport);await installFixtures(page,{matches:visualMatches});
     const report=[];
-    for(const path of ['/','/explore','/champion/nunu','/pool','/notebook',`/matches/${recentAramWin.metadata.matchId}?${query}`,`/next-game?${query}`]){
+    for(const path of ['/explore','/champion/nunu','/pool','/notebook',`/matches/${recentAramWin.metadata.matchId}?${query}`,`/next-game?${query}`]){
       await page.goto(path);await ready(page);
       const labels=await page.locator('[data-journey-tab]').evaluateAll(tabs=>tabs.map(tab=>{
         const text=tab.firstChild,words=tab.textContent?.match(/\S+/g)??[];
@@ -122,22 +120,18 @@ test('UX audit: search distinguishes loading, failure and no matches and offers 
 });
 
 
-test('UX audit: a returning homepage leads with the useful player briefing',async({page})=>{
+test('UX audit: a returning homepage keeps the exact player briefing reachable',async({page})=>{
   await page.addInitScript(player=>localStorage.setItem('riftscry:recent-player:v1',JSON.stringify(player)),{platform,puuid,name:'Fixture Player#TEST'});
-  const requests=await installFixtures(page,{matches:visualMatches});await page.goto('/');await ready(page);
+  const requests=await installFixtures(page,{matches:visualMatches});await page.goto('/');await readyCinema(page);
+  const personal=page.locator('[data-home-personal]').first();
   for(const viewport of [{width:320,height:480},{width:568,height:320},{width:1440,height:900}]){
-    await page.setViewportSize(viewport);
-    const primary=page.locator('.home-approach-actions a:visible').first();
-    await expect(primary).toHaveAttribute('data-home-briefing','');await expect(primary).toHaveClass(/signal-primary-action/);
-    const frame=(await page.locator('#atlas').boundingBox())!;
-    for(const action of await page.locator('.home-approach-actions a:visible').all()){
-      const box=(await action.boundingBox())!;expect.soft(box.height).toBeGreaterThanOrEqual(44);
-      expect.soft(box.y).toBeGreaterThanOrEqual(frame.y-1);expect.soft(box.y+box.height).toBeLessThanOrEqual(frame.y+frame.height+1);
-    }
-    expect.soft(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeLessThanOrEqual(1);
+    await page.setViewportSize(viewport);await reachableTarget(personal,page);await cinemaFitsViewport(page);
+    const destination=new URL(await personal.getAttribute('href')??'',page.url());
+    expect(destination.pathname).toBe('/next-game');expect(destination.searchParams.get('platform')).toBe(platform);
+    expect(destination.searchParams.get('puuid')).toBe(puuid);expect(destination.searchParams.get('name')).toBe('Fixture Player#TEST');
     await capture(page,`returning-home-${viewport.width}x${viewport.height}`);
   }
-  expect(requests).toEqual([]);await page.locator('[data-home-briefing]').click();
+  expect(requests).toEqual([]);await personal.click();
   await expect(page).toHaveURL(url=>url.pathname==='/next-game'&&url.searchParams.get('puuid')===puuid);
   await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
 });

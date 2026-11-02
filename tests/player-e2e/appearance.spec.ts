@@ -1,25 +1,34 @@
 import {test,expect} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
 import {installFixtures} from './fixtures';
+import {cinemaFitsViewport,inspectCinema,openCinemaNavigation,readyCinema} from '../e2e/cinema-test-helpers';
 
 test('appearance themes work with device reduced motion and persist across the platform',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'reduce'});
-  await installFixtures(page);await page.goto('/');
-  const trigger=page.locator('[data-theme-toggle]');
-  await expect(trigger).toBeEnabled();await trigger.click();
-  const panel=page.locator('[data-appearance-panel]');await expect(panel).toBeVisible();
-  const bounds=(await panel.boundingBox())!;expect(bounds.x).toBeGreaterThanOrEqual(12);expect(bounds.x+bounds.width).toBeLessThanOrEqual(378);
-  await expect(page.locator('[data-motion-toggle]')).toBeDisabled();
-  await expect(page.locator('[data-motion-hint]')).toHaveText('Your device has reduced motion enabled.');
+  await installFixtures(page);await page.goto('/');await readyCinema(page);
+  const trigger=page.getByRole('button',{name:'Open navigation',exact:true});
+  const motion=page.locator('button[data-cinema-motion]');
+  const world=page.locator('[data-rift-cinema]');
+  await expect(motion).toHaveAttribute('aria-pressed','true');
+  await expect(world).toHaveAttribute('data-cinema-motion','reduced');
+  const panel=await openCinemaNavigation(page);
+  const bounds=(await panel.boundingBox())!;expect(bounds.x).toBeGreaterThanOrEqual(0);expect(bounds.x+bounds.width).toBeLessThanOrEqual(390);
   await page.locator('[data-theme-choice][value=ember]').check();
   await expect(page.locator('html')).toHaveAttribute('data-theme','ember');
-  await expect(trigger).toHaveAccessibleName('Choose theme, Ember selected');
-  await expect(page.locator('body')).toHaveCSS('background-color','rgb(20, 14, 12)');
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content','#140e0c');
   expect(await page.evaluate(()=>localStorage.getItem('riftscry:theme'))).toBe('ember');
   await mkdir('player-visuals',{recursive:true});await page.screenshot({path:'player-visuals/theme-picker-390x844.png'});
   await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
-  expect(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeLessThanOrEqual(1);
+  // The device preference chooses the initial state; an explicit visitor
+  // action can still enable the world, then return it to a quiet presentation.
+  await motion.click();
+  await expect(motion).toHaveAttribute('aria-pressed','false');
+  await expect(world).toHaveAttribute('data-cinema-motion','full');
+  await expect(motion).toHaveAccessibleName('Reduce cinematic motion');
+  await motion.click();
+  await expect(motion).toHaveAttribute('aria-pressed','true');
+  await expect(world).toHaveAttribute('data-cinema-motion','reduced');
+  await cinemaFitsViewport(page);
   await page.screenshot({path:'player-visuals/theme-ember-home-390x844.png'});
   await page.addInitScript(()=>{
     (window as any).__paintedThemes=[];
@@ -36,7 +45,7 @@ test('appearance themes work with device reduced motion and persist across the p
 });
 
 test('appearance themes support keyboard selection, storage updates and a return from history',async({page})=>{
-  await page.goto('/');const trigger=page.locator('[data-theme-toggle]');
+  await page.goto('/champions');const trigger=page.locator('[data-theme-toggle]');
   await trigger.focus();await page.keyboard.press('Enter');
   await expect(page.locator('[data-theme-choice][value=frost]')).toBeFocused();
   await page.keyboard.press('ArrowRight');await expect(page.locator('html')).toHaveAttribute('data-theme','ember');
@@ -62,8 +71,8 @@ test('appearance themes stay usable when preference storage is unavailable',asyn
     for(const method of ['getItem','setItem'] as const){const original=Storage.prototype[method];Object.defineProperty(Storage.prototype,method,{value:function(key:string,...args:string[]){if(key==='riftscry:theme')throw new DOMException('Unavailable','SecurityError');return Reflect.apply(original,this,[key,...args]);}});}
   });
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto('/');await page.locator('[data-theme-toggle]').click();await page.locator('[data-theme-choice][value=ember]').check();
+  await page.goto('/');await readyCinema(page);await openCinemaNavigation(page);await page.locator('[data-theme-choice][value=ember]').check();
   await expect(page.locator('html')).toHaveAttribute('data-theme','ember');
-  await page.keyboard.press('Escape');await page.locator('.atlas-follow-signal').click();await expect(page.locator('#signal')).toBeVisible();
+  await page.keyboard.press('Escape');await inspectCinema(page);
   expect(errors).toEqual([]);
 });

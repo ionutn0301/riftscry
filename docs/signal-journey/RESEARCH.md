@@ -1,4 +1,10 @@
-# Research behind the signal journey
+# Research behind the signal journey — superseded homepage direction
+
+**Historical research, 30 October 2026.** The homepage direction described below
+was superseded on 2 November 2026 by the
+[single-world Rift Cinema homepage](../rift-cinema/README.md). Retain this record
+for the platform interaction rationale and reference history; it is not the
+current homepage composition or release-verification record.
 
 Reviewed 30 October 2026. This is a focused comparison of current examples and
 primary technical guidance, used to make concrete design decisions for RiftScry.

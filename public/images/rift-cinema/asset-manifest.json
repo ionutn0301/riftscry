@@ -1,0 +1,78 @@
+{
+  "retrieved": "2026-11-02",
+  "artOwner": "Riot Games",
+  "provenanceNote": "These source links establish provenance. They do not imply that Riot endorses RiftScry. Keep the application’s Riot Games disclaimer.",
+  "assets": [
+    {
+      "file": "akali-figure.png",
+      "name": "Akali",
+      "sourcePage": "https://www.leagueoflegends.com/en-us/",
+      "sourceSection": "Choose your champion",
+      "sourceUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/befd42ad6d2564159a441d08cfc3bf511532eb74-1628x1628.png?accountingTag=LoL",
+      "width": 1628,
+      "height": 1628,
+      "bytes": 432261,
+      "sha256": "7902e3bf77e963c7ced07987995a9893e2cde8a165db58c8228f2212c3f6af7f",
+      "transformations": "None. Original official PNG with alpha.",
+      "notes": "Includes the original thin gold ring."
+    },
+    {
+      "file": "yasuo-figure.png",
+      "name": "Yasuo",
+      "sourcePage": "https://www.leagueoflegends.com/en-us/",
+      "sourceSection": "Choose your champion",
+      "sourceUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/70c26e49de8a2c79ac3de144772d2debd195edff-1628x1628.png?accountingTag=LoL",
+      "width": 1628,
+      "height": 1628,
+      "bytes": 596389,
+      "sha256": "d10d4d8c0722f61dceb61422d2e26e83ce608d2569f4fec2ddcc5af5c006b268",
+      "transformations": "None. Original official PNG with alpha.",
+      "notes": "Includes original painted wind strokes."
+    },
+    {
+      "file": "thresh-figure.png",
+      "name": "Thresh",
+      "sourcePage": "https://www.leagueoflegends.com/en-us/",
+      "sourceSection": "Choose your champion",
+      "sourceUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/dbdded937cd214bb2a1189697a9e4f49f8c04505-1628x1628.png?accountingTag=LoL",
+      "width": 1628,
+      "height": 1628,
+      "bytes": 669349,
+      "sha256": "ce383a4229a323a1ae24fd9033b6ee532b52e30ca190740eee13fce8f9c1ddb5",
+      "transformations": "None. Original official PNG with alpha.",
+      "notes": "Includes the original thin gold ring and spectral effects."
+    },
+    {
+      "file": "summoners-rift.webp",
+      "name": "Summoner’s Rift blue Nexus landscape",
+      "sourcePage": "https://www.leagueoflegends.com/en-us/how-to-play/",
+      "sourceSection": "Welcome to the Rift — Learn the basics",
+      "sourceUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/ffe8f50201af51a0956875d2aeeb9e662eb0b228-3840x2160.png?accountingTag=LoL",
+      "originalFile": "rift-landscape-original.png",
+      "originalDimensions": {
+        "width": 3840,
+        "height": 2160
+      },
+      "width": 2560,
+      "height": 1440,
+      "bytes": 412670,
+      "sha256": "91da9869ace425323b60da32ccd98d1dec08ed7c70c7c2b60c831afd020c8b14",
+      "transformations": "Resized to width 2560 with aspect ratio preserved; encoded WebP quality 90 with original alpha preserved. No generated or retouched content.",
+      "notes": "Official painted scene from the how-to-play page. Decorative scene; not a claim about live match geography."
+    }
+  ],
+  "font": {
+    "file": "../../../src/assets/fonts/rift-cinema/Cinzel-Variable.ttf",
+    "name": "Cinzel",
+    "designer": "Natanael Gama",
+    "sourceRepository": "https://github.com/google/fonts/tree/main/ofl/cinzel",
+    "sourceUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/cinzel/Cinzel%5Bwght%5D.ttf",
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "../../../src/assets/fonts/rift-cinema/OFL.txt",
+    "weightRange": [
+      400,
+      900
+    ],
+    "transformations": "None. Original variable TrueType file."
+  }
+}

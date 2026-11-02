@@ -1,10 +1,12 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import { installFixtures, platform, profilePath, puuid, query, recentAramWin, visualMatches } from './fixtures';
+import {cinemaFitsViewport,openCinemaNavigation} from '../e2e/cinema-test-helpers';
+import {readyWorld} from '../e2e/journey-test-helpers';
 
 // The development runtime serves the SSR player/profile/match documents.
 // All player responses are existing synthetic fixtures, never a live account.
 const routes = [
-  { path: '/', surface: 'home', action: '#atlas .atlas-follow-signal' },
+  { path: '/', surface: 'home', action: '[data-cinema-inspect]' },
   { path: '/explore#perspective', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },
@@ -20,12 +22,7 @@ const routes = [
   { path: '/404', surface: 'missing', action: '[data-journey-deck] a[href="/"]' },
 ];
 
-async function ready(page: Page) {
-  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
-  await expect(page.locator('[data-journey-deck]')).toHaveCount(1);
-  await expect(page.locator('astro-island[client="load"][ssr]')).toHaveCount(0);
-  await page.evaluate(() => document.fonts.ready);
-}
+const ready=readyWorld;
 
 async function reachable(control: Locator) {
   await control.scrollIntoViewIfNeeded();
@@ -50,28 +47,38 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       expect(response?.status()).toBe(route.surface === 'missing' ? 404 : 200);
       await ready(page);
       await expect(page.locator('body')).toHaveAttribute('data-surface', route.surface);
-      const panel = page.locator('[data-journey-panel]:visible');
-      await expect(panel).toHaveCount(1);
-      const geometry = await panel.evaluate(element => {
-        const box = element.getBoundingClientRect();
-        return { top: box.top, bottom: box.bottom, width: box.width, height: box.height };
-      });
-      expect(geometry.top).toBeGreaterThanOrEqual(0);
-      expect(geometry.width).toBeLessThanOrEqual(viewport.width + 1);
-      expect(geometry.width).toBeGreaterThan(0);
-      expect(geometry.height).toBeGreaterThan(100);
-      const panelCount = await page.locator('[data-journey-panel]').count();
-      if (panelCount > 1 && route.surface!=='home') await expect(page.locator('#main [data-journey-controls]')).toBeVisible();
-      // Single-task destinations do not need an extra scene-navigation row;
-      // their panel still has an accessible name and the same main navigation.
-      await expect(panel).toHaveAttribute('role', 'tabpanel');
-      await expect(panel).toHaveAccessibleName(/\S/);
-      const navigation = page.getByRole('navigation', { name:'Journey destinations', exact: true });
-      await expect(navigation.getByRole('link')).toHaveCount(5);
-      for (const name of ['Home','Briefing','Atlas','Games','Saved']) {
-        const destination = navigation.getByRole('link', { name, exact: true });
-        await reachable(destination);
-        expect((await destination.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      if(route.surface==='home'){
+        await cinemaFitsViewport(page);
+        await expect(page.locator('[data-journey-panel],.journey-chrome')).toHaveCount(0);
+        const menu=await openCinemaNavigation(page);
+        const destinations=menu.getByRole('navigation',{name:'RiftScry destinations',exact:true});
+        await expect(destinations.getByRole('link')).toHaveCount(5);
+        for(const link of await destinations.getByRole('link').all()){await reachable(link);expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);}
+        await page.keyboard.press('Escape');
+      }else{
+        const panel = page.locator('[data-journey-panel]:visible');
+        await expect(panel).toHaveCount(1);
+        const geometry = await panel.evaluate(element => {
+          const box = element.getBoundingClientRect();
+          return { top: box.top, bottom: box.bottom, width: box.width, height: box.height };
+        });
+        expect(geometry.top).toBeGreaterThanOrEqual(0);
+        expect(geometry.width).toBeLessThanOrEqual(viewport.width + 1);
+        expect(geometry.width).toBeGreaterThan(0);
+        expect(geometry.height).toBeGreaterThan(100);
+        const panelCount = await page.locator('[data-journey-panel]').count();
+        if (panelCount > 1) await expect(page.locator('#main [data-journey-controls]')).toBeVisible();
+        // Single-task destinations do not need an extra scene-navigation row;
+        // their panel still has an accessible name and the same main navigation.
+        await expect(panel).toHaveAttribute('role', 'tabpanel');
+        await expect(panel).toHaveAccessibleName(/\S/);
+        const navigation = page.getByRole('navigation', { name:'Journey destinations', exact: true });
+        await expect(navigation.getByRole('link')).toHaveCount(5);
+        for (const name of ['Home','Briefing','Atlas','Games','Saved']) {
+          const destination = navigation.getByRole('link', { name, exact: true });
+          await reachable(destination);
+          expect((await destination.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+        }
       }
       await reachable(page.locator(route.action).first());
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);

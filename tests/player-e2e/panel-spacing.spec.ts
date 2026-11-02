@@ -1,12 +1,10 @@
 import {test,expect,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,profilePath,query,recentAramWin,visualMatches} from './fixtures';
+import {cinemaFitsViewport,cinemaSignals,chooseSignal,closeEvidence,evidence,inspectCinema,readyCinema} from '../e2e/cinema-test-helpers';
+import {reachableTarget,readyWorld} from '../e2e/journey-test-helpers';
 
-async function ready(page:Page){
-  await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
-  await expect(page.locator('astro-island[client="load"][ssr]')).toHaveCount(0);
-  await page.evaluate(()=>document.fonts.ready);
-}
+const ready=readyWorld;
 
 // Measure the actual text, not just computed padding: nested wrappers can
 // provide an inset, and transformed letters can escape an otherwise padded box.
@@ -70,39 +68,23 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
 }
 
 for(const viewport of [{width:320,height:480},{width:320,height:568},{width:390,height:844},{width:568,height:320},{width:683,height:384},{width:1366,height:600},{width:1440,height:900}]){
-  test(`${viewport.width}×${viewport.height} panel spacing contains every home finding and action`,async({page})=>{
+  test(`${viewport.width}×${viewport.height} panel spacing contains every inspected finding and action`,async({page})=>{
     await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:viewport.width===390?'no-preference':'reduce'});
-    await installFixtures(page);await page.goto('/');await ready(page);await mkdir('player-visuals',{recursive:true});
-    const findings=await page.locator('[data-home-choice]').evaluateAll(nodes=>nodes.map(el=>el.getAttribute('data-home-choice')!));
-    expect(findings).toHaveLength(3);
+    await installFixtures(page);await page.goto('/');await readyCinema(page);await mkdir('player-visuals',{recursive:true});
     const report=[];
-    for(const finding of findings){
-      await page.locator('[data-journey-tab="signal"]').click();await page.locator(`[data-home-choice="${finding}"]`).click();
-      for(const scene of ['reveal','carry']){
-        await page.locator(`[data-journey-tab="${scene}"]`).click();
-        const panel=page.locator(`#${scene}`),desk=panel.locator('.signal-reveal-desk,.signal-carry-desk');
-        const frame=(await panel.boundingBox())!,surface=(await desk.boundingBox())!;
-        for(const value of await desk.locator('.signal-value:visible').all())await expect(value).toHaveCSS('transform','none');
-        const measures=await paintedSurfaces(page);
-        const nodes=await desk.evaluate(el=>[...el.querySelectorAll<HTMLElement>('header,article,.signal-aperture,.signal-reading,footer,.signal-reveal-actions,.signal-carried-record,.signal-opening-actions')].filter(node=>node.checkVisibility()).map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {class:node.className,rect:{y:r.y,height:r.height},padding:s.padding,margin:s.margin};}));
-        report.push({finding,scene,frame,surface,measures,nodes});
-        // Capture before assertions so a failure remains visually reviewable.
-        await page.screenshot({path:`player-visuals/spacing-home-${viewport.width}x${viewport.height}-${finding}-${scene}.png`});
-        expect.soft(surface.y,`${finding} ${scene}: panel top`).toBeGreaterThanOrEqual(frame.y-1);
-        expect.soft(surface.y+surface.height,`${finding} ${scene}: panel bottom`).toBeLessThanOrEqual(frame.y+frame.height+1);
-        expect.soft(await desk.evaluate(el=>parseFloat(getComputedStyle(el).paddingLeft))).toBeGreaterThanOrEqual(12);
-        for(const action of await desk.locator('a,button').all()){
-          if(!await action.isVisible())continue;
-          const box=(await action.boundingBox())!;
-          expect.soft(box.height).toBeGreaterThanOrEqual(44);
-          expect.soft(box.x-surface.x).toBeGreaterThanOrEqual(11.99);
-          expect.soft(surface.x+surface.width-box.x-box.width).toBeGreaterThanOrEqual(11.99);
-          expect.soft(box.y).toBeGreaterThanOrEqual(frame.y-1);
-          expect.soft(box.y+box.height).toBeLessThanOrEqual(frame.y+frame.height+1);
-        }
-        expect.soft(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeLessThanOrEqual(1);
-        expect.soft(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
-      }
+    for(const signal of await cinemaSignals(page)){
+      await chooseSignal(page,signal);await inspectCinema(page);
+      const dialog=evidence(page),record=dialog.locator('[data-home-record]:not([hidden])');
+      await expect(record.locator('.before')).toHaveText(signal.before);await expect(record.locator('.after')).toHaveText(signal.after);
+      const surface=(await dialog.boundingBox())!;
+      report.push({champion:signal.championId,surface,measures:await paintedSurfaces(page)});
+      await page.screenshot({path:`player-visuals/spacing-home-${viewport.width}x${viewport.height}-${signal.championId}-inspect.png`});
+      expect(surface.x).toBeGreaterThanOrEqual(-1);expect(surface.y).toBeGreaterThanOrEqual(-1);
+      expect(surface.x+surface.width).toBeLessThanOrEqual(viewport.width+1);expect(surface.y+surface.height).toBeLessThanOrEqual(viewport.height+1);
+      // Evidence may scroll inside its native modal on short screens. Every
+      // source/action must remain reachable without moving the world behind it.
+      for(const action of await dialog.locator('a:visible,button:visible').all())await reachableTarget(action,page);
+      await cinemaFitsViewport(page);await closeEvidence(page);
     }
     await writeFile(`player-visuals/spacing-home-${viewport.width}x${viewport.height}.json`,JSON.stringify(report,null,2));
   });

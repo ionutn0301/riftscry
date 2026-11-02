@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import SignalJourney from '../components/experience/SignalJourney.astro';
+import RiftCinema from '../components/experience/RiftCinema.astro';
 ---
-<Layout surface="home" title="RiftScry — Read the Rift." description="A League of Legends companion for the space between games. Explore exact champion changes, understand your recent games, and find a useful next move.">
+<Layout immersive surface="home" title="RiftScry — The Rift has changed." description="Step into the Rift. Explore your champions, uncover the changes that shape a fight, and turn your recent League of Legends games into your next move.">
   <script is:inline>
     // Existing shared journey links and saved reading places still reach their
     // original chapter after the companion becomes the front door.
@@ -12,5 +12,5 @@ import SignalJourney from '../components/experience/SignalJourney.astro';
       location.replace('/explore' + previousJourney.search + previousJourney.hash);
     }
   </script>
-  <SignalJourney />
+  <RiftCinema />
 </Layout>

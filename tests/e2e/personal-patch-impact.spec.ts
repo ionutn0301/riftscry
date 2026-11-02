@@ -365,7 +365,7 @@ for (const [width, height] of [[320, 568], [1440, 900]] as const) {
       { platform, puuid, name: 'Reference Fixture#TEST' });
     await page.goto('/');
     await readyWorld(page);
-    const cta = page.locator('.journey-spine [data-spine-station="next-game"]');
+    const cta = page.locator('[data-home-personal]').first();
     await expect(cta).toHaveAttribute('href', new RegExp(`/next-game\\?platform=${platform}&puuid=${puuid}`));
     expect(requests, 'The homepage must not import player data before entering the destination').toEqual([]);
     await cta.scrollIntoViewIfNeeded();

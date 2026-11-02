@@ -7,6 +7,8 @@ let userReduced = false;
 try { userReduced = localStorage.getItem('riftscry:motion') === 'reduced'; } catch { /* Browser preference still applies. */ }
 const motionButton = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
 function applyMotion() {
+  // The immersive world owns its explicit visitor preference and control.
+  if (root.dataset.motionPolicy === 'visitor') return;
   const reduced = preference.matches || userReduced;
   root.dataset.motion = reduced ? 'reduced' : 'full';
   motionButton?.setAttribute('aria-pressed', String(reduced));
@@ -129,7 +131,10 @@ document.addEventListener('click', (event) => {
   const sourceDialog = anchor.closest<HTMLDialogElement>('dialog[open]');
   if (destination.pathname !== location.pathname || destination.search !== location.search || !destination.hash) {
     // A route selected from the map must not restore an open modal on Back.
-    sourceDialog?.close();
+    // Cinema evidence owns an #inspect history entry. Preserve that dialog on
+    // a native exit so its close handler cannot traverse Back and cancel the
+    // destination; a cached return then restores the matching evidence view.
+    if (!sourceDialog?.matches('[data-cinema-evidence]')) sourceDialog?.close();
     return;
   }
   if (destination.pathname === location.pathname && destination.hash) {

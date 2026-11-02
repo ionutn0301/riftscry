@@ -34,7 +34,7 @@ jobs:
           tests/e2e/single-scroll-contract.spec.ts tests/e2e/briefing-report-composition.spec.ts
           tests/e2e/voyage-layout.spec.ts tests/e2e/voyage.spec.ts tests/e2e/connected-observatory.spec.ts
           --project=${{ matrix.project }}
-          --grep 'reveal, keep and carry|reduced motion keeps|long Continue|Rift map has no|champion search stays|phone chapter controls|populated briefing|chapter (history|return) layout at 390|reading destination|patch stations retain|Explore presents|keyboard scene navigation'
+          --grep 'inspection and explicit keep|reduced motion keeps|a long returning identity|champion search stays|phone chapter controls|populated briefing|chapter (history|return) layout at 390|reading destination|patch stations retain|Explore presents|keyboard scene navigation'
         env:
           CI: "true"
       - name: Retain surface geometry and browser evidence
@@ -62,11 +62,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium webkit
-      - name: Verify camera travel, native history, touch and reduced motion
+      - name: Verify the cinematic world, native history, touch and reduced motion
         run: pnpm exec playwright test tests/e2e/home-flight.spec.ts
         env:
           CI: "true"
-      - name: Retain scene frames, camera samples and full motion video
+      - name: Retain world states and full motion video
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -129,7 +129,7 @@ jobs:
         run: >
           pnpm exec playwright test --project=desktop --output=test-results/fallback
           tests/e2e/interaction-stability.spec.ts tests/e2e/rift-atlas.spec.ts tests/e2e/companion-home.spec.ts
-          --grep 'failed imagery leaves|all five destinations are genuine usable links|all acts expose exact source evidence'
+          --grep 'failed imagery leaves|all five destinations are genuine usable links|native world choices and product destinations work without JavaScript'
         env:
           CI: "true"
       - name: Retain transition videos and sampled paint layers

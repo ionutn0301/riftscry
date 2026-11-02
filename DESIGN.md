@@ -1,19 +1,20 @@
 # RiftScry design
 
-## Current direction: the Rift atlas and Read the Rift
+## Current direction: the Rift atlas platform and Rift Cinema entrance
 
 This contract retains the platform design from the 31 October 2026 refactor
 and the motion and return-path refinement of 1 November 2026. The homepage
-revision of 2 November 2026 introduces Read the Rift, a four-scene relief
-instrument journey documented in the
-[homepage research](docs/cinematic-instrument/RESEARCH.md).
+revision of 2 November 2026 introduces a single full-screen League world,
+documented in the [Rift Cinema record](docs/rift-cinema/README.md). It supersedes
+the same day's four-scene relief-instrument homepage after the user rejected
+that direction as too static and insufficiently recognizable as League.
 The [atlas audit](docs/rift-atlas/AUDIT.md) records the earlier platform change,
 which superseded scrolling-homepage, observatory, and disconnected player
 presentation amendments. See the [platform audit](docs/signal-journey/AUDIT.md)
 and [research](docs/signal-journey/RESEARCH.md) for that rationale, and
 [PRODUCT.md](PRODUCT.md) for evidence, queue, privacy, and storage contracts.
 
-The organizing idea is a connected world in the space between games. The Beacon
+The platform's organizing idea is a connected world in the space between games. The Beacon
 (briefing), Echoes (games), Archive (champions), Fracture (patches), and Sanctuary
 (saved material) are places on one atlas. A persistent route path and shared
 spatial map supply a stable geography across routes. The map menu uses one
@@ -35,21 +36,27 @@ patch pair gives the scene a subject. **Choose → reveal → inspect → keep**
 shared interaction grammar. The important moment is an understandable change or
 useful recorded fact; scenery and movement frame that moment.
 
-## One shell across the platform
+## Reader shell and homepage entrance
 
-The desktop header offers Discover, My game, and Saved. Mobile uses a compact
+On application reader routes, the desktop header offers Discover, My game, and Saved. Mobile uses a compact
 header, the five-place path and a full-screen Rift instrument. The map provides direct links to
 the five established destinations, with comparison, exploration, and notebook
 shortcuts. A lower continuation link follows the selected archive subject or
 player; named scene tabs and previous/next controls belong to the active route.
 No destination requires completing the homepage first.
 
-After enhancement, the shell fits the viewport and exposes one active scene.
+After enhancement, the reader shell fits the viewport and exposes one active scene.
 Long evidence grows in the document; the page has one vertical scroll and no nested reading panels. Hidden scenes are
 inert and removed from the focus order. Headers and route controls stay reachable;
 short screens must not hide the action or create a second document-sized page
 inside the shell. Ordinary document flow and source records remain the archive
 fallback without JavaScript.
+
+The homepage has a dedicated immersive composition in the shared layout. It
+replaces the reader header, route path and scene tabs with a compact brand row,
+champion selection, direct briefing/archive actions, and a navigation dialog.
+The world stays in one non-scrolling viewport. Its evidence dialog provides a
+scrollable reading area when the exact record needs more space.
 
 URL queries and fragments carry actual subject, scope, and scene state. Direct
 links, reload, modified clicks, and Back/Forward remain native browser behaviors.
@@ -58,20 +65,24 @@ delay a request, block a record, or require an animation to finish.
 
 ## The opening and its continuations
 
-The homepage is `SignalJourney.astro`. Read the Rift uses one persistent
-code-generated relief instrument across four authored poses. Framing, pointer
-lean, and contour emphasis connect the scenes; native scene controls and direct
-product links remain available throughout. The instrument is illustrative
-geography, not an accurate game map. Its selected marker is a presentation cue,
-not a champion's location or live telemetry. The five-destination map remains a
-separate shared navigation control.
+The homepage is `RiftCinema.astro`. Akali is visible on arrival against official
+painted Summoner's Rift scenery. Yasuo and Thresh offer alternate perspectives
+within the same world. Pointer movement or touch dragging adjusts the camera;
+ordinary champion links provide selection without requiring either gesture.
+There is no sequence of homepage sections or scroll-driven chapters.
 
-| Scene | Experience |
-| --- | --- |
-| Read the Rift — `#atlas` | Introduce the relief instrument and the product, enter the champion journey, open the latest archived patch, or continue directly to a briefing or remembered archive record. |
-| Find a signal — `#signal` | Recognizable champion art, a real archive example, a reveal action, and a direct route to the visitor's games. Featured subjects change the actual record. |
-| Reveal the change — `#reveal` | An exact before/after record or rule is the focal object. The field, patch, and source remain identifiable; keeping the finding is explicit. |
-| Take it forward — `#carry` | The selected record remains recognizable. Continue to the briefing, reopen kept findings, or trace the same subject in `/explore`. |
+Choosing a champion changes the actual record as well as artwork, identity,
+palette and atmosphere. “Scry this champion” and the ability hotspot open an
+evidence dialog while the camera reframes the subject. Exact before/after values,
+patch and source remain readable HTML; keeping a finding is explicit. The full
+record, saved findings, briefing, latest archived patch and other application
+destinations remain ordinary links. Selection and inspection have URL state and
+browser-history behavior.
+
+Champion artwork consists of transparent two-dimensional planes, not rigged 3D
+models. The decorative world is not live telemetry or an assertion about match
+geography. A static artwork composition remains available if WebGL cannot start;
+without JavaScript, champion and inspection links open their exact records.
 
 The homepage does not fetch player records. A validated remembered player
 personalizes its briefing link; public archive context can offer a continuation.
@@ -89,6 +100,8 @@ prominent, before/after strings are real text, and a source link stays nearby.
 A native range input and Before/After buttons change visual emphasis; they do
 not interpolate a stat, alter source values, or imply a game simulation. Long
 rank arrays, scaling expressions, units, and prose stay complete.
+The homepage's evidence dialog presents both exact values together and omits
+the emphasis scrubber; the shared reader controls remain available elsewhere.
 
 Champion histories focus one dated record while retaining the rest as ordinary
 links or disclosures. Patch pages focus one champion record with filters and
@@ -134,12 +147,14 @@ coordinates and metadata. Use open compositions, quiet borders, and intentional
 changes of scale. Reduce repeated explanation through native disclosures, not
 by truncating a visitor's notes or removing evidence.
 
-The homepage's original procedural relief establishes its visual identity,
-with optional Riot environment artwork providing atmosphere. Existing RiftScry
-environment illustrations retain their own provenance. Official Riot champion
-icons, portraits, and splash artwork identify the selected subject. These roles
-are distinct; see [the environment asset record](public/images/voyage/README.md)
-and [homepage research](docs/cinematic-instrument/RESEARCH.md).
+The homepage uses Cinzel for engraved display type and General Sans for controls
+and evidence. Warm ivory and gold complement the characters' own colours.
+Official Akali, Yasuo and Thresh foregrounds and the painted blue Nexus environment
+establish its visual identity; code supplies layered camera movement, mist,
+light and motes. The [asset manifest](public/images/rift-cinema/asset-manifest.json)
+and [homepage record](docs/rift-cinema/README.md) identify the original sources
+and the open font license. Earlier generated environment illustrations retain
+their own provenance and are not the homepage's visual source.
 Keep source text separate from imagery. Failed art retains readable identity and
 the task's controls. The optional environment renderer has a static fallback;
 no sound or 3D interaction is required to navigate or inspect a record.
@@ -162,8 +177,8 @@ shortcuts must not capture text entry or composition.
 | Evidence-to-action handoffs | `src/components/experience/JourneyHandoff.tsx`; native links from changes to impact, and from impact/loadout to the exact source match |
 | Scene visibility, history, and focus | `src/scripts/connected-observatory.ts`; shared map/motion behavior in `src/scripts/experience.ts` |
 | Public subject and player continuation | `src/scripts/signal-continuity.ts`, `src/lib/signal-context.ts`, `src/lib/player/identity.ts` |
-| Homepage records and continuation | `src/components/experience/SignalJourney.astro`, `src/scripts/signal-journey.ts`, `src/styles/signal-journey.css` |
-| Homepage instrument and composition | `src/components/experience/HomeWorld.astro`, `src/scripts/home-world.ts`, `src/lib/rift-instrument.ts`, `src/lib/home-world.ts`, `src/styles/home-film.css` |
+| Homepage records, composition and continuation | `src/components/experience/RiftCinema.astro`, `src/scripts/rift-cinema.ts`, `src/styles/rift-cinema.css` |
+| Homepage layered artwork, camera and atmosphere | `src/lib/rift-cinema-world.ts`, `public/images/rift-cinema/asset-manifest.json` |
 | Shared exact records and readers | `src/components/experience/SignalRecord.astro`, `src/scripts/signal-record.ts`, `src/styles/signal-readers.css` |
 | Champion exploration | `src/components/experience/HomeVoyage.astro`, `src/scripts/voyage.ts`, `src/styles/signal-explore.css` |
 | Roster/archive preview and comparisons | `src/scripts/reader-lens.ts`, `src/scripts/signal-comparison.ts` |
@@ -192,10 +207,16 @@ infrastructure was unavailable, Vercel access was protected, and the workspace
 became unavailable during cleanup. These results do not verify the subsequent
 homepage revision.
 
-Verification for the 2 November 2026 homepage revision is recorded in
+**Historical checkpoint: the earlier 2 November 2026 relief-instrument homepage.**
+
+Verification for that superseded homepage revision is recorded in
 [pull request #70](https://github.com/ionutn0301/riftscry/pull/70) and its CI
-artifacts; the [homepage record](docs/cinematic-instrument/README.md) provides
-the design decisions and comparison captures.
+artifacts; its [historical record](docs/cinematic-instrument/README.md) provides
+the design decisions and comparison captures. Those results do not verify Rift Cinema.
+
+**Current Rift Cinema verification is recorded in its release pull request and
+CI artifacts.** The [current homepage record](docs/rift-cinema/README.md) defines
+the review procedure and the evidence to attach to the release.
 Test collection is not a browser pass, historical screenshots are not current
 baselines, and controlled
 fixtures do not establish successful live Riot or AI access.

@@ -1,4 +1,5 @@
 import { test,expect } from '@playwright/test';
+import { readyCinema } from '../e2e/cinema-test-helpers';
 import { installFixtures,profilePath,query,sourceMatch,visualMatches,puuid } from './fixtures';
 
 for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,height:390},{width:1440,height:900}]){
@@ -33,8 +34,9 @@ test('the match overview reaches AI analysis in one deliberate action',async({pa
 test('a returning player reaches build evidence and match review from the homepage',async({page})=>{
   const requests=await installFixtures(page,{matches:[sourceMatch]});
   await page.addInitScript(({puuid})=>localStorage.setItem('riftscry:recent-player:v1',JSON.stringify({platform:'eun1',puuid,name:'Fixture Player#TEST'})),{puuid});
-  await page.goto('/');await expect(page.locator('[data-home-briefing-label]')).toHaveText('Continue briefing');
-  expect(requests).toEqual([]);await page.locator('[data-home-briefing]').click();
+  await page.goto('/');await readyCinema(page);
+  await expect(page.locator('[data-home-personal]').first()).toHaveAttribute('href',new RegExp(`puuid=${puuid}`));
+  expect(requests).toEqual([]);await page.locator('[data-home-personal]').first().click();
   await expect(page.locator('[data-journey-tab="changes"]')).toBeVisible();await page.locator('[data-journey-tab="changes"]').click();
   await page.locator('#changes .journey-handoff').click();await expect(page.locator('#impact')).toBeVisible();
   const source=page.locator('#impact .journey-handoff');await expect(source).toHaveAttribute('href',new RegExp(`/matches/${sourceMatch.metadata.matchId}\\?`));

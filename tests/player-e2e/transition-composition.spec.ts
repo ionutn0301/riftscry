@@ -2,11 +2,12 @@ import {expect,test,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,platform,profilePath} from './fixtures';
 import {navigateStation} from './navigation-controls';
+import {readyWorld} from '../e2e/journey-test-helpers';
 
 test.use({video:'on'});
 
 const probeKey='riftscry:test:crossing-paint';
-type Sample={time:number;clip:string;geometryAnimation:string;panelClipped:boolean;extraHomeSceneVisible:boolean;mobilePrimaryVisible:boolean;layers:{name:string;display:string;opacity:number}[]};
+type Sample={time:number;clip:string;geometryAnimation:string;panelClipped:boolean;homeHasLegacyControls:boolean;mobilePrimaryVisible:boolean;layers:{name:string;display:string;opacity:number}[]};
 type Crossing={id:string;path:string;ready:boolean;finished:boolean;skipped:boolean;cinematic:boolean;samples:Sample[]};
 
 async function observeCrossings(page:Page){
@@ -31,7 +32,7 @@ async function observeCrossings(page:Page){
             clip:getComputedStyle(document.documentElement,'::view-transition-new(journey-stage)').clipPath,
             geometryAnimation:getComputedStyle(document.documentElement,'::view-transition-group(journey-stage)').animationName,
             panelClipped:[...document.querySelectorAll('[data-journey-panel]')].some(panel=>panel.getClientRects().length>0&&getComputedStyle(panel).clipPath!=='none'),
-            extraHomeSceneVisible:[...document.querySelectorAll('.signal-journey[data-journey-active=atlas] > :is(.signal-subject-visual,.signal-cast,[data-journey-panel]:not(#atlas))')].some(element=>element.getClientRects().length>0),
+            homeHasLegacyControls:Boolean(document.querySelector('[data-rift-cinema]'))&&[...document.querySelectorAll('.journey-header,.journey-chrome,[data-journey-controls]')].some(element=>element.getClientRects().length>0),
             mobilePrimaryVisible:innerWidth<=700&&Boolean(primary?.getClientRects().length),
             layers:['root','journey-stage','journey-header','journey-navigation','player-identity'].map(name=>{
             const style=getComputedStyle(document.documentElement,`::view-transition-old(${name})`);
@@ -55,7 +56,7 @@ const records=(page:Page)=>page.evaluate(key=>JSON.parse(sessionStorage.getItem(
 
 async function crossing(page:Page,path:string){
   await expect(page).toHaveURL(url=>url.pathname===path);
-  await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
+  await readyWorld(page);
   await expect.poll(async()=>{
     const latest=(await records(page)).at(-1);return latest?.path===path&&latest.ready;
   },{message:`${path} must exercise a real native page crossing`}).toBe(true);
@@ -72,7 +73,7 @@ async function crossing(page:Page,path:string){
   expect(latest.samples.every(sample=>sample.clip==='none'),'Camera travel must not slice the incoming text').toBe(true);
   expect(latest.samples.every(sample=>sample.geometryAnimation==='none'),'Different page heights must not stretch the incoming text').toBe(true);
   expect(latest.samples.some(sample=>sample.panelClipped),'Chapter arrival must not slice the incoming text either').toBe(false);
-  expect(latest.samples.some(sample=>sample.extraHomeSceneVisible),'Returning home must never flash the other champion scene').toBe(false);
+  expect(latest.samples.some(sample=>sample.homeHasLegacyControls),'Returning to the immersive world must never flash the retired header or dock').toBe(false);
   expect(latest.samples.some(sample=>sample.mobilePrimaryVisible),'Desktop navigation must never flash on a phone').toBe(false);
   expect(await page.locator('.gateway-heading,.profile-identity-copy').evaluateAll(elements=>
     elements.every(element=>getComputedStyle(element).viewTransitionName==='none'))).toBe(true);
@@ -91,7 +92,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
       for(const path of ['/','/champions','/champion/ahri','/patches','/players',profilePath]){
         expect((await page.request.get(path)).ok()).toBe(true);
       }
-      await page.goto('/');await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
+      await page.goto('/');await readyWorld(page);
       await expect(page.locator('html')).toHaveAttribute('data-motion','full');
       await navigateStation(page,'champions');await crossing(page,'/champions');
       await page.locator('[data-roster-search]').fill('Ahri');
@@ -119,7 +120,7 @@ test('page crossing respects reduced motion without leaving stale copy or page e
   await page.emulateMedia({reducedMotion:'reduce'});await installFixtures(page);await observeCrossings(page);
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto('/champions');
-  await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
+  await readyWorld(page);
   await page.locator('.journey-spine [data-spine-station="players"]').click();
   await expect(page).toHaveURL(url=>url.pathname==='/players');
   await expect(page.getByLabel('Riot ID',{exact:true})).toBeVisible();

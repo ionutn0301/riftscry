@@ -1,5 +1,7 @@
 import {mapControl} from '../shared/navigation';
 import { expect, test, type Page } from '@playwright/test';
+import { cinema, cinemaFitsViewport, closeEvidence, evidence, inspectCinema, openCinemaNavigation, readyCinema } from './cinema-test-helpers';
+import { reachableTarget, readyWorld } from './journey-test-helpers';
 
 const routes = [
   '/', '/explore', '/champions', '/champion/ahri', '/patches', '/patch/26.16',
@@ -21,13 +23,11 @@ async function audit(page: Page) {
     return {
       containers,
       horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
-      hero: document.querySelector('.signal-journey')?.getBoundingClientRect().toJSON(),
-      artwork: document.querySelector('.signal-subject-visual')?.getBoundingClientRect().toJSON(),
-      footer: document.querySelector('.journey-chrome')?.getBoundingClientRect().toJSON(),
+      world: document.querySelector('[data-rift-cinema]')?.getBoundingClientRect().toJSON(),
     };
   });
 }
-test('every room has one vertical document scroll at desktop and phone sizes', async ({ page }, info) => {
+test('application rooms keep one document scroll and the immersive home stays in its viewport', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'Chromium geometry sweep; other suites cover WebKit');
   test.setTimeout(180_000);
   for (const { width, height } of [
@@ -39,24 +39,13 @@ test('every room has one vertical document scroll at desktop and phone sizes', a
     await page.emulateMedia({ reducedMotion: 'reduce' });
     for (const route of routes) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
-      await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
+      await readyWorld(page);
       await expect.poll(async () => (await audit(page)).horizontalOverflow,
         { message: route + ' at ' + width + 'x' + height + ' must never scroll horizontally' })
         .toBeLessThanOrEqual(1);
       const measured = await audit(page);
       expect(measured.containers, route + ' at ' + width + 'x' + height + ' has nested scrolling').toEqual([]);
-      if (route === '/') {
-        await expect.poll(async () => {
-          const current = await audit(page);
-          return Math.round((current.hero?.bottom ?? 99999) - (current.footer?.top ?? 0));
-        }, {message: 'Home hero must not cover navigation at ' + width + 'x' + height})
-          .toBeLessThanOrEqual(2);
-        expect(measured.hero).toBeTruthy();
-        if (height > 620) expect(measured.hero!.height, 'Home hero exceeds screen height at ' + width + 'x' + height)
-          .toBeLessThanOrEqual(height);
-        // On short displays the spatial atlas may grow in the ordinary document.
-        // Its individual portal hit targets are covered by rift-atlas.spec.ts.
-      }
+      if (route === '/') await cinemaFitsViewport(page);
     }
   }
 });
@@ -115,7 +104,7 @@ test('the champion search stays within one screen on phones and desktop', async 
   }
 });
 
-test('home actions stay tappable through all three acts on short screens', async ({ page }, info) => {
+test('home world controls and modal evidence stay tappable on short screens', async ({ page }, info) => {
   test.skip(info.project.name === 'mobile-chromium', 'Chromium and WebKit geometry runs cover this case');
   test.setTimeout(180_000);
   for (const { width, height } of [
@@ -123,28 +112,20 @@ test('home actions stay tappable through all three acts on short screens', async
     { width: 390, height: 844 }, { width: 844, height: 390 },
     { width: 1366, height: 768 },
   ]) {
-    await page.setViewportSize({ width, height });
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/');
-    await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
-    for (const scene of ['signal', 'reveal', 'carry'] as const) {
-      await page.locator('[data-journey-tab="' + scene + '"]').click();
-      const actions = page.locator('#' + scene + ' a:visible, #' + scene + ' button:visible');
-      for (const action of await actions.all()) {
-        await action.scrollIntoViewIfNeeded();
-        await expect.poll(() => action.evaluate(el => {
-          const r = el.getBoundingClientRect();
-          if (!r.width || !r.height) return true;
-          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-          return hit === el || (hit !== null && el.contains(hit));
-        }), { message: scene + ' action must receive a tap at ' + width + 'x' + height }).toBe(true);
-      }
-      const measure = await audit(page);
-      expect(measure.containers).toEqual([]);
-      expect(measure.horizontalOverflow).toBeLessThanOrEqual(1);
-      if (scene === 'signal') expect(measure.hero?.height).toBeLessThanOrEqual(height);
-      expect(measure.artwork?.height).toBeLessThanOrEqual(height);
-    }
+    await page.setViewportSize({ width, height }); await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/'); await readyCinema(page);
+    for (const control of await cinema(page).locator('a:visible,button:visible').all()) await reachableTarget(control, page);
+    await cinemaFitsViewport(page);
+    await inspectCinema(page);
+    for (const control of await evidence(page).locator('a:visible,button:visible').all()) await reachableTarget(control, page);
+    const scrolls = await evidence(page).evaluate(dialog => [dialog, ...dialog.querySelectorAll('*')]
+      .filter(element => element.getClientRects().length && /^(auto|scroll)$/.test(getComputedStyle(element).overflowY) && element.scrollHeight > element.clientHeight + 3)
+      .map(element => element.className));
+    expect(scrolls.length, 'Evidence may use one modal scroll, never competing nested scroll areas').toBeLessThanOrEqual(1);
+    await closeEvidence(page); await cinemaFitsViewport(page);
+    const menu = await openCinemaNavigation(page);
+    for (const control of await menu.locator('a:visible,button:visible').all()) await reachableTarget(control, page);
+    await page.keyboard.press('Escape'); await cinemaFitsViewport(page);
   }
 });
 
@@ -153,7 +134,8 @@ test('phone chapter controls have no overlapping or horizontally scrolling tab s
   test.setTimeout(120_000);
   for (const width of [320, 359, 390]) {
     await page.setViewportSize({ width, height: 568 });
-    for (const route of ['/', '/explore', '/pool', '/notebook']) {
+    // Chapter controls belong to application readers; the immersive home has no rail.
+    for (const route of ['/explore', '/pool', '/notebook']) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
       const tabs = page.locator('[data-journey-tab]');

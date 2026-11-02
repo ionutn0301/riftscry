@@ -1,0 +1,108 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../../assets/brand/logo-desktop-light.png';
+import { getChampionMeta, getLatestPatch, getPatch, getAssetVersion } from '../../lib/data';
+import { recordsFor } from '../../lib/investigation';
+import { buildHomeSignals } from '../../lib/home-signals';
+import { getAllPatches } from '../../lib/data';
+import SignalRecord from './SignalRecord.astro';
+import '../../styles/rift-cinema.css';
+
+const latest = getLatestPatch();
+const roster = getChampionMeta();
+const worlds = [
+  {id:'Akali', region:'IONIA', character:'The Rogue Assassin', primary:'#83cdb2', secondary:'#38656d', word:'SHROUD', number:'01', figure:'/images/rift-cinema/akali-figure.png'},
+  {id:'Yasuo', region:'IONIA', character:'The Unforgiven', primary:'#a9d5ea', secondary:'#476797', word:'WIND', number:'02', figure:'/images/rift-cinema/yasuo-figure.png'},
+  {id:'Thresh', region:'SHADOW ISLES', character:'The Chain Warden', primary:'#65ddaa', secondary:'#176d76', word:'SOUL', number:'03', figure:'/images/rift-cinema/thresh-figure.png'},
+];
+const signals = worlds.map(world => {
+  const candidates = recordsFor(world.id).filter(record => record.change.kind === 'numeric');
+  const newestPatch = candidates.at(-1)?.patch;
+  const record = candidates.filter(item => item.patch === newestPatch).sort((a,b) => {
+    const length=(r:typeof a)=>r.change.kind==='numeric'?r.change.before.length+r.change.after.length:0;
+    return length(a)-length(b);
+  })[0]!;
+  if (!record || record.change.kind !== 'numeric') throw new Error(`No numeric archive evidence for ${world.id}`);
+  const patch = getPatch(record.patch)!;
+  const champion = patch.champions.find(item => item.championId === world.id)!;
+  const explore = `/explore?champion=${world.id}&event=${encodeURIComponent(record.id)}#change`;
+  return {championId:world.id,championName:roster[world.id]!.name,patchId:record.patch,releaseDate:record.date,
+    icon:`https://ddragon.leagueoflegends.com/cdn/${getAssetVersion()}/img/champion/${world.id}.png`,
+    ability:record.ability,abilityName:record.abilityName,classification:champion.classification,direction:record.change.direction,
+    label:record.change.label,before:record.change.before,after:record.change.after,unit:record.change.unit,
+    href:`/patch/${record.patch}#${world.id.toLowerCase()}`,sourceUrl:record.source,record,explore,world};
+});
+const first=signals[0]!;
+const json=JSON.stringify(signals).replaceAll('<','\\u003c');
+const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=>{
+  const record=recordsFor(signal.championId).find(item=>item.patch===signal.patchId&&item.ability===signal.ability&&item.change.kind==='numeric'&&item.change.before===signal.before&&item.change.after===signal.after&&item.change.label===signal.label);
+  return {championId:signal.championId,explore:record?`/explore?champion=${signal.championId}&event=${encodeURIComponent(record.id)}#change`:signal.href};
+})).replaceAll('<','\\u003c');
+---
+<section class="rift-cinema" data-rift-cinema data-home-signals data-home-subject={first.championId} data-cinema-state="world" style={`--cinema-accent:${first.world.primary};--cinema-secondary:${first.world.secondary}`} aria-labelledby="cinema-title">
+  <div class="cinema-world" data-cinema-world aria-hidden="true">
+    <img class="cinema-environment" src="/images/rift-cinema/summoners-rift.webp" alt="" width="2560" height="1440" fetchpriority="high" />
+    <img class="cinema-poster" data-cinema-poster src={first.world.figure} alt="" width="1628" height="1628" fetchpriority="high" />
+    <canvas data-cinema-canvas></canvas>
+    <div class="cinema-world-shade"></div>
+    <div class="cinema-grain"></div>
+  </div>
+
+  <header class="cinema-header">
+    <a class="cinema-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={42} densities={[1,2]} loading="eager" /></a>
+    <span class="cinema-header-note">A LEAGUE OF LEGENDS COMPANION</span>
+    <nav class="cinema-utilities world-utilities" aria-label="Quick navigation">
+      <a href="/next-game" data-home-personal data-home-briefing data-station-link="next-game"><span data-home-briefing-label>My briefing</span><span aria-hidden="true">↗</span></a>
+      <button type="button" class="cinema-icon-button" data-palette-trigger aria-label="Search the archive"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button>
+      <button type="button" class="cinema-menu-trigger" data-cinema-menu-open aria-label="Open navigation" aria-haspopup="dialog" aria-controls="cinema-navigation"><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <div class="cinema-stage-mark" aria-hidden="true"><span>RIFT / S.CRY</span><i></i><span>ANOTHER PERSPECTIVE</span></div>
+
+  <div class="cinema-opening">
+    <p class="cinema-kicker"><i aria-hidden="true"></i> BEFORE YOUR NEXT QUEUE</p>
+    <h1 id="cinema-title"><span>The Rift</span><em>has changed.</em></h1>
+    <p class="cinema-introduction">Every patch leaves a mark.<br />Find the one that changes your next game.</p>
+    <div class="cinema-entry-actions"><a href={first.explore} class="cinema-primary" data-cinema-inspect><span class="cinema-primary-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="m24 6 18 18-18 18L6 24 24 6Z"/><path d="m24 16 8 8-8 8-8-8 8-8Z"/><path d="M24 2v8m0 28v8M2 24h8m28 0h8"/></svg></span><span><strong>Scry this champion</strong><small>UNCOVER AN ARCHIVED CHANGE</small></span><span class="cinema-action-arrow" aria-hidden="true">↗</span></a>
+    <a class="cinema-resume" href="/explore#change" data-home-reading hidden><span data-home-reading-label>Resume exploring</span><span aria-hidden="true">↗</span></a>
+    <a class="cinema-resume" href="/explore#change" data-home-context hidden></a>
+    <p class="cinema-return" data-home-return hidden></p></div>
+  </div>
+
+  <a href={first.explore} class="cinema-hotspot" data-cinema-inspect aria-label={`Inspect ${first.championName}'s archived change`}>
+    <span class="cinema-hotspot-orbit" aria-hidden="true"><i></i><b>+</b></span>
+    <span class="cinema-hotspot-caption"><small data-home-ability>{first.abilityName}</small><span>REVEAL THE CHANGE <b aria-hidden="true">↗</b></span></span>
+  </a>
+
+  <div class="cinema-identity" aria-live="off"><span class="cinema-identity-number" data-cinema-number>{first.world.number}</span><div><p><span data-cinema-region>{first.world.region}</span><i aria-hidden="true"></i><span data-cinema-character>{first.world.character}</span></p><h2 data-home-subject>{first.championName}</h2></div></div>
+
+  <div class="cinema-bottom">
+    <nav class="cinema-roster" aria-label="Choose your champion"><span class="cinema-roster-label">CHOOSE YOUR<br /><strong>PERSPECTIVE</strong></span><div class="cinema-roster-choices">{signals.map((signal,index)=><a href={signal.explore} data-home-choice={signal.championId} aria-current={index===0?'true':undefined} aria-label={`Enter ${signal.championName}'s world`} style={`--choice-accent:${signal.world.primary}`}><span class="cinema-roster-frame"><img src={signal.world.figure} alt="" width="1628" height="1628" loading={index===0?'eager':'lazy'} decoding="async" /></span><span>{signal.championName}</span><i aria-hidden="true"></i></a>)}</div></nav>
+    <span class="cinema-interaction-note" data-cinema-interaction><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8 3 12l4 4m10-8 4 4-4 4M3 12h18"/></svg><span>Move to look. Choose to discover.</span></span>
+    <a class="cinema-archive" href={`/patch/${latest.id}`}><span>LATEST ARCHIVE</span><strong>{latest.id}</strong><span aria-hidden="true">↗</span></a>
+  </div>
+
+  <footer class="cinema-footer"><button type="button" data-cinema-motion aria-pressed="false" aria-label="Reduce cinematic motion"><span class="cinema-motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-cinema-motion-label>WORLD IN MOTION</span></button><span>RIOT GAMES ARTWORK · INDEPENDENT FAN PROJECT</span><a href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer">BUILT BY IONUTN0301 <span aria-hidden="true">↗</span></a></footer>
+
+  <dialog class="cinema-evidence" data-cinema-evidence aria-labelledby="cinema-evidence-title">
+    <div class="cinema-evidence-sheet">
+      <header class="cinema-evidence-header"><span class="cinema-kicker">A CHANGE WORTH SEEING</span><button class="cinema-close" type="button" data-cinema-close aria-label="Close change"><span>Return to the Rift</span><b aria-hidden="true">×</b></button></header>
+      <div class="cinema-evidence-content"><p class="cinema-evidence-region" data-cinema-region>{first.world.region}</p><h2 id="cinema-evidence-title" data-cinema-evidence-name>{first.championName}</h2><p class="cinema-evidence-intro">One change. Its exact source. Your next perspective.</p>
+      {signals.map((signal,index)=><div data-home-record={signal.championId} hidden={index!==0}><SignalRecord label={signal.championName} championId={signal.championId} entries={[{change:signal.record.change,ability:signal.ability,abilityName:signal.abilityName}]} patchId={signal.patchId} sourceUrl={signal.sourceUrl}/></div>)}
+      <p class="cinema-save-status" role="status" data-home-keep-status></p>
+      </div>
+      <footer class="cinema-evidence-actions"><button type="button" class="cinema-save" data-home-keep hidden aria-pressed="false"><span>Keep this finding</span><span aria-hidden="true">+</span></button><a href={first.explore} data-home-explore><span>Explore the full record</span><span aria-hidden="true">↗</span></a><a href="/pool#findings" class="cinema-kept-link">Open kept findings <span aria-hidden="true">↗</span></a></footer>
+    </div>
+  </dialog>
+
+  <dialog id="cinema-navigation" class="cinema-navigation" data-cinema-menu aria-label="RiftScry navigation">
+    <header><a href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={40}/></a><button type="button" class="cinema-close" data-cinema-menu-close aria-label="Close navigation"><span>Close</span><b aria-hidden="true">×</b></button></header>
+    <div class="cinema-navigation-body"><div><p class="cinema-kicker">MAKE YOUR NEXT MOVE</p><nav aria-label="RiftScry destinations"><a href="/">Home <span>01</span></a><a href="/next-game" data-home-personal data-station-link="next-game">Briefing <span>02</span></a><a href="/champions">Atlas <span>03</span></a><a href="/players" data-station-link="players">Games <span>04</span></a><a href="/pool#findings">Saved <span>05</span></a></nav></div><aside><a href="/patches">Patch archive ↗</a><a href="/notebook">Your notebook ↗</a><button type="button" data-palette-trigger>Search the archive ↗</button><fieldset><legend>Application appearance</legend>{['frost','ember','obsidian'].map(theme=><label><input type="radio" name="appearance-theme" value={theme} data-theme-choice checked={theme==='frost'} disabled/><span>{theme}</span></label>)}</fieldset><p>RiftScry is an independent League of Legends companion. Champion and environment artwork © Riot Games.</p><a href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer">Explore the source ↗</a></aside></div>
+  </dialog>
+  <p class="sr-only" role="status" aria-live="polite" data-cinema-status></p>
+  <noscript><p class="cinema-nojs">Choose a champion to open their exact archive record, or <a href="/next-game">open your briefing</a>. The animated world needs JavaScript.</p></noscript>
+  <script is:inline type="application/json" id="home-signals-data" set:html={json}></script>
+  <script is:inline type="application/json" id="home-legacy-signals" set:html={legacy}></script>
+</section>
+<script>import '../../scripts/rift-cinema';</script>

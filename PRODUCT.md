@@ -1,11 +1,11 @@
 # RiftScry product contract
 
-Current contract for the Rift atlas, established 31 October 2026, with the
-Read the Rift homepage revision of 2 November 2026. This document and
+Current contract for the Rift atlas platform, established 31 October 2026, with
+the single-world Rift Cinema homepage revision of 2 November 2026. This document and
 [DESIGN.md](DESIGN.md) supersede earlier presentation storyboards. The
 [platform audit](docs/signal-journey/AUDIT.md) records the scope and cleanup;
 [the platform research](docs/signal-journey/RESEARCH.md) and
-[homepage research](docs/cinematic-instrument/RESEARCH.md) explain their respective
+[current homepage record](docs/rift-cinema/README.md) explain their respective
 design decisions.
 
 ## Purpose
@@ -15,12 +15,14 @@ match history. A visitor can follow a champion's change, discover what moved
 since a recorded game, inspect the evidence, and keep something useful for the
 next visit. The shared interaction is **choose → reveal → inspect → keep**.
 
-The homepage follows four connected scenes: atlas, signal, reveal, and carry.
-Its relief instrument frames a real, identified champion archive record; the
-five application destinations remain available through the shared map and
-navigation. Returning visitors can resume a selected player or public archive
-context. The entrance offers a direct remembered briefing and an exact archive
-reading link without requesting player data. Patch changes lead to personal item
+The homepage is one full-screen League world, with official Akali, Yasuo and
+Thresh artwork over a painted Summoner's Rift environment. Looking around and
+choosing a champion change the view; inspection opens that champion's exact
+archived change in a dialog. The entrance has no scroll-driven chapters. Its
+navigation exposes the existing application destinations, and returning visitors
+can resume a selected player or public archive context. The entrance offers a
+direct remembered briefing and an exact archive reading link without requesting
+player data. Patch changes lead to personal item
 impact; impact and loadout scenes link to their actual source match and its
 explicit AI action. Personal briefings build from available records without
 requiring a note, build entry, preparation card, or reflection. Each route
@@ -33,16 +35,20 @@ account does not verify ownership or create a synchronized RiftScry account.
 
 ## One journey, distinct useful destinations
 
-With JavaScript, the shared shell keeps one task chapter active. Named scene
+Away from the homepage, the shared shell keeps one task chapter active with
+JavaScript. Named scene
 controls move between tasks; longer evidence grows in the ordinary document. A
 spatial atlas and persistent destination path keep every chapter connected.
 The header provides **Discover, My game, and Saved**. The map exposes Briefing,
 Games, Champions, Patches, and Saved, with comparison and notebook shortcuts.
 Direct links, URL scope, browser Back, search, and reduced motion remain integral.
+The homepage uses its own full-screen composition and native navigation/evidence
+dialogs; long evidence remains readable within the dialog without scrolling the
+world itself.
 
 | Route | Product job |
 | --- | --- |
-| `/` | Enter the Read the Rift instrument journey, follow a champion signal, or resume remembered context. |
+| `/` | Enter the League world, choose Akali/Yasuo/Thresh, inspect an exact archived change, or resume remembered context. |
 | `/explore` | Follow a selected champion and field through exact changes, an explicit interval, and kept findings. |
 | `/next-game` | Assemble a focus, patch catch-up, supported patch-impact calculations, and the recorded final loadout from imported games. |
 | `/players` | Look up a player or resume the remembered player with the selected task and filters. |
@@ -145,18 +151,21 @@ scene tabs and dialogs, and ordinary links. Without JavaScript, server-rendered
 archive records and navigation remain readable; player requests and local
 personalization need JavaScript.
 
-The homepage's original code-generated relief is illustrative geography, not an
-accurate Summoner's Rift map or live game telemetry. Its decorative markers do
-not locate champions in a match. This instrument, original environment art, and
-official Riot atmosphere and champion artwork have separate provenance; retain
-the [asset record](public/images/voyage/README.md) and third-party Riot disclaimer.
-The visual treatment does not grant asset-policy clearance.
+The homepage uses layered two-dimensional official Riot artwork with optional
+WebGL camera and atmosphere effects. It does not contain rigged 3D champion
+models, live game telemetry, or a claim about a champion's position in a match.
+Retain the [asset manifest](public/images/rift-cinema/asset-manifest.json), the
+bundled Cinzel font license, and the third-party Riot disclaimer. Earlier
+environment illustrations have separate provenance and are not the homepage's
+visual source.
 
-Verification for the 2 November 2026 homepage revision is recorded in
-[pull request #70](https://github.com/ionutn0301/riftscry/pull/70) and its CI runs.
-The [homepage record](docs/cinematic-instrument/README.md) includes the design
-decisions and comparison captures. The pull request identifies the tested commit,
-checks, and remaining limitations.
+Verification for the current Rift Cinema homepage is recorded in its release
+pull request and CI artifacts. The
+[homepage record](docs/rift-cinema/README.md) describes the design, sources and
+review procedure. The earlier 2 November 2026 relief-instrument revision is
+recorded in [pull request #70](https://github.com/ionutn0301/riftscry/pull/70) and
+[its historical homepage record](docs/cinematic-instrument/README.md); those
+results apply to that superseded implementation.
 Do not treat test collection, typechecking, a build, historical screenshots, or
 fixture-backed results as a current visual sign-off or a successful live-account
 lookup. Earlier release records remain discoverable under [docs](docs/) and in

@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { COMPANION_KEY } from '../../src/lib/companion';
 import { openScene } from './profile-controls';
 import { openBriefingSettings } from './briefing-controls';
+import { readyCinema } from '../e2e/cinema-test-helpers';
 import { RECENT_PLAYER_KEY } from '../../src/lib/player/identity';
 import {
   installFixtures, mayhemMatch, otherPuuid, platform, profilePath, puuid, query, recentAramLoss, recentAramWin,
@@ -19,9 +20,9 @@ function isBriefingTarget(url: URL, queue: string, champion = 'Ahri') {
 
 test('homepage My game prepares the briefing and continues into matches after one lookup', async ({ page }) => {
   const requests = await installFixtures(page, { matches: [recentAramWin] });
-  await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Read the Rift.');
-  await page.locator('#atlas [data-home-briefing]').click();
+  await page.goto('/'); await readyCinema(page);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('The Rift has changed.');
+  await page.locator('[data-home-personal]').first().click();
   await expect(page).toHaveURL(url => url.pathname === '/next-game');
   const lookup = page.getByRole('form', { name: 'Get an automatic player briefing', exact: true });
   await expect(lookup).toBeVisible();
