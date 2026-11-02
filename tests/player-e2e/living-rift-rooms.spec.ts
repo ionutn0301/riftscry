@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 import { installFixtures, platform, profilePath, puuid, query, recentAramWin, visualMatches } from './fixtures';
+import {readyCinema} from '../e2e/cinema-test-helpers';
 
 // These documents include SSR player routes. Use the fixture-backed Astro
 // runtime, rather than the static archive server, to test their shared scene.
 const rooms = [
-  { path: '/', surface: 'home', task: '#atlas .atlas-follow-signal' },
+  { path: '/', surface: 'home', task: '[data-cinema-inspect]' },
   { path: '/explore', surface: 'explore', task: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', task: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', task: '[data-direct-save="Nunu"]' },
@@ -21,6 +22,7 @@ const rooms = [
 ];
 
 async function ready(page: Page) {
+  if(await page.locator('[data-rift-cinema]').count()){await readyCinema(page);return;}
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-ready', 'true');
   await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
   await expect(page.locator('astro-island[client="load"][ssr]')).toHaveCount(0);
@@ -28,7 +30,7 @@ async function ready(page: Page) {
 }
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
-  test(`${viewport.width}px: one shared scene frames every room without covering its first task`, async ({ page }) => {
+  test(`${viewport.width}px: one shared scene frames application rooms and cinema keeps the home task reachable`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -41,18 +43,22 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         await page.goto(room.path, { waitUntil: 'domcontentloaded' });
         await ready(page);
         await expect(page.locator('body')).toHaveAttribute('data-surface', room.surface);
-        const scene = page.locator('[data-rift-scene]');
-        await expect(scene).toHaveCount(1);
-        await expect(scene).toHaveAttribute('aria-hidden', 'true');
-        await expect(scene).toHaveAttribute('data-rift-surface', room.surface);
-        // This scenario deliberately uses reduced motion. Every route must
-        // retain the authored environment when the animated renderer is off.
-        await expect(scene).toHaveAttribute('data-rift-renderer', 'static');
-        await expect(scene).toHaveAttribute('data-rift-motion', 'still');
-        if(room.surface==='home')await expect(page.locator('[data-home-world-canvas]')).toBeVisible();
-        else await expect(scene.locator('[data-rift-scene-static]')).toBeVisible();
-        await expect(scene.locator('[data-rift-scene-canvas]')).toBeHidden();
-        await expect(scene.locator('a, button, input, select, textarea, [tabindex]')).toHaveCount(0);
+        if(room.surface==='home'){
+          await expect(page.locator('[data-rift-scene]')).toHaveCount(0);
+          await expect(page.locator('[data-cinema-canvas]')).toHaveCount(1);
+        }else{
+          const scene = page.locator('[data-rift-scene]');
+          await expect(scene).toHaveCount(1);
+          await expect(scene).toHaveAttribute('aria-hidden', 'true');
+          await expect(scene).toHaveAttribute('data-rift-surface', room.surface);
+          // This scenario deliberately uses reduced motion. Every route must
+          // retain the authored environment when the animated renderer is off.
+          await expect(scene).toHaveAttribute('data-rift-renderer', 'static');
+          await expect(scene).toHaveAttribute('data-rift-motion', 'still');
+          await expect(scene.locator('[data-rift-scene-static]')).toBeVisible();
+          await expect(scene.locator('[data-rift-scene-canvas]')).toBeHidden();
+          await expect(scene.locator('a, button, input, select, textarea, [tabindex]')).toHaveCount(0);
+        }
         const task = page.locator(room.task).first();
         await task.scrollIntoViewIfNeeded();
         await expect(task).toBeInViewport({ ratio: .99 });

@@ -29,7 +29,7 @@ const inferredSurface = isHome ? "home" : Astro.url.pathname.split("/")[1] || "m
 const surface = requestedSurface ?? inferredSurface;
 ---
 
-<html lang="en">
+<html lang="en" data-motion-policy={immersive ? 'visitor' : 'device'}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -59,7 +59,9 @@ const surface = requestedSurface ?? inferredSurface;
       document.documentElement.dataset.theme=savedTheme;
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content',{frost:'#071016',ember:'#140e0c',obsidian:'#0e0e10'}[savedTheme]);
       try {
-        document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches || localStorage.getItem('riftscry:motion') === 'reduced' ? 'reduced' : 'full';
+        const storedMotion=localStorage.getItem('riftscry:motion');
+        const explicitMotion=document.documentElement.dataset.motionPolicy==='visitor' && (storedMotion==='full'||storedMotion==='reduced');
+        document.documentElement.dataset.motion = explicitMotion ? storedMotion : matchMedia('(prefers-reduced-motion: reduce)').matches || storedMotion === 'reduced' ? 'reduced' : 'full';
       } catch { document.documentElement.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'; }
       // Read native activation metadata rather than intercepting clicks. The
       // browser still owns URLs, modified links, cancellation and Back/Forward.

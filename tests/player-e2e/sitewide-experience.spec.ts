@@ -2,6 +2,7 @@ import {mapControl} from '../shared/navigation';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { readdirSync, readFileSync } from 'node:fs';
 import { installFixtures, profilePath, query, recentAramWin, visualMatches } from './fixtures';
+import { readyWorld } from '../e2e/journey-test-helpers';
 
 // Run against the development runtime: player and match documents are SSR.
 // Player responses below are isolated browser fixtures, never live accounts.
@@ -14,7 +15,7 @@ const patchIds = readdirSync(patchDirectory).filter(file => file.endsWith('.json
 const latestPatchId = patchIds[0]!;
 const previousPatchId = patchIds[1]!;
 const routes = [
-  { path: '/', surface: 'home', action: '#atlas .atlas-follow-signal' },
+  { path: '/', surface: 'home', action: '[data-cinema-inspect]' },
   { path: '/explore', surface: 'explore', action: '[data-roster-open]' },
   { path: '/champions', surface: 'champions', action: '[data-roster-search]' },
   { path: '/champion/nunu', surface: 'champion', action: '[data-direct-save="Nunu"]' },
@@ -32,9 +33,7 @@ const routes = [
 
 async function settled(page: Page) {
   await expect(page.locator('main h1')).toHaveCount(1);
-  await expect(page.locator('body')).toHaveAttribute('data-journey-ready', 'true');
-  await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator('astro-island[client="load"][ssr]')).toHaveCount(0);
+  await readyWorld(page);
 }
 
 async function contained(locator: Locator, viewportWidth: number) {
@@ -62,13 +61,14 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         await expect(page.locator('main h1')).toBeInViewport({ ratio: 1 });
         const header = page.getByRole('banner', { name: 'RiftScry controls' });
         const color = await page.locator('body').evaluate(element => getComputedStyle(element).backgroundColor);
-        if (!canvasColor) canvasColor = color;
-        expect(color, 'The page canvas should retain the shared theme between destinations').toBe(canvasColor);
-        for (const control of [
-          mapControl(page),
-          header.getByRole('button', { name: 'Search the archive', exact: true }),
-          header.locator('[data-theme-toggle]'),
-        ]) {
+        if (route.surface !== 'home') {
+          if (!canvasColor) canvasColor = color;
+          expect(color, 'Application documents retain the shared theme').toBe(canvasColor);
+        }
+        const controls = route.surface === 'home'
+          ? [page.getByRole('button', { name: 'Open navigation', exact: true })]
+          : [mapControl(page), header.getByRole('button', { name: 'Search the archive', exact: true }), header.locator('[data-theme-toggle]')];
+        for (const control of controls) {
           await expect(control).toBeInViewport({ ratio: 1 });
           await contained(control, viewport.width);
           expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(44);
@@ -192,7 +192,7 @@ for (const preference of ['operating-system', 'saved'] as const) {
       await page.goto(path);
       await settled(page);
       await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
-      await expect(page.locator('[data-motion-toggle]')).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.locator(path === '/' ? 'button[data-cinema-motion]' : '[data-motion-toggle]')).toHaveAttribute('aria-pressed', 'true');
       const loops = await page.evaluate(() => document.getAnimations().filter(animation =>
         animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length);
       expect(loops, `Decorative loops must stop on ${path}`).toBe(0);

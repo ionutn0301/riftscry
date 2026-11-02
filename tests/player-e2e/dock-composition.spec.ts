@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
+import {readyCinema} from '../e2e/cinema-test-helpers';
 import {installFixtures,profilePath,query,recentAramWin,visualMatches} from './fixtures';
 
 const labels=['Home','Briefing','Atlas','Games','Saved'];
@@ -10,11 +11,11 @@ async function ready(page:Page){
 }
 
 for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,height:390},{width:1440,height:900}]){
-  test(`${viewport.width}×${viewport.height}: one consistent dock across home, profile and archive pages`,async({page})=>{
+  test(`${viewport.width}×${viewport.height}: one consistent dock across profile and archive pages`,async({page})=>{
     test.setTimeout(120_000);await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
     await installFixtures(page,{matches:visualMatches});await mkdir('player-visuals',{recursive:true});
     let baseline:number[]|undefined;
-    for(const route of [{path:'/',current:'Home',capture:'home'},{path:profilePath,current:'Games',capture:'profile'},{path:'/champions',current:'Atlas',capture:'champions'},{path:'/patches',current:'Atlas',capture:'patches'},{path:'/pool#edit-pool',current:'Saved',capture:'saved'}]){
+    for(const route of [{path:profilePath,current:'Games',capture:'profile'},{path:'/champions',current:'Atlas',capture:'champions'},{path:'/patches',current:'Atlas',capture:'patches'},{path:'/pool#edit-pool',current:'Saved',capture:'saved'}]){
       await page.goto(route.path,{waitUntil:'domcontentloaded'});await ready(page);
       if(route.current==='Games')await expect(page.locator('.match-row').first()).toBeVisible();
       const chrome=page.locator('.journey-chrome'),dock=chrome.locator('.journey-dock');
@@ -45,7 +46,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
       await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
       expect((await last.boundingBox())!.y+(await last.boundingBox())!.height).toBeLessThanOrEqual(box.y-8);
       await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
-      if(['home','profile'].includes(route.capture))await page.screenshot({path:`player-visuals/dock-${route.capture}-${viewport.width}x${viewport.height}.png`,animations:'disabled'});
+      if(route.capture==='profile')await page.screenshot({path:`player-visuals/dock-${route.capture}-${viewport.width}x${viewport.height}.png`,animations:'disabled'});
     }
   });
 }
@@ -53,7 +54,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
 test.describe('Touch dock navigation',()=>{
   test.use({viewport:{width:390,height:844},hasTouch:true});
   test('one consistent dock opens Atlas, restores focus and reaches champions and patches',async({page})=>{
-    await page.emulateMedia({reducedMotion:'reduce'});await installFixtures(page);await page.goto('/');await ready(page);
+    await page.emulateMedia({reducedMotion:'reduce'});await installFixtures(page);await page.goto('/champions');await ready(page);
     const atlas=page.locator('[data-dock-atlas]');await atlas.tap();
     await expect(atlas).toHaveAttribute('aria-expanded','true');await expect(page.locator('#rift-map-dialog')).toBeVisible();
     await page.keyboard.press('Escape');await expect(atlas).toBeFocused();await expect(atlas).toHaveAttribute('aria-expanded','false');
@@ -70,8 +71,9 @@ test.describe('Touch dock navigation',()=>{
       await expect(page).toHaveURL(url=>url.pathname===`/${station}`);await ready(page);
       await expect(atlas).toHaveAttribute('aria-current','location');
     }
-    await page.locator('.journey-spine-home').tap();await expect(page).toHaveURL(url=>url.pathname==='/');await ready(page);
-    await expect(page.locator('.journey-dock a[aria-current]')).toHaveAccessibleName('Home');
+    await page.locator('.journey-spine-home').tap();await expect(page).toHaveURL(url=>url.pathname==='/');await readyCinema(page);
+    await expect(page.locator('.journey-chrome')).toHaveCount(0);
+    await expect(page.getByRole('button',{name:'Open navigation',exact:true})).toBeVisible();
   });
 });
 

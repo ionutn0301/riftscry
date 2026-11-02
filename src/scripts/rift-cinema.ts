@@ -22,6 +22,10 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   const keep=root.querySelector<HTMLButtonElement>('[data-home-keep]')!;
   const motion=root.querySelector<HTMLButtonElement>('[data-cinema-motion]')!;
   const media=matchMedia('(prefers-reduced-motion: reduce)');
+  const readMotion=()=>{try{const value=localStorage.getItem('riftscry:motion');return value==='full'||value==='reduced'?value:null;}catch{return null;}};
+  let motionChoice=readMotion();
+  const restoreMotion=()=>{document.documentElement.dataset.motion=motionChoice??(media.matches?'reduced':'full');};
+  restoreMotion();
   let current=signals[0]!;
   let retained=readSignalContext();
   let world:RiftCinemaWorld|null=null;
@@ -143,12 +147,12 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     motion.setAttribute('aria-pressed',String(quiet));motion.setAttribute('aria-label',quiet?'Enable cinematic motion':'Reduce cinematic motion');text('[data-cinema-motion-label]',quiet?'STILL WORLD':'WORLD IN MOTION');
   }
   motion.addEventListener('click',()=>{
-    const quiet=!reduced();document.documentElement.dataset.motion=quiet?'reduced':'full';
-    try{localStorage.setItem('riftscry:motion',quiet?'reduced':'full');}catch{/* Keep the visible preference for this visit. */}
+    motionChoice=reduced()?'full':'reduced';restoreMotion();
+    try{localStorage.setItem('riftscry:motion',motionChoice);}catch{/* Keep the visible preference for this visit. */}
     applyMotion();
   },events);
   const preference=new MutationObserver(applyMotion);preference.observe(document.documentElement,{attributes:true,attributeFilter:['data-motion']});
-  media.addEventListener('change',()=>{document.documentElement.dataset.motion=media.matches?'reduced':'full';applyMotion();},events);
+  media.addEventListener('change',()=>{restoreMotion();applyMotion();},events);
   function sendPointer(){pointerFrame=0;if(!reduced()&&!evidence.open&&!menu.open)world?.setPointer(pointer.x,pointer.y);}
   root.addEventListener('pointermove',event=>{
     if(event.pointerType!=='mouse'&&!drag)return;
@@ -184,7 +188,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     if(event.key===SIGNAL_CONTEXT_KEY||event.key===null)retained=readSignalContext();
     if([RECENT_PLAYER_KEY,'riftscry:remembered-player:v1',SIGNAL_CONTEXT_KEY,RESUME_KEY,null].includes(event.key))resume();
     if(event.key===FINDINGS_KEY||event.key===null)saved();
-    if(event.key==='riftscry:motion'||event.key===null){try{document.documentElement.dataset.motion=media.matches||localStorage.getItem('riftscry:motion')==='reduced'?'reduced':'full';}catch{document.documentElement.dataset.motion=media.matches?'reduced':'full';}applyMotion();}
+    if(event.key==='riftscry:motion'||event.key===null){motionChoice=readMotion();restoreMotion();applyMotion();}
   },events);
   window.addEventListener('pageshow',()=>{retained=readSignalContext();resume();saved();world?.resize();},events);
   window.addEventListener('pagehide',event=>{if(!event.persisted){abort.abort();preference.disconnect();world?.dispose();clearTimeout(changeTimer);cancelAnimationFrame(pointerFrame);}},events);

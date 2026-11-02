@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import { readyCinema } from './cinema-test-helpers';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,makeMatch,baseTime} from '../player-e2e/fixtures';
 
@@ -82,14 +83,14 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
 test('populated briefing navigation paints the dock above the incoming page camera',async({page},info)=>{
   await page.setViewportSize({width:390,height:844});await installFixtures(page,{matches:records});
   await page.addInitScript(player=>localStorage.setItem('riftscry:recent-player:v1',JSON.stringify(player)),{platform:'eun1',puuid:playerId,name:'Fixture Player#EUNE'});
-  await page.goto('/');await page.locator('.journey-dock [data-station-link="next-game"]').click();
+  await page.goto('/');await readyCinema(page);await page.locator('[data-home-personal]').first().click();
   await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
   await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
   const result=await shell(page);
   expect(result.navTransition,'The fixed dock needs its own paint layer during native page crossings').toBe('journey-navigation');
   expect(Number(result.navZ)).toBeGreaterThan(Number(result.stageZ));
   await capture(page,`${info.project.name}-native-entry`);
-  await page.goBack();await expect(page.locator('#atlas')).toBeVisible();
+  await page.goBack();await readyCinema(page);await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-cinema-state','world');
   await page.goForward();await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
   await shell(page);
 });

@@ -1,4 +1,4 @@
-import {mapControl} from '../shared/navigation';
+import { readyCinema, inspectCinema, closeEvidence, openCinemaNavigation } from './cinema-test-helpers';
 import { stationaryWorld } from './journey-test-helpers';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import historicalPatch from '../../src/data/patches/26.16.json' with { type: 'json' };
@@ -35,21 +35,13 @@ async function activeScene(page: Page, id: string) {
 test('the opening reveals a real signal and its menu supports a useful champion choice', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/');
-  await ready(page);
-  await expect(page.locator('[data-home-signals]')).toBeVisible();
-  await page.locator('.atlas-follow-signal').click();
-  await page.locator('[data-home-reveal]').click();
-  const reveal = await activeScene(page, 'reveal');
+  await page.goto('/'); await readyCinema(page);
+  const reveal = await inspectCinema(page);
   await expect(reveal.locator('[data-home-record]:not([hidden]) .before')).not.toBeEmpty();
   await expect(reveal.locator('[data-home-record]:not([hidden]) .after')).not.toBeEmpty();
-  await mapControl(page).click();
-  const map = page.locator('#rift-map-dialog');
-  const destinations = map.locator('a[data-world-link]');
-  await expect(destinations).toHaveCount(5);
-  const paths = await destinations.evaluateAll(links => links.map(link => new URL((link as HTMLAnchorElement).href).pathname).sort());
-  expect(paths).toEqual(['/champions', '/next-game', '/patches', '/players', '/pool']);
-  const champions = map.locator('a[data-world-link][href="/champions"]');
+  await closeEvidence(page);
+  const menu = await openCinemaNavigation(page);
+  const champions = menu.locator('a[href="/champions"]');
   await champions.scrollIntoViewIfNeeded();
   await reachable(champions);
   await champions.click();

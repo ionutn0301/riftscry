@@ -373,7 +373,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
   const media = matchMedia('(prefers-reduced-motion: reduce)');
   const textureResources = new Set<WebGLTexture>(), images = new Set<HTMLImageElement>();
   const textureCache = new Map<string, Promise<Texture>>();
-  let disposed = false, lost = false, visible = true, ready = false, requestedReduced = options.reducedMotion ?? false;
+  let disposed = false, lost = false, failed = false, visible = true, ready = false, requestedReduced = options.reducedMotion ?? false;
   let width = 1, height = 1, dpr = 1, frame = 0, last = 0, elapsed = 0, scene = 0, targetScene = 0, blend = 1;
   let lookX = 0, lookY = 0, targetX = 0, targetY = 0, requestId = 0;
   let selected = options.champions.find(item => item.id === options.initialChampion) ?? options.champions[0];
@@ -421,19 +421,25 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     if (base.status !== 'fulfilled') {
       if (url !== options.environmentUrl) {
         try { const fallback = await loadTexture(options.environmentUrl); if (ticket === requestId && !disposed && !lost) applySelection(champion, fallback, front.status === 'fulfilled' ? front.value : null); }
-        catch { if (ticket === requestId && !disposed) { canvas.dataset.cinemaStatus = 'fallback'; options.onError?.('The environment artwork is unavailable.'); } }
-      } else { canvas.dataset.cinemaStatus = 'fallback'; options.onError?.('The environment artwork is unavailable.'); }
+        catch { if (ticket === requestId && !disposed) failEnvironment(); }
+      } else failEnvironment();
       return;
     }
     applySelection(champion, base.value, front.status === 'fulfilled' ? front.value : null);
   }
 
+  function failEnvironment() {
+    failed = true; stop(); canvas.dataset.cinemaStatus = 'fallback';
+    options.onError?.('The environment artwork is unavailable.');
+  }
+
   function applySelection(champion: RiftCinemaChampion | undefined, base: Texture, front: Texture | null) {
+    const recovering = failed; failed = false;
     previousSelected = selected; selected = champion;
     oldBackground = background; background = base; oldForeground = foreground; foreground = front;
-    blend = ready && !reduced() ? 0 : 1;
+    blend = ready && !recovering && !reduced() ? 0 : 1;
     canvas.dataset.cinemaChampion = champion?.id ?? '';
-    if (!ready) { ready = true; oldBackground = base; render(0); canvas.dataset.cinemaStatus = 'ready'; options.onReady?.(); }
+    if (!ready || recovering) { ready = true; oldBackground = base; render(0); canvas.dataset.cinemaStatus = 'ready'; options.onReady?.(); }
     schedule();
   }
 
@@ -446,7 +452,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
   function texture(resource: Texture, unit: number) { gpu.activeTexture(gpu.TEXTURE0 + unit); gpu.bindTexture(gpu.TEXTURE_2D, resource.texture); }
 
   function render(delta: number) {
-    if (disposed || lost) return;
+    if (disposed || lost || failed) return;
     const quiet = reduced(), ease = quiet ? 1 : 1 - Math.exp(-delta * 4.2);
     if (!quiet) elapsed += delta;
     scene = mix(scene, targetScene, ease); if (Math.abs(scene - targetScene) < .001) scene = targetScene;
@@ -507,13 +513,13 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
 
   function tick(now: number) {
     frame = 0;
-    if (disposed || lost || !visible || document.hidden) return;
+    if (disposed || lost || failed || !visible || document.hidden) return;
     if (last && now - last < 1000 / 30 - 1 && !reduced()) { frame = requestAnimationFrame(tick); return; }
     const delta = Math.min(.1, (now - last) / 1000 || 1 / 30); last = now;
     render(delta);
     if (!reduced()) frame = requestAnimationFrame(tick);
   }
-  function schedule() { if (!disposed && !lost && visible && !document.hidden && !frame) frame = requestAnimationFrame(tick); }
+  function schedule() { if (!disposed && !lost && !failed && visible && !document.hidden && !frame) frame = requestAnimationFrame(tick); }
   function stop() { cancelAnimationFrame(frame); frame = 0; last = 0; }
   function resize() {
     if (disposed || lost) return;
@@ -542,7 +548,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
 
   return {
     setStage(stage) { targetScene = { arrival: 0, champions: 1, evidence: 2 }[stage]; canvas.dataset.cinemaStage = stage; if (reduced()) scene = targetScene; schedule(); },
-    setChampion(id) { const champion = options.champions.find(item => item.id === id); if (!champion) return; if (selected?.id === id && ready) { requestId++; return; } void loadSelection(champion); },
+    setChampion(id) { const champion = options.champions.find(item => item.id === id); if (!champion) return; if (selected?.id === id && ready && !failed) { requestId++; return; } void loadSelection(champion); },
     setPointer(x, y) { if (reduced()) return; targetX = clamp(x, -.5, .5); targetY = clamp(y, -.5, .5); schedule(); },
     setReducedMotion(value) { requestedReduced = value; stop(); schedule(); },
     resize,

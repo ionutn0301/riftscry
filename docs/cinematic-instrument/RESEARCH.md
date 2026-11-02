@@ -1,6 +1,13 @@
-# Read the Rift: research and design record
+# Read the Rift: research and design record — superseded direction
 
 Date: 2026-11-02
+
+**Historical homepage recommendation.** The four-scene relief-instrument
+direction below was superseded later on 2 November 2026 after the user rejected
+its static, section-like presentation and weak League identity. The current
+contract is the [single-world Rift Cinema homepage](../rift-cinema/README.md).
+The reference research remains available here; these implementation decisions
+and any earlier verification results do not describe the current homepage.
 
 ## Purpose
 
