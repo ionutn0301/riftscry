@@ -11,7 +11,7 @@ test('the homepage is distinct from Atlas and a native round trip retains its pl
   await expect(page.locator('#main [data-rift-atlas]')).toHaveCount(0);
   await expect(page.locator('#rift-map-dialog [data-atlas-portal]')).toHaveCount(5);
   await expect(page.locator('.journey-dock a')).toHaveCount(5);
-  await expect(page.locator('main h1')).toContainText('ripple.');
+  await expect(page.locator('main h1')).toHaveAccessibleName('Read the Rift.');
   await navigateStation(page,'champions');
   await readyWorld(page); await expect(page).toHaveURL(/\/champions\/?$/);
   await expect(page.locator('[data-dock-atlas]')).toHaveAttribute('aria-current','location');

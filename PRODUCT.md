@@ -1,9 +1,12 @@
 # RiftScry product contract
 
-Current contract for the Rift atlas, 31 October 2026. This document and
+Current contract for the Rift atlas, established 31 October 2026, with the
+Read the Rift homepage revision of 2 November 2026. This document and
 [DESIGN.md](DESIGN.md) supersede earlier presentation storyboards. The
 [platform audit](docs/signal-journey/AUDIT.md) records the scope and cleanup;
-[the research](docs/signal-journey/RESEARCH.md) explains the design decisions.
+[the platform research](docs/signal-journey/RESEARCH.md) and
+[homepage research](docs/cinematic-instrument/RESEARCH.md) explain their respective
+design decisions.
 
 ## Purpose
 
@@ -12,14 +15,16 @@ match history. A visitor can follow a champion's change, discover what moved
 since a recorded game, inspect the evidence, and keep something useful for the
 next visit. The shared interaction is **choose → reveal → inspect → keep**.
 
-The homepage begins with five connected spatial destinations and a direct briefing
-action. Its champion-signal branch reveals a real, identified archive record. Returning visitors
-can resume a selected player or public archive context. The entrance offers a
-direct remembered briefing and an exact archive reading link without requesting
-player data. Patch changes lead to personal item impact; impact and loadout
-scenes link to their actual source match and its explicit AI action. Personal briefings build
-from available records without requiring a note, build entry, preparation card,
-or reflection. Each route supports the same journey and remains a direct entry.
+The homepage follows four connected scenes: atlas, signal, reveal, and carry.
+Its relief instrument frames a real, identified champion archive record; the
+five application destinations remain available through the shared map and
+navigation. Returning visitors can resume a selected player or public archive
+context. The entrance offers a direct remembered briefing and an exact archive
+reading link without requesting player data. Patch changes lead to personal item
+impact; impact and loadout scenes link to their actual source match and its
+explicit AI action. Personal briefings build from available records without
+requiring a note, build entry, preparation card, or reflection. Each route
+supports the same journey and remains a direct entry.
 
 RiftScry is an independent hybrid Astro application: prerendered archive and
 briefing shells, server-rendered player routes, and a protected server-side Riot
@@ -37,7 +42,7 @@ Direct links, URL scope, browser Back, search, and reduced motion remain integra
 
 | Route | Product job |
 | --- | --- |
-| `/` | Enter the spatial atlas or follow a champion signal; resume remembered context. |
+| `/` | Enter the Read the Rift instrument journey, follow a champion signal, or resume remembered context. |
 | `/explore` | Follow a selected champion and field through exact changes, an explicit interval, and kept findings. |
 | `/next-game` | Assemble a focus, patch catch-up, supported patch-impact calculations, and the recorded final loadout from imported games. |
 | `/players` | Look up a player or resume the remembered player with the selected task and filters. |
@@ -140,12 +145,18 @@ scene tabs and dialogs, and ordinary links. Without JavaScript, server-rendered
 archive records and navigation remain readable; player requests and local
 personalization need JavaScript.
 
-Original environment art and official Riot artwork have separate provenance;
-retain the [asset record](public/images/voyage/README.md) and third-party Riot
-disclaimer. The visual treatment does not grant asset-policy clearance.
+The homepage's original code-generated relief is illustrative geography, not an
+accurate Summoner's Rift map or live game telemetry. Its decorative markers do
+not locate champions in a match. This instrument, original environment art, and
+official Riot atmosphere and champion artwork have separate provenance; retain
+the [asset record](public/images/voyage/README.md) and third-party Riot disclaimer.
+The visual treatment does not grant asset-policy clearance.
 
-Current verification is still in progress. The pull request and its CI runs must
-identify the tested commit, checks, browser captures, and remaining limitations.
+Verification for the 2 November 2026 homepage revision is recorded in
+[pull request #70](https://github.com/ionutn0301/riftscry/pull/70) and its CI runs.
+The [homepage record](docs/cinematic-instrument/README.md) includes the design
+decisions and comparison captures. The pull request identifies the tested commit,
+checks, and remaining limitations.
 Do not treat test collection, typechecking, a build, historical screenshots, or
 fixture-backed results as a current visual sign-off or a successful live-account
 lookup. Earlier release records remain discoverable under [docs](docs/) and in

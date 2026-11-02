@@ -79,7 +79,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
     }
     await page.locator('[data-map-close]').click();
     await page.locator('[data-journey-tab="atlas"]').click();
-    await expect(page.locator('#atlas h1')).toHaveAccessibleName('Every game leaves a ripple.');
+    await expect(page.locator('#atlas h1')).toHaveAccessibleName('Read the Rift.');
     await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
     await mkdir('player-visuals',{recursive:true});await page.screenshot({path:`player-visuals/home-${viewport.width}x${viewport.height}.png`,fullPage:true});
   });

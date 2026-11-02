@@ -1,11 +1,24 @@
 ---
 import { homeArt } from '../../lib/home-world';
 ---
-<div class="home-world" data-home-world data-art-direction="painted" aria-hidden="true">
+<div class="home-world" data-home-world data-art-direction="cartographic" aria-hidden="true">
   <picture class="home-world-horizon home-world-still" data-home-world-still><img src={homeArt.src} alt="" width={homeArt.width} height={homeArt.height} decoding="async" fetchpriority="high" data-home-world-source /></picture>
+  <svg class="home-instrument-still" viewBox="0 0 800 650" fill="none">
+    <defs><linearGradient id="instrument-stone" x1="160" y1="120" x2="540" y2="530" gradientUnits="userSpaceOnUse"><stop stop-color="#687c79"/><stop offset=".45" stop-color="#273b3c"/><stop offset="1" stop-color="#0c1c21"/></linearGradient></defs>
+    <g transform="translate(400 325) rotate(-18) scale(1 .72)">
+      <ellipse cy="27" rx="305" ry="261" fill="#0b1418" stroke="#63756d"/>
+      <ellipse rx="307" ry="259" fill="url(#instrument-stone)" stroke="#9f9b7b" stroke-width="2"/>
+      <ellipse rx="288" ry="241" stroke="#d0c8a04d" stroke-dasharray="1 9" stroke-width="8"/>
+      <ellipse rx="270" ry="223" stroke="#b5c3b233"/>
+      {[0,1,2,3,4,5].map(i=><path d="M-230 -55C-225-170-138-200-80-172S-30-90-71-65S-176-32-162 35S-220 90-245 35Z" transform={`translate(${i*14} ${i*5}) scale(${1-i*.1})`} stroke="#9ab9ac" stroke-opacity={.15+i*.035}/>) }
+      {[0,1,2,3,4,5].map(i=><path d="M60-155C168-210 247-100 216-23S178 170 89 165S-15 86 36 21S-3-110 60-155Z" transform={`translate(${i*10} ${i*8}) scale(${1-i*.1})`} stroke="#a9c9bc" stroke-opacity={.15+i*.035}/>) }
+      <path d="M-147 181C-110 99 4 116-8 37S-56-12 11-75S58-140 92-200" stroke="#9bd6ca" stroke-width="4"/>
+      <path d="M-147 181C-110 99 4 116-8 37S-56-12 11-75S58-140 92-200" stroke="#b9e7d2" stroke-width="18" opacity=".08"/>
+    </g>
+  </svg>
   <canvas data-home-world-canvas hidden></canvas>
   <div class="home-world-shade"></div>
-  <span class="home-world-coordinate">{homeArt.credit}</span>
+  <span class="home-world-coordinate">RIFTSCRY / AN EXPLORATION IN PERSPECTIVE</span>
   <span class="home-world-depth" data-film-depth>01 / BETWEEN GAMES</span>
 </div>
 <script>import '../../scripts/home-world';</script>
