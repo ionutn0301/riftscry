@@ -31,7 +31,16 @@ claim of a design that has never appeared elsewhere.
   smoke, wind or spectral colour. Moving the view is optional.
 - **Choose:** Akali, Yasuo and Thresh links update the foreground, palette,
   identity, ability and actual archive record. The URL preserves the selected
-  subject. Modified clicks and the unenhanced links open the record normally.
+  subject. Wheel gestures and swipes also move between these perspectives, one
+  deliberate gesture at a time, stopping at the ends. The page itself remains
+  fixed. Modified clicks and the unenhanced links open the record normally.
+- **Play a tour:** an explicit Play tour action cycles the champion worlds every
+  eight seconds. It replaces the current URL instead of adding history entries
+  and stops on deliberate input, inspection, navigation, reduced motion, a hidden
+  tab or departure. Starting the tour explicitly enables and saves full motion;
+  Still World stops it. A saved motion choice takes precedence over the operating
+  system's default on this homepage. The tour does not automatically advance a
+  reader's evidence.
 - **Inspect:** “Scry this champion” and the ability hotspot open the same evidence
   dialog. The camera reframes the champion while the exact before/after values,
   patch and source remain HTML. Long evidence can scroll inside its reading
@@ -40,6 +49,29 @@ claim of a design that has never appeared elsewhere.
   findings, latest archived patch and briefing remain direct destinations.
   Existing validated reading/player context supplies return links; the homepage
   does not fetch a player's games or manufacture a personalized result.
+
+## Navigation as part of the scene
+
+The mobile menu fits one dynamic viewport, including short portrait and landscape
+phones. A circular reveal grows from the menu control; destinations enter in a
+staggered sequence over the selected champion, a slowly moving orbit and diffuse
+light. Dismissal reverses the presentation before the native dialog closes or a
+normal destination opens. Rapid interruptions begin from the currently visible
+reveal. Reduced motion settles immediately. Focus, Escape, native modified links,
+search handoff and browser Back remain part of the interaction contract.
+
+The homepage WebGL renderer pauses behind the opaque menu while its lightweight
+CSS presentation continues. The menu itself and the page beneath it do not scroll.
+
+Application chapters now also accept wheel and swipe gestures. Long reading
+content retains normal scrolling: a separate gesture at its boundary can move to
+the next or previous chapter. Inputs, links, sliders, dialogs, text selections and
+independently scrolling areas keep their native interactions. Trackpad momentum
+cannot skip through multiple scenes.
+
+A remembered champion title such as “Caitlyn Patch History” is now visibly prefixed
+with **Resume**. It is local reading history, not a hardcoded featured
+champion or a recommendation.
 
 These champions are **two-dimensional official images on layered WebGL planes**,
 not rigged or volumetric 3D champion models. The shared environment is decorative
@@ -58,6 +90,8 @@ champion retains their own recognisable colours.
 | Selection, dialogs, history, explicit saving, return context and motion controls | [rift-cinema.ts](../../src/scripts/rift-cinema.ts) |
 | Artwork planes, camera, atmosphere and renderer lifecycle | [rift-cinema-world.ts](../../src/lib/rift-cinema-world.ts) |
 | Viewport composition, responsive treatment and static fallback | [rift-cinema.css](../../src/styles/rift-cinema.css) |
+| Menu reveal, exit, ambient motion and fixed viewport composition | [rift-cinema-navigation.css](../../src/styles/rift-cinema-navigation.css) |
+| Guarded wheel and swipe input shared with reader chapters | [scene-gestures.ts](../../src/lib/scene-gestures.ts) |
 | Shared exact evidence | [SignalRecord.astro](../../src/components/experience/SignalRecord.astro) |
 
 The renderer targets 30 frames per second, bounds device-pixel ratio and canvas
@@ -82,6 +116,11 @@ Champion and environment artwork belongs to Riot Games. Preserve RiftScry's
 independent-project notice and Riot disclaimer. Source provenance is not an
 endorsement. The canonical artwork is distinct from earlier generated
 environment illustrations elsewhere in the repository.
+
+The [all-champion asset audit](./ASSET-COVERAGE.md) distinguishes the complete
+173-champion splash/portrait catalogue from the smaller verified foreground set.
+It records the official package inspection and the data states that a universal
+cinematic selector must support.
 
 ## References that informed the interpretation
 

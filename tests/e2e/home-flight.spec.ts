@@ -219,7 +219,11 @@ test('appearance choices stay interactive on reduced-motion devices and survive 
   await expect(page.locator('button[data-cinema-motion]')).toHaveAttribute('aria-pressed', 'false');
   await expect(cinema(page)).toHaveAttribute('data-cinema-motion', 'full');
   await openCinemaNavigation(page);
-  await menu.locator('a[href="/champions"]').click(); await readyWorld(page);
+  await menu.locator('a[href="/champions"]').click();
+  // Navigation begins after the animated menu exit, so wait for the destination
+  // before asking the shared readiness helper to identify the active route.
+  await expect(page).toHaveURL(/\/champions(?:#.*)?$/);
+  await readyWorld(page);
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'obsidian');
   await page.locator('[data-theme-toggle]').click();
   await expect(page.locator('[data-theme-choice][value=obsidian]')).toBeChecked();

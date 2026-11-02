@@ -1,5 +1,6 @@
 import { briefingLink, readRecentPlayer, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
 import { playerLink } from '../components/player/client';
+import { documentAtBoundary, installSceneGestures } from '../lib/scene-gestures';
 
 /** The scene is the navigation unit. Real documents, records and links remain intact. */
 const main = document.querySelector<HTMLElement>('#main');
@@ -115,6 +116,7 @@ function discover() {
   if (!found || !foundPanels.length) return;
   const changed = found !== deck || foundPanels.length !== panels.length || foundPanels.some((panel, index) => panel !== panels[index]);
   if (!changed) return;
+  resetGestures();
   const newDocumentDeck=deck===null;
   deck = found;
   panels = foundPanels;
@@ -154,13 +156,14 @@ if (main) mutations.observe(main, { childList: true, subtree: true, attributes: 
 
 tabs?.addEventListener('click', event => {
   const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-journey-tab]') : null;
-  if (button) activate(button.dataset.journeyTab!, { history: true, announce: true });
+  if (button) { resetGestures(); activate(button.dataset.journeyTab!, { history: true, announce: true }); }
 }, listen);
 tabs?.addEventListener('keydown', event => {
   const buttons = [...tabs.querySelectorAll<HTMLButtonElement>('button')];
   const index = buttons.indexOf(document.activeElement as HTMLButtonElement);
   if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
   event.preventDefault();
+  resetGestures();
   const target = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1
     : (index + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
   const button = buttons[target]!;
@@ -176,16 +179,13 @@ function step(direction: number) {
 previous?.addEventListener('click', () => step(-1), listen);
 next?.addEventListener('click', () => step(1), listen);
 
-// A dedicated scene rail accepts swipes. Forms and reading areas retain ordinary touch scrolling.
-let touchStart: { x: number; y: number } | null = null;
-controls?.addEventListener('pointerdown', event => {
-  if (event.pointerType === 'touch') touchStart = { x: event.clientX, y: event.clientY };
-}, listen);
-controls?.addEventListener('pointerup', event => {
-  if (touchStart && Math.abs(event.clientX - touchStart.x) > 70 && Math.abs(event.clientY - touchStart.y) < 35) step(event.clientX < touchStart.x ? 1 : -1);
-  touchStart = null;
-}, listen);
-controls?.addEventListener('pointercancel', () => { touchStart = null; }, listen);
+const resetGestures = main ? installSceneGestures(main, {
+  signal: abort.signal,
+  enabled: () => Boolean(deck && panels.length > 1 && !document.hidden),
+  canStep: direction => Boolean(panels[panels.findIndex(panel => panel.id === active) + direction]),
+  step,
+  atBoundary: documentAtBoundary,
+}) : () => {};
 
 document.addEventListener('click', event => {
   const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
@@ -200,7 +200,7 @@ document.addEventListener('click', event => {
   activate(id, { history: true, focus: true, announce: true });
 }, { capture: true, ...listen });
 
-function restore() { if (panels.length) activate(hashId() || deck?.dataset.journeyDefault || panels[0]!.id); }
+function restore() { resetGestures(); if (panels.length) activate(hashId() || deck?.dataset.journeyDefault || panels[0]!.id); }
 window.addEventListener('hashchange', restore, listen);
 window.addEventListener('popstate', restore, listen);
 window.addEventListener('riftscry:journey-reveal', event => {
@@ -234,6 +234,7 @@ about?.addEventListener('close', () => aboutTrigger?.focus({ preventScroll: true
 
 window.addEventListener('pageshow', event => { if (event.persisted) { restore(); restorePlayer(); } }, listen);
 window.addEventListener('pagehide', event => {
+  resetGestures();
   if (event.persisted) return;
   abort.abort(); mutations.disconnect(); mapState.disconnect(); cancelAnimationFrame(pendingFrame);
 }, listen);
