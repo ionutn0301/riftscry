@@ -52,7 +52,7 @@ const serialized = JSON.stringify(signals).replaceAll('<', '\\u003c');
   </section>
 
   <section id="reveal" class="signal-act signal-act--reveal" data-journey-panel data-journey-label="Reveal the change" data-journey-short-label="Shift" data-journey-world="explore" aria-labelledby="signal-reveal-title">
-    <div class="signal-reveal-desk"><header><p class="journey-eyebrow">03 / THE DETAIL THAT CHANGED</p><h2 id="signal-reveal-title">See the <em>shift.</em></h2></header>
+    <div class="signal-reveal-desk"><header><p class="journey-eyebrow">03 / THE DETAIL THAT CHANGED</p><h2 id="signal-reveal-title">See the <em>shift.</em></h2><p class="home-record-subject"><span data-home-subject>{first.championName}</span><span> / ARCHIVE RECORD</span></p></header>
       {signals.map((signal,index) => <div data-home-record={signal.championId} hidden={index !== 0}><SignalRecord label={signal.championName} championId={signal.championId} entries={[{change:signal.record.change,ability:signal.ability,abilityName:signal.abilityName}]} patchId={signal.patchId} sourceUrl={signal.sourceUrl}/></div>)}
       <div class="signal-reveal-actions"><button class="signal-primary-action" type="button" data-home-keep hidden><span>Keep this finding</span><span aria-hidden="true">+</span></button><a class="signal-secondary-action" href={first.explore.replace('#change','#history')} data-home-trace>Trace it through time <span aria-hidden="true">↗</span></a></div>
       <p class="signal-keep-status" role="status" data-home-keep-status></p>

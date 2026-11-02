@@ -120,7 +120,7 @@ test('choosing a signal changes the subject and evidence without moving the open
     await expect(home).toHaveAttribute('data-home-subject', signal.championId);
     await expect(choices.nth(index)).toHaveAttribute('aria-current', 'true');
     await expect(page).toHaveURL(url => url.searchParams.get('signal') === signal.championId);
-    await expect(home.locator('[data-home-subject]')).toHaveText(signal.championName);
+    await expect(home.locator('[data-home-subject]')).toHaveText([signal.championName, signal.championName]);
     await expect(home.locator('[data-home-art]')).toHaveAttribute('alt', `${signal.championName} — official Riot Games artwork`);
     await expect(home.locator('[data-home-trace]')).toHaveAttribute('href', signal.explore.replace('#change', '#history'));
     const record = home.locator('[data-home-record]:not([hidden])');

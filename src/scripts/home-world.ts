@@ -14,6 +14,7 @@ function mount(film:HTMLElement) {
   let artReady=false;
   const abort=new AbortController(),listen={signal:abort.signal};
   const ids=['atlas','signal','reveal','carry'];
+  const choices=[...film.querySelectorAll<HTMLElement>('[data-home-choice]')];
   const depth=world.querySelector<HTMLElement>('[data-film-depth]')!;
   const labels=['01 / BETWEEN GAMES','02 / THE CHAMPION','03 / THE EVIDENCE','04 / YOUR NEXT MOVE'];
   const media=matchMedia('(prefers-reduced-motion: reduce)');
@@ -52,7 +53,6 @@ function mount(film:HTMLElement) {
       ctx.drawImage(artwork,frame.x,frame.y,frame.width,frame.height);
       ctx.globalAlpha=1;
     }
-    const choices=[...film.querySelectorAll<HTMLElement>('[data-home-choice]')];
     const focus=Math.max(0,choices.findIndex(choice=>choice.dataset.homeChoice===film.dataset.homeSubject));
     drawRiftInstrument(ctx,{width,height,progress:current,lookX,lookY,focus,reduced});
     // The original vector world never waits for an image or a player request.

@@ -15,6 +15,13 @@ function initialize(host: HTMLElement, signals: OpeningSignal[]) {
   if (!signals.length) return;
   const abort = new AbortController();
   const options = { signal: abort.signal };
+  // Names remain the usable controls when an optional portrait cannot load.
+  host.querySelectorAll<HTMLImageElement>('[data-home-choice] img').forEach(icon => {
+    const update = () => { icon.style.visibility = icon.complete && !icon.naturalWidth ? 'hidden' : ''; };
+    icon.addEventListener('load', update, options);
+    icon.addEventListener('error', update, options);
+    update();
+  });
   const image = host.querySelector<HTMLImageElement>('[data-home-art]')!;
   const fallback = host.querySelector<HTMLElement>('[data-home-art-fallback]')!;
   const keep = host.querySelector<HTMLButtonElement>('[data-home-keep]')!;

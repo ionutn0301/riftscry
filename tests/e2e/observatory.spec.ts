@@ -69,9 +69,12 @@ test('without WebGL the environment, personal entry and exact archive journey re
   await page.goto('/'); await readySignal(page);
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-renderer', 'static');
   await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
-  const environment = page.locator('.home-world-horizon img');
+  // The homepage's original instrument uses Canvas2D and still renders when
+  // the shared WebGL environment is unavailable.
+  await expect(page.locator('[data-home-world]')).toHaveAttribute('data-film-paint', 'ready');
+  const environment = page.locator('[data-home-world-canvas]');
   await expect(environment).toBeVisible();
-  await expect.poll(() => environment.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+  await expect.poll(() => environment.evaluate((canvas: HTMLCanvasElement) => canvas.width > 0 && canvas.height > 0)).toBe(true);
   const personal = page.locator('#signal [data-home-personal]');
   await expect(personal).toHaveJSProperty('href', new URL('/next-game', page.url()).href); await unobstructed(personal);
   await mapControl(page).click();

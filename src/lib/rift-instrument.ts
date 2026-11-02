@@ -29,7 +29,9 @@ function terrain(x: number, z: number): number {
     + Math.cos(x * 19.2 - z * 11.1) * .006;
   const ridge = Math.exp(-Math.pow((z + x * .18 - .34) * 4.8, 2)) * .14
     + Math.exp(-Math.pow((z + x * .1 + .49) * 6.5, 2)) * .1;
-  const bank = smooth(clamp((shore - .026) / .17, 0, 1));
+  // A level river bed wider than one mesh cell prevents the relief's triangles
+  // from cutting across the inset water when the camera looks along the valley.
+  const bank = smooth(clamp((shore - .068) / .23, 0, 1));
   const edge = smooth(clamp((1.025 - radius) / .2, 0, 1));
   return .015 + Math.max(0, .055 + hills + ridge) * bank * (.5 + edge * .5);
 }
@@ -45,17 +47,28 @@ function normal(a: Point, b: Point, c: Point): Point {
   return [x, y, z];
 }
 
+function terrainNormal(x: number, z: number): Point {
+  const step = .012;
+  const dx = (terrain(x + step, z) - terrain(x - step, z)) / (step * 2);
+  const dz = (terrain(x, z + step) - terrain(x, z - step)) / (step * 2);
+  const length = Math.hypot(dx, 1, dz);
+  return [-dx / length, 1 / length, -dz / length];
+}
+
 const vertices: Point[] = [];
 const faces: Face[] = [];
 const contours: Stroke[] = [];
 const addVertex = (point: Point) => vertices.push(point) - 1;
 function addFace(indices: number[], material: number, tone = 0) {
   const points = indices.map(index => vertices[index]!);
-  faces.push({ indices, material, tone, normal: normal(points[0]!, points[1]!, points[2]!), center: [
+  const center: Point = [
     points.reduce((n, point) => n + point[0], 0) / points.length,
     points.reduce((n, point) => n + point[1], 0) / points.length,
     points.reduce((n, point) => n + point[2], 0) / points.length,
-  ] });
+  ];
+  faces.push({ indices, material, tone, center,
+    normal: material === 0 ? terrainNormal(center[0], center[2]) : normal(points[0]!, points[1]!, points[2]!),
+  });
 }
 
 // Geometry and contour intersections are authored once; frames only project it.
@@ -115,19 +128,19 @@ for (let band = 0; band < edgeBands.length - 1; band++) for (let column = 0; col
   addFace([a, b, d, c], band === 1 ? 1 : band === 2 ? 2 : 3, Math.sin(column * 3.7) * .5);
 }
 
-// The river is part of the depth-sorted surface, so hills can occlude it.
-for (let segment = 0; segment < 120; segment++) {
-  const x = -.849 + segment / 120 * 1.698, nextX = -.849 + (segment + 1) / 120 * 1.698;
+// One continuous inset avoids painter-sort seams between the river and a
+// terrain triangle spanning both banks. Every authored camera sees its bed.
+const riverBanks: [Point[], Point[]] = [[], []];
+for (let segment = 0; segment <= 120; segment++) {
+  const x = -.849 + segment / 120 * 1.698;
   const half = .011 + Math.sin(segment * .17) * .004;
-  const a = addVertex([x, .019, riverAt(x) - half]);
-  const b = addVertex([x, .019, riverAt(x) + half]);
-  const c = addVertex([nextX, .019, riverAt(nextX) + half]);
-  const d = addVertex([nextX, .019, riverAt(nextX) - half]);
-  addFace([a, b, c, d], 4, Math.sin(segment * .28));
+  riverBanks[0].push([x, terrain(x, riverAt(x) - half) + .008, riverAt(x) - half]);
+  riverBanks[1].push([x, terrain(x, riverAt(x) + half) + .008, riverAt(x) + half]);
 }
+const riverOutline = [...riverBanks[0], ...[...riverBanks[1]].reverse()];
 
 const poses: readonly Pose[] = [
-  { yaw: -.48, elevation: .83, scale: 1, x: .73, y: .51, opacity: 1 },
+  { yaw: -.48, elevation: .83, scale: .9, x: .72, y: .51, opacity: 1 },
   { yaw: .12, elevation: .65, scale: 1.12, x: .79, y: .57, opacity: .62 },
   { yaw: .84, elevation: 1.0, scale: 1.2, x: .79, y: .51, opacity: .72 },
   { yaw: 1.42, elevation: .78, scale: .97, x: .75, y: .51, opacity: .9 },
@@ -192,19 +205,21 @@ export function drawRiftInstrument(ctx: CanvasRenderingContext2D, options: RiftI
 
   const projected = vertices.map(project);
   const ordered = faces.map(face => ({ face, depth: project(face.center)[2] })).sort((a, b) => a.depth - b.depth);
+  // Fade the material toward the scene ink, not each overlapping triangle.
+  // Per-face alpha would expose the mesh wherever antialiased seams overlap.
+  ctx.globalAlpha = 1;
+  const materialColor = (r: number, g: number, b: number) => `rgb(${Math.round(mix(8, r, pose.opacity))} ${Math.round(mix(15, g, pose.opacity))} ${Math.round(mix(18, b, pose.opacity))})`;
   for (const { face } of ordered) {
     const n = face.normal;
     const nx = n[0] * cy - n[2] * sy, nz = n[0] * sy + n[2] * cy;
     const diffuse = Math.max(0, -nx * .38 + Math.abs(n[1]) * .78 - nz * .47);
     const light = .32 + diffuse * .7;
     let red: number, green: number, blue: number;
-    if (face.material === 4) {
-      red = 97 + face.tone * 16; green = 169 + face.tone * 19; blue = 155 + face.tone * 18;
-    } else if (face.material === 0) {
+    if (face.material === 0) {
       const heightTone = clamp(face.center[1] * 1.8, 0, .5);
-      red = (43 + heightTone * 71 + face.tone * 1.7) * light;
-      green = (65 + heightTone * 67 + face.tone * 1.6) * light;
-      blue = (62 + heightTone * 49 + face.tone * 1.5) * light;
+      red = (43 + heightTone * 71 + face.tone * .2) * light;
+      green = (65 + heightTone * 67 + face.tone * .2) * light;
+      blue = (62 + heightTone * 49 + face.tone * .2) * light;
     } else if (face.material === 1) {
       red = 78 * light; green = 78 * light; blue = 66 * light;
     } else if (face.material === 2) {
@@ -219,14 +234,44 @@ export function drawRiftInstrument(ctx: CanvasRenderingContext2D, options: RiftI
       if (!i) ctx.moveTo(point[0], point[1]); else ctx.lineTo(point[0], point[1]);
     });
     ctx.closePath();
-    ctx.fillStyle = `rgb(${Math.round(red)} ${Math.round(green)} ${Math.round(blue)})`;
+    ctx.fillStyle = materialColor(red, green, blue);
     ctx.fill();
     // Fill subpixel seams without turning the heightfield into a wireframe.
-    if (face.material !== 4) { ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = .45; ctx.stroke(); }
+    ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = face.material === 0 ? .85 : .65; ctx.stroke();
   }
+
+  ctx.beginPath();
+  riverOutline.forEach((point, index) => {
+    const screen = project(point);
+    if (!index) ctx.moveTo(screen[0], screen[1]); else ctx.lineTo(screen[0], screen[1]);
+  });
+  ctx.closePath();
+  const riverStart = project(riverBanks[0][0]!), riverEnd = project(riverBanks[0][120]!);
+  const water = ctx.createLinearGradient(riverStart[0], riverStart[1], riverEnd[0], riverEnd[1]);
+  water.addColorStop(0, materialColor(82, 140, 132));
+  water.addColorStop(.4, materialColor(114, 181, 166));
+  water.addColorStop(.75, materialColor(93, 161, 148));
+  water.addColorStop(1, materialColor(76, 136, 128));
+  ctx.fillStyle = water; ctx.fill();
+
+  ctx.globalAlpha = pose.opacity;
 
   ctx.beginPath(); contours.forEach(([a, b]) => line(a, b));
   ctx.strokeStyle = 'rgba(185,201,173,.19)'; ctx.lineWidth = .6; ctx.stroke();
+
+  if (!options.reduced && Math.hypot(lookX, lookY) > .015) {
+    const scanX = width * (lookX + .5), scanY = height * (lookY + .5), radius = scale * .29;
+    const scan = ctx.createRadialGradient(scanX, scanY, 0, scanX, scanY, radius);
+    scan.addColorStop(0, 'rgba(203,227,200,.65)');
+    scan.addColorStop(.4, 'rgba(182,216,192,.34)');
+    scan.addColorStop(1, 'rgba(182,216,192,0)');
+    ctx.beginPath();
+    contours.forEach(([a, b]) => {
+      const p = project(a);
+      if (Math.hypot(p[0] - scanX, p[1] - scanY) < radius) line(a, b);
+    });
+    ctx.strokeStyle = scan; ctx.lineWidth = .85; ctx.stroke();
+  }
 
   ctx.beginPath(); circle(1.087, -.036); circle(1.116, -.048);
   ctx.strokeStyle = 'rgba(194,183,140,.38)'; ctx.lineWidth = .65; ctx.stroke();

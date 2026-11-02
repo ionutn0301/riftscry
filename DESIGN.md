@@ -1,20 +1,23 @@
 # RiftScry design
 
-## Current direction: the Rift atlas
+## Current direction: the Rift atlas and Read the Rift
 
-This is the design contract implemented in the 31 October 2026 refactor,
-with motion and return-path refinement on 1 November 2026.
-The [atlas audit and research](docs/rift-atlas/AUDIT.md) record this change. It
-supersedes earlier scrolling-homepage, observatory, and disconnected player
+This contract retains the platform design from the 31 October 2026 refactor
+and the motion and return-path refinement of 1 November 2026. The homepage
+revision of 2 November 2026 introduces Read the Rift, a four-scene relief
+instrument journey documented in the
+[homepage research](docs/cinematic-instrument/RESEARCH.md).
+The [atlas audit](docs/rift-atlas/AUDIT.md) records the earlier platform change,
+which superseded scrolling-homepage, observatory, and disconnected player
 presentation amendments. See the [platform audit](docs/signal-journey/AUDIT.md)
-and [research](docs/signal-journey/RESEARCH.md) for the rationale, and
+and [research](docs/signal-journey/RESEARCH.md) for that rationale, and
 [PRODUCT.md](PRODUCT.md) for evidence, queue, privacy, and storage contracts.
 
 The organizing idea is a connected world in the space between games. The Beacon
 (briefing), Echoes (games), Archive (champions), Fracture (patches), and Sanctuary
-(saved material) are places on one atlas. A persistent route path and the same
-spatial instrument on every route supply a stable geography. The entrance and
-menu use one perspective-projected Rift with five authored camera positions.
+(saved material) are places on one atlas. A persistent route path and shared
+spatial map supply a stable geography across routes. The map menu uses one
+perspective-projected Rift with five authored camera positions.
 Drag, wheel, keyboard and a native range move the same object continuously;
 all five destinations also remain ordinary links. Camera work is optional and
 reduced motion selects the destination immediately. Destination type unfolds in
@@ -55,12 +58,17 @@ delay a request, block a record, or require an animation to finish.
 
 ## The opening and its continuations
 
-The homepage is `SignalJourney.astro`. The atlas is its entrance; the evidence
-journey remains a direct branch with three focused scenes:
+The homepage is `SignalJourney.astro`. Read the Rift uses one persistent
+code-generated relief instrument across four authored poses. Framing, pointer
+lean, and contour emphasis connect the scenes; native scene controls and direct
+product links remain available throughout. The instrument is illustrative
+geography, not an accurate game map. Its selected marker is a presentation cue,
+not a champion's location or live telemetry. The five-destination map remains a
+separate shared navigation control.
 
 | Scene | Experience |
 | --- | --- |
-| The Rift — `#atlas` | Five native destination portals, setting previews, directional keyboard focus, and a direct automatic briefing action. |
+| Read the Rift — `#atlas` | Introduce the relief instrument and the product, enter the champion journey, open the latest archived patch, or continue directly to a briefing or remembered archive record. |
 | Find a signal — `#signal` | Recognizable champion art, a real archive example, a reveal action, and a direct route to the visitor's games. Featured subjects change the actual record. |
 | Reveal the change — `#reveal` | An exact before/after record or rule is the focal object. The field, patch, and source remain identifiable; keeping the finding is explicit. |
 | Take it forward — `#carry` | The selected record remains recognizable. Continue to the briefing, reopen kept findings, or trace the same subject in `/explore`. |
@@ -126,9 +134,12 @@ coordinates and metadata. Use open compositions, quiet borders, and intentional
 changes of scale. Reduce repeated explanation through native disclosures, not
 by truncating a visitor's notes or removing evidence.
 
-Original RiftScry environment illustrations establish continuity. Official Riot
-champion icons, portraits, and splash artwork provide identity. Their provenance
-and roles are distinct; see [the environment asset record](public/images/voyage/README.md).
+The homepage's original procedural relief establishes its visual identity,
+with optional Riot environment artwork providing atmosphere. Existing RiftScry
+environment illustrations retain their own provenance. Official Riot champion
+icons, portraits, and splash artwork identify the selected subject. These roles
+are distinct; see [the environment asset record](public/images/voyage/README.md)
+and [homepage research](docs/cinematic-instrument/RESEARCH.md).
 Keep source text separate from imagery. Failed art retains readable identity and
 the task's controls. The optional environment renderer has a static fallback;
 no sound or 3D interaction is required to navigate or inspect a record.
@@ -151,7 +162,8 @@ shortcuts must not capture text entry or composition.
 | Evidence-to-action handoffs | `src/components/experience/JourneyHandoff.tsx`; native links from changes to impact, and from impact/loadout to the exact source match |
 | Scene visibility, history, and focus | `src/scripts/connected-observatory.ts`; shared map/motion behavior in `src/scripts/experience.ts` |
 | Public subject and player continuation | `src/scripts/signal-continuity.ts`, `src/lib/signal-context.ts`, `src/lib/player/identity.ts` |
-| Homepage | `src/components/experience/SignalJourney.astro`, `src/scripts/signal-journey.ts`, `src/styles/signal-journey.css` |
+| Homepage records and continuation | `src/components/experience/SignalJourney.astro`, `src/scripts/signal-journey.ts`, `src/styles/signal-journey.css` |
+| Homepage instrument and composition | `src/components/experience/HomeWorld.astro`, `src/scripts/home-world.ts`, `src/lib/rift-instrument.ts`, `src/lib/home-world.ts`, `src/styles/home-film.css` |
 | Shared exact records and readers | `src/components/experience/SignalRecord.astro`, `src/scripts/signal-record.ts`, `src/styles/signal-readers.css` |
 | Champion exploration | `src/components/experience/HomeVoyage.astro`, `src/scripts/voyage.ts`, `src/styles/signal-explore.css` |
 | Roster/archive preview and comparisons | `src/scripts/reader-lens.ts`, `src/scripts/signal-comparison.ts` |
@@ -171,12 +183,21 @@ archive merely to present the opening scene.
 
 ## Verification and historical evidence
 
+**Historical checkpoint: the 31 October 2026 platform refactor.**
+
 The first implementation passed typecheck, the production build and 519 tests.
 Five atlas DOM tests passed separately. The output contract checked 622 generated
-content pages. Browser QA is pending: managed preview infrastructure was unavailable,
-Vercel access was protected, and the workspace became unavailable during cleanup. Record the tested commit and
-actual results in the pull request and CI artifacts. Test collection is not a
-browser pass, historical screenshots are not current baselines, and controlled
+content pages. Browser QA was pending at that checkpoint: managed preview
+infrastructure was unavailable, Vercel access was protected, and the workspace
+became unavailable during cleanup. These results do not verify the subsequent
+homepage revision.
+
+Verification for the 2 November 2026 homepage revision is recorded in
+[pull request #70](https://github.com/ionutn0301/riftscry/pull/70) and its CI
+artifacts; the [homepage record](docs/cinematic-instrument/README.md) provides
+the design decisions and comparison captures.
+Test collection is not a browser pass, historical screenshots are not current
+baselines, and controlled
 fixtures do not establish successful live Riot or AI access.
 
 Acceptance must follow a complete route: enter or resume, choose a subject,

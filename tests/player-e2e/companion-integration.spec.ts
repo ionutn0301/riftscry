@@ -20,7 +20,7 @@ function isBriefingTarget(url: URL, queue: string, champion = 'Ahri') {
 test('homepage My game prepares the briefing and continues into matches after one lookup', async ({ page }) => {
   const requests = await installFixtures(page, { matches: [recentAramWin] });
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Every game leaves a ripple.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Read the Rift.');
   await page.locator('#atlas [data-home-briefing]').click();
   await expect(page).toHaveURL(url => url.pathname === '/next-game');
   const lookup = page.getByRole('form', { name: 'Get an automatic player briefing', exact: true });
