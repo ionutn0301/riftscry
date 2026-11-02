@@ -60,8 +60,11 @@ scrollable reading area when the exact record needs more space.
 
 URL queries and fragments carry actual subject, scope, and scene state. Direct
 links, reload, modified clicks, and Back/Forward remain native browser behaviors.
-A transition expresses navigation after the selection is committed; it must not
-delay a request, block a record, or require an animation to finish.
+Reader transitions express navigation after the selection is committed; they must
+not delay a request, block a record, or require an animation to finish. The
+homepage menu has a deliberate 380ms close before normal same-tab navigation,
+with an animation-completion fallback. Reduced motion navigates immediately;
+modified clicks and external/new-tab links retain native behavior.
 
 ## The opening and its continuations
 
@@ -70,6 +73,10 @@ painted Summoner's Rift scenery. Yasuo and Thresh offer alternate perspectives
 within the same world. Pointer movement or touch dragging adjusts the camera;
 ordinary champion links provide selection without requiring either gesture.
 There is no sequence of homepage sections or scroll-driven chapters.
+Wheel and swipe input can change the champion perspective without moving the
+page. An optional Play tour action advances every eight seconds and stops on
+deliberate input. Reader chapters also support guarded gestures at document
+boundaries, preserving ordinary scrolling through long evidence.
 
 Choosing a champion changes the actual record as well as artwork, identity,
 palette and atmosphere. “Scry this champion” and the ability hotspot open an

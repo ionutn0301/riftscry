@@ -7,6 +7,7 @@ import { buildHomeSignals } from '../../lib/home-signals';
 import { getAllPatches } from '../../lib/data';
 import SignalRecord from './SignalRecord.astro';
 import '../../styles/rift-cinema.css';
+import '../../styles/rift-cinema-navigation.css';
 
 const latest = getLatestPatch();
 const roster = getChampionMeta();
@@ -79,11 +80,11 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
 
   <div class="cinema-bottom">
     <nav class="cinema-roster" aria-label="Choose your champion"><span class="cinema-roster-label">CHOOSE YOUR<br /><strong>PERSPECTIVE</strong></span><div class="cinema-roster-choices">{signals.map((signal,index)=><a href={signal.explore} data-home-choice={signal.championId} aria-current={index===0?'true':undefined} aria-label={`Enter ${signal.championName}'s world`} style={`--choice-accent:${signal.world.primary}`}><span class="cinema-roster-frame"><img src={signal.world.figure} alt="" width="1628" height="1628" loading={index===0?'eager':'lazy'} decoding="async" /></span><span>{signal.championName}</span><i aria-hidden="true"></i></a>)}</div></nav>
-    <span class="cinema-interaction-note" data-cinema-interaction><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8 3 12l4 4m10-8 4 4-4 4M3 12h18"/></svg><span>Move to look. Choose to discover.</span></span>
+    <span class="cinema-interaction-note" data-cinema-interaction><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8 3 12l4 4m10-8 4 4-4 4M3 12h18"/></svg><span>Move to look. Scroll to change worlds.</span></span>
     <a class="cinema-archive" href={`/patch/${latest.id}`}><span>LATEST ARCHIVE</span><strong>{latest.id}</strong><span aria-hidden="true">↗</span></a>
   </div>
 
-  <footer class="cinema-footer"><button type="button" data-cinema-motion aria-pressed="false" aria-label="Reduce cinematic motion"><span class="cinema-motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-cinema-motion-label>WORLD IN MOTION</span></button><span>RIOT GAMES ARTWORK · INDEPENDENT FAN PROJECT</span><a href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer">BUILT BY IONUTN0301 <span aria-hidden="true">↗</span></a></footer>
+  <footer class="cinema-footer"><button type="button" data-cinema-motion aria-pressed="false" aria-label="Reduce cinematic motion"><span class="cinema-motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-cinema-motion-label>WORLD IN MOTION</span></button><button type="button" class="cinema-tour" data-cinema-tour aria-pressed="false" title="Automatically explore the champion worlds"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="cinema-tour-play" d="M5 3 13 8 5 13Z"/><path class="cinema-tour-pause" d="M4 3h3v10H4zM10 3h3v10h-3z"/></svg><span data-cinema-tour-label>Play tour</span></button><span>RIOT GAMES ARTWORK · INDEPENDENT FAN PROJECT</span><a href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer">BUILT BY IONUTN0301 <span aria-hidden="true">↗</span></a></footer>
 
   <dialog class="cinema-evidence" data-cinema-evidence aria-labelledby="cinema-evidence-title">
     <div class="cinema-evidence-sheet">
@@ -96,9 +97,37 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
     </div>
   </dialog>
 
-  <dialog id="cinema-navigation" class="cinema-navigation" data-cinema-menu aria-label="RiftScry navigation">
-    <header><a href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={40}/></a><button type="button" class="cinema-close" data-cinema-menu-close aria-label="Close navigation"><span>Close</span><b aria-hidden="true">×</b></button></header>
-    <div class="cinema-navigation-body"><div><p class="cinema-kicker">MAKE YOUR NEXT MOVE</p><nav aria-label="RiftScry destinations"><a href="/">Home <span>01</span></a><a href="/next-game" data-home-personal data-station-link="next-game">Briefing <span>02</span></a><a href="/champions">Atlas <span>03</span></a><a href="/players" data-station-link="players">Games <span>04</span></a><a href="/pool#findings">Saved <span>05</span></a></nav></div><aside><a href="/patches">Patch archive ↗</a><a href="/notebook">Your notebook ↗</a><button type="button" data-palette-trigger>Search the archive ↗</button><fieldset><legend>Application appearance</legend>{['frost','ember','obsidian'].map(theme=><label><input type="radio" name="appearance-theme" value={theme} data-theme-choice checked={theme==='frost'} disabled/><span>{theme}</span></label>)}</fieldset><p>RiftScry is an independent League of Legends companion. Champion and environment artwork © Riot Games.</p><a href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer">Explore the source ↗</a></aside></div>
+  <dialog id="cinema-navigation" class="cinema-navigation" data-cinema-menu data-menu-state="closed" aria-label="RiftScry navigation">
+    <div class="cinema-menu-scenery" aria-hidden="true">
+      <div class="cinema-menu-haze"></div>
+      <div class="cinema-menu-orbit"><svg viewBox="0 0 600 600" fill="none"><circle cx="300" cy="300" r="278"/><circle cx="300" cy="300" r="252" stroke-dasharray="2 17"/><path d="M300 4v34m0 524v34M4 300h34m524 0h34M103 103l24 24m346 346 24 24m0-394-24 24M127 473l-24 24"/><path class="cinema-menu-orbit-arc" d="M300 22A278 278 0 0 1 578 300"/></svg></div>
+      <img class="cinema-menu-portrait" data-cinema-menu-portrait src={first.world.figure} alt="" width="1628" height="1628" loading="lazy" decoding="async"/>
+      <div class="cinema-menu-scrim"></div>
+      <span class="cinema-menu-perspective"><span data-cinema-menu-subject>{first.championName}</span><i></i> YOUR PERSPECTIVE</span>
+    </div>
+    <header class="cinema-menu-header">
+      <a class="cinema-menu-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={40}/></a>
+      <button type="button" class="cinema-menu-dismiss" data-cinema-menu-close aria-label="Close navigation"><span>Return to the Rift</span><span class="cinema-menu-cross" aria-hidden="true"><i></i><i></i></span></button>
+    </header>
+    <div class="cinema-navigation-body">
+      <div class="cinema-menu-primary">
+        <p class="cinema-menu-kicker"><i aria-hidden="true"></i> MAKE YOUR NEXT MOVE</p>
+        <nav class="cinema-menu-routes" aria-label="RiftScry destinations">
+          {[
+            {name:'Home',href:'/',station:null},
+            {name:'Briefing',href:'/next-game',station:'next-game'},
+            {name:'Atlas',href:'/champions',station:null},
+            {name:'Games',href:'/players',station:'players'},
+            {name:'Saved',href:'/pool#findings',station:null},
+          ].map((route,index)=><a class="cinema-menu-route" href={route.href} data-home-personal={route.station==='next-game'?true:undefined} data-station-link={route.station??undefined} aria-current={index===0?'page':undefined} style={`--menu-order:${index}`}><span class="cinema-menu-index" aria-hidden="true">0{index+1}</span><span class="cinema-menu-label"><span>{route.name}</span></span><span class="cinema-menu-arrow" aria-hidden="true">↗</span></a>)}
+        </nav>
+      </div>
+      <aside class="cinema-menu-secondary">
+        <nav class="cinema-menu-tools" aria-label="Archive tools"><a href="/patches"><span>Patch archive</span><span aria-hidden="true">↗</span></a><a href="/notebook"><span>Your notebook</span><span aria-hidden="true">↗</span></a><button type="button" data-palette-trigger aria-label="Search the archive"><span>Search</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></nav>
+        <div class="cinema-menu-preferences"><fieldset><legend class="sr-only">Application appearance</legend>{['frost','ember','obsidian'].map(theme=><label><input type="radio" name="appearance-theme" value={theme} data-theme-choice checked={theme==='frost'} disabled/><span>{theme}</span></label>)}</fieldset><a class="cinema-menu-source" href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer" aria-label="Explore the source on GitHub">Source <span aria-hidden="true">↗</span></a></div>
+        <p class="cinema-menu-credit">RIOT GAMES ARTWORK · INDEPENDENT FAN PROJECT</p>
+      </aside>
+    </div>
   </dialog>
   <p class="sr-only" role="status" aria-live="polite" data-cinema-status></p>
   <noscript><p class="cinema-nojs">Choose a champion to open their exact archive record, or <a href="/next-game">open your briefing</a>. The animated world needs JavaScript.</p></noscript>

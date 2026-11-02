@@ -37,7 +37,9 @@ account does not verify ownership or create a synchronized RiftScry account.
 
 Away from the homepage, the shared shell keeps one task chapter active with
 JavaScript. Named scene
-controls move between tasks; longer evidence grows in the ordinary document. A
+controls and guarded wheel/swipe gestures move between tasks; longer evidence
+grows in the ordinary document, with a separate gesture at its boundary changing
+the chapter. A
 spatial atlas and persistent destination path keep every chapter connected.
 The header provides **Discover, My game, and Saved**. The map exposes Briefing,
 Games, Champions, Patches, and Saved, with comparison and notebook shortcuts.
@@ -119,7 +121,7 @@ The following storage contracts remain distinct:
 | Recent player | `riftscry:recent-player:v1`: validated player/server context from lookup or an explicit valid selection. `riftscry:remembered-player:v1` remains a read fallback. Verified account data supplies names; late responses must not replace a newer player selection. |
 | Notebook | `riftscry:companion:v1`: context, up to 100 notes, 30 recorded loadouts, and 50 game cards. Writes validate the current stored state. Additive backup import preserves local records by default, rejects incompatible/oversized files and conflicting unfinished cards, and has a 2 MB limit. |
 | Build Memory | `riftscry:build-memory:v1:<platform>:<puuid>`: up to 50 private adjustments per player/server. Saving is explicit; generated drafts are reviewable summaries with optional editing. Prospective tracking starts on save or a material revision. Historical games, unknown roles, custom-condition confirmation, and reflection-only edits retain their existing meanings. |
-| Motion preference | `riftscry:motion`: the visitor's preference, combined with the operating-system reduced-motion setting. |
+| Motion preference | `riftscry:motion`: the visitor's explicit `full` or `reduced` choice. The homepage uses the operating-system preference when no choice is saved; a saved choice takes precedence. Starting its optional Play tour explicitly enables and saves full motion. Still World stops the tour. |
 | Temporary record reuse | `riftscry:player-cache:v1` in session storage: bounded tab-local Riot record/cooldown reuse, not saved notes or persistent AI responses. In-memory reuse remains available when storage fails. |
 
 Keep loadout on a match or observed build saves its actual provenance in one
