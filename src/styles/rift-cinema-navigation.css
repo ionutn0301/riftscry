@@ -115,7 +115,9 @@
   .cinema-menu-route { min-height: 44px; padding: 0; }.cinema-menu-label>span { font-size: 30px; }
   .cinema-menu-secondary { gap: 2px; }.cinema-menu-portrait { right: -41%; top: 4%; height: 93%; }
 }
-@media(max-height:480px) and (min-width:500px) {
+/* A 480px landscape phone needs two columns too; the portrait grid overlaps
+   its header and tools when only 320px of height is available. */
+@media(max-height:480px) and (min-width:480px) {
   .cinema-navigation { padding: max(10px,env(safe-area-inset-top)) 24px max(10px,env(safe-area-inset-bottom)); grid-template-rows: 44px minmax(0,1fr); gap: 7px; }
   .cinema-menu-brand img { width: 110px; }.cinema-menu-dismiss>span:first-child { font-size: 8px; }
   .cinema-navigation-body { grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); grid-template-rows: minmax(0,1fr); gap: 38px; }

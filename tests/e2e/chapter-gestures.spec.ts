@@ -1,5 +1,6 @@
 import { expect, test, type Locator } from '@playwright/test';
 import { readyWorld } from './journey-test-helpers';
+import { wheelAt } from './gesture-test-helpers';
 
 async function swipe(element: Locator, dx: number, dy = 0) {
   await element.evaluate((target, delta) => {
@@ -17,19 +18,28 @@ async function swipe(element: Locator, dx: number, dy = 0) {
 
 test.beforeEach(async ({ page }) => { await page.emulateMedia({ reducedMotion: 'reduce' }); });
 
-test('a long patch document scrolls before a fresh boundary gesture changes its chapter', async ({ page }) => {
+test('a long patch document scrolls before a fresh boundary gesture changes its chapter', async ({ page, browserName, isMobile }) => {
   await page.goto('/patch/26.16#champions'); await readyWorld(page);
   const champions = page.locator('#champions[data-journey-panel]');
   await expect(champions).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)).toBeGreaterThan(100);
-  await page.locator('.journey-result-caption').hover();
+  const caption = page.locator('.journey-result-caption');
+  await caption.hover();
+  const box = (await caption.boundingBox())!;
   const before = await page.evaluate(() => scrollY);
-  await page.mouse.wheel(0, 400);
+  const input = await wheelAt(page, { x: box.x + box.width / 2, y: box.y + box.height / 2 }, 400, isMobile && browserName === 'webkit');
+  if (!input.native) {
+    // Mobile WebKit cannot inject a native wheel. Verify the handler leaves
+    // reading unclaimed, then position the real document with its scroll API.
+    // This is DOM contract coverage, not a claim of native wheel coverage.
+    expect(input.prevented).toBe(false);
+    await page.evaluate(() => window.scrollBy({ top: 400, behavior: 'instant' }));
+  }
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(before);
   await expect(champions).toBeVisible();
 
   await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
-  // A fresh gesture follows the native reading gesture; inertia alone cannot advance.
+  // A fresh gesture follows the reading gesture; inertia alone cannot advance.
   await page.waitForTimeout(300);
   await champions.dispatchEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true });
   const items = page.locator('#items[data-journey-panel]');

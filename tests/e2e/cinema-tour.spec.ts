@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { cinema, cinemaSignals, chooseSignal, cinemaFitsViewport, openCinemaNavigation, readyCinema } from './cinema-test-helpers';
+import { wheelAt } from './gesture-test-helpers';
 
 test.use({ contextOptions: { reducedMotion: 'reduce' } });
 const tour = (page: Page) => page.locator('button[data-cinema-tour]');
@@ -9,27 +10,28 @@ test('world gestures advance one champion per gesture and leave interactive cont
   const signals = await cinemaSignals(page);
   const viewport = page.viewportSize()!;
   const point = { x: viewport.width * .53, y: viewport.height * .48 };
+  const mobileWebKit = isMobile && browserName === 'webkit';
   const open = page.getByRole('button', { name: 'Open navigation', exact: true });
-  // Native wheel deltas are scaled in mobile emulation (Pixel 7: 400 becomes
-  // about 152 CSS pixels), so use a full gesture for both boundary checks.
-  await open.hover(); await page.mouse.wheel(0, 400);
+  const openBox = (await open.boundingBox())!;
+  // Native wheel deltas are scaled in mobile Chromium. Mobile WebKit exposes
+  // no native wheel injection, so that project checks the DOM gesture contract.
+  await wheelAt(page, { x: openBox.x + openBox.width / 2, y: openBox.y + openBox.height / 2 }, 400, mobileWebKit);
   await expect(cinema(page)).toHaveAttribute('data-home-subject', signals[0]!.championId);
   // A fresh gesture after a pause is distinct from the wheel over a control.
   await page.waitForTimeout(1000);
   await page.mouse.move(point.x, point.y);
   expect(await page.evaluate(({ x, y }) => Boolean(document.elementFromPoint(x, y)?.closest('a,button,input,dialog')), point)).toBe(false);
-  // Queue the native wheel burst together so remote-call latency cannot turn
-  // trailing momentum into several separate, deliberately spaced gestures.
-  await Promise.all([120, 80, 50, 30].map(delta => page.mouse.wheel(0, delta)));
+  // Queue the burst together so remote-call latency cannot turn trailing
+  // momentum into several separate, deliberately spaced gestures.
+  await Promise.all([120, 80, 50, 30].map(delta => wheelAt(page, point, delta, mobileWebKit)));
   await expect(cinema(page)).toHaveAttribute('data-home-subject', signals[1]!.championId);
   await page.waitForTimeout(1000);
   await expect(cinema(page)).toHaveAttribute('data-home-subject', signals[1]!.championId);
-  await page.mouse.wheel(0, -400);
+  await wheelAt(page, point, -400, mobileWebKit);
   await expect(cinema(page)).toHaveAttribute('data-home-subject', signals[0]!.championId);
 
   if (isMobile && browserName === 'chromium') {
     // Chromium exposes native touch injection through its browser protocol.
-    // Every project above exercises real wheel input and the same scene state.
     const session = await page.context().newCDPSession(page);
     await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: point.x, y: point.y, id: 1 }] });
     await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: point.x - 45, y: point.y, id: 1 }] });

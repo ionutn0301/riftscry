@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { cinema, cinemaSignals, chooseSignal, cinemaFitsViewport, openCinemaNavigation, readyCinema } from './cinema-test-helpers';
+import { wheelAt } from './gesture-test-helpers';
 
 const menu = (page: Page) => page.locator('[data-cinema-menu]');
 const opener = (page: Page) => page.getByRole('button', { name: 'Open navigation', exact: true });
@@ -7,8 +8,8 @@ const close = (page: Page) => page.getByRole('button', { name: 'Close navigation
 
 test.use({ contextOptions: { reducedMotion: 'reduce' } });
 
-for (const [width, height] of [[320, 480], [390, 844], [568, 320], [844, 390]] as const) {
-  test(`cinema navigation fits one screen and every action is reachable at ${width}×${height}`, async ({ page, isMobile }) => {
+for (const [width, height] of [[320, 480], [390, 844], [480, 320], [568, 320], [844, 390]] as const) {
+  test(`cinema navigation fits one screen and every action is reachable at ${width}×${height}`, async ({ page, isMobile, browserName }, info) => {
     await page.setViewportSize({ width, height });
     await page.goto('/'); await readyCinema(page);
     const dialog = await openCinemaNavigation(page);
@@ -43,7 +44,7 @@ for (const [width, height] of [[320, 480], [390, 844], [568, 320], [844, 390]] a
       else await action.click({ trial: true });
     }
     for (const input of await dialog.locator('input:visible').all()) await expect(input).toBeEnabled();
-    await page.mouse.wheel(0, 650);
+    await wheelAt(page, { x: width / 2, y: height / 2 }, 650, isMobile && browserName === 'webkit');
     await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
     const scrolling = await dialog.evaluate(element => ({
       top: element.scrollTop, left: element.scrollLeft,
@@ -59,6 +60,7 @@ for (const [width, height] of [[320, 480], [390, 844], [568, 320], [844, 390]] a
     expect(scrolling.overflowY).toBeLessThanOrEqual(1); expect(scrolling.overflowX).toBeLessThanOrEqual(1);
     expect(scrolling.nested).toBe(0);
     await cinemaFitsViewport(page);
+    await page.screenshot({ path: info.outputPath(`menu-${width}x${height}.png`) });
     await close(page).click();
     await expect(dialog).toBeHidden(); await expect(opener(page)).toBeFocused();
   });
