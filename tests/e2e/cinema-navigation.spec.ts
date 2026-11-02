@@ -169,7 +169,10 @@ test('menu destinations and search handoff preserve native history and return to
   // A desktop modified click must keep its ordinary new-tab behavior and must
   // not start a delayed same-tab departure or dismiss the active menu.
   if (!isMobile) {
-    const opened = page.waitForEvent('popup');
+    // Native modified-click tabs need not have a window.opener. Observe the
+    // context's page event rather than requiring an opener-specific popup.
+    // Still assert the exact destination and unchanged original world/menu.
+    const opened = page.context().waitForEvent('page');
     await atlas.click({ modifiers: ['ControlOrMeta'] });
     const other = await opened;
     await expect(other).toHaveURL(url => url.pathname === '/champions');
