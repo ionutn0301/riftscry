@@ -18,10 +18,11 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  immersive?: boolean;
   surface?: "home" | "explore" | "next-game" | "notebook" | "champions" | "champion" | "patches" | "patch" | "compare" | "pool" | "players" | "player" | "match" | "missing";
 }
 
-const { title, description, ogImage = "/og-default.png", surface: requestedSurface } = Astro.props;
+const { title, description, ogImage = "/og-default.png", surface: requestedSurface, immersive = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const isHome = Astro.url.pathname === "/";
 const inferredSurface = isHome ? "home" : Astro.url.pathname.split("/")[1] || "missing";
@@ -93,14 +94,14 @@ const surface = requestedSurface ?? inferredSurface;
       addEventListener('pagereveal', quietCrossing);
     </script>
   </head>
-  <body class:list={["rift-shell", (isHome || surface === 'explore') && "is-home"]} data-surface={surface}>
+  <body class:list={["rift-shell", (isHome || surface === 'explore') && "is-home", immersive && "rift-cinema-shell"]} data-surface={surface}>
     <a class="skip-link" href="#main">Skip to content</a>
-    <RiftScene surface={surface} />
+    {!immersive && <RiftScene surface={surface} />}
     <div class="rift-site-shell">
-      <Wayfinder surface={surface} />
-      <main id="main"><JourneyChapters /><slot /></main>
+      {!immersive && <Wayfinder surface={surface} />}
+      <main id="main">{!immersive && <JourneyChapters />}<slot /></main>
     </div>
-    <JourneyChrome surface={surface} />
+    {!immersive && <JourneyChrome surface={surface} />}
     <CommandPalette client:load />
     <script>
       import '../scripts/experience';
