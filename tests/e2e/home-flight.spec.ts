@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { cinema, cinemaSignals, chooseSignal, closeEvidence, evidence, inspectCinema, openCinemaNavigation, readyCinema, selectedSignal, cinemaFitsViewport } from './cinema-test-helpers';
 import { reachableTarget, readyWorld } from './journey-test-helpers';
 import { captureColdCinemaFrame, expectCinemaStartupStable, installCinemaStartupProbe, markCinemaStartup, projectCinemaForeground, readCinemaStartupTrace, type CinemaStartupTrace } from './cinema-startup-test-helpers';
@@ -88,8 +88,10 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     } finally {
       scripts.release(); images.release(); fonts.release();
       trace ??= await readCinemaStartupTrace(page, true).catch(() => undefined);
+      const telemetry = JSON.stringify({ viewport: page.viewportSize(), browserName, reducedMotion, renderer, intercepted, errors, playerRequests, trace });
+      await writeFile(`${prefix}-metrics.json`, telemetry);
       await info.attach(`cold-homepage-${reducedMotion}`, { contentType: 'application/json',
-        body: JSON.stringify({ viewport: page.viewportSize(), browserName, reducedMotion, renderer, intercepted, errors, playerRequests, trace }) });
+        body: telemetry });
     }
   });
 }
@@ -302,7 +304,10 @@ test('direct inspection and a restored graphics context begin at the native artw
   expect(firstRestored).toBeDefined();
   matchesNative(firstRestored!, fallback);
   expect(errors).toEqual([]);
-  await info.attach('inspection-and-graphics-recovery', { contentType: 'application/json', body: JSON.stringify({ viewport: page.viewportSize(), fallback, trace: restored }) });
+  const telemetry = JSON.stringify({ viewport: page.viewportSize(), fallback, trace: restored });
+  await mkdir('player-visuals', { recursive: true });
+  await writeFile(`player-visuals/flight-recovery-${info.project.name}-metrics.json`, telemetry);
+  await info.attach('inspection-and-graphics-recovery', { contentType: 'application/json', body: telemetry });
 });
 
 test('failed visual assets leave world navigation and archive evidence available', async ({ page }) => {
