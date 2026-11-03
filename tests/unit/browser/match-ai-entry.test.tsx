@@ -69,6 +69,7 @@ it('replaces a failed session with sign-in and keeps recorded evidence', async (
   network.mockImplementation((url:string) => url.includes('/review?') ? Promise.reject(new PlayerRequestError('Session expired',401)) : Promise.resolve(url.includes('/match?') ? sourceMatch : itemMetadata));
   await mount(); await act(async () => container.querySelector<HTMLButtonElement>('[data-match-ai-entry]')!.click());
   expect(container.querySelector('[data-match-ai-entry]')?.tagName).toBe('A');
+  expect(new URL(container.querySelector<HTMLAnchorElement>('[data-match-ai-entry]')!.href).searchParams.get('reauth')).toBe('1');
   expect(container.querySelector('.review-mode')?.textContent).toContain('Recorded summary');
 });
 it('discards an in-flight AI result after account identity changes', async () => {

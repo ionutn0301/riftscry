@@ -95,7 +95,9 @@ storage. Concurrent AI POST responses are not deduplicated across identities.
 Guests retain recorded summaries, deterministic item comparisons, timelines and
 all existing guest notebook features. Match sign-in links carry a validated local
 return destination; OAuth still uses the fixed `/auth/callback`. No AI request
-starts automatically after sign-in. Provider credentials remain a prerequisite:
+starts automatically after sign-in. A rejected session opens explicit reauthentication
+controls; **Reconnect account** also remains available when pending edits prevent
+sign-out. Reauthentication preserves the local outbox. Provider credentials remain a prerequisite:
 when `PUBLIC_AUTH_PROVIDERS` is empty, the account page explains that setup is
 pending and offers guest access.
 

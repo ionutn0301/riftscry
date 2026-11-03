@@ -10,7 +10,12 @@ export default function AccountPanel() {
   const account = useStore($account, { ssr: 'initial' });
   const [busy, setBusy] = useState(false);
   const [returnTo, setReturnTo] = useState<string | null>(null);
-  useEffect(() => { setReturnTo(safeAccountReturn(new URLSearchParams(location.search).get('returnTo'))); }, []);
+  const [reauthenticate, setReauthenticate] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setReturnTo(safeAccountReturn(params.get('returnTo')));
+    setReauthenticate(params.get('reauth') === '1');
+  }, []);
   const [message, setMessage] = useState('');
   async function act(action: () => Promise<unknown>) {
     setBusy(true); setMessage('');
@@ -40,9 +45,10 @@ export default function AccountPanel() {
         {!socialProviders.length && <p>Social sign-in is being set up. You can continue using your guest workspace.</p>}
         <a href="/next-game">Continue as a guest →</a>
       </div> : <>
+        {reauthenticate && <div className="account-card" id="account-reauth"><h2>Reconnect your sign-in</h2><p>Sign in again with the same social account to continue using AI and sync. Your saved workspace and pending edits stay on this device.</p><div className="account-actions">{socialProviders.map(provider => <button key={provider} disabled={busy} onClick={() => void act(() => signIn(provider))}>Sign in again with {names[provider]}</button>)}</div>{!socialProviders.length && <p>Social sign-in is being set up. Keep a workspace export while access is restored.</p>}</div>}
         <div className="account-card"><h2>Your account</h2><p className="account-email">{account.email || 'Signed in'}</p>
           <p role="status">{account.syncing ? 'Syncing your workspace…' : account.conflicts.length ? 'Some records changed on another device. Choose which version to keep below.' : account.pending ? `${account.pending} record(s) waiting to sync.` : account.error ? 'Sync needs attention.' : 'Your workspace is synced.'}</p>
-          <div className="account-actions"><button disabled={busy || account.syncing} onClick={() => void act(syncAccount)}>Retry sync</button><button disabled={busy || account.syncing} onClick={() => void act(signOut)}>Sign out</button></div>
+          <div className="account-actions"><button disabled={busy || account.syncing} onClick={() => void act(syncAccount)}>Retry sync</button><button disabled={busy} aria-expanded={reauthenticate} aria-controls="account-reauth" onClick={() => setReauthenticate(true)}>Reconnect account</button><button disabled={busy || account.syncing} onClick={() => void act(signOut)}>Sign out</button></div>
           <a href="/next-game">Open your briefing →</a>
         </div>
         <div id="practice-plan"><PracticePlan /></div>

@@ -12,11 +12,12 @@ PR #77 is merged. The last verified main/production commit is
 Vercel production deployment `dpl_cbmJum4MZJK5MFLHVifnJJRHAFfa` was READY at that
 commit. These observations precede the new changes below.
 
-New implementation is on local branch `feat/account-personalization-ai-access`:
+Implementation was published to `main` from `feat/account-personalization-ai-access`:
 verified Supabase bearer sessions before all AI review work, guest sign-in links
 that preserve the match, account-specific AI generation limits, and a private
 practice plan with a display name, role, custom focus and up to eight manual goals.
-Account includes first-use links; the briefing exposes the same checklist.
+Account includes first-use links; the briefing exposes the same checklist. Rejected
+sessions expose direct reauthentication, even when pending edits prevent sign-out.
 Recorded summaries, item comparisons, timelines and guest notebook features remain
 available without an account. See [docs/ACCOUNTS.md](docs/ACCOUNTS.md).
 
@@ -188,7 +189,7 @@ The new local practice-plan/AI-access branch has these observed results:
 | Check | Observed result |
 | --- | --- |
 | Typecheck | Pass; one pre-existing unused-import hint |
-| Unit/integration/database suite | 713 tests, 69 files passed |
+| Unit/integration/database suite | 715 tests, 70 files passed |
 | Production build | Pass |
 | Generated homepage/archive contracts | Pass; 624 generated pages |
 | Real local review route | Guest and malformed bearer requests return 401 before Riot access; no-store response |
@@ -196,8 +197,8 @@ The new local practice-plan/AI-access branch has these observed results:
 | React interactions | AI opt-in, guest/expired gating, in-flight account change; checklist check/reset/remove, role save, account isolation and unsaved-preference conflict |
 | Hosted migration | Practice-plan key and size bound applied; old records retained |
 | Supabase advisors | No security or performance findings |
-| Browser suites/screenshots | Prepared, not verified: browser download/launch failed before app pages opened |
-| Main CI/deployment | Verify for the released main SHA; explicit main publication is now approved |
+| Browser suites/screenshots | Initial main release passed all 12 account browser tests in CI; inspect the final commit’s full CI and screenshots |
+| Main CI/deployment | Initial `d400f2c` release READY on production; verify the final recovery-fix SHA and CI |
 | Live Google OAuth | Not verified; provider credentials not installed |
 
 Run the account/player browser suites in CI on the published main commit, and

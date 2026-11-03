@@ -197,6 +197,9 @@ test('signed-in analysis sends the session only after an explicit request; an ex
   await page.locator('#match-review').getByRole('button', { name: 'Review with AI', exact: true }).click();
   await expect(page.locator('#match-review').getByRole('link', { name: 'Sign in to use AI' })).toBeVisible();
   await expect(page.locator('.review-mode')).toContainText('Recorded summary');
+  await page.locator('#match-review').getByRole('link', { name: 'Sign in to use AI' }).click();
+  await expect(page.getByRole('heading', { name: 'Reconnect your sign-in' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign in again with Google' })).toBeVisible();
 });
 
 test('the real review route rejects a guest or malformed token before any Riot access', async ({ request }) => {

@@ -42,7 +42,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   const account = useStore($account, { ssr: 'initial' });
   const [signInRequired, setSignInRequired] = useState(false);
   const canReview = account.ready && !!account.userId && !signInRequired;
-  const signInHref = `/account?${new URLSearchParams({ returnTo: `/matches/${id}?${new URLSearchParams({ platform, puuid, back })}#match-review` })}`;
+  const signInHref = `/account?${new URLSearchParams({ returnTo: `/matches/${id}?${new URLSearchParams({ platform, puuid, back })}#match-review`, ...(signInRequired ? { reauth: '1' } : {}) })}`;
   const values = { id, platform, puuid };
   const { data: match, error, isLoading, mutate: retryMatch } = useSWR<Match>(api('match', values), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const retrySeconds = usePlayerCooldown();
