@@ -215,5 +215,6 @@ html[data-motion=reduced] .rift-cinema :is(*,*:before,*:after){animation:none!im
   .cinema-header { padding-inline:16px; }
   .cinema-brand img { width:96px; }
   .cinema-utilities { gap:6px; }
+  .cinema-utilities > a[data-home-briefing] { min-width:44px; justify-content:center; }
   .cinema-utilities > a[data-home-briefing] > span:last-child { display:none; }
 }
