@@ -27,7 +27,7 @@ export default function SaveBuildButton({ match, platform, puuid, metadata }: Pr
       const build = makeSavedBuild(match, platform, puuid, metadata ?? cachedMetadata);
       const persisted = update(current => current.builds.some(record => record.platform === platform && record.puuid === puuid && record.source === build.source)
         ? current : { ...current, builds: [build, ...current.builds] });
-      if (persisted) setMessage('Loadout saved on this browser.');
+      if (persisted) setMessage('Loadout saved to your workspace.');
     } catch (error) {
       setFailure(error instanceof Error ? error.message : 'This loadout could not be saved.');
     }

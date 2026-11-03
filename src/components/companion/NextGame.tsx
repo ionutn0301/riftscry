@@ -121,7 +121,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
       }
       if (current.notes.length >= 100) throw new Error('Your notebook has 100 notes. Export a backup, then remove an older note to make room.');
       return { ...current, notes: [...current.notes, { ...fields, id: savedId, patch: latest, reviewedPatch: null, createdAt: now, updatedAt: now }] };
-    }, editingId ? 'Note updated. Saved game cards keep their original copy.' : 'Note saved on this browser.')) {
+    }, editingId ? 'Note updated. Saved game cards keep their original copy.' : 'Note saved to your workspace.')) {
       setEditor(null); editorOpener.current = null; setNoteId(savedId);
       if (editorPanel.current === 'game-card') focusCard();
       else requestAnimationFrame(() => {
@@ -156,7 +156,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
     <div className="recall-wrap">
       <header className="recall-header">
         <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR SAVED IDEAS</p><h1>Notebook.</h1><p className="recall-tagline">Keep what helps. Leave the rest.</p></div>
-        <div className="recall-header-note"><PlayerIcon name="bookmark" size={16} /><p>Saved in this browser.</p></div>
+        <div className="recall-header-note"><PlayerIcon name="bookmark" size={16} /><p>Saved to your workspace.</p></div>
       </header>
 
       {!ready && <p className="recall-loading" role="status">Opening your preparation…</p>}
@@ -232,7 +232,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
           <header className="recall-scene-heading"><div><p className="recall-eyebrow">YOUR RECORD</p><h2>Past cards</h2></div><span className="recall-summary-caption">{completed.length} reflected on</span></header>
           <div className="recall-library-content">{completed.length > 0 && <p>Your original plan and your own reflection. These are self-reports, not measured game outcomes.</p>}{completed.length ? <div className="recall-history-list">{completed.map(run => <article className="recall-past-card" key={run.id} data-recall-run={run.id}><header><div><h3>{championDisplayName(run.context.champion)}</h3><p>{queueName(run.context.queue)} · {dateLabel(run.createdAt)} · Patch {run.patch}</p></div><span className="recall-outcome-label" data-outcome={run.outcome}>{outcomeLabels[run.outcome!]}</span></header>{run.note && <blockquote>{run.note.text}</blockquote>}{run.build && <details className="recall-historical-build"><summary>Saved loadout: {run.build.name}</summary><LoadoutView build={run.build} /></details>}{run.reflection && <p className="recall-past-reflection">{run.reflection}</p>}<div className="recall-record-actions"><span>{situationName(run.context.situation)}</span><button type="button" className="recall-text-button recall-delete" onClick={() => deleteEntry({ kind: 'run', entry: run })}>Delete card</button></div></article>)}</div> : <div className="recall-empty-small"><p>After a game, reflect on your card to keep it here.</p><a className="recall-text-link" href="#game-card">Create a game card<PlayerIcon name="arrow-right" size={16} /></a></div>}<p className="recall-fineprint">Up to 50 game cards. Export a backup before removing cards you want to keep.</p></div>
         <RecallBackup state={state} ready={ready} update={update} /></section>
-      <footer className="recall-local-note"><PlayerIcon name="info" size={15} /><p>Saved on this browser. <a href="/next-game">Open your automatic briefing ↗</a></p></footer>
+      <footer className="recall-local-note"><PlayerIcon name="info" size={15} /><p>Saved to your workspace. Sign in to sync across devices. <a href="/next-game">Open your automatic briefing ↗</a></p></footer>
     </div>
   </div>;
 }

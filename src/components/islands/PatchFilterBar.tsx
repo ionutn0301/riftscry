@@ -167,7 +167,7 @@ export default function PatchFilterBar({ entries }: { entries: FilterEntry[] }) 
       </details>
       {serializeFilters(filters) && <button type="button" className="pool-toggle patch-filter-clear" onClick={() => setFilters({ ...EMPTY_FILTERS })}>Clear filters</button>}
       {ready && <span className="patch-filter-status" role="status" aria-live="polite">{filterChampions(changes, filters, roles, pool, meta).length} of {entries.length} champions{activeFilters.length > 0 ? ` · ${activeFilters.join(" · ")}` : ""}</span>}
-      {ready && filters.pool && pool.length === 0 && <span>No champions saved on this device. Turn off My pool or <a href="/pool">choose champions</a>.</span>}
+      {ready && filters.pool && pool.length === 0 && <span>No champions saved in your workspace. Turn off My pool or <a href="/pool">choose champions</a>.</span>}
     </div>
   );
 }

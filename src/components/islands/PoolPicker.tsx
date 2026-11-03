@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useStore } from "@nanostores/react";
 import { $pool, togglePool } from "../../lib/pool";
+import { $account } from '../../lib/account/storage';
 import type { Role } from "../../lib/data";
 import "./pool-picker.css";
 
@@ -28,6 +29,8 @@ export default function PoolPicker({
   latestPatchId: string;
 }) {
   const pool = useStore($pool, { ssr: () => emptyServerPool });
+  const account = useStore($account);
+  const [problem, setProblem] = useState('');
   const [q, setQ] = useState("");
   const [role, setRole] = useState<Role | null>(null);
 
@@ -43,6 +46,7 @@ export default function PoolPicker({
 
   return (
     <div className="pool-picker">
+      {problem && <p role="alert">{problem}</p>}
       <div className="controls">
         <input
           type="search"
@@ -74,7 +78,8 @@ export default function PoolPicker({
                 type="button"
                 role="option"
                 aria-selected={selected}
-                onClick={() => togglePool(c.id)}
+                disabled={!account.ready}
+                onClick={() => { try { togglePool(c.id); setProblem(''); } catch (error) { setProblem(error instanceof Error ? error.message : 'Could not save your pool.'); } }}
               >
                 <span className="portrait">
                   <img

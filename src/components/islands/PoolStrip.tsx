@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@nanostores/react";
 import { $pool, togglePool } from "../../lib/pool";
+import { $account } from '../../lib/account/storage';
 import "./pool-strip.css";
 
 /**
@@ -28,6 +29,8 @@ const GLYPH: Record<string, { glyph: string; label: string; cls: string }> = {
 
 export default function PoolStrip({ patchId, assetVersion, names, changed }: PoolStripProps) {
   const pool = useStore($pool);
+  const account = useStore($account);
+  const [problem, setProblem] = useState('');
   const [pinned, setPinned] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -49,6 +52,7 @@ export default function PoolStrip({ patchId, assetVersion, names, changed }: Poo
 
   return (
     <section className="pool-strip" aria-label={`Your pool in patch ${patchId}`}>
+      {problem && <p role="alert">{problem}</p>}
       <header>
         <h2>
           Your pool <span className="dash">—</span> <span className="num">patch {patchId}</span>
@@ -90,7 +94,8 @@ export default function PoolStrip({ patchId, assetVersion, names, changed }: Poo
                   type="button"
                   className="add"
                   title={`Add ${names[id] ?? id} to my pool`}
-                  onClick={() => togglePool(id)}
+                  disabled={!account.ready}
+                  onClick={() => { try { togglePool(id); setProblem(''); } catch (error) { setProblem(error instanceof Error ? error.message : 'Could not save your pool.'); } }}
                 >
                   + pool
                 </button>

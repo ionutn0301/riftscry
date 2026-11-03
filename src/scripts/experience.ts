@@ -1,3 +1,4 @@
+import { personalStorage } from '../lib/account/storage';
 import { $pool } from '../lib/pool';
 import { readReturnState, rememberReading, RESUME_KEY, RETURN_STATE_EVENT } from '../lib/return-briefing';
 
@@ -194,7 +195,7 @@ window.addEventListener('pageshow', (event) => {
   // was frozen in the browser's back-forward cache.
   try {
     userReduced = localStorage.getItem('riftscry:motion') === 'reduced';
-    const saved: unknown = JSON.parse(localStorage.getItem('riftscry:pool') ?? '[]');
+    const saved: unknown = JSON.parse(personalStorage.getItem('riftscry:pool') ?? '[]');
     if (Array.isArray(saved)) {
       const pool = saved.filter((id): id is string => typeof id === 'string');
       if (JSON.stringify(pool) !== JSON.stringify($pool.get())) $pool.set(pool);

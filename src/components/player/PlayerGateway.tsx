@@ -114,7 +114,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
         </div>
       </details>
 
-    <footer className="gateway-footnote"><span>RIOT MATCH RECORDS</span><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />About this lookup</summary><p>Your last player stays selected on this browser when storage is available. Looking up a player does not verify account ownership.</p></details></footer>
+    <footer className="gateway-footnote"><span>RIOT MATCH RECORDS</span><details className="player-disclosure gateway-privacy"><summary><PlayerIcon name="info" size={16} />About this lookup</summary><p>Your last player stays in your workspace and syncs when you sign in. Looking up a player does not verify account ownership.</p></details></footer>
     </div>
   </section>;
 }

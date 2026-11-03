@@ -1,3 +1,4 @@
+import { personalStorage } from '../../lib/account/storage';
 import { useEffect, useId, useRef, useState, type SubmitEvent } from 'react';
 import useSWR from 'swr';
 import { buildAutomaticBriefing, type AutomaticChampionContext } from '../../lib/player/automatic-briefing';
@@ -57,9 +58,11 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
       setSelection(next); setReady(true);
     };
     restore();
-    try { setHasNotebook(localStorage.getItem('riftscry:companion:v1') !== null); } catch { /* Optional legacy records. */ }
+    try { setHasNotebook(personalStorage.getItem('riftscry:companion:v1') !== null); } catch { /* Optional legacy records. */ }
     window.addEventListener('popstate', restore);
-    return () => window.removeEventListener('popstate', restore);
+    const onStorage = () => { setSelection(locationSelection()); setHasNotebook(personalStorage.getItem('riftscry:companion:v1') !== null); };
+    window.addEventListener('storage', onStorage);
+    return () => { window.removeEventListener('popstate', restore); window.removeEventListener('storage', onStorage); };
   }, []);
   useEffect(() => {
     if (!selection.player || !focusAfterSelection.current) return;
@@ -107,7 +110,7 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
           </aside>
         </section>}
       {storageNotice && <p className="automatic-storage-note" role="status">{storageNotice}</p>}
-      <footer className="automatic-footnote"><details><summary>About your player</summary><p>Built from available match records. Looking up a player does not verify account ownership. Your selected player stays in this browser.</p></details>{hasNotebook && <a href="/notebook">Open saved notebook<PlayerIcon name="arrow-right" size={15} /></a>}</footer>
+      <footer className="automatic-footnote"><details><summary>About your player</summary><p>Built from available match records. Looking up a player does not verify account ownership. Sign in to remember your selected player across devices.</p></details>{hasNotebook && <a href="/notebook">Open saved notebook<PlayerIcon name="arrow-right" size={15} /></a>}</footer>
     </div>
   </div>;
 }
@@ -142,7 +145,7 @@ function PlayerEntry({ onChoose }: { onChoose: (player: RecentPlayer) => void })
     <div className="automatic-field"><label htmlFor={`${id}-riot`}>Riot ID</label><input id={`${id}-riot`} name="riotId" placeholder="Game name#TAG" autoComplete="off" spellCheck={false} required maxLength={50} disabled={busy} aria-describedby={`${id}-status`} aria-invalid={invalidId || undefined} onInput={() => { if (invalidId) { setInvalidId(false); setProblem(''); } }} /></div>
     <div className="automatic-field"><label htmlFor={`${id}-server`}>Server</label><select id={`${id}-server`} name="platform" defaultValue="euw1" disabled={busy}>{Object.keys(platforms).map(platform => <option key={platform} value={platform}>{serverNames[platform] ?? platform.toUpperCase()}</option>)}</select></div>
     <button type="submit" className="automatic-button automatic-button--primary" disabled={busy || retrySeconds > 0}><PlayerIcon name={busy ? 'clock' : 'sparkles'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Finding your games…' : 'Get my briefing'}</button>
-    <p className="automatic-lookup-status" id={`${id}-status`} role={problem ? 'alert' : 'status'}>{problem || (busy ? 'Looking up your player…' : 'Remembered on this browser.')}</p>
+    <p className="automatic-lookup-status" id={`${id}-status`} role={problem ? 'alert' : 'status'}>{problem || (busy ? 'Looking up your player…' : 'Remembered in your workspace. Sign in to sync.')}</p>
   </form>;
 }
 

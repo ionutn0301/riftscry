@@ -37,7 +37,7 @@ export default function PlayerSample({ matches, puuid, imported, available, load
     <section className="history-availability" aria-label={`${availability.label} availability`} data-history-availability={availability.status}>
       <header className="history-availability-heading"><PlayerIcon name="info" size={24} /><h2>Mayhem history is private</h2></header>
       <p role="status">Riot keeps ARAM: Mayhem match history private. Check your Mayhem results in the League client.</p>
-      <p>Saved Build Memory notes remain available on this browser.</p>
+      <p>Saved Build Memory notes remain available in your workspace.</p>
       <a className="player-text-link" href={availability.sourceUrl} target="_blank" rel="noreferrer">Riot’s availability notice<PlayerIcon name="arrow-right" size={16} /></a>
       <div className="player-actions">
         <button type="button" onClick={() => onChangeQueue('450')}>Show regular ARAM</button>

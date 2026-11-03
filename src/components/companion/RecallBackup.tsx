@@ -57,7 +57,7 @@ export default function RecallBackup({ state, ready, update }: { state: Companio
   return <details className="recall-library-section recall-backup">
     <summary><span><PlayerIcon name="bookmark" />Backup and restore</span><span className="recall-summary-caption">Keep a copy</span></summary>
     <div className="recall-library-content">
-      <p>Your notes, saved loadouts, and reflections stay in this browser. They do not sync or go to AI. Clearing browser data removes them. A backup lets you move them to another browser.</p>
+      <p>Your notes, saved loadouts, and reflections sync privately when you sign in. Guest data stays in this browser until you import it from Account. These records do not go to AI. Export a backup before clearing browser data.</p>
       <p className="recall-fineprint">This backup contains only Rift Recall quick notes, saved loadouts, and cards. Build Memory adjustments and your champion pool are separate and are not included.</p>
       <button type="button" className="recall-button recall-button--quiet" disabled={!ready} onClick={download}><PlayerIcon name="arrow-down" size={17} />Export backup</button>
       <div className="recall-import-field recall-field"><label htmlFor={`${id}-file`}>Import a RiftScry backup</label><input ref={inputRef} type="file" id={`${id}-file`} accept=".json,application/json" disabled={!ready} onChange={event => void preview(event.target.files?.[0])} /><p className="recall-fineprint">JSON, up to 2 MB. You will review the contents before anything changes.</p></div>
@@ -71,8 +71,8 @@ export default function RecallBackup({ state, ready, update }: { state: Companio
           {incoming.runs.length > 0 && <><h4>Game cards</h4><ul>{incoming.runs.map(run => <li key={run.id}>{run.note?.text ?? run.build?.name}{run.reflection ? ` — ${run.reflection}` : ''}</li>)}</ul></>}
           {!incoming.notes.length && !incoming.builds.length && !incoming.runs.length && <p>This backup has no saved entries.</p>}
         </details>
-        <p>New entries will be added. By default, matching entries already in this browser are kept. Your selected game context stays the same.</p>
-        <label className="recall-checkbox"><input type="checkbox" checked={preferIncoming} onChange={event => setPreferIncoming(event.target.checked)} /><span>Replace matching local entries with this backup</span></label>
+        <p>New entries will be added. By default, matching entries already in your workspace are kept. Your selected game context stays the same.</p>
+        <label className="recall-checkbox"><input type="checkbox" checked={preferIncoming} onChange={event => setPreferIncoming(event.target.checked)} /><span>Replace matching workspace entries with this backup</span></label>
         <div className="recall-inline-actions"><button type="button" className="recall-button" onClick={() => {
           if (update(current => mergeCompanion(current, incoming, preferIncoming))) {
             setIncoming(null); setFilename(''); setMessage('Backup imported. Your preparation is ready.');

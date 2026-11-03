@@ -1,3 +1,4 @@
+import { personalStorage } from './account/storage';
 import { safeReadingHref } from './return-briefing';
 
 /** Public archive context only. Selection never saves a finding or marks a patch reviewed. */
@@ -19,7 +20,7 @@ export function parseSignalContext(value: unknown): SignalContext | null {
 }
 
 export function readSignalContext(): SignalContext | null {
-  try { return parseSignalContext(JSON.parse(localStorage.getItem(SIGNAL_CONTEXT_KEY) ?? 'null')); }
+  try { return parseSignalContext(JSON.parse(personalStorage.getItem(SIGNAL_CONTEXT_KEY) ?? 'null')); }
   catch { return null; }
 }
 
@@ -27,7 +28,7 @@ export function rememberSignal(value: SignalContext): boolean {
   const signal = parseSignalContext(value);
   if (!signal || typeof window === 'undefined') return false;
   let saved = true;
-  try { localStorage.setItem(SIGNAL_CONTEXT_KEY, JSON.stringify(signal)); } catch { saved = false; }
+  try { personalStorage.setItem(SIGNAL_CONTEXT_KEY, JSON.stringify(signal)); } catch { saved = false; }
   window.dispatchEvent(new CustomEvent(SIGNAL_CONTEXT_EVENT, { detail: signal }));
   return saved;
 }

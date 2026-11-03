@@ -32,7 +32,7 @@ export default function RecallNoteForm({ note, context, champions, problem, onSa
       <div className="recall-field recall-field--wide">
         <label htmlFor={`${id}-text`}>Note text</label>
         <textarea ref={textRef} id={`${id}-text`} value={text} onChange={event => setText(event.target.value)} required maxLength={500} rows={3} placeholder="One thing you want to remember when this situation comes up…" aria-describedby={`${id}-hint`} />
-        <div className="recall-field-hint"><span id={`${id}-hint`}>Saved on this browser.</span><span>{text.length}/500</span></div>
+        <div className="recall-field-hint"><span id={`${id}-hint`}>Saved to your workspace. Sign in to sync across devices.</span><span>{text.length}/500</span></div>
       </div>
       <details className="recall-note-context recall-field--wide"><summary>Champion, mode & pin <small>optional</small></summary><div className="recall-note-context-fields">
       <div className="recall-field"><label htmlFor={`${id}-champion`}>Applies to champion</label><select id={`${id}-champion`} value={champion} onChange={event => setChampion(event.target.value)}><option value="">Any champion</option>{champions.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></div>

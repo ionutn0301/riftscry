@@ -101,7 +101,7 @@ export default function PersonalBriefing({ archive, champions, insights, initial
           <div className="return-briefing__reviewed">
             <button type="button" disabled={!ready || !device.storageAvailable || device.reviewedPatch === latest.id} onClick={() => {
               const saved = markPatchReviewed(latest.id);
-              setMessage(saved ? `Patch ${latest.id} marked reviewed on this device.` : 'This browser could not save your reviewed patch.');
+              setMessage(saved ? `Patch ${latest.id} marked reviewed in your workspace.` : 'This browser could not save your reviewed patch.');
               if (!saved) setDevice((previous) => ({ ...previous, storageAvailable: false }));
             }}>{device.reviewedPatch === latest.id ? `✓ ${latest.id} marked reviewed` : `Mark ${latest.id} reviewed`}</button>
             <p>Only this button updates your reviewed baseline.</p>

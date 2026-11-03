@@ -19,7 +19,7 @@ const { id, name } = Astro.props;
     });
     button.addEventListener('click', () => {
       const status = button.parentElement?.querySelector('[data-direct-save-status]');
-      try { togglePool(id); if (status) status.textContent = $pool.get().includes(id) ? `${name} saved on this device.` : `${name} removed from My Pool.`; }
+      try { togglePool(id); if (status) status.textContent = $pool.get().includes(id) ? `${name} saved in your workspace.` : `${name} removed from My Pool.`; }
       catch { if (status) status.textContent = 'Storage is unavailable. You can still read and share this history.'; }
     });
   }

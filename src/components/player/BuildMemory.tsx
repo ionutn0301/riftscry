@@ -1,3 +1,4 @@
+import { personalStorage } from '../../lib/account/storage';
 import { useEffect, useId, useRef, useState } from 'react';
 import useSWR from 'swr';
 import ItemPicker, { ItemLabel, type ItemMetadata } from './ItemPicker';
@@ -14,7 +15,7 @@ const GENERAL_CONDITION = 'Same champion, role, queue and patch';
 const CUSTOM_CONDITION = 'Specific matchup or replay condition — requires confirmation';
 const keyFor = (player: string) => `riftscry:build-memory:v1:${player}`;
 const textValue = (form: FormData, name: string) => String(form.get(name) ?? '').trim().slice(0, 600);
-function load(player: string): Memory[] { return parseMemories(localStorage.getItem(keyFor(player)), player); }
+function load(player: string): Memory[] { return parseMemories(personalStorage.getItem(keyFor(player)), player); }
 function minute(timestamp: number) {
   const seconds = Math.max(0, Math.floor(timestamp / 1000));
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
@@ -69,11 +70,17 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
     setSavedId(undefined);
   }, [savedId, notes]);
 
-  const save: Save = (next, message = 'Saved privately on this browser.') => {
+  useEffect(() => {
+    const reload = (event: StorageEvent) => { if (event.key === null || event.key === keyFor(player)) void mutate(); };
+    window.addEventListener('storage', reload);
+    return () => window.removeEventListener('storage', reload);
+  }, [player, mutate]);
+
+  const save: Save = (next, message = 'Saved to your workspace. Check Account for sync status.') => {
     if (error || notesLoading) return false;
     try {
       parseMemories(JSON.stringify(next), player);
-      localStorage.setItem(keyFor(player), JSON.stringify(next));
+      personalStorage.setItem(keyFor(player), JSON.stringify(next));
       void mutate(next, false);
       setStatus(message);
       return true;
@@ -114,7 +121,7 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
       check: 'Inspect recorded purchases, including later undo and sale events. A recorded purchase is an observation, not a success score.',
       status: 'active', reflection: '', favorite: false,
     };
-    if (save([...notes, next], 'Saved privately on this browser. Tracking starts now.')) {
+    if (save([...notes, next], 'Saved to your workspace. Check Account for sync status. Tracking starts now.')) {
       setFilter({ champion: '', status: '', favorites: false });
       setSavedId(id);
       setOpen(false);
@@ -123,8 +130,8 @@ export default function BuildMemory({ player, puuid, platform, source, matches, 
   }
 
   return <section className="memory-panel" aria-labelledby="memory-heading" id="build-memory">
-    <header className="player-section-heading"><div><h2 id="memory-heading">Build Memory</h2><p>One idea for your next game.</p></div><span className="player-chip"><PlayerIcon name="bookmark" /> This browser</span></header>
-    <details className="memory-privacy player-explainer"><summary><PlayerIcon name="info" /> About your notes</summary><p>Notes stay on this browser, separated by player and server. Clearing browser data deletes them; they do not sync or get sent to AI. Looking up a player does not verify account ownership.</p></details>
+    <header className="player-section-heading"><div><h2 id="memory-heading">Build Memory</h2><p>One idea for your next game.</p></div><span className="player-chip"><PlayerIcon name="bookmark" /> Your workspace</span></header>
+    <details className="memory-privacy player-explainer"><summary><PlayerIcon name="info" /> About your notes</summary><p>Notes are separated by player and server inside your workspace. Sign in to sync them privately across devices. Guest notes stay on this browser. These notes are not sent to AI. Looking up a player does not verify account ownership.</p></details>
     {notesLoading && <p role="status">Loading your saved adjustments…</p>}
     {error && <p role="alert">Saved notes could not be read. They have not been overwritten.</p>}
     {source && <details ref={draftDetails} open={open} onToggle={event => setOpen(event.currentTarget.open)} className="memory-draft">
@@ -221,7 +228,7 @@ function SavedAdjustment({ note, notes, save, matches, matchesLoading, puuid, pl
     <div className="memory-toolbar"><div className="player-field"><label htmlFor={`${fieldId}-status`}>Status</label><select id={`${fieldId}-status`} value={note.status} onChange={event => replace({ ...note, status: event.target.value as Memory['status'] })}>{['active', 'revised', 'completed', 'archived'].map(value => <option key={value}>{value}</option>)}</select></div>
     <div className="player-actions">
       <button aria-pressed={note.favorite} className="player-button-secondary" onClick={() => replace({ ...note, favorite: !note.favorite })}><PlayerIcon name="star" />{note.favorite ? 'Unfavorite' : 'Favorite'}</button>
-      <button className="player-button-text" onClick={() => { if (confirm('Discard this private adjustment?')) save(notes.filter(saved => saved.id !== note.id), 'Adjustment discarded from this browser.'); }}><PlayerIcon name="trash" />Discard</button>
+      <button className="player-button-text" onClick={() => { if (confirm('Discard this private adjustment?')) save(notes.filter(saved => saved.id !== note.id), 'Adjustment discarded from your workspace.'); }}><PlayerIcon name="trash" />Discard</button>
     </div></div>
     <details open={editing} onToggle={event => setEditing(event.currentTarget.open)}><summary>Revise this adjustment</summary>{editing && <RevisionForm key={`${note.id}:${note.revisedAt ?? 0}`} note={note} platform={platform} puuid={puuid} onSave={change => { if (replace(reviseMemory(note, change, Date.now()))) setEditing(false); }} />}</details>
     {note.trackingStartedAt == null ? <div><p>Legacy adjustment: creation time is unknown.</p><button onClick={() => replace({ ...note, trackingStartedAt: Date.now(), confirmedMatchIds: [] }, 'Tracking starts now. Earlier games remain historical comparisons.')}>Start tracking from now</button></div> : <details className="player-explainer memory-tracking"><summary><PlayerIcon name="clock" /> Tracking dates</summary><p>Tracking matches starting after {new Date(note.trackingStartedAt).toLocaleString()}. {note.createdAt == null ? 'Original creation time unknown.' : `Created ${new Date(note.createdAt).toLocaleString()}.`} Earlier games are not follow-up tests.</p></details>}
