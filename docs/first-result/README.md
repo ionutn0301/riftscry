@@ -195,6 +195,47 @@ prove a successful live Riot account lookup. Existing deployment protection is
 preserved, and exact deployment readiness is distinct from authenticated page
 verification.
 
+## Visual proof
+
+These repository copies preserve the supplied **synthetic fixture** captures.
+The before state is baseline `main` commit
+[`612dfcf`](https://github.com/ionutn0301/riftscry/commit/612dfcf); the after and
+ready states show application implementation
+[`9aae1a7`](https://github.com/ionutn0301/riftscry/commit/9aae1a7).
+The subsequent test-only follow-up does not change that application implementation.
+
+### Same import state, before and after
+
+Both sides show **4 of 20 recent games imported**, with the same fixture player
+and viewport. The baseline still shows the loading panel. The implementation
+shows a source-linked first-game observation and keeps the remaining import
+explicitly marked as loading. This is a state comparison, not a measured network
+latency or live-account benchmark.
+
+| Viewport | Before: baseline loading panel | After: observation during import |
+| --- | --- | --- |
+| Desktop, 1440 × 900 | [before-import-desktop.webp](proof/before-import-desktop.webp) | [after-import-desktop.webp](proof/after-import-desktop.webp) |
+| Phone, 390 × 844 | [before-import-mobile.webp](proof/before-import-mobile.webp) | [after-import-mobile.webp](proof/after-import-mobile.webp) |
+
+### Ready from one ARAM game
+
+The separate ready-state captures show **1 of 1 game imported**: the fixture's
+40% team-kill participation, its recorded match context and the source-game action.
+They demonstrate the one-game result without a same-champion baseline or a
+numerical Momentum target. These are full-page captures, so their image heights
+differ from the viewport-only import comparison above.
+
+| Capture | Image dimensions | Evidence |
+| --- | --- | --- |
+| Desktop | 1440 × 1251 | [ready-desktop.webp](proof/ready-desktop.webp) |
+| Phone | 390 × 1367 | [ready-mobile.webp](proof/ready-mobile.webp) |
+
+All six assets are lossless WebP conversions of the supplied PNGs, with original
+dimensions and decoded RGB pixels checked for equality. No visual content was
+added, removed or retouched. These captures document the fixture states shown;
+they do not establish a successful live Riot lookup, physical-device testing or
+additional automated-check results.
+
 ## Measurement and follow-up
 
 No new analytics collection is part of this release. Future approved measurement

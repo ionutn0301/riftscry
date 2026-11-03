@@ -312,6 +312,11 @@ test('first-result evidence is keyboard reachable at 320px and 200% zoom with de
     await page.evaluate(zoom => { document.documentElement.style.zoom = String(zoom); }, viewport.zoom);
     await expect(result).toBeVisible();
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    // Resizing preserves the link's focus, which would skip Tab navigation on
+    // the second pass. Start from its preceding section in each layout instead.
+    await page.locator('#focus').focus();
+    await expect(page.locator('#focus')).toBeFocused();
+    await expect(sourceLink).not.toBeFocused();
     await keyboardReach(page, sourceLink);
   }
   noFirstValueDependencies(requests);
