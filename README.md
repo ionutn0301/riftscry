@@ -35,6 +35,12 @@ history. The experience connects those paths across the whole site.
 - **Automatic briefing:** `/next-game` discovers recent champions, exact queues and
   recorded loadouts from imported games. It assembles a session recap and a focus
   supported by available evidence. No notes, saved cards or reflections are required.
+- **Momentum:** one personal target, checked automatically across the next three
+  comparable games. The starting median stays fixed; later games update a small
+  progress record without checkboxes or journals. Supports get suitable vision
+  measures, ARAM uses valid team participation, and a personal high can appear
+  even after a loss. Small samples provide an honest latest-game observation.
+  Progress is local to this browser and bounded to twelve cycles.
 - **Personal patch catch-up:** compare each recent champion's latest imported game
   against newer archived champion and verified item changes, with before/after
   records and source links. Unknown patch baselines remain unknown.
@@ -109,6 +115,9 @@ client or commit deployment environment files.
 - [Signal journey research](docs/signal-journey/RESEARCH.md) — references and the decisions they support
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
 - [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
+- [Momentum release](docs/momentum/README.md) — automatic targets, progress receipts and validation
+- [Competitive strategy](docs/COMPETITIVE_STRATEGY.md) — current primary-source research and product priorities
+- [Master implementation prompts](docs/MASTER_PROMPTS.md) — eight sequenced prompts for the next releases
 - [Personal patch impact](docs/personal-patch-impact/README.md) — calculations, coverage, sources and verification
 - [Data & methodology](docs/DATA.md) — schema, classification and provenance
 - [Contributing](CONTRIBUTING.md) — checks and contribution workflow

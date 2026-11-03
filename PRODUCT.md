@@ -96,6 +96,18 @@ current route inventory and implementation scope are in the platform audit.
   supported historical references, a recorded inventory, and visible formulas,
   assumptions, exclusions, and sources; it does not simulate an entire fight.
   Unknown patch baselines and unsupported calculations remain explicit.
+- **Automatic progress:** Momentum in the briefing starts one target for an
+  eligible comparison context from the latest three to five valid games. It
+  freezes that median and target before checking the next three games started
+  after creation. Champion, exact queue, known role/context and game-version
+  pair must match. Supports do not receive farming targets; ARAM uses valid
+  team participation only. Short/remade games and missing measurements do not
+  count as failure. Incomplete imports, storage failures and history gaps pause
+  evaluation. A completed cycle retains its observed results and can start the
+  next focus automatically. A sample high requires at least three prior
+  comparable imported games and is not a lifetime record or a skill grade.
+  A useful latest-game observation remains available before a target can start.
+  Momentum is separate from authored notes and does not confirm Build Memory.
 - **Optional review:** a timeline loads on request or through a direct
   event-evidence link. AI review requires its own explicit action. AI
   interpretation is labelled; validation constrains its evidence references and
@@ -121,6 +133,7 @@ The following storage contracts remain distinct:
 | Recent player | `riftscry:recent-player:v1`: validated player/server context from lookup or an explicit valid selection. `riftscry:remembered-player:v1` remains a read fallback. Verified account data supplies names; late responses must not replace a newer player selection. |
 | Notebook | `riftscry:companion:v1`: context, up to 100 notes, 30 recorded loadouts, and 50 game cards. Writes validate the current stored state. Additive backup import preserves local records by default, rejects incompatible/oversized files and conflicting unfinished cards, and has a 2 MB limit. |
 | Build Memory | `riftscry:build-memory:v1:<platform>:<puuid>`: up to 50 private adjustments per player/server. Saving is explicit; generated drafts are reviewable summaries with optional editing. Prospective tracking starts on save or a material revision. Historical games, unknown roles, custom-condition confirmation, and reflection-only edits retain their existing meanings. |
+| Momentum | `riftscry:momentum:v1:<platform>:<puuid>`: up to 12 automatically recorded focus cycles with fixed baselines, source match IDs and up to three later results each. Valid complete imports create/check cycles; timestamps and exact contexts prevent retrospective credit. Web Locks serialize cooperating tabs where available. Corrupt data remains untouched; failed writes never claim new saved progress. No cross-device sync or automatic processing while the browser is closed. |
 | Motion preference | `riftscry:motion`: the visitor's explicit `full` or `reduced` choice. The homepage uses the operating-system preference when no choice is saved; a saved choice takes precedence. Starting its optional Play tour explicitly enables and saves full motion. Still World stops the tour. |
 | Temporary record reuse | `riftscry:player-cache:v1` in session storage: bounded tab-local Riot record/cooldown reuse, not saved notes or persistent AI responses. In-memory reuse remains available when storage fails. |
 
