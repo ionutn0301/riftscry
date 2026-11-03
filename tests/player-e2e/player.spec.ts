@@ -75,7 +75,7 @@ test('AI suggestion prefills a draft, opens evidence, and saves only after confi
   expect(await readNotes(page)).toEqual([]);
 
   await page.getByRole('button', { name: 'Save adjustment', exact: true }).click();
-  await expect(page.getByText(/^Saved privately on this browser\./)).toBeVisible();
+  await expect(page.getByText(/^Saved to your workspace\./)).toBeVisible();
   const [note] = await readNotes(page);
   expect(note).toMatchObject({ targetItem: 3047, source: sourceMatch.metadata.matchId, evidence: suggestion.evidence });
   expect(note!.createdAt).toBeGreaterThan(sourceMatch.info.gameCreation);
@@ -108,7 +108,7 @@ test('manual adjustments persist privately and do not cross player contexts', as
   await page.getByLabel('Reason', { exact: true }).fill('Preparation note');
   await page.getByLabel('Tradeoff', { exact: true }).fill('Another component is delayed');
   await page.getByRole('button', { name: 'Save adjustment', exact: true }).click();
-  await expect(page.getByText(/^Saved privately on this browser\./)).toBeVisible();
+  await expect(page.getByText(/^Saved to your workspace\./)).toBeVisible();
 
   await page.goto(`${profilePath}?view=memory`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Ahri · Observe boots timing', exact: true })).toBeVisible();
@@ -128,7 +128,7 @@ test('material revision updates the tracked item and baseline; reflection preser
   await note.getByLabel('Reason', { exact: true }).fill('Compare this item in a future suitable situation.');
   await note.getByLabel('Tradeoff', { exact: true }).fill('Different properties replace the previous item choice.');
   await note.getByRole('button', { name: 'Save revision', exact: true }).click();
-  await expect(page.getByText('Saved privately on this browser.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Saved to your workspace. Check Account for sync status.', { exact: true })).toBeVisible();
   const [revised] = await readNotes(page);
   expect(revised).toMatchObject({ createdAt: trackingStart, targetItem: 3006, alternative: 'Observe attack-speed boots instead', status: 'revised' });
   expect(revised!.trackingStartedAt).toBeGreaterThan(trackingStart);

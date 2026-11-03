@@ -95,6 +95,8 @@ Vercel Git integration builds previews for PRs and production from `main`.
 
 ## Managed accounts and storage
 
+For continuation work, start with the [master agent handover](HANDOVER_MASTER.md).
+
 Supabase Auth handles social sign-in and sessions; hosted Postgres stores private
 workspaces with row-level security. No custom auth server or database host is needed.
 See [the setup guide](docs/ACCOUNTS.md) for the migration, social provider setup,
