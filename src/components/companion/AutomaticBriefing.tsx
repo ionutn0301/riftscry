@@ -13,6 +13,7 @@ import { usePlayerHistory } from '../player/usePlayerHistory';
 import { useItemMetadata } from '../player/useItemMetadata';
 import { usePlayerCooldown } from '../player/usePlayerCooldown';
 import ChampionPortrait from '../player/ChampionPortrait';
+import { LoadoutIcon } from '../player/ItemPicker';
 import { championDisplayName } from '../player/championArtwork';
 import PlayerIcon from '../player/PlayerIcon';
 import PatchImpact from './PatchImpact';
@@ -91,7 +92,7 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
 
   return <div className="automatic-workspace" data-journey-deck data-journey-hydrated={ready} data-journey-default="focus" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
     <div className="automatic-wrap">
-      <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your briefing.</h1>{ready && !selection.player && <p>Your games become your next move.</p>}</header>
+      <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your briefing.</h1><p>Your games become your next move.</p></header>
       {!ready ? <section id="focus" className="automatic-loading automatic-panel automatic-empty" data-journey-panel data-journey-label="Focus" data-journey-world="next-game" role="status"><PlayerIcon name="clock" size={28} /><h2>Opening your briefing…</h2><p>Finding your latest games.</p></section> : selection.player ?
         <AutomaticReport key={`${selection.player.platform}:${selection.player.puuid}:${selection.queue}`} player={selection.player} queue={selection.queue} champion={selection.champion} archive={archive} onChangePlayer={changePlayer} onChangeScope={changeScope} /> :
         <section id="connect" data-journey-panel data-journey-label="Connect" data-journey-world="next-game" className="automatic-entry automatic-panel" aria-labelledby="automatic-entry-heading">
@@ -278,5 +279,14 @@ function AutomaticLoadout({ match, player, sourceHref }: { match: Match; player:
   const items = [person.item0, person.item1, person.item2, person.item3, person.item4, person.item5, person.item6].filter(id => Number.isInteger(id) && id > 0);
   const mode = modeForMatch(match);
   const runes = mode.runeSetup ? [...new Set(person.perks?.styles.flatMap(style => style.selections.map(selection => selection.perk)) ?? [])] : [];
-  return <section id="loadout" data-journey-panel data-journey-label="Loadout" data-journey-short-label="Build" data-journey-world="match" className="automatic-loadout automatic-panel" aria-labelledby="automatic-loadout-heading"><header className="automatic-section-heading"><div><p className="automatic-eyebrow"><PlayerIcon name="build" size={16} /> AUTOMATICALLY FOUND</p><h2 id="automatic-loadout-heading">Your last {championDisplayName(person.championName)} loadout.</h2><p>{mode.label} · {date(match.info.gameCreation)} · {count(person.kills)}/{count(person.deaths)}/{count(person.assists)}</p></div></header>{items.length ? <ul className="automatic-items" aria-label="Recorded final loadout">{items.map((id, index) => <li key={`${id}:${index}`}>{compatible?.version && <img src={`https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(compatible.version)}/img/item/${id}.png`} width="40" height="40" alt="" loading="lazy" onError={event => { event.currentTarget.hidden = true; }} />}<span>{compatible?.data[id]?.name ?? `Item ${id}`}</span></li>)}</ul> : <p>No final items were recorded in this game.</p>}{runes.length > 0 && <p className="automatic-runes"><strong>Recorded runes</strong>{runes.map(id => compatible?.runes?.[id]?.name ?? `Rune ${id}`).join(' · ')}</p>}<p className="automatic-fineprint">Recorded final inventory, not purchase order or a recommended build.{error || (metadata && !compatible) ? ' Compatible item names are unavailable; IDs are shown.' : ''}</p><JourneyHandoff href={sourceHref} cue="Next · Match review" label="Inspect the match"/></section>;
+  return <section id="loadout" data-journey-panel data-journey-label="Loadout" data-journey-short-label="Build" data-journey-world="match" className="automatic-loadout automatic-panel" aria-labelledby="automatic-loadout-heading">
+    <header className="automatic-section-heading"><div><p className="automatic-eyebrow"><PlayerIcon name="build" size={16} /> AUTOMATICALLY FOUND</p><h2 id="automatic-loadout-heading">Your last {championDisplayName(person.championName)} loadout.</h2><p>{mode.label} · {date(match.info.gameCreation)} · {count(person.kills)}/{count(person.deaths)}/{count(person.assists)}</p></div></header>
+    {items.length ? <ul className="automatic-items" aria-label="Recorded final loadout">{items.map((id, index) => <li key={`${id}:${index}`}>
+      <LoadoutIcon id={id} src={compatible?.version ? `https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(compatible.version)}/img/item/${id}.png` : undefined} />
+      <span className="automatic-item-name">{compatible?.data[id]?.name ?? `Item ${id}`}</span>
+    </li>)}</ul> : <p>No final items were recorded in this game.</p>}
+    {runes.length > 0 && <p className="automatic-runes"><strong>Recorded runes</strong>{runes.map(id => compatible?.runes?.[id]?.name ?? `Rune ${id}`).join(' · ')}</p>}
+    <p className="automatic-fineprint">Recorded final inventory, not purchase order or a recommended build.{error || (metadata && !compatible) ? ' Compatible item names are unavailable; IDs are shown.' : ''}</p>
+    <JourneyHandoff href={sourceHref} cue="Next · Match review" label="Inspect the match"/>
+  </section>;
 }

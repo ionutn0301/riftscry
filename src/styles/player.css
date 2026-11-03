@@ -236,13 +236,15 @@
 .loadout-items li, .review-inventory li { min-width: 0; }
 .item-label, .rune-label { display: inline-flex; align-items: center; gap: 8px; vertical-align: middle; line-height: 1.35; color: var(--player-text); }
 .item-label { font-size: 12px; max-width: 240px; }
-.item-label img { width: 32px; height: 32px; flex: none; border: 1px solid #56726a; border-radius: 2px; object-fit: contain; background: #081319; }
-.item-label > span { overflow-wrap: anywhere; }
+.loadout-icon { position: relative; display: inline-grid; place-items: center; flex: none; width: var(--loadout-icon-size,32px); height: var(--loadout-icon-size,32px); overflow: hidden; border: 1px solid #56726a; border-radius: 2px; background: #081319; }
+.loadout-icon > .loadout-icon-fallback { font: 500 8px/1 var(--font-ui); color: #a8c4bb; }
+.loadout-icon > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.loadout-icon--rune { --loadout-icon-size: 24px; border-color: transparent; }
+.loadout-label { overflow-wrap: anywhere; }
 .rune-label { font-size: 11px; }
-.rune-label img { width: 24px; height: 24px; flex: none; object-fit: contain; }
 .loadout-runes, .review-runes { display: flex; flex-wrap: wrap; gap: 8px 14px; }
 .loadout--concise .item-label { font-size: 10px; max-width: 150px; }
-.loadout--concise .item-label img { width: 25px; height: 25px; }
+.loadout--concise .item-label .loadout-icon { --loadout-icon-size: 25px; }
 .loadout--concise .loadout-items { gap: 8px 10px; margin-bottom: 10px; }
 .loadout-mode-note { font-size: 10px; }
 .player-ranks { display: flex; align-items: center; gap: 20px 35px; flex-wrap: wrap; margin-top: 60px; padding-block: 25px; border-block: 1px solid var(--player-line); }
@@ -346,8 +348,13 @@
 .match-row { align-items: center; gap: 22px; padding-block: 22px; }
 .match-time > span { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 5px; }
 .loadout--concise .loadout-items { gap: 6px; margin-bottom: 10px; }
-.loadout--concise .item-label img { width: 30px; height: 30px; }
-.loadout--concise .item-label--compact.has-art > span { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.loadout--concise .item-label .loadout-icon { --loadout-icon-size: 30px; }
+.loadout--concise .item-label--compact > .loadout-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.rift-shell .profile-hub .match-inventory .item-label .loadout-icon { --loadout-icon-size: 28px; border-color: #85aa9f47; border-radius: 5px; }
+.rift-shell .profile-hub .match-inventory .item-label .loadout-icon > img { width: 100%; height: 100%; border: 0; border-radius: inherit; }
+@media (max-width: 760px) {
+  .rift-shell .profile-hub .match-inventory .item-label .loadout-icon { --loadout-icon-size: 26px; border-radius: 4px; }
+}
 .player-ranks { margin-top: 38px; padding-block: 20px; gap: 16px 28px; }
 .player-ranks > .player-kicker { display: flex; align-items: center; gap: 8px; }
 .player-ranks > div > p { font-size: 12px; }
@@ -367,10 +374,11 @@
 .review-metric span { font-size: 11px; color: var(--player-muted); }
 .review-metric strong { display: block; margin-top: 4px; font: 500 18px/1.3 var(--font-ui); color: var(--player-text); font-variant-numeric: tabular-nums; }
 .review-inventory { gap: 14px; margin-block: 16px; }
-.review-inventory .item-label--compact.has-art { flex-direction: column; gap: 6px; max-width: 78px; text-align: center; font-size: 11px; }
-.review-inventory .item-label img { width: 42px; height: 42px; border-radius: 7px; }
+.review-inventory .item-label--compact { flex-direction: column; gap: 6px; width: 78px; max-width: 100%; text-align: center; font-size: 11px; }
+.review-inventory .item-label .loadout-icon { --loadout-icon-size: 42px; border-radius: 7px; }
+.review-inventory .item-label > .loadout-label { min-height: 2.7em; }
 .review-runes { gap: 10px 14px; }
-.review-runes .rune-label--compact.has-art { font-size: 11px; }
+.review-runes .rune-label--compact { font-size: 11px; }
 .review-actions { margin-top: 28px; gap: 16px; }
 .review-actions h2 { font-size: 30px; }
 .review-mode { display: flex; align-items: center; gap: 7px; margin-block: 8px 12px; }
@@ -386,8 +394,8 @@
 .build-suggestions { margin-top: 32px; }
 .build-suggestion { border: 1px solid #8ed8d044; border-left: 3px solid var(--player-accent); border-radius: 8px; padding: 22px; }
 .build-suggestion header { grid-template-columns: auto minmax(0, 1fr); gap: 18px; }
-.build-suggestion header .item-label--compact.has-art { flex-direction: column; max-width: 76px; text-align: center; font-size: 11px; }
-.build-suggestion header .item-label img { width: 42px; height: 42px; }
+.build-suggestion header .item-label--compact { flex-direction: column; max-width: 76px; text-align: center; font-size: 11px; }
+.build-suggestion header .item-label .loadout-icon { --loadout-icon-size: 42px; }
 .build-suggestion h3 { font-size: 23px; }
 .suggestion-condition, .memory-condition { display: flex; align-items: start; gap: 8px; font-size: 13px; }
 .suggestion-condition > .player-icon, .memory-condition > .player-icon { margin-top: 2px; width: 17px; height: 17px; color: var(--player-accent); }

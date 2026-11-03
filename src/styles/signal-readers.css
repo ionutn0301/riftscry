@@ -86,7 +86,9 @@ body[data-journey-ready] .journey-casting-wall { overflow:auto; overscroll-behav
 
 /* The chosen champion remains present while the evidence changes. */
 .journey-champion-panel { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(25px,4vw,65px); }
-.journey-champion-art { position:relative; display:flex; flex-direction:column; justify-content:center; min-width:0; min-height:0; margin:0; }
+/* Every record stays readable before enhancement. Its combined height must
+   never move the champion away from the first record, then pull it back. */
+.journey-champion-art { position:relative; display:flex; flex-direction:column; align-self:start; justify-content:flex-start; width:100%; min-width:0; min-height:0; margin:0; }
 .journey-champion-art picture { position:relative; display:block; width:100%; aspect-ratio:.86; max-height:62dvh; overflow:hidden; }
 .journey-champion-art picture::after { content:''; position:absolute; inset:0; border:1px solid #c6e6e314; pointer-events:none; }
 .journey-champion-art img { height:100%; width:100%; object-fit:contain; object-position:center; }
@@ -519,13 +521,15 @@ body:not([data-journey-ready]) [data-history-record] {
   overflow-wrap: anywhere;
 }
 
-/* The mobile champion selector is horizontally navigable, never a 2,000px
-   intrinsic-width document. Keep its overflow inside the selector itself. */
+/* The native chooser has the same wrapped footprint before enhancement.
+   Turning a single scrolling row into several rows after mount would move
+   the record below it, even though no selection had changed. */
 @media (max-width: 700px) {
   body:not([data-journey-ready]) .journey-patch-browser { min-width: 0; max-width: 100%; }
   body:not([data-journey-ready]) .journey-record-selector {
     width: 100%; max-width: 100%; min-width: 0;
-    overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain;
+    flex-wrap: wrap; align-content: start; max-height: none;
+    overflow: visible; overscroll-behavior: auto;
   }
   body:not([data-journey-ready]) .journey-record-canvas { width: 100%; min-width: 0; }
 }

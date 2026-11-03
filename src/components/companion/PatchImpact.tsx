@@ -7,6 +7,7 @@ import { modeForMatch } from '../../lib/player/modes';
 import type { ImpactMetric, PatchImpactReport } from '../../lib/player/patch-impact';
 import { api, fetcher } from '../player/client';
 import ChampionPortrait from '../player/ChampionPortrait';
+import { LoadoutIcon } from '../player/ItemPicker';
 import { championDisplayName } from '../player/championArtwork';
 import PlayerIcon, { type PlayerIconName } from '../player/PlayerIcon';
 import { usePlayerCooldown } from '../player/usePlayerCooldown';
@@ -96,7 +97,7 @@ function ImpactResult({ id, context, player, sourceHref }: { id: string; context
           {report.uncomputedChanges > 0 && <div className="patch-impact-coverage"><PlayerIcon name="info" size={17} /><p>{report.uncomputedChanges} other {report.uncomputedChanges === 1 ? 'recorded change is' : 'recorded changes are'} outside these calculations.<a href="#changes">See the patch records<PlayerIcon name="arrow-right" size={13} /></a></p></div>}
         </> : <EmptyResult report={report} />}
         {report.retryable && <div className="patch-impact-reference-retry"><p className="patch-impact-notice">A versioned item reference could not be loaded. You can retry this comparison.</p>{retry}</div>}
-        {report.inventory.length > 0 && <div className="patch-impact-inventory"><p className="patch-impact-small-label"><PlayerIcon name="build" size={14} />RECORDED FINAL ITEMS</p><ul>{report.inventory.map(item => <li key={item.id}>{report.sourceVersion && <img src={`https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(report.sourceVersion)}/img/item/${item.id}.png`} width="28" height="28" alt="" loading="lazy" onError={event => { event.currentTarget.hidden = true; }} />}<span>{item.name}{item.quantity > 1 && <small> ×{item.quantity}</small>}</span></li>)}</ul></div>}
+        {report.inventory.length > 0 && <div className="patch-impact-inventory"><p className="patch-impact-small-label"><PlayerIcon name="build" size={14} />RECORDED FINAL ITEMS</p><ul>{report.inventory.map(item => <li key={item.id}><LoadoutIcon id={item.id} src={report.sourceVersion ? `https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(report.sourceVersion)}/img/item/${item.id}.png` : undefined} /><span>{item.name}{item.quantity > 1 && <small> ×{item.quantity}</small>}</span></li>)}</ul></div>}
         {(report.assumptions.length > 0 || report.sources.length > 0) && <details className="patch-impact-method"><summary>What this comparison includes<PlayerIcon name="plus" size={17} /></summary><div>{report.assumptions.length > 0 && <ul>{report.assumptions.map((assumption, index) => <li key={index}>{assumption}</li>)}</ul>}{report.sourceVersion && report.targetVersion && <p className="patch-impact-versions">Game data {report.sourceVersion} → {report.targetVersion}</p>}<SourceLinks sources={report.sources} /></div></details>}
       </>}
   </div>;

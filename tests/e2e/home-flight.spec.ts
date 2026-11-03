@@ -1,9 +1,100 @@
 import { test, expect } from '@playwright/test';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { cinema, cinemaSignals, chooseSignal, closeEvidence, evidence, inspectCinema, openCinemaNavigation, readyCinema, selectedSignal, cinemaFitsViewport } from './cinema-test-helpers';
 import { reachableTarget, readyWorld } from './journey-test-helpers';
+import { captureColdCinemaFrame, expectCinemaStartupStable, installCinemaStartupProbe, markCinemaStartup, projectCinemaForeground, readCinemaStartupTrace, type CinemaStartupTrace } from './cinema-startup-test-helpers';
 
 test.use({ video: 'on' });
+
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+  test(`cold homepage keeps its first-paint composition with delayed assets (${reducedMotion})`, async ({ page, browserName }, info) => {
+    test.setTimeout(90_000);
+    await page.emulateMedia({ reducedMotion });
+    // Cover the inclusive mobile breakpoint without multiplying the matrix.
+    // Normal mobile Chromium and both WebKit cases retain the 390px viewport.
+    if (info.project.name === 'mobile-chromium' && reducedMotion === 'reduce') await page.setViewportSize({ width: 700, height: 844 });
+    const gate = () => {
+      let release!: () => void;
+      const pending = new Promise<void>(resolve => { release = resolve; });
+      return { pending, release };
+    };
+    const scripts = gate(), images = gate(), fonts = gate();
+    const intercepted = { scripts: 0, images: 0, fonts: 0 };
+    const errors: string[] = [], playerRequests: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) playerRequests.push(request.url()); });
+    await page.route('**/*', async route => {
+      const request = route.request(), path = new URL(request.url()).pathname;
+      if (request.resourceType() === 'script') { intercepted.scripts++; await scripts.pending; }
+      else if (request.resourceType() === 'font') { intercepted.fonts++; await fonts.pending; }
+      else if (request.resourceType() === 'image' && path.startsWith('/images/rift-cinema/')) { intercepted.images++; await images.pending; }
+      await route.continue();
+    });
+    await installCinemaStartupProbe(page);
+    let trace: CinemaStartupTrace | undefined;
+    let renderer: string | null = null;
+    const prefix = `player-visuals/flight-startup-${info.project.name}-${reducedMotion}`;
+    await mkdir('player-visuals', { recursive: true });
+    try {
+      // A module gate prevents DOMContentLoaded. The recorder is installed
+      // before navigation and observes the actual styled SSR frames instead.
+      await page.goto('/', { waitUntil: 'commit' });
+      await page.waitForFunction(() => {
+        const frames = (window as unknown as Window & { __cinemaStartup: CinemaStartupTrace }).__cinemaStartup.frames.filter(frame => frame.styled);
+        return frames.length >= 2 && frames.at(-1)!.time - frames[0]!.time >= 250;
+      });
+      expect(intercepted.scripts).toBeGreaterThan(0);
+      expect(intercepted.images).toBeGreaterThanOrEqual(2);
+      expect(intercepted.fonts).toBeGreaterThan(0);
+      await expect(cinema(page)).not.toHaveAttribute('data-home-ready', 'true');
+      await markCinemaStartup(page, 'images-released');
+      images.release();
+      await page.waitForFunction(() => ['[data-cinema-poster]', '.cinema-environment'].every(selector => {
+        const image = document.querySelector<HTMLImageElement>(selector);
+        return image?.complete && image.naturalWidth > 0;
+      }));
+      await markCinemaStartup(page, 'ssr-artwork');
+      await captureColdCinemaFrame(page, browserName, `${prefix}-before.png`, info);
+      await markCinemaStartup(page, 'scripts-released');
+      scripts.release();
+      // Do not use readyCinema: it waits for fonts, hiding the startup interval.
+      await expect(cinema(page)).toHaveAttribute('data-home-ready', 'true');
+      await expect(cinema(page)).toHaveAttribute('data-renderer', /^(webgl|fallback)$/);
+      renderer = await cinema(page).getAttribute('data-renderer');
+      await page.waitForFunction(() => {
+        const probe = (window as unknown as Window & { __cinemaStartup: CinemaStartupTrace }).__cinemaStartup;
+        const start = probe.marks.rendered ?? probe.marks.enhanced;
+        return start !== undefined && performance.now() - start >= 1_300;
+      });
+      await markCinemaStartup(page, 'observation-end');
+      await markCinemaStartup(page, 'fonts-released');
+      fonts.release();
+      await page.evaluate(() => document.fonts.ready);
+      await markCinemaStartup(page, 'fonts-ready');
+      await page.waitForFunction(() => {
+        const probe = (window as unknown as Window & { __cinemaStartup: CinemaStartupTrace }).__cinemaStartup;
+        return (probe.frames.at(-1)?.time ?? 0) - probe.marks['fonts-ready']! >= 300;
+      });
+      trace = await readCinemaStartupTrace(page, true);
+      await page.screenshot({ path: `${prefix}-after.png`, animations: 'allow' });
+      if (browserName === 'chromium') expect(renderer, 'Chromium must exercise the GPU handoff, not silently pass as a static fallback').toBe('webgl');
+      else if (renderer !== 'webgl') info.annotations.push({
+        type: 'graphics capability',
+        description: `WebKit verified native artwork, late assets and DOM stability; GPU unavailable: ${await cinema(page).getAttribute('data-cinema-graphics-issue') ?? 'no WebGL context'}`,
+      });
+      expectCinemaStartupStable(trace, renderer === 'webgl');
+      expect(playerRequests).toEqual([]);
+      expect(errors).toEqual([]);
+    } finally {
+      scripts.release(); images.release(); fonts.release();
+      trace ??= await readCinemaStartupTrace(page, true).catch(() => undefined);
+      const telemetry = JSON.stringify({ viewport: page.viewportSize(), browserName, reducedMotion, renderer, intercepted, errors, playerRequests, trace });
+      await writeFile(`${prefix}-metrics.json`, telemetry);
+      await info.attach(`cold-homepage-${reducedMotion}`, { contentType: 'application/json',
+        body: telemetry });
+    }
+  });
+}
 
 // Live WebGL with video and traces can render on a CPU in CI. Only tests that
 // exercise that moving world opt into 90 seconds; action/readiness assertions
@@ -159,6 +250,64 @@ test('graphics-context failure keeps the native world choices and exact evidence
   await expect(evidence(page)).toBeVisible(); await closeEvidence(page);
   await reachableTarget(page.locator('[data-home-personal]').first(), page);
   expect(errors).toEqual([]);
+});
+
+test('direct inspection and a restored graphics context begin at the native artwork pose', async ({ page, browserName }, info) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await installCinemaStartupProbe(page);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/?signal=Akali#inspect');
+  await readyCinema(page);
+  await expect(evidence(page)).toBeVisible();
+  await expect(cinema(page)).toHaveAttribute('data-renderer', /^(webgl|fallback)$/);
+  if (browserName === 'chromium') await expect(cinema(page)).toHaveAttribute('data-renderer', 'webgl');
+  if (await cinema(page).getAttribute('data-renderer') !== 'webgl') {
+    info.annotations.push({ type: 'graphics capability', description: 'This browser used the native inspection fallback; GPU recovery is covered by Chromium.' });
+    return;
+  }
+  const nativeBox = async () => page.locator('[data-cinema-poster]').evaluate(element => {
+    const box = element.getBoundingClientRect();
+    return [box.x, box.y, box.width, box.height];
+  });
+  const matchesNative = (draw: CinemaStartupTrace['draws'][number], expected: number[]) => {
+    const projected = projectCinemaForeground(draw);
+    for (let axis = 0; axis < 4; axis++) expect(Math.abs(projected[axis]! - expected[axis]!), `First GPU draw agrees with the native artwork on axis ${axis}`).toBeLessThanOrEqual(1);
+  };
+  const initial = await readCinemaStartupTrace(page);
+  expect(initial.draws.length).toBeGreaterThan(0);
+  matchesNative(initial.draws[0]!, await nativeBox());
+
+  await closeEvidence(page);
+  await cinema(page).dispatchEvent('pointermove', { pointerType: 'mouse', pointerId: 1, isPrimary: true, clientX: page.viewportSize()!.width * .85, clientY: page.viewportSize()!.height * .25 });
+  await expect.poll(async () => (await readCinemaStartupTrace(page)).draws.at(-1)?.uniforms.u_pointer?.[0] ?? 0).toBeGreaterThan(.05);
+  const canInterrupt = await page.evaluate(() => {
+    const canvas = document.querySelector<HTMLCanvasElement>('[data-cinema-canvas]')!;
+    const extension = canvas.getContext('webgl')?.getExtension('WEBGL_lose_context');
+    (window as Window & { __cinemaLoss?: WEBGL_lose_context }).__cinemaLoss = extension ?? undefined;
+    if (extension) extension.loseContext();
+    return Boolean(extension);
+  });
+  if (browserName === 'chromium') expect(canInterrupt, 'Chromium must exercise a real context loss and restoration').toBe(true);
+  if (!canInterrupt) {
+    info.annotations.push({ type: 'graphics capability', description: 'Direct inspection pose checked; WEBGL_lose_context is unavailable in this browser.' });
+    return;
+  }
+  await expect(cinema(page)).toHaveAttribute('data-renderer', 'fallback');
+  const fallback = await nativeBox();
+  await markCinemaStartup(page, 'restore-requested');
+  await page.evaluate(() => (window as Window & { __cinemaLoss?: WEBGL_lose_context }).__cinemaLoss!.restoreContext());
+  await expect(cinema(page)).toHaveAttribute('data-renderer', 'webgl');
+  const restored = await readCinemaStartupTrace(page, true);
+  const firstRestored = restored.draws.find(draw => draw.time > restored.marks['restore-requested']!);
+  expect(firstRestored).toBeDefined();
+  matchesNative(firstRestored!, fallback);
+  expect(errors).toEqual([]);
+  const telemetry = JSON.stringify({ viewport: page.viewportSize(), fallback, trace: restored });
+  await mkdir('player-visuals', { recursive: true });
+  await writeFile(`player-visuals/flight-recovery-${info.project.name}-metrics.json`, telemetry);
+  await info.attach('inspection-and-graphics-recovery', { contentType: 'application/json', body: telemetry });
 });
 
 test('failed visual assets leave world navigation and archive evidence available', async ({ page }) => {

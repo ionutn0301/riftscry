@@ -1,3 +1,5 @@
+import { cinemaEnvironmentZoom, cinemaForegroundPose, CINEMA_MOBILE_MAX_WIDTH, CINEMA_RENDERER_FADE_MS } from './rift-cinema-pose';
+
 /** Decorative League artwork and a dimensional scrying crystal; content stays in HTML. */
 export type RiftCinemaStage = 'arrival' | 'champions' | 'evidence';
 export interface RiftCinemaChampion {
@@ -58,6 +60,7 @@ uniform vec3 u_secondary;
 uniform float u_aspect;
 uniform float u_time;
 uniform float u_stage;
+uniform float u_zoom;
 uniform float u_blend;
 uniform float u_crystal;
 uniform float u_motion;
@@ -69,10 +72,8 @@ float mist(vec2 p){return noise(p)*.57+noise(p*2.03+4.7)*.28+noise(p*4.07-1.8)*.
 vec2 cover(vec2 uv,float source){vec2 ratio=vec2(min(1.,u_aspect/source),min(1.,source/u_aspect));return (uv-.5)*ratio+.5;}
 void main(){
   vec2 uv=v_uv;
-  float breath=sin(u_time*.13)*.004*u_motion;
-  float zoom=1.035+u_stage*.10+breath;
-  vec2 lens=(uv-.5)/zoom+.5+u_pointer*vec2(.033,.019);
-  lens+=vec2(sin(u_time*.06),cos(u_time*.047))*.0025*u_motion;
+  // Camera position changes only with deliberate input, not a startup drift.
+  vec2 lens=(uv-.5)/u_zoom+.5+u_pointer*vec2(.033,.019);
   vec4 oldArt=texture2D(u_previous,cover(lens-vec2(u_blend*.025,0.),u_imageAspects.y));
   vec4 newArt=texture2D(u_image,cover(lens+vec2((1.-u_blend)*.04,0.),u_imageAspects.x));
   vec3 sky=mix(vec3(.035,.08,.12),vec3(.19,.29,.32),uv.y);
@@ -213,7 +214,6 @@ void main(){
   vec2 dimensions=vec2(u_imageAspect/u_aspect,1.)*u_scale;
   vec2 center=u_focus-u_pointer*vec2(.036,.022);
   center.x+=mix(-u_reveal*.045,(1.-u_reveal)*.075,u_incoming);
-  center.y+=sin(u_time*.22)*.002*u_motion;
   vec2 uv=(v_uv-center)/dimensions+.5;
   if(any(lessThan(uv,vec2(0.)))||any(greaterThan(uv,vec2(1.))))discard;
   vec4 art=texture2D(u_image,uv);
@@ -322,7 +322,7 @@ const particles = new Float32Array(Array.from({ length: 72 }, (_, index) => {
   return [Math.sin(index * 7.3) * .98, Math.cos(index * 4.1) * .98, value, Math.abs(Math.sin(index * 13.7))];
 }).flat());
 
-const uniformNames = ['image', 'previous', 'imageAspects', 'pointer', 'center', 'primary', 'secondary', 'aspect', 'time', 'stage', 'blend', 'crystal', 'motion', 'transition', 'atmosphere', 'rotation', 'scale', 'resolution', 'strength', 'focus', 'texel', 'imageAspect', 'opacity', 'reveal', 'incoming', 'dpr'];
+const uniformNames = ['image', 'previous', 'imageAspects', 'pointer', 'center', 'primary', 'secondary', 'aspect', 'time', 'stage', 'zoom', 'blend', 'crystal', 'motion', 'transition', 'atmosphere', 'rotation', 'scale', 'resolution', 'strength', 'focus', 'texel', 'imageAspect', 'opacity', 'reveal', 'incoming', 'dpr'];
 function createPass(gl: WebGLRenderingContext, vertexCode: string, fragmentCode: string, data: Float32Array, stride: number, attributes: string[]): Pass {
   const shaders: WebGLShader[] = [];
   const compile = (type: number, code: string) => {
@@ -375,6 +375,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
   const textureCache = new Map<string, Promise<Texture>>();
   let disposed = false, lost = false, failed = false, visible = true, ready = false, requestedReduced = options.reducedMotion ?? false;
   let width = 1, height = 1, dpr = 1, frame = 0, last = 0, elapsed = 0, scene = 0, targetScene = 0, blend = 1;
+  let handoffUntil = 0;
   let lookX = 0, lookY = 0, targetX = 0, targetY = 0, requestId = 0;
   let selected = options.champions.find(item => item.id === options.initialChampion) ?? options.champions[0];
   let previousSelected = selected;
@@ -418,6 +419,12 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     const results = await Promise.allSettled([loadTexture(url), champion?.foregroundUrl ? loadTexture(champion.foregroundUrl) : Promise.resolve(null)]);
     if (disposed || lost || ticket !== requestId) return;
     const base = results[0], front = results[1];
+    // A usable native champion must not disappear behind a background-only
+    // canvas when its foreground texture could not be prepared.
+    if (champion?.foregroundUrl && front.status !== 'fulfilled') {
+      failEnvironment('The champion artwork is unavailable.');
+      return;
+    }
     if (base.status !== 'fulfilled') {
       if (url !== options.environmentUrl) {
         try { const fallback = await loadTexture(options.environmentUrl); if (ticket === requestId && !disposed && !lost) applySelection(champion, fallback, front.status === 'fulfilled' ? front.value : null); }
@@ -428,9 +435,9 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     applySelection(champion, base.value, front.status === 'fulfilled' ? front.value : null);
   }
 
-  function failEnvironment() {
+  function failEnvironment(reason = 'The environment artwork is unavailable.') {
     failed = true; stop(); canvas.dataset.cinemaStatus = 'fallback';
-    options.onError?.('The environment artwork is unavailable.');
+    options.onError?.(reason);
   }
 
   function applySelection(champion: RiftCinemaChampion | undefined, base: Texture, front: Texture | null) {
@@ -439,7 +446,16 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     oldBackground = background; background = base; oldForeground = foreground; foreground = front;
     blend = ready && !recovering && !reduced() ? 0 : 1;
     canvas.dataset.cinemaChampion = champion?.id ?? '';
-    if (!ready || recovering) { ready = true; oldBackground = base; render(0); canvas.dataset.cinemaStatus = 'ready'; options.onReady?.(); }
+    if (!ready || recovering) {
+      ready = true; oldBackground = base;
+      // Begin at the native poster's current mode, including inspection. Keep
+      // the pointer target, but resume its movement only after the handoff.
+      scene = targetScene; lookX = lookY = 0; blend = 1;
+      render(0);
+      // Anchor the hold after the first draw; software rendering may take time.
+      handoffUntil = performance.now() + (reduced() ? 0 : CINEMA_RENDERER_FADE_MS);
+      canvas.dataset.cinemaStatus = 'ready'; options.onReady?.();
+    }
     schedule();
   }
 
@@ -452,7 +468,8 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
   function texture(resource: Texture, unit: number) { gpu.activeTexture(gpu.TEXTURE0 + unit); gpu.bindTexture(gpu.TEXTURE_2D, resource.texture); }
 
   function render(delta: number) {
-    if (disposed || lost || failed) return;
+    if (disposed || lost || failed || !ready) return;
+    if (performance.now() < handoffUntil) delta = 0;
     const quiet = reduced(), ease = quiet ? 1 : 1 - Math.exp(-delta * 4.2);
     if (!quiet) elapsed += delta;
     scene = mix(scene, targetScene, ease); if (Math.abs(scene - targetScene) < .001) scene = targetScene;
@@ -460,7 +477,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     blend = quiet ? 1 : Math.min(1, blend + delta * .95);
     const goalPrimary = color(selected?.palette?.primary, [.80, .70, .43]), goalSecondary = color(selected?.palette?.secondary, [.25, .65, .78]);
     primary = primary.map((v, i) => mix(v, goalPrimary[i]!, ease)); secondary = secondary.map((v, i) => mix(v, goalSecondary[i]!, ease));
-    const mobile = width < 700, aspect = width / height;
+    const mobile = width <= CINEMA_MOBILE_MAX_WIDTH, aspect = width / height;
     const cx = mobile ? .55 : .70 + scene * .025, cy = mobile ? .41 : .47;
     const strength = clamp(selected?.crystalStrength ?? (foreground ? 0 : .9)) * (1 - scene * .16);
     const time = quiet ? 0 : elapsed;
@@ -471,6 +488,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     gpu.uniform2f(u('imageAspects'), background.aspect, oldBackground.aspect); gpu.uniform2f(u('pointer'), lookX, -lookY); gpu.uniform2f(u('center'), cx, cy);
     gpu.uniform3f(u('primary'), primary[0]!, primary[1]!, primary[2]!); gpu.uniform3f(u('secondary'), secondary[0]!, secondary[1]!, secondary[2]!);
     gpu.uniform1f(u('aspect'), aspect); gpu.uniform1f(u('time'), time); gpu.uniform1f(u('stage'), scene); gpu.uniform1f(u('blend'), blend); gpu.uniform1f(u('crystal'), strength); gpu.uniform1f(u('motion'), quiet ? 0 : 1);
+    gpu.uniform1f(u('zoom'), cinemaEnvironmentZoom(scene));
     gpu.uniform1f(u('transition'), quiet ? 0 : Math.min(1, Math.abs(targetScene - scene)));
     gpu.uniform1f(u('atmosphere'), { smoke: 0, wind: 1, souls: 2 }[selected?.atmosphere ?? 'smoke']);
     gpu.drawArrays(gpu.TRIANGLES, 0, passes.world.count);
@@ -490,13 +508,11 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     const drawForeground = (art: Texture | null, champion: RiftCinemaChampion | undefined, incoming: boolean) => {
       const opacity = 1;
       if (!art || opacity < .001) return;
-      const focus = champion?.focus;
-      const evidence = clamp(scene - 1);
-      const positionX = mix(mobile ? .56 : clamp(focus?.x ?? .70, 0, 1), mobile ? .40 : .35, evidence);
+      const pose = cinemaForegroundPose(champion?.focus, width, scene);
       u = bind(passes.foreground, 2, [['position', 2, 0]]); texture(art, 0); gpu.uniform1i(u('image'), 0);
-      gpu.uniform2f(u('pointer'), lookX, -lookY); gpu.uniform2f(u('focus'), positionX, 1 - clamp(focus?.y ?? .46, 0, 1));
+      gpu.uniform2f(u('pointer'), lookX, -lookY); gpu.uniform2f(u('focus'), pose.x, 1 - pose.y);
       gpu.uniform2f(u('texel'), 1 / art.width, 1 / art.height); gpu.uniform3f(u('primary'), primary[0]!, primary[1]!, primary[2]!);
-      gpu.uniform1f(u('aspect'), aspect); gpu.uniform1f(u('imageAspect'), art.aspect); gpu.uniform1f(u('scale'), clamp(focus?.scale ?? 1.15, .4, 1.8) * (mobile ? .83 : 1) * (1 + scene * .11));
+      gpu.uniform1f(u('aspect'), aspect); gpu.uniform1f(u('imageAspect'), art.aspect); gpu.uniform1f(u('scale'), pose.scale);
       gpu.uniform1f(u('opacity'), opacity * (1 - scene * .045)); gpu.uniform1f(u('time'), time); gpu.uniform1f(u('motion'), quiet ? 0 : 1);
       gpu.uniform1f(u('reveal'), blend); gpu.uniform1f(u('incoming'), incoming ? 1 : 0);
       gpu.drawArrays(gpu.TRIANGLES, 0, passes.foreground.count);
@@ -519,12 +535,12 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     render(delta);
     if (!reduced()) frame = requestAnimationFrame(tick);
   }
-  function schedule() { if (!disposed && !lost && !failed && visible && !document.hidden && !frame) frame = requestAnimationFrame(tick); }
+  function schedule() { if (ready && !disposed && !lost && !failed && visible && !document.hidden && !frame) frame = requestAnimationFrame(tick); }
   function stop() { cancelAnimationFrame(frame); frame = 0; last = 0; }
   function resize() {
     if (disposed || lost) return;
     const bounds = canvas.getBoundingClientRect(); width = Math.max(1, bounds.width); height = Math.max(1, bounds.height);
-    const budget = width < 700 ? 800_000 : 1_900_000;
+    const budget = width <= CINEMA_MOBILE_MAX_WIDTH ? 800_000 : 1_900_000;
     dpr = Math.min(devicePixelRatio || 1, 1.5, Math.sqrt(budget / (width * height)));
     const w = Math.max(1, Math.round(width * dpr)), h = Math.max(1, Math.round(height * dpr));
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; render(0); }
