@@ -84,11 +84,12 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
         <p>Pick up where you left off.</p>
       </header>
 
+      {!ready && <p className="gateway-pending" role="status">Opening your player choices…</p>}
       {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { ...filters, name: remembered.name, view })}>
         <span className="player-kicker"><PlayerIcon name="bookmark" size={15} /> CONTINUE WITH</span><strong>{remembered.name || 'Your remembered player'}</strong><span>{destinationLabel} <PlayerIcon name="arrow-right" size={16} /></span>
       </a>}
 
-      <details className="gateway-lookup-scene" open={!remembered || !!name}><summary>{remembered ? 'Find another player' : 'Enter your Riot ID'}<PlayerIcon name="plus" size={16} /></summary>
+      <details className="gateway-lookup-scene" hidden={!ready} open={ready && (!remembered || !!name)}><summary>{remembered ? 'Find another player' : 'Enter your Riot ID'}<PlayerIcon name="plus" size={16} /></summary>
       <form onSubmit={lookup} className="lookup-form" aria-label="Find a League of Legends player" aria-busy={busy}>
         <div className="player-field lookup-identity">
           <label htmlFor={`${id}-riot-id`}>Riot ID</label>

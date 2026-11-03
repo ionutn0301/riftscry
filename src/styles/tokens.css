@@ -9,14 +9,15 @@
   font-family: "Clash Display";
   src: url("../assets/fonts/ClashDisplay-Variable.woff2") format("woff2");
   font-weight: 200 700;
-  font-display: swap;
+  /* Preloaded in Layout. Keep the first visible face when the network is slow. */
+  font-display: optional;
 }
 
 @font-face {
   font-family: "General Sans";
   src: url("../assets/fonts/GeneralSans-Variable.woff2") format("woff2");
   font-weight: 200 700;
-  font-display: swap;
+  font-display: optional;
 }
 
 :root {

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { cinema, cinemaSignals, chooseSignal, closeEvidence, evidence, inspectCinema, openCinemaNavigation, readyCinema, selectedSignal, cinemaFitsViewport } from './cinema-test-helpers';
 import { reachableTarget, readyWorld } from './journey-test-helpers';
-import { captureColdCinemaFrame, expectCinemaStartupStable, installCinemaStartupProbe, markCinemaStartup, readCinemaStartupTrace, type CinemaStartupTrace } from './cinema-startup-test-helpers';
+import { captureColdCinemaFrame, expectCinemaStartupStable, installCinemaStartupProbe, markCinemaStartup, projectCinemaForeground, readCinemaStartupTrace, type CinemaStartupTrace } from './cinema-startup-test-helpers';
 
 test.use({ video: 'on' });
 
@@ -248,6 +248,61 @@ test('graphics-context failure keeps the native world choices and exact evidence
   await expect(evidence(page)).toBeVisible(); await closeEvidence(page);
   await reachableTarget(page.locator('[data-home-personal]').first(), page);
   expect(errors).toEqual([]);
+});
+
+test('direct inspection and a restored graphics context begin at the native artwork pose', async ({ page, browserName }, info) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await installCinemaStartupProbe(page);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/?signal=Akali#inspect');
+  await readyCinema(page);
+  await expect(evidence(page)).toBeVisible();
+  await expect(cinema(page)).toHaveAttribute('data-renderer', /^(webgl|fallback)$/);
+  if (browserName === 'chromium') await expect(cinema(page)).toHaveAttribute('data-renderer', 'webgl');
+  if (await cinema(page).getAttribute('data-renderer') !== 'webgl') {
+    info.annotations.push({ type: 'graphics capability', description: 'This browser used the native inspection fallback; GPU recovery is covered by Chromium.' });
+    return;
+  }
+  const nativeBox = async () => page.locator('[data-cinema-poster]').evaluate(element => {
+    const box = element.getBoundingClientRect();
+    return [box.x, box.y, box.width, box.height];
+  });
+  const matchesNative = (draw: CinemaStartupTrace['draws'][number], expected: number[]) => {
+    const projected = projectCinemaForeground(draw);
+    for (let axis = 0; axis < 4; axis++) expect(Math.abs(projected[axis]! - expected[axis]!), `First GPU draw agrees with the native artwork on axis ${axis}`).toBeLessThanOrEqual(1);
+  };
+  const initial = await readCinemaStartupTrace(page);
+  expect(initial.draws.length).toBeGreaterThan(0);
+  matchesNative(initial.draws[0]!, await nativeBox());
+
+  await closeEvidence(page);
+  await cinema(page).dispatchEvent('pointermove', { pointerType: 'mouse', pointerId: 1, isPrimary: true, clientX: page.viewportSize()!.width * .85, clientY: page.viewportSize()!.height * .25 });
+  await expect.poll(async () => (await readCinemaStartupTrace(page)).draws.at(-1)?.uniforms.u_pointer?.[0] ?? 0).toBeGreaterThan(.05);
+  const canInterrupt = await page.evaluate(() => {
+    const canvas = document.querySelector<HTMLCanvasElement>('[data-cinema-canvas]')!;
+    const extension = canvas.getContext('webgl')?.getExtension('WEBGL_lose_context');
+    (window as Window & { __cinemaLoss?: WEBGL_lose_context }).__cinemaLoss = extension ?? undefined;
+    if (extension) extension.loseContext();
+    return Boolean(extension);
+  });
+  if (browserName === 'chromium') expect(canInterrupt, 'Chromium must exercise a real context loss and restoration').toBe(true);
+  if (!canInterrupt) {
+    info.annotations.push({ type: 'graphics capability', description: 'Direct inspection pose checked; WEBGL_lose_context is unavailable in this browser.' });
+    return;
+  }
+  await expect(cinema(page)).toHaveAttribute('data-renderer', 'fallback');
+  const fallback = await nativeBox();
+  await markCinemaStartup(page, 'restore-requested');
+  await page.evaluate(() => (window as Window & { __cinemaLoss?: WEBGL_lose_context }).__cinemaLoss!.restoreContext());
+  await expect(cinema(page)).toHaveAttribute('data-renderer', 'webgl');
+  const restored = await readCinemaStartupTrace(page, true);
+  const firstRestored = restored.draws.find(draw => draw.time > restored.marks['restore-requested']!);
+  expect(firstRestored).toBeDefined();
+  matchesNative(firstRestored!, fallback);
+  expect(errors).toEqual([]);
+  await info.attach('inspection-and-graphics-recovery', { contentType: 'application/json', body: JSON.stringify({ viewport: page.viewportSize(), fallback, trace: restored }) });
 });
 
 test('failed visual assets leave world navigation and archive evidence available', async ({ page }) => {

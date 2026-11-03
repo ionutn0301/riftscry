@@ -3,7 +3,7 @@ interface Props { id: string; name: string }
 const { id, name } = Astro.props;
 ---
 <div class="reader-next-actions">
-  <button type="button" class="route-action route-action--quiet" data-direct-save={id} data-save-name={name} aria-pressed="false" aria-label={"Save " + name + " to My Pool"}>Save champion <span aria-hidden="true">+</span></button>
+  <button type="button" class="route-action route-action--quiet" data-direct-save={id} data-save-name={name} aria-pressed="false" aria-label={"Save " + name + " to My Pool"}><span data-direct-save-label>Save champion</span><span data-direct-save-mark aria-hidden="true">+</span></button>
   <span class="journey-save-status" role="status" data-direct-save-status></span>
 </div>
 <script>
@@ -11,10 +11,13 @@ const { id, name } = Astro.props;
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-direct-save]')) {
     const id = button.dataset.directSave!;
     const name = button.dataset.saveName!;
+    const label = button.querySelector<HTMLElement>('[data-direct-save-label]');
+    const mark = button.querySelector<HTMLElement>('[data-direct-save-mark]');
     $pool.subscribe((pool) => {
       const saved = pool.includes(id);
       button.setAttribute('aria-pressed', String(saved));
-      button.textContent = saved ? 'Saved ✓' : 'Save champion +';
+      if (label) label.textContent = saved ? 'Saved' : 'Save champion';
+      if (mark) mark.textContent = saved ? '✓' : '+';
       button.setAttribute('aria-label', saved ? `${name} saved — remove from My Pool` : `Save ${name} to My Pool`);
     });
     button.addEventListener('click', () => {

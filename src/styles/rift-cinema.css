@@ -1,4 +1,5 @@
-@font-face{font-family:'Cinzel';src:url('../assets/fonts/rift-cinema/Cinzel-Variable.ttf') format('truetype');font-weight:400 900;font-display:swap}
+/* Preloaded by the immersive layout. A late font must not replace visible text. */
+@font-face{font-family:'Cinzel';src:url('../assets/fonts/rift-cinema/Cinzel-Variable.ttf') format('truetype');font-weight:400 900;font-display:optional}
 
 /* A single interactive viewport. The application keeps its own reader shell. */
 html:has(.rift-cinema-shell){background:#050b0e;overflow:hidden;scrollbar-gutter:auto}
@@ -11,11 +12,15 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 .rift-cinema :is(a,button):focus-visible{outline:2px solid #ead4a1;outline-offset:6px}
 .rift-cinema button{font-family:inherit}
 .cinema-world{position:absolute;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
-.cinema-world canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .8s ease}
+.cinema-world canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity var(--cinema-renderer-fade,400ms) ease}
 .rift-cinema[data-renderer=webgl] .cinema-world canvas{opacity:1}
-.cinema-environment{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.57) saturate(.78);transform:scale(1.045)}
-.cinema-poster{position:absolute;width:auto;height:116%;max-width:none;left:67%;top:49%;transform:translate(-50%,-50%);object-fit:contain;filter:drop-shadow(0 22px 42px #0009);transition:opacity .5s ease,transform 1.2s cubic-bezier(.2,.8,.2,1)}
-.rift-cinema[data-renderer=webgl] :is(.cinema-environment,.cinema-poster){opacity:0;transition:opacity .8s .3s ease}
+/* Native artwork is always at the current authored pose. The renderer owns
+   travel; an independent CSS tween would disagree with its recovery frame. */
+.cinema-environment{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.57) saturate(.78);transform:scale(var(--cinema-world-zoom,1.035))}
+.cinema-poster{position:absolute;width:auto;height:var(--cinema-poster-height);max-width:none;left:var(--cinema-poster-x);top:var(--cinema-poster-y);transform:translate(-50%,-50%);object-fit:contain;filter:drop-shadow(0 22px 42px #0009)}
+/* The opaque canvas fades over an intact frame, rather than fading both copies
+   toward an empty background. A failed renderer reveals the reserved fallback. */
+.rift-cinema[data-renderer=fallback] .cinema-world canvas{transition:none}
 .cinema-world-shade{position:absolute;inset:0;background:linear-gradient(90deg,#040a0fd9 0%,#040a0f75 24%,transparent 52%),linear-gradient(0deg,#050b0efa 0%,#050b0e4d 22%,transparent 52%,#050b0e40 85%,#050b0eac 100%)}
 .cinema-grain{position:absolute;inset:0;opacity:.075;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.55' d='M0 0h180v180H0z'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
 .cinema-header{position:absolute;inset:0 0 auto;z-index:10;display:flex;align-items:center;gap:28px;padding:27px max(36px,4.2vw);height:100px}
@@ -98,11 +103,11 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 .cinema-tour svg{height:12px;width:12px;fill:currentColor}.cinema-tour-pause{display:none}.cinema-tour[aria-pressed=true] .cinema-tour-pause{display:block}.cinema-tour[aria-pressed=true] .cinema-tour-play{display:none}
 .rift-cinema[data-cinema-state=inspect] :is(.cinema-opening,.cinema-hotspot,.cinema-identity,.cinema-bottom){opacity:0;pointer-events:none}
 .rift-cinema[data-cinema-state=inspect] .cinema-opening{transform:translate(-40px,-5%)}
-.rift-cinema[data-cinema-state=inspect] .cinema-poster{transform:translate(-80%,-50%) scale(1.22)}
+.rift-cinema[data-cinema-state=inspect] .cinema-poster{left:var(--cinema-poster-inspect-x);top:var(--cinema-poster-inspect-y);height:var(--cinema-poster-inspect-height)}
+.rift-cinema[data-cinema-state=inspect] .cinema-environment{transform:scale(var(--cinema-world-inspect-zoom))}
 .rift-cinema[data-cinema-state=inspect] .cinema-header{opacity:.4;pointer-events:none}
 .rift-cinema[data-changing=true] .cinema-identity{animation:cinema-identity-in .95s cubic-bezier(.16,.7,.1,1) both}
-.rift-cinema[data-home-ready=true] .cinema-opening{animation:cinema-copy-in 1.15s cubic-bezier(.2,.8,.2,1) both}
-.rift-cinema[data-home-ready=true][data-cinema-state=inspect] .cinema-opening{animation:none;opacity:0}
+/* Server-rendered copy stays visible when enhancement arrives, however late. */
 
 .cinema-evidence{position:fixed;inset:0;width:100vw;height:100svh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:#e8e6d8;overflow:hidden}
 .cinema-evidence::backdrop{background:linear-gradient(90deg,#02080b18,#02080b40 55%,#02080b50)}
@@ -163,7 +168,6 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 
 @keyframes cinema-beacon{0%,100%{opacity:.3;transform:rotate(45deg) scale(.88)}50%{opacity:.9;transform:rotate(45deg) scale(1.1)}}
 @keyframes cinema-wave{to{transform:scaleY(.3)}}
-@keyframes cinema-copy-in{from{opacity:0;translate:0 18px}to{opacity:1;translate:0 0}}
 @keyframes cinema-identity-in{0%{opacity:0;translate:28px 0;filter:blur(7px)}40%{opacity:0}100%{opacity:1;translate:0 0;filter:blur(0)}}
 @keyframes cinema-sheet-in{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:translateX(0)}}
 
@@ -172,7 +176,8 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 @media(max-width:700px){
   .rift-cinema{min-height:0}.cinema-header{height:76px;padding:16px 22px;gap:8px}.cinema-brand{min-width:0}.cinema-brand img{width:118px}.cinema-utilities{gap:8px}.cinema-utilities>a{font-size:10px;gap:9px}.cinema-icon-button{display:none}.cinema-menu-trigger{width:38px;height:44px}.cinema-menu-trigger span{width:23px}
   .cinema-world-shade{background:linear-gradient(180deg,#040b10b8,transparent 34%,transparent 46%,#040b10bd 69%,#040b10fb 100%),linear-gradient(90deg,#040b103d,transparent 70%)}
-  .cinema-environment{object-position:60% center}.cinema-poster{height:88%;left:59%;top:47%}
+  .cinema-poster{height:var(--cinema-poster-mobile-height);left:var(--cinema-poster-mobile-x);top:var(--cinema-poster-mobile-y)}
+  .rift-cinema[data-cinema-state=inspect] .cinema-poster{left:var(--cinema-poster-inspect-mobile-x);top:var(--cinema-poster-inspect-mobile-y);height:var(--cinema-poster-inspect-mobile-height)}
   .cinema-opening{top:14%;left:7%;width:87%;max-width:none;transform:none}.cinema-kicker{font-size:7px;letter-spacing:.2em;gap:9px}.rift-cinema h1{margin:14px 0 0;line-height:1}.rift-cinema h1>span{font-size:clamp(42px,11vw,68px)}.rift-cinema h1>em{font-size:clamp(29px,8vw,49px);line-height:1.1}.cinema-introduction{display:none}.cinema-primary{position:fixed;left:7%;bottom:176px;min-height:60px;gap:11px;padding:4px 14px 4px 0}.cinema-primary-symbol,.cinema-primary-symbol svg{width:43px;height:43px}.cinema-primary strong{font-size:12px}.cinema-primary small{font-size:6px;letter-spacing:.15em}.cinema-action-arrow{margin-left:8px;font-size:19px}
   .cinema-resume{position:fixed;left:7%;bottom:137px;font-size:9px;max-width:85%;margin:0;min-height:38px}.cinema-resume[data-home-context]:not([hidden]){bottom:137px}.cinema-return{display:none}
   .cinema-hotspot{left:70%;top:47%;min-height:48px}.cinema-hotspot-orbit{width:48px;height:48px}.cinema-hotspot-caption{display:none}

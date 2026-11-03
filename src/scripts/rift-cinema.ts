@@ -7,8 +7,9 @@ import { readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY 
 import { playerLink } from '../components/player/client';
 import { readReturnState, rememberReading, RETURN_STATE_EVENT, RESUME_KEY } from '../lib/return-briefing';
 import { installSceneGestures, type SceneDirection } from '../lib/scene-gestures';
+import { cinemaFocusFor, cinemaPosterProperties, type CinemaFocus } from '../lib/rift-cinema-pose';
 
-type CinemaSignal=HomeSignal & {record:Evidence;explore:string;world:{id:string;region:string;character:string;primary:string;secondary:string;word:string;number:string;figure:string}};
+type CinemaSignal=HomeSignal & {record:Evidence;explore:string;world:{id:string;region:string;character:string;primary:string;secondary:string;word:string;number:string;figure:string;focus?:CinemaFocus}};
 const host=document.querySelector<HTMLElement>('[data-rift-cinema]');
 const data=document.getElementById('home-signals-data');
 if(host&&data?.textContent)mount(host,JSON.parse(data.textContent) as CinemaSignal[]);
@@ -176,14 +177,15 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     const changed=current.championId!==selected.championId;
     current=selected;root.dataset.homeSubject=current.championId;
     root.style.setProperty('--cinema-accent',current.world.primary);root.style.setProperty('--cinema-secondary',current.world.secondary);
+    for(const [name,value] of Object.entries(cinemaPosterProperties(current.world.focus??cinemaFocusFor(current.championId))))root.style.setProperty(name,value);
     root.querySelectorAll<HTMLAnchorElement>('[data-home-choice]').forEach(link=>{if(link.dataset.homeChoice===current.championId)link.setAttribute('aria-current','true');else link.removeAttribute('aria-current');});
     root.querySelectorAll<HTMLElement>('[data-home-record]').forEach(record=>{record.hidden=record.dataset.homeRecord!==current.championId;record.inert=record.hidden;});
     text('[data-home-subject]',current.championName);text('[data-cinema-evidence-name]',current.championName);
     text('[data-home-ability]',current.abilityName);text('[data-cinema-region]',current.world.region);text('[data-cinema-character]',current.world.character);text('[data-cinema-number]',current.world.number);
     links('[data-cinema-inspect]',current.explore);links('[data-home-explore]',current.explore);
     root.querySelector('.cinema-hotspot')?.setAttribute('aria-label',`Inspect ${current.championName}'s archived change`);
-    poster.src=current.world.figure;
-    root.querySelectorAll<HTMLImageElement>('[data-cinema-menu-portrait]').forEach(image=>image.src=current.world.figure);
+    if(poster.getAttribute('src')!==current.world.figure)poster.src=current.world.figure;
+    root.querySelectorAll<HTMLImageElement>('[data-cinema-menu-portrait]').forEach(image=>{if(image.getAttribute('src')!==current.world.figure)image.src=current.world.figure;});
     text('[data-cinema-menu-subject]',current.championName);
     world?.setChampion(current.championId);
     if(changed){
@@ -315,7 +317,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
 
   const champions:RiftCinemaChampion[]=signals.map(signal=>({id:signal.championId,foregroundUrl:signal.world.figure,
     palette:{primary:signal.world.primary,secondary:signal.world.secondary},atmosphere:signal.championId==='Yasuo'?'wind':signal.championId==='Thresh'?'souls':'smoke',
-    focus:{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0}));
+    focus:signal.world.focus??cinemaFocusFor(signal.championId),crystalStrength:0}));
   try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:new URLSearchParams(location.search).get('signal')??signals[0]!.championId,reducedMotion:reduced(),
     onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});
   }catch{root.dataset.renderer='fallback';}

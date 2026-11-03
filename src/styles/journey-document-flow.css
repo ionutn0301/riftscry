@@ -1,5 +1,10 @@
 /* Evidence uses ordinary document flow. Compact scenes fit the viewport
    without creating a spare scrolling surface. */
+/* Enhancement changes the active chapter, not the document's entrance. Keep
+   the same reading inset while its modules are pending or unavailable. */
+body.rift-shell:not(.rift-cinema-shell) #main {
+  padding-block: clamp(8px,1.5vh,18px) var(--journey-dock-clearance);
+}
 html:has(body.rift-shell[data-journey-ready]) {
   scroll-padding-top: calc(var(--world-header-height) + 16px);
   scroll-padding-bottom: var(--journey-dock-clearance);

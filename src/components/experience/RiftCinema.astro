@@ -5,6 +5,7 @@ import { getChampionMeta, getLatestPatch, getPatch, getAssetVersion } from '../.
 import { recordsFor } from '../../lib/investigation';
 import { buildHomeSignals } from '../../lib/home-signals';
 import { getAllPatches } from '../../lib/data';
+import { cinemaFocusFor, cinemaPosterProperties, CINEMA_ENVIRONMENT_ZOOM, CINEMA_RENDERER_FADE_MS } from '../../lib/rift-cinema-pose';
 import SignalRecord from './SignalRecord.astro';
 import '../../styles/rift-cinema.css';
 import '../../styles/rift-cinema-navigation.css';
@@ -15,7 +16,7 @@ const worlds = [
   {id:'Akali', region:'IONIA', character:'The Rogue Assassin', primary:'#83cdb2', secondary:'#38656d', word:'SHROUD', number:'01', figure:'/images/rift-cinema/akali-figure.png'},
   {id:'Yasuo', region:'IONIA', character:'The Unforgiven', primary:'#a9d5ea', secondary:'#476797', word:'WIND', number:'02', figure:'/images/rift-cinema/yasuo-figure.png'},
   {id:'Thresh', region:'SHADOW ISLES', character:'The Chain Warden', primary:'#65ddaa', secondary:'#176d76', word:'SOUL', number:'03', figure:'/images/rift-cinema/thresh-figure.png'},
-];
+].map(world => ({ ...world, focus: cinemaFocusFor(world.id) }));
 const signals = worlds.map(world => {
   const candidates = recordsFor(world.id).filter(record => record.change.kind === 'numeric');
   const newestPatch = candidates.at(-1)?.patch;
@@ -34,13 +35,14 @@ const signals = worlds.map(world => {
     href:`/patch/${record.patch}#${world.id.toLowerCase()}`,sourceUrl:record.source,record,explore,world};
 });
 const first=signals[0]!;
+const posterStyle=Object.entries(cinemaPosterProperties(first.world.focus)).map(([name,value])=>`${name}:${value}`).join(';');
 const json=JSON.stringify(signals).replaceAll('<','\\u003c');
 const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=>{
   const record=recordsFor(signal.championId).find(item=>item.patch===signal.patchId&&item.ability===signal.ability&&item.change.kind==='numeric'&&item.change.before===signal.before&&item.change.after===signal.after&&item.change.label===signal.label);
   return {championId:signal.championId,explore:record?`/explore?champion=${signal.championId}&event=${encodeURIComponent(record.id)}#change`:signal.href};
 })).replaceAll('<','\\u003c');
 ---
-<section class="rift-cinema" data-rift-cinema data-home-signals data-home-subject={first.championId} data-cinema-state="world" style={`--cinema-accent:${first.world.primary};--cinema-secondary:${first.world.secondary}`} aria-labelledby="cinema-title">
+<section class="rift-cinema" data-rift-cinema data-home-signals data-home-subject={first.championId} data-cinema-state="world" style={`--cinema-accent:${first.world.primary};--cinema-secondary:${first.world.secondary};--cinema-world-zoom:${CINEMA_ENVIRONMENT_ZOOM};--cinema-renderer-fade:${CINEMA_RENDERER_FADE_MS}ms;${posterStyle}`} aria-labelledby="cinema-title">
   <div class="cinema-world" data-cinema-world aria-hidden="true">
     <img class="cinema-environment" src="/images/rift-cinema/summoners-rift.webp" alt="" width="2560" height="1440" fetchpriority="high" />
     <img class="cinema-poster" data-cinema-poster src={first.world.figure} alt="" width="1628" height="1628" fetchpriority="high" />

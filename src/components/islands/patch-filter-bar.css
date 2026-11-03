@@ -108,7 +108,7 @@
 .patch-filter-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; padding: 0 4px; border-radius: 50%; background: #b5e9ed18; color: #c7efdf; font-size: 10px; }
 .patch-filter-options-body { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
 .patch-filter-options[open] { flex: 1 0 100%; order: 4; }
-.patch-filter-status { flex: 1 0 100%; order: 3; color: var(--cream-faint); font-size: 11px; line-height: 1.5; }
+.patch-filter-status { flex: 1 0 100%; order: 3; min-height: 1.5em; color: var(--cream-faint); font-size: 11px; line-height: 1.5; }
 .patch-filter-console .patch-filter-clear { font-size: 10px; letter-spacing: 0; text-transform: none; }
 @media (max-width: 640px) {
   .patch-filter-console input[type="search"] { flex: 1 1 100px; width: 0; }

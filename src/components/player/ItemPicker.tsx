@@ -54,25 +54,31 @@ export default function ItemPicker({ platform, puuid, id, initial = 0, value, on
   </div>;
 }
 
+/** Metadata and CDN failures replace the picture, never its reserved slot. */
+export function LoadoutIcon({ id, src = '', rune = false }: { id: number; src?: string; rune?: boolean }) {
+  const [failedSource, setFailedSource] = useState('');
+  const hasImage = !!src && failedSource !== src;
+  return <span className={`loadout-icon${rune ? ' loadout-icon--rune' : ''}`} aria-hidden="true" data-image-missing={!hasImage || undefined}>
+    <span className="loadout-icon-fallback">{id}</span>
+    {hasImage && <img width={rune ? 24 : 32} height={rune ? 24 : 32} loading="lazy" decoding="async" alt="" src={src} onError={() => setFailedSource(src)} />}
+  </span>;
+}
+
 export function RuneLabel({ id, metadata, compact = false }: { id: number; metadata?: ItemMetadata; compact?: boolean }) {
   const rune = metadata?.runes?.[id];
   const src = rune ? `https://ddragon.leagueoflegends.com/cdn/img/${rune.icon.split('/').map(encodeURIComponent).join('/')}` : '';
-  const [failedSource, setFailedSource] = useState('');
-  const hasImage = !!src && failedSource !== src;
   const name = rune?.name ?? `Rune ${id}`;
-  return <span className={`rune-label${compact ? ' rune-label--compact' : ''}${hasImage ? ' has-art' : ''}`} title={name}>
-    {hasImage && <img loading="lazy" width="24" height="24" alt="" src={src} onError={() => setFailedSource(src)} />}
-    <span>{name}</span>
+  return <span className={`rune-label${compact ? ' rune-label--compact' : ''}`} title={name}>
+    <LoadoutIcon id={id} src={src} rune />
+    <span className="loadout-label">{name}</span>
   </span>;
 }
 
 export function ItemLabel({ id, metadata, compact = false }: { id: number; metadata?: ItemMetadata; compact?: boolean }) {
   const item = metadata?.data[id];
   const src = metadata?.version && item?.image?.full ? `https://ddragon.leagueoflegends.com/cdn/${encodeURIComponent(metadata.version)}/img/item/${encodeURIComponent(item.image.full)}` : '';
-  const [failedSource, setFailedSource] = useState('');
-  const hasImage = !!src && failedSource !== src;
-  return <span className={`item-label${compact ? ' item-label--compact' : ''}${hasImage ? ' has-art' : ''}`} title={item?.name ?? `Item ${id}`}>
-    {hasImage && <img width="32" height="32" loading="lazy" src={src} alt="" onError={() => setFailedSource(src)} />}
-    <span>{item?.name ?? `Item ${id}`}{!compact && item?.plaintext && <small> — {item.plaintext}</small>}</span>
+  return <span className={`item-label${compact ? ' item-label--compact' : ''}`} title={item?.name ?? `Item ${id}`}>
+    <LoadoutIcon id={id} src={src} />
+    <span className="loadout-label">{item?.name ?? `Item ${id}`}{!compact && item?.plaintext && <small> — {item.plaintext}</small>}</span>
   </span>;
 }
