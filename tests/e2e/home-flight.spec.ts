@@ -2,8 +2,97 @@ import { test, expect } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { cinema, cinemaSignals, chooseSignal, closeEvidence, evidence, inspectCinema, openCinemaNavigation, readyCinema, selectedSignal, cinemaFitsViewport } from './cinema-test-helpers';
 import { reachableTarget, readyWorld } from './journey-test-helpers';
+import { captureColdCinemaFrame, expectCinemaStartupStable, installCinemaStartupProbe, markCinemaStartup, readCinemaStartupTrace, type CinemaStartupTrace } from './cinema-startup-test-helpers';
 
 test.use({ video: 'on' });
+
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+  test(`cold homepage keeps its first-paint composition with delayed assets (${reducedMotion})`, async ({ page, browserName }, info) => {
+    test.setTimeout(90_000);
+    await page.emulateMedia({ reducedMotion });
+    // Cover the inclusive mobile breakpoint without multiplying the matrix.
+    // Normal mobile Chromium and both WebKit cases retain the 390px viewport.
+    if (info.project.name === 'mobile-chromium' && reducedMotion === 'reduce') await page.setViewportSize({ width: 700, height: 844 });
+    const gate = () => {
+      let release!: () => void;
+      const pending = new Promise<void>(resolve => { release = resolve; });
+      return { pending, release };
+    };
+    const scripts = gate(), images = gate(), fonts = gate();
+    const intercepted = { scripts: 0, images: 0, fonts: 0 };
+    const errors: string[] = [], playerRequests: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) playerRequests.push(request.url()); });
+    await page.route('**/*', async route => {
+      const request = route.request(), path = new URL(request.url()).pathname;
+      if (request.resourceType() === 'script') { intercepted.scripts++; await scripts.pending; }
+      else if (request.resourceType() === 'font') { intercepted.fonts++; await fonts.pending; }
+      else if (request.resourceType() === 'image' && path.startsWith('/images/rift-cinema/')) { intercepted.images++; await images.pending; }
+      await route.continue();
+    });
+    await installCinemaStartupProbe(page);
+    let trace: CinemaStartupTrace | undefined;
+    let renderer: string | null = null;
+    const prefix = `player-visuals/flight-startup-${info.project.name}-${reducedMotion}`;
+    await mkdir('player-visuals', { recursive: true });
+    try {
+      // A module gate prevents DOMContentLoaded. The recorder is installed
+      // before navigation and observes the actual styled SSR frames instead.
+      await page.goto('/', { waitUntil: 'commit' });
+      await page.waitForFunction(() => {
+        const frames = (window as unknown as Window & { __cinemaStartup: CinemaStartupTrace }).__cinemaStartup.frames.filter(frame => frame.styled);
+        return frames.length >= 2 && frames.at(-1)!.time - frames[0]!.time >= 250;
+      });
+      expect(intercepted.scripts).toBeGreaterThan(0);
+      expect(intercepted.images).toBeGreaterThanOrEqual(2);
+      expect(intercepted.fonts).toBeGreaterThan(0);
+      await expect(cinema(page)).not.toHaveAttribute('data-home-ready', 'true');
+      await markCinemaStartup(page, 'images-released');
+      images.release();
+      await page.waitForFunction(() => ['[data-cinema-poster]', '.cinema-environment'].every(selector => {
+        const image = document.querySelector<HTMLImageElement>(selector);
+        return image?.complete && image.naturalWidth > 0;
+      }));
+      await markCinemaStartup(page, 'ssr-artwork');
+      await captureColdCinemaFrame(page, browserName, `${prefix}-before.png`, info);
+      await markCinemaStartup(page, 'scripts-released');
+      scripts.release();
+      // Do not use readyCinema: it waits for fonts, hiding the startup interval.
+      await expect(cinema(page)).toHaveAttribute('data-home-ready', 'true');
+      await expect(cinema(page)).toHaveAttribute('data-renderer', /^(webgl|fallback)$/);
+      renderer = await cinema(page).getAttribute('data-renderer');
+      await page.waitForFunction(() => {
+        const probe = (window as unknown as Window & { __cinemaStartup: CinemaStartupTrace }).__cinemaStartup;
+        const start = probe.marks.rendered ?? probe.marks.enhanced;
+        return start !== undefined && performance.now() - start >= 1_300;
+      });
+      await markCinemaStartup(page, 'observation-end');
+      await markCinemaStartup(page, 'fonts-released');
+      fonts.release();
+      await page.evaluate(() => document.fonts.ready);
+      await markCinemaStartup(page, 'fonts-ready');
+      await page.waitForFunction(() => {
+        const probe = (window as unknown as Window & { __cinemaStartup: CinemaStartupTrace }).__cinemaStartup;
+        return (probe.frames.at(-1)?.time ?? 0) - probe.marks['fonts-ready']! >= 300;
+      });
+      trace = await readCinemaStartupTrace(page, true);
+      await page.screenshot({ path: `${prefix}-after.png`, animations: 'allow' });
+      if (browserName === 'chromium') expect(renderer, 'Chromium must exercise the GPU handoff, not silently pass as a static fallback').toBe('webgl');
+      else if (renderer !== 'webgl') info.annotations.push({
+        type: 'graphics capability',
+        description: `WebKit verified native artwork, late assets and DOM stability; GPU unavailable: ${await cinema(page).getAttribute('data-cinema-graphics-issue') ?? 'no WebGL context'}`,
+      });
+      expectCinemaStartupStable(trace, renderer === 'webgl');
+      expect(playerRequests).toEqual([]);
+      expect(errors).toEqual([]);
+    } finally {
+      scripts.release(); images.release(); fonts.release();
+      trace ??= await readCinemaStartupTrace(page, true).catch(() => undefined);
+      await info.attach(`cold-homepage-${reducedMotion}`, { contentType: 'application/json',
+        body: JSON.stringify({ viewport: page.viewportSize(), browserName, reducedMotion, renderer, intercepted, errors, playerRequests, trace }) });
+    }
+  });
+}
 
 // Live WebGL with video and traces can render on a CPU in CI. Only tests that
 // exercise that moving world opt into 90 seconds; action/readiness assertions
