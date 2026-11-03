@@ -5,7 +5,7 @@ import { parseRecentPlayer, readRecentPlayer, rememberRecentPlayer } from '../..
 
 /** A direct player/match URL is a selection; a late name response is not. */
 export function useSelectedPlayer(platform: string, puuid: string, verifiedName = '', enabled = true) {
-  const { ready } = useStore($account);
+  const { ready } = useStore($account, { ssr: 'initial' });
   const arrival = useRef<{ identity: string; previous: string; claimed: boolean } | null>(null);
   useEffect(() => {
     if (!ready) return;

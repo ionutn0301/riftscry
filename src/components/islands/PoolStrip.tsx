@@ -29,7 +29,7 @@ const GLYPH: Record<string, { glyph: string; label: string; cls: string }> = {
 
 export default function PoolStrip({ patchId, assetVersion, names, changed }: PoolStripProps) {
   const pool = useStore($pool);
-  const account = useStore($account);
+  const account = useStore($account, { ssr: 'initial' });
   const [problem, setProblem] = useState('');
   const [pinned, setPinned] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);

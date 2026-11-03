@@ -29,7 +29,7 @@ export default function PoolPicker({
   latestPatchId: string;
 }) {
   const pool = useStore($pool, { ssr: () => emptyServerPool });
-  const account = useStore($account);
+  const account = useStore($account, { ssr: 'initial' });
   const [problem, setProblem] = useState('');
   const [q, setQ] = useState("");
   const [role, setRole] = useState<Role | null>(null);

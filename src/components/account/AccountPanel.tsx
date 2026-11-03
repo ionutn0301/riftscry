@@ -5,7 +5,7 @@ import { importGuestData, resolveConflict, signIn, signOut, socialProviders, syn
 
 const names = { google: 'Google', github: 'GitHub', discord: 'Discord' };
 export default function AccountPanel() {
-  const account = useStore($account);
+  const account = useStore($account, { ssr: 'initial' });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   async function act(action: () => Promise<unknown>) {
