@@ -195,7 +195,8 @@ export function playerRequest<T>(input: string, init?: RequestInit): Promise<T> 
   const ttl = method !== 'GET' ? 0 : ['match', 'timeline', 'items'].includes(action) ? IMMUTABLE_TTL : ['account', 'rank', 'summoner'].includes(action) ? 5 * 60 * 1000 : 0;
   const cached = ttl ? read(requestKey) ?? read(key) : undefined;
   if (cached !== undefined) return Promise.resolve(cached as T);
-  const existing = inFlight.get(requestKey);
+  // Authenticated POST results must never be shared between sessions.
+  const existing = method === 'GET' ? inFlight.get(requestKey) : undefined;
   if (existing) return existing as Promise<T>;
 
   const promise = schedule(async () => {
@@ -227,7 +228,7 @@ export function playerRequest<T>(input: string, init?: RequestInit): Promise<T> 
       }
     }
     return value as T;
-  }).finally(() => inFlight.delete(requestKey));
-  inFlight.set(requestKey, promise);
+  }).finally(() => { if (method === 'GET') inFlight.delete(requestKey); });
+  if (method === 'GET') inFlight.set(requestKey, promise);
   return promise;
 }

@@ -4,59 +4,62 @@ Updated: 2026-11-03. Repository: [ionutn0301/riftscry](https://github.com/ionutn
 
 ## Start here
 
-The user wants a free, managed backend with social accounts and existing personal
-features adapted to accounts. Supabase Auth + hosted Postgres was chosen to keep
-this to one new service. No self-hosted server or custom password management was
-introduced. The user explicitly requested merging
-[PR #77](https://github.com/ionutn0301/riftscry/pull/77) and creating this handover.
+The latest request is to continue development, improve the first-use experience,
+add personal functionality, and restrict AI analysis to signed-in users.
 
-**The code and database are implemented. Social login is not activated.**
-`PUBLIC_AUTH_PROVIDERS` is intentionally empty in Vercel until a real OAuth provider
-and redirect allowlist are configured. The Account page explains that setup is in
-progress and guest functionality remains available. Do not mistake a successful
-build or mocked OAuth test for a working live social login.
+PR #77 is merged. The last verified main/production commit is
+`9a910ea0b93560449d37256df737424304c2bdff`; CI run `41695519560` passed all 11 jobs.
+Vercel production deployment `dpl_cbmJum4MZJK5MFLHVifnJJRHAFfa` was READY at that
+commit. These observations precede the new changes below.
 
-This file ships with PR #77. Use that PR's merge record and the current `main` HEAD
-for the final release SHA; do not assume the old feature-branch SHA is production.
-The user authorized the merge despite the previously disclosed unfinished OAuth
-activation. Merging `main` triggers the existing Vercel production Git deployment.
-Check its completion separately before claiming that production is live.
+New implementation is on local branch `feat/account-personalization-ai-access`:
+verified Supabase bearer sessions before all AI review work, guest sign-in links
+that preserve the match, account-specific AI generation limits, and a private
+practice plan with a display name, role, custom focus and up to eight manual goals.
+Account includes first-use links; the briefing exposes the same checklist.
+Recorded summaries, item comparisons, timelines and guest notebook features remain
+available without an account. See [docs/ACCOUNTS.md](docs/ACCOUNTS.md).
+
+**Release authorization:** the user explicitly approved publishing these changes
+on `main` after the earlier automatic approval rejection. Use a normal fast-forward
+push to `ionutn0301/riftscry` without rewriting remote history, then inspect GitHub
+CI and the Vercel production deployment for the exact resulting main SHA. The local
+checks below do not substitute for that release verification.
+
+**Social login is still not activated.** The user authorized configuring Google
+sign-in. Supabase dashboard authentication completed, and the Site URL is saved as
+`https://riftscry.vercel.app`, with exact production and localhost callback URLs.
+Google Cloud Console and its OAuth-client creation page were unavailable in the
+browser, so OAuth client credentials could not be created. The Google provider
+remains disabled; `PUBLIC_AUTH_PROVIDERS` is intentionally empty. Keep provider
+secrets in Supabase and use the secure credential workflow, never chat or git.
 
 ## Next steps, in order
 
-1. Check PR #77's merge record, current `main`, the resulting GitHub Actions runs,
-   and Vercel's production deployment. A final test-assertion correction is described
-   below; do not report the entire CI suite green without inspecting the new run.
-2. Complete Supabase dashboard authentication. The connector can provision projects
-   and run SQL, but its available tools did not expose Auth provider/URL settings.
-   Browser sign-in was attempted; the secure ChatGPT login prompt timed out and a
-   fresh Supabase dashboard check was still signed out. A manual browser handoff
-   was offered. Do not assume that session survived or authentication completed.
-3. In the **existing** Supabase project, configure at least one social provider:
-   Google, GitHub, or Discord are supported by the application. No provider choice
-   was finalized. The user's selection of ChatGPT during dashboard sign-in was
-   only a dashboard login method, not a requested application OAuth provider.
-4. Register/configure the provider OAuth app as needed. Use the callback Supabase
-   displays; for this project it is expected to be
-   `https://vpirgetchbflxwrwjgzm.supabase.co/auth/v1/callback`. Keep provider secrets
-   in Supabase's provider settings. Never request passwords or secrets in chat or
-   put them in git. Follow the environment's secure credential/handoff workflow.
-5. Set Supabase Site URL to `https://riftscry.vercel.app`. Add exact application
-   redirects: `https://riftscry.vercel.app/auth/callback`,
-   `http://localhost:4321/auth/callback`, and the selected preview origin followed
-   by `/auth/callback` if using a preview. Avoid broad wildcard production redirects.
-6. Set Vercel `PUBLIC_AUTH_PROVIDERS` to only enabled providers, such as `github`
-   or `google,github`. Rebuild the intended deployment: these are build-time public
-   variables. Do not enable buttons before the provider is configured.
-7. Verify a real sign-in/callback/sign-out round trip, first sign-in account
-   creation, two independent accounts, a second browser/device, guest import,
-   offline edits, and conflict resolution. Mocked tests cannot verify credentials
-   or the hosted redirect settings. Preserve deployment protection during testing.
+1. Publish the approved changes on `main` and verify the resulting release.
+   Local type checks, unit/integration tests, production build, generated-route
+   verification and a real local unauthenticated API test are covered. Browser
+   tests are prepared but could not launch in this workspace: the standard download
+   was truncated and a portable Chromium exited with SIGTRAP before opening pages.
+   Inspect the account and player workflows in CI; capture and review desktop and
+   390px screenshots before claiming complete visual verification.
+2. Add branch-scoped public Supabase configuration to the new Vercel preview if
+   needed; only the old accounts preview branch is currently configured. Keep the
+   provider list empty until Google OAuth credentials are installed successfully.
+3. Finish the Google OAuth client/provider setup. Supabase's provider callback is
+   `https://vpirgetchbflxwrwjgzm.supabase.co/auth/v1/callback` (copy the exact value
+   from the dashboard; the project ref is listed below). Add the exact chosen
+   preview origin plus `/auth/callback` if testing a preview. No wildcard redirects.
+4. Enable only configured providers in `PUBLIC_AUTH_PROVIDERS`, rebuild, and verify
+   a real first sign-in/callback/sign-out round trip, two accounts, second-device
+   sync, guest import, offline edits and conflicts. Mocked tests cannot validate
+   OAuth credentials or a live provider's availability. Preserve deployment protection.
 
-Project creation and schema installation are already complete. Do not create
-another project or rerun the initial migration blindly. See
-[docs/ACCOUNTS.md](docs/ACCOUNTS.md) for the detailed setup/operations guide; its
-generic setup steps 1–2 are already done for this project.
+Both hosted migrations are applied. The source filenames now match the actual
+hosted migration versions (`20261103140311` and `20261103195258`) so linked CLI
+workflows do not mistake applied schema for pending migrations. Do not rerun the
+initial table creation or create another project. Security and performance advisors
+returned no findings after the practice-plan extension. Existing records are kept.
 
 ## Infrastructure and routing
 
@@ -65,11 +68,13 @@ generic setup steps 1–2 are already done for this project.
 | Supabase project | `riftscry`, ref `vpirgetchbflxwrwjgzm`, Frankfurt `eu-central-1` |
 | Supabase organization | `ionutn0301's Org`, ID `ldmybobswrglaxkvrpmx`; Free plan |
 | Supabase API URL | `https://vpirgetchbflxwrwjgzm.supabase.co` |
-| Applied migration | `supabase/migrations/20261103135354_account_workspaces.sql` |
+| Initial applied migration | `supabase/migrations/20261103140311_account_workspaces.sql` |
+| Practice plan migration | `supabase/migrations/20261103195258_personal_practice_plan.sql` |
 | Vercel team | `ionutn0301s-projects`, ID `team_L6BlILw6401DMAX3LmdEfd9d` |
 | Vercel project | `riftscry`, ID `prj_k5dcQpAhbwA78SgEzq62DZBuaLzC` |
 | Production hostname | `riftscry.vercel.app` |
-| Feature branch | `feat/supabase-accounts` |
+| Current local branch | `feat/account-personalization-ai-access` |
+| Previous merged branch | `feat/supabase-accounts` |
 | Verified preview build | Deployment `dpl_fxqQdb9F5bY5Knb35A79QArcotM9`, READY for application commit `91721a9ab14f55c93d8eb4ee62be8823e7ed950e` |
 | Preview branch alias | `riftscry-git-feat-supabase-accounts-ionutn0301s-projects.vercel.app` |
 
@@ -100,6 +105,7 @@ Use the appropriate authorized deployment access path if live preview QA is need
 | Saved findings | Private synchronized kept records |
 | Player shortcuts | Recent and legacy remembered player |
 | Reading continuity | Reviewed patch, reading resume, and focused signal |
+| Personal practice plan | Synced display name, preferred role, custom focus and manual checklist |
 | Theme/motion preferences | Remain device-local |
 | Riot API caches, temporary navigation, AI responses | Never uploaded by account sync |
 
@@ -151,6 +157,8 @@ growth; it does not promise unlimited free project storage.
 | Path | Responsibility |
 | --- | --- |
 | `src/lib/account/storage.ts` | Scope, allowlisted adapter, account state, durable cache/outbox, quotas |
+| `src/lib/account/server.ts` | Trusted Auth verification for every AI review request |
+| `src/lib/account/practice-plan.ts` | Bounded custom preferences and checklist storage |
 | `src/lib/account/client.ts` | Supabase SDK, PKCE/session lifecycle, cloud sync/import/sign-out/conflicts |
 | `src/lib/account/sync.ts` | Pure reconciliation and acknowledgement logic |
 | `src/lib/account/validation.ts` | Validate legacy guest records before import |
@@ -158,7 +166,7 @@ growth; it does not promise unlimited free project storage.
 | `src/components/account/SyncStatus.tsx` | Shared sync-status indicator |
 | `src/pages/account.astro`, `src/pages/auth/callback.astro` | Account and OAuth-return routes |
 | `src/layouts/Layout.astro`, `src/styles/account.css` | Shared bootstrap and presentation |
-| `supabase/migrations/20261103135354_account_workspaces.sql` | Schema, RLS, RPC, grants, limits |
+| `supabase/migrations/20261103140311_account_workspaces.sql` | Schema, RLS, RPC, grants, limits |
 | `tests/account-e2e/accounts.spec.ts` | Actual SDK with deterministic mocked Auth/Data APIs |
 | `tests/unit/account-database.test.ts` | Actual migration executed in PGlite/Postgres |
 | `tests/unit/account-sync.test.ts`, `tests/unit/browser/account-storage.test.ts` | Reconciliation and storage isolation tests |
@@ -171,36 +179,31 @@ database validation together when necessary.
 
 ## Verification record and remaining CI work
 
-Application baseline: `91721a9ab14f55c93d8eb4ee62be8823e7ed950e`.
-Evidence: [CI run 250](https://github.com/ionutn0301/riftscry/actions/runs/41692039279).
-These are observed results for that commit, not a claim about future runs:
+The last verified main release (`9a910ea0b93560449d37256df737424304c2bdff`) passed
+all 11 jobs in [CI run 252](https://github.com/ionutn0301/riftscry/actions/runs/41695519560).
+The earlier PR #77 assertion failures and cancelled job are resolved on that commit.
+
+The new local practice-plan/AI-access branch has these observed results:
 
 | Check | Observed result |
 | --- | --- |
 | Typecheck | Pass; one pre-existing unused-import hint |
-| Unit/database suite | 673 tests, 66 files passed |
-| Production build + archive contract | Pass; 624 generated pages |
-| Account Playwright suite | All 6 passed: PKCE, 1440/390px layout, guest import/cross-device/sign-out, offline/conflicts, separate accounts |
-| Actual hosted SQL checks | Owner isolation, revision conflict, direct-write denial, anonymous denial passed; test identities rolled back |
-| Supabase advisors | Security and performance returned no findings |
-| Surface regressions | Desktop, mobile WebKit, and mobile Chromium passed |
-| Briefing / transition / homepage composition | Passed |
-| Full production browser journeys | Desktop and mobile Chromium passed; mobile WebKit was still running at handover drafting |
-| Home-flight job | Cancelled; inspect/rerun before claiming complete CI success |
-| Player workflow suite | 186 passed, 3 failed at assertions expecting the old browser-only save message |
+| Unit/integration/database suite | 713 tests, 69 files passed |
+| Production build | Pass |
+| Generated homepage/archive contracts | Pass; 624 generated pages |
+| Real local review route | Guest and malformed bearer requests return 401 before Riot access; no-store response |
+| Auth verification | Actual SDK with controlled Auth responses: valid, missing, malformed, expired/rejected, anonymous, unavailable and misconfigured cases |
+| React interactions | AI opt-in, guest/expired gating, in-flight account change; checklist check/reset/remove, role save, account isolation and unsaved-preference conflict |
+| Hosted migration | Practice-plan key and size bound applied; old records retained |
+| Supabase advisors | No security or performance findings |
+| Browser suites/screenshots | Prepared, not verified: browser download/launch failed before app pages opened |
+| Main CI/deployment | Verify for the released main SHA; explicit main publication is now approved |
+| Live Google OAuth | Not verified; provider credentials not installed |
 
-The final handover commit updates those three assertions in
-`tests/player-e2e/player.spec.ts` to the implemented workspace save message.
-It retains the subsequent persistence, player-isolation, and revision checks.
-The correction changes tests only, not application behavior. **A fresh CI run is
-still required to confirm the complete player workflows and any cancelled job.**
-Check the latest PR/main workflow rather than repeatedly rerunning the old SHA.
-
-Local browser execution in the agent workspace was unavailable: the standard
-Chromium download failed and an alternate Chromium process crashed on launch.
-GitHub-hosted Playwright produced the verified browser results and account screenshots.
-Do not claim that the browser suite passed locally. CI artifacts have limited
-retention; old screenshots elsewhere in the repository may describe earlier UI.
+Run the account/player browser suites in CI on the published main commit, and
+review the captured 1440px/390px layouts. Old screenshots and CI runs do not verify
+this branch. The browser tests use the real Supabase SDK with mocked Auth/Data API
+responses; a real provider round trip still must be checked separately.
 
 ## Local setup and checks
 

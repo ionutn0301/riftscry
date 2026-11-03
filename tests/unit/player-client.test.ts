@@ -39,6 +39,18 @@ afterEach(() => {
 });
 
 describe('player request reuse and bounded imports', () => {
+  it('never deduplicates or persists authenticated AI responses across sessions', async () => {
+    const { api, fetcher } = await freshClient();
+    fetchMock.mockImplementation(async (_input, init) => json({ owner: new Headers(init?.headers).get('authorization') }));
+    const url = api('review', params);
+    expect(await Promise.all([
+      fetcher(url, { method: 'POST', headers: { authorization: 'Bearer alice-private-token' } }),
+      fetcher(url, { method: 'POST', headers: { authorization: 'Bearer bob-private-token' } }),
+    ])).toEqual([{ owner: 'Bearer alice-private-token' }, { owner: 'Bearer bob-private-token' }]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    window.dispatchEvent(new Event('pagehide'));
+    expect(JSON.stringify(sessionStorage)).not.toContain('private-token');
+  });
   it('reuses the player icon across simultaneous reads and reloads for five minutes, then refreshes it', async () => {
     let client = await freshClient();
     const oldIcon = { puuid, profileIconId: 685, summonerLevel: 340 };

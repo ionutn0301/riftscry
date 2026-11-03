@@ -1,4 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useStore } from '@nanostores/react';
+import { $account } from '../../lib/account/storage';
+import { getReviewAccessToken } from '../../lib/account/client';
+import { PlayerRequestError } from './requestCache';
 import { useJourneyReady } from '../experience/useJourneyReady';
 import useSWR from 'swr';
 import { api, fetcher, playerBackLink } from './client';
@@ -35,12 +39,17 @@ function EvidenceLink({ factId, fact, onReveal }: { factId: string; fact?: Fact;
 
 export default function MatchReview({ id, platform, puuid, back }: { id: string; platform: string; puuid: string; back: string }) {
   const journeyReady = useJourneyReady();
+  const account = useStore($account, { ssr: 'initial' });
+  const [signInRequired, setSignInRequired] = useState(false);
+  const canReview = account.ready && !!account.userId && !signInRequired;
+  const signInHref = `/account?${new URLSearchParams({ returnTo: `/matches/${id}?${new URLSearchParams({ platform, puuid, back })}#match-review` })}`;
   const values = { id, platform, puuid };
   const { data: match, error, isLoading, mutate: retryMatch } = useSWR<Match>(api('match', values), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const retrySeconds = usePlayerCooldown();
   const reviewRetrySeconds = usePlayerCooldown('review');
   const [timelineRequested, setTimelineRequested] = useState(false);
-  const [report, setReport] = useState<Review>();
+  const [savedReport, setReport] = useState<{ userId: string; review: Review }>();
+  const report = canReview && savedReport?.userId === account.userId ? savedReport.review : undefined;
   const [busy, setBusy] = useState(false);
   const reviewInFlight = useRef(false);
   const [message, setMessage] = useState('');
@@ -94,17 +103,25 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
   }, [shown.facts]);
 
   async function generate() {
-    if (busy || reviewRetrySeconds || reviewInFlight.current) return;
+    if (!canReview || busy || reviewRetrySeconds || reviewInFlight.current) return;
+    const userId = account.userId!;
     reviewInFlight.current = true;
     setBusy(true);
     setMessage('');
     try {
-      const body = await fetcher<Review>(api('review', values), { method: 'POST' });
+      let token: string;
+      try { token = await getReviewAccessToken(); }
+      catch (error) { setSignInRequired(true); throw error; }
+      if ($account.get().userId !== userId || !$account.get().ready) return;
+      const body = await fetcher<Review>(api('review', values), { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      if ($account.get().userId !== userId || !$account.get().ready) return;
       if (!Array.isArray(body.sections) || !Array.isArray(body.facts) || !['ai', 'deterministic'].includes(body.mode)) throw new Error('The review could not be read. Please try again.');
-      setReport(body as Review);
+      setReport({ userId, review: body });
       setReviewOpen(true);
     } catch (failure) {
-      setMessage(`${failure instanceof Error ? failure.message : 'Review unavailable.'} ${report ? 'Your previous review remains available.' : 'Deterministic summary remains available.'}`);
+      if ($account.get().userId !== userId || !$account.get().ready) return;
+      if (failure instanceof PlayerRequestError && failure.status === 401) { setSignInRequired(true); setReport(undefined); }
+      setMessage(`${failure instanceof Error ? failure.message : 'Review unavailable.'} ${report && !(failure instanceof PlayerRequestError && failure.status === 401) ? 'Your previous review remains available.' : 'Recorded summary remains available.'}`);
     } finally {
       reviewInFlight.current = false;
       setBusy(false);
@@ -125,10 +142,10 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     </section>}
     {match && p && <>
       <section id="match-overview" className="match-overview-scene" data-journey-panel data-journey-label="Match" data-journey-world="match">
-      <div className="match-primary-actions"><button type="button" data-match-ai-entry aria-controls="match-review" disabled={busy || reviewRetrySeconds > 0} onClick={() => {
+      <div className="match-primary-actions">{canReview ? <button type="button" data-match-ai-entry aria-controls="match-review" disabled={busy || reviewRetrySeconds > 0} onClick={() => {
         window.dispatchEvent(new CustomEvent('riftscry:journey-reveal', { detail: { id:'match-review' } }));
         void generate();
-      }}><PlayerIcon name="sparkles" />{reviewRetrySeconds ? `AI review ready in ${reviewRetrySeconds}s` : busy ? 'Reviewing…' : 'Review with AI'}<PlayerIcon name="arrow-right" size={17} /></button><a href="#match-evidence">Inspect match evidence <PlayerIcon name="arrow-right" size={15} /></a></div>
+      }}><PlayerIcon name="sparkles" />{reviewRetrySeconds ? `AI review ready in ${reviewRetrySeconds}s` : busy ? 'Reviewing…' : 'Review with AI'}<PlayerIcon name="arrow-right" size={17} /></button> : <a className="player-button-secondary" data-match-ai-entry href={signInHref}>{account.ready ? 'Sign in to use AI' : 'Checking account…'}</a>}<a href="#match-evidence">Inspect match evidence <PlayerIcon name="arrow-right" size={15} /></a></div>
       {error && <div><p role="alert">{error.message}</p><button disabled={isLoading || retrySeconds > 0} onClick={() => void retryMatch().catch(() => {})}>{retrySeconds ? `Retry in ${retrySeconds}s` : 'Retry match'}</button></div>}
       <section className="profile-stats review-summary" aria-label="Match overview">
         <div>
@@ -157,8 +174,9 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
       <section className="review-reading-section" aria-labelledby="short-review-heading">
         <div className="player-actions review-actions">
           <h2 id="short-review-heading">One thing to revisit</h2>
-          <button disabled={busy || reviewRetrySeconds > 0} onClick={() => void generate()}><PlayerIcon name="sparkles" />{reviewRetrySeconds ? `Ready in ${reviewRetrySeconds}s` : busy ? 'Reviewing…' : 'Review with AI'}</button>
+          {canReview ? <button disabled={busy || reviewRetrySeconds > 0} onClick={() => void generate()}><PlayerIcon name="sparkles" />{reviewRetrySeconds ? `Ready in ${reviewRetrySeconds}s` : busy ? 'Reviewing…' : 'Review with AI'}</button> : <a className="player-button-secondary" href={signInHref}>{account.ready ? 'Sign in to use AI' : 'Checking account…'}</a>}
         </div>
+        {!canReview && <p className="player-help">AI analysis requires a signed-in RiftScry account. Recorded summaries, item comparisons, and timelines are available to everyone.</p>}
         <p className="review-mode"><PlayerIcon name={shown.mode === 'ai' ? 'sparkles' : 'check'} />{shown.mode === 'ai' ? 'AI-assisted interpretation' : 'Recorded summary'}</p>
         <p role="status" aria-live="polite">{busy ? 'Reviewing your match…' : message}</p>
         {focusSection && <article className="review-focus"><PlayerIcon name="target" size={24} /><div><p>{focusSection.text}</p><div className="review-evidence-links">{focusSection.evidence.map(factId => <EvidenceLink key={factId} factId={factId} fact={shown.facts.find(fact => fact.id === factId)} onReveal={revealEvidence} />)}</div></div></article>}

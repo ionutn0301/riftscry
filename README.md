@@ -69,7 +69,9 @@ history. The experience connects those paths across the whole site.
 
 A successful lookup or explicit valid player selection remembers the player in your
 workspace. Sign in at `/account` to sync across devices; guests keep browser-local
-data. Guest imports are explicit and account workspaces are isolated. Direct player
+data. AI match analysis requires sign-in; recorded summaries and timelines remain
+available to guests. Account also offers a synced personal focus and practice checklist.
+Guest imports are explicit and account workspaces are isolated. Direct player
 links still work without storage. A RiftScry login does not verify Riot account ownership. Automatic
 results require exposed match history; checked Mayhem availability metadata explains
 empty imports without inventing a report or substituting ordinary ARAM. Exact mode

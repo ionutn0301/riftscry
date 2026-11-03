@@ -1,3 +1,4 @@
+import { signInFixture } from './account-fixture';
 import { test,expect } from '@playwright/test';
 import { readyCinema } from '../e2e/cinema-test-helpers';
 import { installFixtures,profilePath,query,sourceMatch,visualMatches,puuid } from './fixtures';
@@ -20,7 +21,8 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
   });
 }
-test('the match overview reaches AI analysis in one deliberate action',async({page})=>{
+test('the signed-in match overview reaches AI analysis in one deliberate action',async({page})=>{
+  await signInFixture(page);
   const requests=await installFixtures(page);
   await page.goto(`/matches/${sourceMatch.metadata.matchId}?${query}`);
   await expect(page.locator('[data-match-ai-entry]')).toBeVisible();
@@ -32,6 +34,7 @@ test('the match overview reaches AI analysis in one deliberate action',async({pa
   expect(requests.filter(request=>request.action==='review').map(request=>request.method)).toEqual(['POST']);
 });
 test('a returning player reaches build evidence and match review from the homepage',async({page})=>{
+  await signInFixture(page, { 'riftscry:recent-player:v1': JSON.stringify({platform:'eun1',puuid,name:'Fixture Player#TEST'}) });
   const requests=await installFixtures(page,{matches:[sourceMatch]});
   await page.addInitScript(({puuid})=>localStorage.setItem('riftscry:recent-player:v1',JSON.stringify({platform:'eun1',puuid,name:'Fixture Player#TEST'})),{puuid});
   await page.goto('/');await readyCinema(page);

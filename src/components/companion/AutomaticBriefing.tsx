@@ -1,3 +1,4 @@
+import PracticePlan from '../account/PracticePlan';
 import { personalStorage } from '../../lib/account/storage';
 import { useEffect, useId, useRef, useState, type SubmitEvent } from 'react';
 import useSWR from 'swr';
@@ -109,6 +110,7 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
             <ol><li><PlayerIcon name="history" /><span>Your games</span></li><li><PlayerIcon name="sparkles" /><span>What changed</span></li><li><PlayerIcon name="target" /><span>Your next move</span></li></ol>
           </aside>
         </section>}
+      <PracticePlan compact />
       {storageNotice && <p className="automatic-storage-note" role="status">{storageNotice}</p>}
       <footer className="automatic-footnote"><details><summary>About your player</summary><p>Built from available match records. Looking up a player does not verify account ownership. Sign in to remember your selected player across devices.</p></details>{hasNotebook && <a href="/notebook">Open saved notebook<PlayerIcon name="arrow-right" size={15} /></a>}</footer>
     </div>

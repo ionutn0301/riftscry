@@ -241,6 +241,6 @@ export async function seedNotes(page: Page, notes: unknown[]) {
     if (localStorage.getItem(key) === null) localStorage.setItem(key, value);
   }, { key: memoryKey, value: JSON.stringify(notes) });
 }
-export async function readNotes(page: Page): Promise<Memory[]> {
-  return page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '[]'), memoryKey);
+export async function readNotes(page: Page, accountId?: string): Promise<Memory[]> {
+  return page.evaluate(({ key, accountId }) => JSON.parse(accountId ? JSON.parse(localStorage.getItem(`riftscry:account:v1:${accountId}`) ?? '{}')[key]?.value ?? '[]' : localStorage.getItem(key) ?? '[]'), { key: memoryKey, accountId });
 }

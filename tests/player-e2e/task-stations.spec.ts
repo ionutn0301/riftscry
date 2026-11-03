@@ -1,3 +1,4 @@
+import { signInFixture } from './account-fixture';
 import { expect, test, type Page } from '@playwright/test';
 import { installFixtures, platform, profilePath, puuid, query, sourceMatch, matches } from './fixtures';
 
@@ -60,6 +61,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   });
 
   test(`${viewport.width}px match: inspect an actual fact and a draft as connected scenes`, async ({ page }) => {
+    await signInFixture(page);
     await page.setViewportSize(viewport);
     const requests = await installFixtures(page, { matches });
     const errors: string[] = [];

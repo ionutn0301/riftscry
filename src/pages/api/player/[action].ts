@@ -8,6 +8,7 @@ import { getItemMetadata } from '../../../lib/player/metadata';
 import { buildSuggestions } from '../../../lib/player/advice';
 import { review } from '../../../lib/player/review';
 import { getPersonalPatchImpact } from '../../../lib/player/impact-service';
+import { requireAccount } from '../../../lib/account/server';
 export const prerender = false;
 const platformSchema = z.enum(Object.keys(platforms) as [Platform, ...Platform[]]);
 const puuidSchema = z.string().regex(/^[A-Za-z0-9_-]{30,120}$/);
@@ -19,6 +20,7 @@ export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => 
     if (!action || !['lookup', 'account', 'summoner', 'history', 'rank', 'match', 'timeline', 'review', 'items', 'impact'].includes(action)) return json({ error: 'Unknown endpoint' }, 404);
     if (request.method !== (action === 'review' ? 'POST' : 'GET')) return json({ error: 'Method not allowed' }, 405);
     if (request.method === 'POST' && request.headers.get('origin') !== url.origin) return json({ error: 'Origin not allowed' }, 403);
+    const accountId = action === 'review' ? await requireAccount(request) : undefined;
     const platform = platformSchema.parse(url.searchParams.get('platform'));
     if (!riotAccessAllowed(process.env)) throw new ServiceError('Player access is unavailable in this environment. Private testing requires the protected deployment and its private-testing configuration.');
     const beforeFetch = () => limit(clientAddress);
@@ -56,7 +58,10 @@ export const ALL: APIRoute = async ({ request, url, params, clientAddress }) => 
       const timeline = timelineResult.status === 'fulfilled' ? timelineResult.value : undefined;
       const metadata = metadataResult.status === 'fulfilled' ? metadataResult.value : undefined;
       const facts = evidence(match, puuid, timeline, metadata);
-      return json(await review(facts, buildSuggestions(match, puuid, facts, metadata), () => limit(clientAddress, true)));
+      return json(await review(facts, buildSuggestions(match, puuid, facts, metadata), async () => {
+        await limit(clientAddress, true);
+        await limit(`account:${accountId}`, true);
+      }));
     }
     if (action === 'items') {
       return json(await getItemMetadata(match));

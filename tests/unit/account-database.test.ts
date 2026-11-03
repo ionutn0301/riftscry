@@ -1,5 +1,5 @@
 import { PGlite } from '@electric-sql/pglite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const alice = '00000000-0000-4000-8000-000000000001';
@@ -22,7 +22,8 @@ beforeAll(async () => {
     grant usage on schema auth, public to anon, authenticated;
     grant execute on function auth.uid() to anon, authenticated;
     insert into auth.users values ('${alice}'), ('${bob}');`);
-  await db.exec(readFileSync(new URL('../../supabase/migrations/20261103135354_account_workspaces.sql', import.meta.url), 'utf8'));
+  const migrations = new URL('../../supabase/migrations/', import.meta.url);
+  for (const file of readdirSync(migrations).filter(file => file.endsWith('.sql')).sort()) await db.exec(readFileSync(new URL(file, migrations), 'utf8'));
 }, 30_000);
 afterAll(async () => { await db?.close(); });
 
@@ -61,8 +62,19 @@ describe('Postgres account isolation and write boundary', () => {
     await expect(save('riftscry:resume', '{broken')).rejects.toThrow('invalid input syntax');
     await expect(save('riftscry:resume', JSON.stringify('x'.repeat(2_000_000)))).rejects.toThrow('Record exceeds');
   });
-  it('enforces total workspace quotas atomically', async () => {
+  it('supports private practice plans, bounded by the same owner and revision rules', async () => {
     await asUser(alice);
+    await save('riftscry:practice-plan:v1', JSON.stringify({ version: 1, profile: { displayName: 'Alice', role: 'Mid', focus: 'Review a death' }, goals: [] }));
+    await expect(save('riftscry:practice-plan:v1', '{}')).rejects.toMatchObject({ code: '40001' });
+    await expect(save('riftscry:practice-plan:v1', JSON.stringify('x'.repeat(8192)), 1)).rejects.toThrow('account_practice_plan_size');
+    await asUser(bob);
+    expect((await db.query("select * from public.account_records where record_key = 'riftscry:practice-plan:v1'")).rows).toEqual([]);
+  });
+  it('enforces total workspace quotas atomically', async () => {
+    const owner = '00000000-0000-4000-8000-000000000003';
+    await db.exec('reset role;');
+    await db.query('insert into auth.users values ($1)', [owner]);
+    await asUser(owner);
     await save('riftscry:companion:v1', JSON.stringify('x'.repeat(1_999_990)));
     await save('riftscry:resume', JSON.stringify('x'.repeat(1_999_990)));
     await expect(save('riftscry:signal-context:v1', JSON.stringify('x'.repeat(100)))).rejects.toThrow('Workspace storage limit');

@@ -131,7 +131,7 @@ for (const viewport of [
       await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
       await expect(page.getByRole('region', { name: 'Match overview', exact: true })).toContainText('18 / 6 / 24');
       await openScene(page, 'match-review');
-      await expect(page.getByRole('button', { name: 'Review with AI', exact: true })).toBeEnabled();
+      await expect(page.locator('#match-review').getByRole('link', { name: 'Sign in to use AI', exact: true })).toBeVisible();
       await expectNoHorizontalOverflow(page);
       await capture(page, `${viewport.name}-match-review`, true);
       expect(requests.filter(request => ['timeline', 'review'].includes(request.action))).toEqual([]);

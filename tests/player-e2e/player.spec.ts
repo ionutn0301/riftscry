@@ -1,3 +1,4 @@
+import { signInFixture, fixtureAccountId } from './account-fixture';
 import { test, expect } from '@playwright/test';
 import {
   alreadyStartedMatch, followUpMatch, historicalMatch, installFixtures, makeMatch, memoryKey,
@@ -50,6 +51,7 @@ test('lookup opens readable profile and grouped builds without eager timeline or
 });
 
 test('AI suggestion prefills a draft, opens evidence, and saves only after confirmation', async ({ page }) => {
+  await signInFixture(page);
   const requests = await installFixtures(page);
   await page.goto(matchUrl, { waitUntil: 'domcontentloaded' });
   await openScene(page, 'match-review');
@@ -72,11 +74,11 @@ test('AI suggestion prefills a draft, opens evidence, and saves only after confi
   await expect(page.getByLabel('Tracked item', { exact: true })).toHaveValue('3047');
   await expect(page.getByLabel('Reason', { exact: true })).toHaveValue(suggestion.reason);
   await expect(page.getByLabel('Tradeoff', { exact: true })).toHaveValue(suggestion.tradeoff);
-  expect(await readNotes(page)).toEqual([]);
+  expect(await readNotes(page, fixtureAccountId)).toEqual([]);
 
   await page.getByRole('button', { name: 'Save adjustment', exact: true }).click();
   await expect(page.getByText(/^Saved to your workspace\./)).toBeVisible();
-  const [note] = await readNotes(page);
+  const [note] = await readNotes(page, fixtureAccountId);
   expect(note).toMatchObject({ targetItem: 3047, source: sourceMatch.metadata.matchId, evidence: suggestion.evidence });
   expect(note!.createdAt).toBeGreaterThan(sourceMatch.info.gameCreation);
   expect(note!.trackingStartedAt).toBe(note!.createdAt);
@@ -210,6 +212,7 @@ test('a custom condition requires explicit match confirmation and can be undone'
 });
 
 test('timeline and AI failures keep the loaded match summary usable while unavailable item details can be retried', async ({ page }) => {
+  await signInFixture(page);
   let itemsAvailable = false;
   const requests = await installFixtures(page, {
     reviewFailure: true, timelineFailure: true,
@@ -226,7 +229,7 @@ test('timeline and AI failures keep the loaded match summary usable while unavai
   await expect(page.getByText(/Timeline unavailable/).first()).toBeVisible();
   await openScene(page, 'match-review');
   await page.getByRole('button', { name: 'Review with AI', exact: true }).click();
-  await expect(page.getByText(/Deterministic summary remains available/)).toBeVisible();
+  await expect(page.getByText(/Recorded summary remains available/)).toBeVisible();
   await expect(page.getByRole('heading', { name: /^Ahri/, level: 1 })).toBeVisible();
   await expect(page.locator('.review-full')).toHaveJSProperty('open', false);
   await page.getByText('Full review', { exact: true }).click();

@@ -19,6 +19,7 @@ export default defineConfig({
   webServer: {
     command: `pnpm dev --port ${new URL(baseURL).port || '3000'}`,
     url: `${baseURL}/players`,
+    env: { PUBLIC_SUPABASE_URL: 'https://account-test.supabase.co', PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test', PUBLIC_AUTH_PROVIDERS: 'google' },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

@@ -4,6 +4,7 @@ import { parseMemories } from '../player/memory';
 import { parseMomentumState } from '../player/momentum';
 import { parseReadingResume, safeInternalHref } from '../return-briefing';
 import { parseSignalContext } from '../signal-context';
+import { parsePracticePlan, PRACTICE_PLAN_KEY } from './practice-plan';
 
 /** Legacy browser records are untrusted, including during an explicit import. */
 export function validateGuestRecord(key: string, raw: string): void {
@@ -13,6 +14,7 @@ export function validateGuestRecord(key: string, raw: string): void {
     return;
   }
   const value: unknown = JSON.parse(raw);
+  if (key === PRACTICE_PLAN_KEY) { parsePracticePlan(raw); return; }
   if (key === 'riftscry:companion:v1') { parseCompanion(raw); return; }
   if (key.startsWith('riftscry:build-memory:v1:')) { parseMemories(raw, key.slice('riftscry:build-memory:v1:'.length)); return; }
   if (key.startsWith('riftscry:momentum:v1:')) {

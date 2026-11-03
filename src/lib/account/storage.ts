@@ -6,6 +6,7 @@ const keys = new Set([
   'riftscry:pool', 'riftscry:companion:v1', 'riftscry:kept-findings',
   'riftscry:recent-player:v1', 'riftscry:remembered-player:v1',
   'riftscry:last-reviewed-patch', 'riftscry:resume', 'riftscry:signal-context:v1',
+  'riftscry:practice-plan:v1',
 ]);
 export function isPersonalKey(key: string): boolean {
   return keys.has(key) || /^riftscry:(?:build-memory|momentum):v1:[A-Za-z0-9:_-]{1,180}$/.test(key);

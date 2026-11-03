@@ -15,3 +15,9 @@
 .account-nav-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: inherit; font-size: .8rem; text-decoration: none; }
 .account-sync-status { position: fixed; right: 14px; bottom: 10px; z-index: 80; border: 1px solid #496876; border-radius: 20px; padding: 7px 12px; font-size: .72rem; background: #10232d; color: #e6f2fa; text-decoration: none; max-width: calc(100vw - 28px); }
 @media (max-width: 600px) { .account-panel { margin-top: 110px; } .account-card { padding: 20px; } .world-utilities .account-nav-link { font-size: .7rem; } .cinema-header-note { display: none; } }
+
+#practice-plan { scroll-margin-top: 100px; }
+.account-getting-started { padding-left: 24px; }
+.account-getting-started li { padding: 8px 0; }
+.account-getting-started a { display: inline-flex; min-height: 44px; align-items: center; }
+.account-getting-started p { margin: 0; }

@@ -5,6 +5,7 @@ import {
   guestRecords, clearAccountCache, type RemoteRecord,
 } from './storage';
 import { acknowledgeRecord, reconcileRecords } from './sync';
+import { consumeAccountReturn, rememberAccountReturn } from './return-to';
 
 let client: SupabaseClient | null = null;
 export function getSupabase() {
@@ -47,7 +48,7 @@ async function initialize() {
   window.addEventListener('focus', () => void syncAccount());
   document.addEventListener('visibilitychange', () => { if (!document.hidden) void syncAccount(); });
   await syncAccount();
-  if (location.pathname === '/auth/callback') location.replace('/account');
+  if (location.pathname === '/auth/callback') location.replace(data.session ? consumeAccountReturn() : '/account');
 }
 function scheduleSync() {
   clearTimeout(timer);
@@ -104,8 +105,19 @@ async function syncWorkspace(userId: string) {
 export async function signIn(provider: Provider) {
   const supabase = getSupabase();
   if (!supabase) throw new Error('Accounts have not been configured yet.');
+  rememberAccountReturn();
   const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}/auth/callback` } });
   if (error) throw new Error('Could not start sign-in. Please try again.');
+}
+export async function getReviewAccessToken(): Promise<string> {
+  const supabase = getSupabase();
+  const userId = getAccountScope();
+  if (!supabase || !userId) throw new Error('Sign in to use AI analysis.');
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session || data.session.user.is_anonymous || data.session.user.id !== userId || getAccountScope() !== userId) {
+    throw new Error('Your session has expired. Sign in again to use AI analysis.');
+  }
+  return data.session.access_token;
 }
 export async function signOut() {
   await syncAccount();

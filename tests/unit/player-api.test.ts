@@ -5,6 +5,8 @@ vi.mock('../../src/lib/player/server', () => ({
 }));
 vi.mock('../../src/lib/player/metadata', () => ({ getItemMetadata: vi.fn() }));
 vi.mock('../../src/lib/player/review', () => ({ review: vi.fn() }));
+vi.mock('../../src/lib/account/server', () => ({ requireAccount: vi.fn() }));
+import { requireAccount } from '../../src/lib/account/server';
 import { ALL } from '../../src/pages/api/player/[action]';
 import { getMatch, getTimeline, getSummoner, limit, riot, ServiceError } from '../../src/lib/player/server';
 import { getItemMetadata } from '../../src/lib/player/metadata';
@@ -33,6 +35,7 @@ async function request(action: string, params: Record<string, string> = {}, meth
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(requireAccount).mockResolvedValue('verified-account');
   vi.stubEnv('RIOT_API_KEY', 'test-only-placeholder');
   vi.stubEnv('RIOT_PUBLIC_ACCESS_APPROVED', 'false');
   vi.stubEnv('RIOT_PRIVATE_TESTING_ENABLED', 'true');
@@ -49,6 +52,17 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs());
 
 describe('player API access and review integration', () => {
+  it.each([401, 503])('denies AI before match, cache, Riot, or generation when verification returns %s', async status => {
+    vi.mocked(requireAccount).mockRejectedValue(new ServiceError('Account verification failed', status));
+    const result = await request('review', { platform: 'eun1', puuid, id: match.metadata.matchId }, 'POST');
+    expect(result.status).toBe(status);
+    expect(result.headers.get('cache-control')).toBe('private, no-store');
+    for (const fn of [getMatch, getTimeline, getItemMetadata, review, limit, riot]) expect(fn).not.toHaveBeenCalled();
+  });
+  it('keeps recorded summaries available without account verification', async () => {
+    expect((await request('match', { platform: 'eun1', puuid, id: match.metadata.matchId })).status).toBe(200);
+    expect(requireAccount).not.toHaveBeenCalled();
+  });
   it('denies private production access before Redis, Riot, metadata or AI work', async () => {
     vi.stubEnv('VERCEL_ENV', 'production');
     vi.stubEnv('NODE_ENV', 'development');
@@ -252,6 +266,6 @@ describe('player API budgets apply to upstream work rather than cached reads', (
     });
     const result = await request('review', { platform: 'eun1', puuid, id: match.metadata.matchId }, 'POST');
     expect(result.status).toBe(200);
-    expect(limit).toHaveBeenCalledExactlyOnceWith('127.0.0.1', true);
+    expect(vi.mocked(limit).mock.calls).toEqual([['127.0.0.1', true], ['account:verified-account', true]]);
   });
 });

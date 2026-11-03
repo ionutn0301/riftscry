@@ -8,25 +8,31 @@ API. Clerk is not required, so there is only one new service to configure.
 ## Provisioned project
 
 The free project `riftscry` (`vpirgetchbflxwrwjgzm`) has been created in
-`ionutn0301's Org`, Frankfurt (`eu-central-1`). The account migration is applied.
+`ionutn0301's Org`, Frankfurt (`eu-central-1`). The account and personal practice plan migrations are applied.
 Hosted SQL tests passed for owner isolation, revision conflicts, direct-write
 denial and anonymous denial, with all test identities rolled back. Supabase's
 security and performance advisors returned no findings.
 
 The public project URL/key are configured in Vercel Production and Development,
 and on the `feat/supabase-accounts` preview branch. `PUBLIC_AUTH_PROVIDERS` is empty
-until provider credentials and redirect configuration are completed; the UI shows
-a setup notice instead of offering broken sign-in buttons. Set it to `github`,
+until provider credentials are completed. Production and localhost redirect URLs
+are configured. The UI shows a setup notice instead of offering broken sign-in buttons. Set it to `github`,
 `google`, or the enabled comma-separated list after configuring the provider,
 then rebuild. Other preview branches are not given account configuration.
 Project URL: `https://vpirgetchbflxwrwjgzm.supabase.co`.
+
+Migration filenames match the hosted versions `20261103140311` (accounts) and
+`20261103195258` (practice plan). The original accounts filename had a different
+creation timestamp; it is renamed without changing its SQL to match the already
+applied hosted migration. Do not rerun either applied migration.
 
 ## One-time setup
 
 1. Create a **Free** Supabase project in your chosen organization. No paid add-ons,
    development branches or compute upgrades are needed.
-2. Run `supabase/migrations/20261103135354_account_workspaces.sql` in the project's
-   SQL editor, or apply it through your linked Supabase CLI migration workflow.
+2. Apply migrations in `supabase/migrations/` in timestamp order through your linked
+   Supabase migration workflow. Existing projects need only unapplied migrations;
+   do not rerun the original account table migration.
 3. In **Authentication → Sign In / Providers**, enable Google, GitHub and/or Discord.
    Register an OAuth application with each selected provider. Set its callback to
    the exact callback URL shown by Supabase, normally
@@ -66,6 +72,7 @@ breaking the archive, notebook or existing browser data.
 | Saved findings | Private synchronized findings |
 | Player shortcuts | Most recent/legacy remembered player syncs |
 | Reading continuity | Reviewed patch, resume position and focused signal sync |
+| Personal practice plan | Display name, preferred role, custom focus and up to 8 self-tracked goals sync privately |
 | Theme and reduced motion | Stay on this device |
 | Riot response caches, temporary navigation and AI responses | Do not sync |
 
@@ -73,6 +80,33 @@ Selecting a Riot ID is a shortcut, **not verified Riot account linking**. Existi
 Riot API approval, deployment protection, request budgets, Redis caching and AI
 opt-in rules remain in force. Social auth does not bypass these rules or make
 existing paid AI/Redis usage free.
+
+## AI access and personal practice
+
+AI analysis requires a signed-in, non-anonymous RiftScry account. The review API
+verifies the bearer access token using Supabase Auth `getUser` before any Riot,
+metadata, cache or AI work. Missing/invalid sessions return 401; unavailable Auth
+or missing server configuration fails closed with 503. Existing same-origin POST,
+Riot deployment gates and IP limits remain enforced; AI generation also has a
+verified-account budget. Tokens and AI responses are never included in workspace
+exports or persisted in the player response cache. Supabase manages its own session
+storage. Concurrent AI POST responses are not deduplicated across identities.
+
+Guests retain recorded summaries, deterministic item comparisons, timelines and
+all existing guest notebook features. Match sign-in links carry a validated local
+return destination; OAuth still uses the fixed `/auth/callback`. No AI request
+starts automatically after sign-in. Provider credentials remain a prerequisite:
+when `PUBLIC_AUTH_PROVIDERS` is empty, the account page explains that setup is
+pending and offers guest access.
+
+Account includes getting-started links and a personal practice plan. Display names
+are up to 40 characters, focus up to 240, and up to 8 goals of 180 characters each.
+The plan appears on the automatic briefing with checkboxes and a next-session
+reset. The preferred role is a personal label, not a filter on recorded evidence.
+These are user-authored intentions and manually checked goals, never an inferred
+performance score or AI advice. Unsaved profile edits cannot silently replace
+preferences that changed in another tab. Cloud conflicts use the existing account
+resolution flow. The dedicated record is additionally capped at 8 KB in Postgres.
 
 ## Existing data and sync behavior
 
@@ -138,12 +172,14 @@ pnpm build
 pnpm exec playwright test --config=playwright.accounts.config.ts
 ```
 
-The database suite executes the actual migration in PGlite/Postgres with two test
+The database suite executes all actual migrations in PGlite/Postgres with isolated test
 identities. It checks anonymous denial, RLS isolation, forbidden direct writes,
 revision conflicts, malformed records, quotas and cascade deletion. Browser tests
 use the actual Supabase SDK against deterministic mocked Auth/Data API responses
 for PKCE handoff, guest migration, cross-device hydration, sign-out, account
-isolation, offline recovery and conflict resolution.
+isolation, offline recovery, conflict resolution, practice-plan persistence and
+account-gated AI. The real local API is also tested for anonymous denial. Auth unit
+tests use the real SDK with controlled Auth responses to verify failures and identity checks.
 
 After configuring the hosted project, also run a real provider round trip and use
 two real test accounts to verify cloud saves from a second browser. Mocked browser
