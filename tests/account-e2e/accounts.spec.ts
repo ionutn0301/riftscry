@@ -1,4 +1,5 @@
 import { expect, test, type BrowserContext } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
 
 const alice = '00000000-0000-4000-8000-000000000001';
 const bob = '00000000-0000-4000-8000-000000000002';
@@ -22,24 +23,25 @@ async function backend(context: BrowserContext, rows: Map<string, Map<string, Ro
   await context.route('https://account-test.supabase.co/**', async route => {
     if (network.offline) return route.abort('failed');
     const request = route.request();
-    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' } });
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS' };
+    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
     const url = new URL(request.url());
-    if (url.pathname.endsWith('/logout')) return route.fulfill({ status: 204 });
+    if (url.pathname.endsWith('/logout')) return route.fulfill({ status: 204, headers });
     const token = request.headers().authorization?.split(' ')[1];
     const id = token ? JSON.parse(Buffer.from(token.split('.')[1]!, 'base64url').toString()).sub as string : '';
-    if (!id) return route.fulfill({ status: 401, json: { message: 'No session' } });
+    if (!id) return route.fulfill({ status: 401, headers, json: { message: 'No session' } });
     if (!rows.has(id)) rows.set(id, new Map());
     const records = rows.get(id)!;
     if (url.pathname.endsWith('/rpc/save_account_record')) {
       const body = request.postDataJSON();
       const current = records.get(body.p_key);
-      if ((current?.revision ?? 0) !== body.p_revision) return route.fulfill({ status: 409, json: { code: '40001', message: 'conflict' } });
+      if ((current?.revision ?? 0) !== body.p_revision) return route.fulfill({ status: 409, headers, json: { code: '40001', message: 'conflict' } });
       const revision = (current?.revision ?? 0) + 1;
       records.set(body.p_key, { record_key: body.p_key, value: body.p_value, revision });
-      return route.fulfill({ json: revision });
+      return route.fulfill({ headers, json: revision });
     }
     const key = url.searchParams.get('record_key')?.replace('eq.', '');
-    return route.fulfill({ json: key ? records.get(key) : [...records.values()] });
+    return route.fulfill({ headers, json: key ? records.get(key) : [...records.values()] });
   });
 }
 
@@ -53,6 +55,18 @@ test('social sign-in uses PKCE and the fixed callback on this origin', async ({ 
   expect(url.searchParams.get('code_challenge')).toBeTruthy();
   expect(url.searchParams.get('code_challenge_method')).toBe('s256');
   expect(url.searchParams.get('redirect_to')).toBe('http://127.0.0.1:4325/auth/callback');
+});
+
+for (const width of [1440, 390]) test(`account controls remain usable at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/account');
+  await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeVisible();
+  await expect(page.locator('.account-panel')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await page.getByRole('button', { name: 'Export workspace' }).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('button', { name: 'Export workspace' })).toBeInViewport();
+  await mkdir('player-visuals', { recursive: true });
+  await page.screenshot({ path: `player-visuals/account-${width}.png`, fullPage: true });
 });
 
 test('guest import is explicit, sync reaches another device, and sign-out restores guest data', async ({ browser }) => {

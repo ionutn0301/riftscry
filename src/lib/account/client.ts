@@ -14,7 +14,7 @@ export function getSupabase() {
   });
 }
 const supportedProviders = ['google', 'github', 'discord'] as const;
-export const socialProviders = (import.meta.env.PUBLIC_AUTH_PROVIDERS ?? 'google').split(',').map((s: string) => s.trim())
+export const socialProviders = (import.meta.env?.PUBLIC_AUTH_PROVIDERS ?? '').split(',').map((s: string) => s.trim())
   .filter((s: string): s is typeof supportedProviders[number] => supportedProviders.includes(s as typeof supportedProviders[number]));
 let started: Promise<void> | undefined;
 let syncing: Promise<void> | undefined;

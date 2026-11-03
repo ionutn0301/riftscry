@@ -10,7 +10,7 @@ const keys = new Set([
 export function isPersonalKey(key: string): boolean {
   return keys.has(key) || /^riftscry:(?:build-memory|momentum):v1:[A-Za-z0-9:_-]{1,180}$/.test(key);
 }
-export const accountsConfigured = Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+export const accountsConfigured = Boolean(import.meta.env?.PUBLIC_SUPABASE_URL && import.meta.env?.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 export const ACCOUNT_WRITE = 'riftscry:account-write';
 export type RemoteRecord = { record_key: string; value: string | null; revision: number };
 export type LocalRecord = { value: string | null; revision: number; dirty: boolean; conflict?: RemoteRecord };

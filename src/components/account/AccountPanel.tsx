@@ -24,7 +24,7 @@ export default function AccountPanel() {
       setMessage('Workspace exported, including any unsynced versions. Notebook backups can be imported from Notebook.');
     } catch { setMessage('The workspace could not be exported. Your data has not changed.'); }
   }
-  return <section className="account-panel" aria-labelledby="account-title">
+  return <section id="workspace" className="account-panel" data-journey-panel data-journey-label="Account" aria-labelledby="account-title">
     <p className="account-eyebrow">YOUR RIFTSCRY</p>
     <h1 id="account-title">One account.<br />Your next game, anywhere.</h1>
     <p>Keep your champion pool, notes, loadouts, Build Memory, Momentum, saved findings, and reading progress together.</p>
