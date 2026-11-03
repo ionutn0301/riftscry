@@ -1,5 +1,8 @@
 # RiftScry product contract
 
+> Account update: signed-in users now sync personal records through managed Supabase Auth and Postgres. Guest workspaces remain browser-local. The account model and its boundaries are documented in [docs/ACCOUNTS.md](docs/ACCOUNTS.md) and supersede browser-only claims below for signed-in users.
+
+
 Current contract for the Rift atlas platform, established 31 October 2026, with
 the single-world Rift Cinema homepage revision of 2 November 2026. This document and
 [DESIGN.md](DESIGN.md) supersede earlier presentation storyboards. The

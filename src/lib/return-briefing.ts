@@ -1,3 +1,4 @@
+import { personalStorage } from './account/storage';
 /** Compact client-side contracts. This module deliberately imports no archive data. */
 export type BriefingPatch = { id: string; date: string; championIds: string[] };
 export type BriefingChampion = { name: string; icon: string };
@@ -61,10 +62,10 @@ export function readReturnState(): ReturnState {
   const empty = { reviewedPatch: null, resume: null, storageAvailable: true };
   if (typeof window === "undefined") return empty;
   try {
-    const reviewed = window.localStorage.getItem(REVIEWED_PATCH_KEY);
+    const reviewed = personalStorage.getItem(REVIEWED_PATCH_KEY);
     return {
       reviewedPatch: reviewed && /^\d+\.\d+$/.test(reviewed) ? reviewed : null,
-      resume: parseReadingResume(window.localStorage.getItem(RESUME_KEY)),
+      resume: parseReadingResume(personalStorage.getItem(RESUME_KEY)),
       storageAvailable: true,
     };
   } catch { return { ...empty, storageAvailable: false }; }
@@ -76,7 +77,7 @@ export function rememberReading(href: string, label: string): boolean {
   if (typeof window === "undefined" || !safeHref || !label.trim()) return false;
   try {
     const resume: ReadingResume = { href: safeHref, label: label.trim().slice(0, 120), updatedAt: new Date().toISOString() };
-    window.localStorage.setItem(RESUME_KEY, JSON.stringify(resume));
+    personalStorage.setItem(RESUME_KEY, JSON.stringify(resume));
     window.dispatchEvent(new Event(RETURN_STATE_EVENT));
     return true;
   } catch { return false; }
@@ -86,7 +87,7 @@ export function rememberReading(href: string, label: string): boolean {
 export function markPatchReviewed(patchId: string): boolean {
   if (typeof window === "undefined" || !/^\d+\.\d+$/.test(patchId)) return false;
   try {
-    window.localStorage.setItem(REVIEWED_PATCH_KEY, patchId);
+    personalStorage.setItem(REVIEWED_PATCH_KEY, patchId);
     window.dispatchEvent(new Event(RETURN_STATE_EVENT));
     return true;
   } catch { return false; }

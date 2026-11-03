@@ -4,10 +4,24 @@ RiftScry combines a versioned patch archive, Riot-backed player review, and an a
 personal briefing. Astro 7 prerenders archive and briefing shells; the Vercel adapter
 serves dynamic player routes and API handlers. React islands import and render player data.
 
+## Account workspaces
+
+Supabase Auth and Postgres provide managed social sign-in and private cross-device
+storage. `src/lib/account/storage.ts` scopes every personal record to the current
+user, or to the unchanged guest keys when signed out. `client.ts` owns PKCE login,
+session changes, a durable local outbox and optimistic revision checks. Database
+RLS restricts reads to `auth.uid()`; writes use a quota-limited compare-and-swap RPC.
+Account records are never used as proof of Riot account ownership. API response
+caches, AI output, theme and motion preferences do not sync. See [ACCOUNTS.md](ACCOUNTS.md).
+
+The account model supersedes browser-only descriptions below for signed-in users;
+guest mode retains those browser-only semantics.
+
 ## Product routes
 
 | Route | Purpose | Data boundary |
 | --- | --- | --- |
+| `/account`, `/auth/callback` | Social sign-in, sync, guest import and conflict resolution | Supabase Auth and owner-scoped records |
 | `/` | Introduce automatic preparation, show archive examples and launch the selected player's next task | Prerendered archive examples; validated local identity; no player API requests |
 | `/next-game` | Automatic session recap, personal patch catch-up, review focus and recorded loadout | Existing account/history/match/items API; build-time archive |
 | `/notebook` | Existing Rift Recall notes, saved loadouts, original cards and backups | Existing browser-local preparation document |

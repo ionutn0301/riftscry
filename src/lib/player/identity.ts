@@ -1,3 +1,4 @@
+import { personalStorage } from '../account/storage';
 import { platforms } from './contracts';
 import { historyOptions } from './modes';
 
@@ -19,7 +20,7 @@ export function parseRecentPlayer(value: unknown): RecentPlayer | null {
 export function readRecentPlayer(): RecentPlayer | null {
   try {
     for (const key of [RECENT_PLAYER_KEY, rememberedKey]) {
-      const raw = localStorage.getItem(key);
+      const raw = personalStorage.getItem(key);
       if (!raw) continue;
       try { const player = parseRecentPlayer(JSON.parse(raw)); if (player) return player; }
       catch { /* A damaged optional shortcut cannot block lookup. */ }
@@ -32,7 +33,7 @@ export function rememberRecentPlayer(value: RecentPlayer): boolean {
   const player = parseRecentPlayer(value);
   if (!player) return false;
   try {
-    localStorage.setItem(RECENT_PLAYER_KEY, JSON.stringify(player));
+    personalStorage.setItem(RECENT_PLAYER_KEY, JSON.stringify(player));
     window.dispatchEvent(new Event(RECENT_PLAYER_EVENT));
     return true;
   } catch { return false; }

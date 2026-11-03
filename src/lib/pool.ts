@@ -1,8 +1,9 @@
-import { persistentAtom } from "@nanostores/persistent";
+import { atom } from 'nanostores';
+import { personalStorage } from './account/storage';
 
 /**
- * My Pool — the champions this player cares about. localStorage only; no
- * account. Stored as an array of ddragon champion ids ("Ahri", "LeeSin").
+ * My Pool, scoped to the signed-in workspace or the original guest browser.
+ * Stored as an array of ddragon champion ids ("Ahri", "LeeSin").
  */
 
 function decode(raw: string): string[] {
@@ -14,9 +15,18 @@ function decode(raw: string): string[] {
   }
 }
 
-export const $pool = persistentAtom<string[]>("riftscry:pool", [], {
-  encode: JSON.stringify,
-  decode,
+function readPool() {
+  try { return decode(personalStorage.getItem('riftscry:pool') ?? '[]'); }
+  catch { return []; }
+}
+export const $pool = atom<string[]>(readPool());
+const setPool = $pool.set.bind($pool);
+$pool.set = value => {
+  personalStorage.setItem('riftscry:pool', JSON.stringify(value));
+  setPool(value);
+};
+if (typeof window !== 'undefined') window.addEventListener('storage', event => {
+  if (event.key === null || event.key === 'riftscry:pool') setPool(readPool());
 });
 
 export function togglePool(championId: string): void {

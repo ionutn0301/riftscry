@@ -1,3 +1,4 @@
+import { personalStorage } from '../../lib/account/storage';
 import { useEffect, useState } from 'react';
 import type { Match } from '../../lib/player/contracts';
 import type { RecentPlayer } from '../../lib/player/identity';
@@ -25,7 +26,7 @@ export function useMomentum(player: RecentPlayer, sample: Sample, queue: string,
       if (disposed) return;
       const options = { platform, now: Date.now(), available, failed, loading, error, queue, champion };
       let raw: string | null;
-      try { raw = localStorage.getItem(key); }
+      try { raw = personalStorage.getItem(key); }
       catch {
         setView({ report: buildMomentum(matches, puuid, { ...options, canPersist: false }),
           storageNotice: 'Browser storage is unavailable. Match observations still work; automatic progress cannot be saved here.' });
@@ -42,8 +43,8 @@ export function useMomentum(player: RecentPlayer, sample: Sample, queue: string,
         try {
           // The lock below serializes cooperating tabs. This extra check also
           // protects a write after an external storage edit in older browsers.
-          if (localStorage.getItem(key) !== raw) { queueMicrotask(reconcile); return; }
-          localStorage.setItem(key, serializeMomentumState(report.state));
+          if (personalStorage.getItem(key) !== raw) { queueMicrotask(reconcile); return; }
+          personalStorage.setItem(key, serializeMomentumState(report.state));
         } catch {
           setView({ report: buildMomentum(matches, puuid, { ...options, state: saved.state, canPersist: false }),
             storageNotice: 'This browser could not save new progress. Previously saved results are unchanged; current match observations still work.' });

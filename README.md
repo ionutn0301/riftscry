@@ -46,7 +46,7 @@ history. The experience connects those paths across the whole site.
   progress record without checkboxes or journals. Supports get suitable vision
   measures, ARAM uses valid team participation, and a personal high can appear
   even after a loss. Small samples provide an honest latest-game observation.
-  Progress is local to this browser and bounded to twelve cycles.
+  Progress is bounded to twelve cycles and syncs when signed in.
 - **Personal patch catch-up:** compare each recent champion's latest imported game
   against newer archived champion and verified item changes, with before/after
   records and source links. Unknown patch baselines remain unknown.
@@ -67,9 +67,10 @@ history. The experience connects those paths across the whole site.
   details available. Saving, starting a card, and marking a patch reviewed remain
   explicit actions, independent of the automatic briefing.
 
-A successful lookup or explicit valid player selection remembers the player on this
-browser when storage is available. Direct player links still work without storage.
-There is no automatic cross-device account sync or ownership verification. Automatic
+A successful lookup or explicit valid player selection remembers the player in your
+workspace. Sign in at `/account` to sync across devices; guests keep browser-local
+data. Guest imports are explicit and account workspaces are isolated. Direct player
+links still work without storage. A RiftScry login does not verify Riot account ownership. Automatic
 results require exposed match history; checked Mayhem availability metadata explains
 empty imports without inventing a report or substituting ordinary ARAM. Exact mode
 capabilities and source references live in [modes.ts](src/lib/player/modes.ts).
@@ -91,6 +92,16 @@ pnpm dev
 plus server-rendered player routes and the protected player API. A static file server
 alone cannot serve the player API or populate an automatic briefing. The existing
 Vercel Git integration builds previews for PRs and production from `main`.
+
+## Managed accounts and storage
+
+For continuation work, start with the [master agent handover](HANDOVER_MASTER.md).
+
+Supabase Auth handles social sign-in and sessions; hosted Postgres stores private
+workspaces with row-level security. No custom auth server or database host is needed.
+See [the setup guide](docs/ACCOUNTS.md) for the migration, social provider setup,
+three public environment settings, free-plan limits, and verification steps.
+Without Supabase settings the existing guest experience remains available.
 
 ## How it works
 

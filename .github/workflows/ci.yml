@@ -211,6 +211,11 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium webkit
 
+      - name: Managed account browser tests
+        run: pnpm exec playwright test --config=playwright.accounts.config.ts
+        env:
+          CI: "true"
+
       - name: Player workflow browser tests
         run: pnpm exec playwright test --config=playwright.player.config.ts
         env:

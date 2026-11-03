@@ -31,7 +31,7 @@ test('shared empty pool filter can be disabled and all filters cleared', async (
   await page.goto('/patch/26.16?pool=1', { waitUntil: 'domcontentloaded' });
   await readyWorld(page);
   await page.waitForSelector('.filter-bar[data-ready="true"]');
-  await expect(page.getByText('No champions saved on this device.',{exact:false})).toBeVisible();
+  await expect(page.getByText('No champions saved in your workspace.',{exact:false})).toBeVisible();
   const options = page.locator('.patch-filter-options');
   await options.locator('summary').click();
   const pool = page.getByRole('button',{name:'My pool',exact:true});

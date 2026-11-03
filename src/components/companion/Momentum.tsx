@@ -68,7 +68,7 @@ export default function Momentum({ player, view, historyOnly = false }: Props) {
     {completed && <Receipt cycle={completed} link={evidenceLink} />}
     {report.notice && report.status !== 'tracking' && <p className="momentum-notice" role="status">{report.notice}</p>}
     {storageNotice && <p className="momentum-notice" role="status">{storageNotice}</p>}
-    <footer className="momentum-footer"><PlayerIcon name="history" size={14} /><span>{storageNotice ? 'Current match observations only.' : 'Saved on this browser · Updates with your briefing · Take breaks anytime.'}</span></footer>
+    <footer className="momentum-footer"><PlayerIcon name="history" size={14} /><span>{storageNotice ? 'Current match observations only.' : 'Saved to your workspace · Sign in to sync · Take breaks anytime.'}</span></footer>
   </section>;
 }
 

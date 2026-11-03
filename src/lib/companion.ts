@@ -1,3 +1,4 @@
+import { personalStorage } from './account/storage';
 import { z } from 'zod';
 import { comparisonRole, participant, patchOf, platforms, type Match } from './player/contracts';
 import { modeForMatch, queueCatalog } from './player/modes';
@@ -102,13 +103,13 @@ export function serializeCompanion(state: CompanionState): string {
 
 /** Read-modify-write the current browser state, not an old React render's copy. */
 export function readCompanion(): CompanionState {
-  const raw = localStorage.getItem(COMPANION_KEY);
+  const raw = personalStorage.getItem(COMPANION_KEY);
   return raw === null ? emptyCompanion() : parseCompanion(raw);
 }
 export function updateCompanion(updater: (current: CompanionState) => CompanionState): CompanionState {
   const next = updater(readCompanion());
   const raw = serializeCompanion(next);
-  localStorage.setItem(COMPANION_KEY, raw);
+  personalStorage.setItem(COMPANION_KEY, raw);
   window.dispatchEvent(new Event(COMPANION_EVENT));
   return parseCompanion(raw);
 }

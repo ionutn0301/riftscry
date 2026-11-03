@@ -1,3 +1,4 @@
+import { personalStorage } from '../lib/account/storage';
 import { comparisonWithSignal, readSignalContext, rememberSignal, parseSignalContext, SIGNAL_CONTEXT_EVENT, SIGNAL_CONTEXT_KEY } from '../lib/signal-context';
 import { FINDINGS_EVENT, FINDINGS_KEY, readFindings } from '../lib/kept-findings';
 import { readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
@@ -63,7 +64,7 @@ window.addEventListener('pageshow', event => {
   // Initial producers may already have supplied session context even when
   // storage is blocked. Only restore persisted pages from available storage.
   if (event.persisted) {
-    try { signal = parseSignalContext(JSON.parse(localStorage.getItem(SIGNAL_CONTEXT_KEY) ?? 'null')); }
+    try { signal = parseSignalContext(JSON.parse(personalStorage.getItem(SIGNAL_CONTEXT_KEY) ?? 'null')); }
     catch { /* Keep the current visit's context when storage is unavailable. */ }
   }
   render();
