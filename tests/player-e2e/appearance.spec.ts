@@ -6,7 +6,7 @@ import {cinemaFitsViewport,inspectCinema,openCinemaNavigation,readyCinema} from 
 test('appearance themes work with device reduced motion and persist across the platform',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'reduce'});
   await installFixtures(page);await page.goto('/');await readyCinema(page);
-  const trigger=page.getByRole('button',{name:'Open navigation',exact:true});
+  const trigger=page.getByRole('button',{name:'Open navigation menu',exact:true});
   const motion=page.locator('button[data-cinema-motion]');
   const world=page.locator('[data-rift-cinema]');
   await expect(motion).toHaveAttribute('aria-pressed','true');

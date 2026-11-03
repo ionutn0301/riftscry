@@ -81,7 +81,7 @@ async function mount(href = '/') {
     <main data-rift-cinema data-home-signals data-cinema-state="world">
       <canvas data-cinema-canvas></canvas><img data-cinema-poster alt="">
       <a data-home-briefing data-home-personal href="/next-game"><span data-home-briefing-label></span></a>
-      <button data-cinema-menu-open>Open navigation</button>
+      <button data-cinema-menu-open>Open navigation menu</button>
       <a data-home-reading hidden href="/explore#change"><span data-home-reading-label></span></a>
       <p data-home-return hidden></p><a data-home-context hidden href="/explore#change"></a>
       <h2 data-home-subject></h2><a data-cinema-inspect href="${first.explore}">Scry this champion</a>

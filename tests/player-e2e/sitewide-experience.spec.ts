@@ -66,7 +66,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
           expect(color, 'Application documents retain the shared theme').toBe(canvasColor);
         }
         const controls = route.surface === 'home'
-          ? [page.getByRole('button', { name: 'Open navigation', exact: true })]
+          ? [page.getByRole('button', { name: 'Open navigation menu', exact: true })]
           : [mapControl(page), header.getByRole('button', { name: 'Search the archive', exact: true }), header.locator('[data-theme-toggle]')];
         for (const control of controls) {
           await expect(control).toBeInViewport({ ratio: 1 });

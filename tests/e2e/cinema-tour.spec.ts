@@ -11,7 +11,7 @@ test('world gestures advance one champion per gesture and leave interactive cont
   const viewport = page.viewportSize()!;
   const point = { x: viewport.width * .53, y: viewport.height * .48 };
   const mobileWebKit = isMobile && browserName === 'webkit';
-  const open = page.getByRole('button', { name: 'Open navigation', exact: true });
+  const open = page.getByRole('button', { name: 'Open navigation menu', exact: true });
   const openBox = (await open.boundingBox())!;
   // Native wheel deltas are scaled in mobile Chromium. Mobile WebKit exposes
   // no native wheel injection, so that project checks the DOM gesture contract.

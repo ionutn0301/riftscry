@@ -55,9 +55,9 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
     <span class="cinema-header-note">A LEAGUE OF LEGENDS COMPANION</span>
     <nav class="cinema-utilities world-utilities" aria-label="Quick navigation">
       <AccountLink />
-      <a href="/next-game" data-home-personal data-home-briefing data-station-link="next-game"><span data-home-briefing-label>My briefing</span><span aria-hidden="true">↗</span></a>
+      <a href="/next-game" aria-label="Open my briefing" data-home-personal data-home-briefing data-station-link="next-game"><span class="cinema-briefing-label" data-home-briefing-label>My briefing</span><span class="cinema-briefing-short" aria-hidden="true">Briefing</span><span class="cinema-briefing-arrow" aria-hidden="true">↗</span></a>
       <button type="button" class="cinema-icon-button" data-palette-trigger aria-label="Search the archive"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button>
-      <button type="button" class="cinema-menu-trigger" data-cinema-menu-open aria-label="Open navigation" aria-haspopup="dialog" aria-controls="cinema-navigation"><span></span><span></span></button>
+      <button type="button" class="cinema-menu-trigger" data-cinema-menu-open aria-label="Open navigation menu" aria-haspopup="dialog" aria-controls="cinema-navigation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Menu</span></button>
     </nav>
   </header>
 
@@ -66,11 +66,11 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
   <div class="cinema-opening">
     <p class="cinema-kicker"><i aria-hidden="true"></i> BEFORE YOUR NEXT QUEUE</p>
     <h1 id="cinema-title"><span>The Rift</span><em>has changed.</em></h1>
-    <p class="cinema-introduction">Every patch leaves a mark.<br />Find the one that changes your next game.</p>
-    <div class="cinema-entry-actions"><a href={first.explore} class="cinema-primary" data-cinema-inspect><span class="cinema-primary-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="m24 6 18 18-18 18L6 24 24 6Z"/><path d="m24 16 8 8-8 8-8-8 8-8Z"/><path d="M24 2v8m0 28v8M2 24h8m28 0h8"/></svg></span><span><strong>Scry this champion</strong><small>UNCOVER AN ARCHIVED CHANGE</small></span><span class="cinema-action-arrow" aria-hidden="true">↗</span></a>
+    <p class="cinema-introduction">Find the change that matters to your next game.</p>
+    <div class="cinema-entry-actions"><a href={first.explore} class="cinema-primary" data-cinema-inspect><span class="cinema-primary-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="m24 6 18 18-18 18L6 24 24 6Z"/><path d="m24 16 8 8-8 8-8-8 8-8Z"/><path d="M24 2v8m0 28v8M2 24h8m28 0h8"/></svg></span><span><strong>Scry this champion</strong></span><span class="cinema-action-arrow" aria-hidden="true">↗</span></a>
     <a class="cinema-resume" href="/explore#change" data-home-reading hidden><span data-home-reading-label>Resume exploring</span><span aria-hidden="true">↗</span></a>
     <a class="cinema-resume" href="/explore#change" data-home-context hidden></a>
-    <p class="cinema-return" data-home-return hidden></p></div>
+    </div>
   </div>
 
   <a href={first.explore} class="cinema-hotspot" data-cinema-inspect aria-label={`Inspect ${first.championName}'s archived change`}>
@@ -81,12 +81,12 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
   <div class="cinema-identity" aria-live="off"><span class="cinema-identity-number" data-cinema-number>{first.world.number}</span><div><p><span data-cinema-region>{first.world.region}</span><i aria-hidden="true"></i><span data-cinema-character>{first.world.character}</span></p><h2 data-home-subject>{first.championName}</h2></div></div>
 
   <div class="cinema-bottom">
-    <nav class="cinema-roster" aria-label="Choose your champion"><span class="cinema-roster-label">CHOOSE YOUR<br /><strong>PERSPECTIVE</strong></span><div class="cinema-roster-choices">{signals.map((signal,index)=><a href={signal.explore} data-home-choice={signal.championId} aria-current={index===0?'true':undefined} aria-label={`Enter ${signal.championName}'s world`} style={`--choice-accent:${signal.world.primary}`}><span class="cinema-roster-frame"><img src={signal.world.figure} alt="" width="1628" height="1628" loading={index===0?'eager':'lazy'} decoding="async" /></span><span>{signal.championName}</span><i aria-hidden="true"></i></a>)}</div></nav>
+    <nav class="cinema-roster" aria-label="Choose your champion"><span class="cinema-roster-label">CHOOSE YOUR CHAMPION</span><div class="cinema-roster-choices">{signals.map((signal,index)=><a href={signal.explore} data-home-choice={signal.championId} aria-current={index===0?'true':undefined} aria-label={`Enter ${signal.championName}'s world`} style={`--choice-accent:${signal.world.primary}`}><span class="cinema-roster-frame"><img src={signal.world.figure} alt="" width="1628" height="1628" loading={index===0?'eager':'lazy'} decoding="async" /></span><span>{signal.championName}</span><i aria-hidden="true"></i></a>)}</div></nav>
     <span class="cinema-interaction-note" data-cinema-interaction><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8 3 12l4 4m10-8 4 4-4 4M3 12h18"/></svg><span>Move to look. Scroll to change worlds.</span></span>
     <a class="cinema-archive" href={`/patch/${latest.id}`}><span>LATEST ARCHIVE</span><strong>{latest.id}</strong><span aria-hidden="true">↗</span></a>
   </div>
 
-  <footer class="cinema-footer"><button type="button" data-cinema-motion aria-pressed="false" aria-label="Reduce cinematic motion"><span class="cinema-motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-cinema-motion-label>WORLD IN MOTION</span></button><button type="button" class="cinema-tour" data-cinema-tour aria-pressed="false" title="Automatically explore the champion worlds"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="cinema-tour-play" d="M5 3 13 8 5 13Z"/><path class="cinema-tour-pause" d="M4 3h3v10H4zM10 3h3v10h-3z"/></svg><span data-cinema-tour-label>Play tour</span></button><span>RIOT GAMES ARTWORK · INDEPENDENT FAN PROJECT</span><a href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer">BUILT BY IONUTN0301 <span aria-hidden="true">↗</span></a></footer>
+  <footer class="cinema-footer"><div class="cinema-playback" role="group" aria-label="World playback"><button type="button" data-cinema-motion aria-pressed="false" aria-label="Reduce cinematic motion"><span class="cinema-motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-cinema-motion-label>Motion on</span></button><button type="button" class="cinema-tour" data-cinema-tour aria-pressed="false" title="Automatically explore the champion worlds"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="cinema-tour-play" d="M5 3 13 8 5 13Z"/><path class="cinema-tour-pause" d="M4 3h3v10H4zM10 3h3v10h-3z"/></svg><span data-cinema-tour-label>Play tour</span></button></div><span>RIOT GAMES ARTWORK · INDEPENDENT FAN PROJECT</span><a href="https://github.com/ionutn0301/riftscry" target="_blank" rel="noopener noreferrer" aria-label="Explore the source on GitHub"><span class="cinema-source-credit">Built by Ionutn0301</span><span class="cinema-source-short">Source</span><span aria-hidden="true">↗</span></a></footer>
 
   <dialog class="cinema-evidence" data-cinema-evidence aria-labelledby="cinema-evidence-title">
     <div class="cinema-evidence-sheet">

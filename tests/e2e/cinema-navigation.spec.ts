@@ -3,7 +3,7 @@ import { cinema, cinemaSignals, chooseSignal, cinemaFitsViewport, openCinemaNavi
 import { wheelAt } from './gesture-test-helpers';
 
 const menu = (page: Page) => page.locator('[data-cinema-menu]');
-const opener = (page: Page) => page.getByRole('button', { name: 'Open navigation', exact: true });
+const opener = (page: Page) => page.getByRole('button', { name: 'Open navigation menu', exact: true });
 const close = (page: Page) => page.getByRole('button', { name: 'Close navigation', exact: true });
 
 test.use({ contextOptions: { reducedMotion: 'reduce' } });

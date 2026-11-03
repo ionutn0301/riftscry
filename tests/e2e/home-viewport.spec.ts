@@ -47,7 +47,7 @@ test('remembering a player does not move the world title or navigation opener', 
     await page.setViewportSize(viewport); await page.goto('/'); await readyCinema(page);
     const position = () => page.evaluate(() => ({
       heading: document.querySelector('main h1')!.getBoundingClientRect().top,
-      menu: document.querySelector('[aria-label="Open navigation"]')!.getBoundingClientRect().top,
+      menu: document.querySelector('[aria-label="Open navigation menu"]')!.getBoundingClientRect().top,
       scroll: scrollY,
     }));
     const before = await position();

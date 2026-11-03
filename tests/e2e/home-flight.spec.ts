@@ -97,7 +97,7 @@ test('world choices and inspection work by keyboard and Escape restores the open
   expect(await evidence(page).evaluate(dialog => dialog.contains(document.activeElement))).toBe(true);
   await page.keyboard.press('Escape');
   await expect(evidence(page)).toBeHidden(); await expect(inspect).toBeFocused();
-  const opener = page.getByRole('button', { name: 'Open navigation', exact: true });
+  const opener = page.getByRole('button', { name: 'Open navigation menu', exact: true });
   await opener.focus(); await page.keyboard.press('Enter');
   await expect(page.getByRole('dialog', { name: 'RiftScry navigation', exact: true })).toBeVisible();
   await page.keyboard.press('Escape'); await expect(opener).toBeFocused();

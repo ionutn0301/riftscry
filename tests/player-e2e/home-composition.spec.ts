@@ -4,6 +4,45 @@ import {installFixtures} from './fixtures';
 import {cinema,cinemaFitsViewport,cinemaSignals,chooseSignal,closeEvidence,evidence,inspectCinema,openCinemaNavigation,readyCinema} from '../e2e/cinema-test-helpers';
 import {reachableTarget} from '../e2e/journey-test-helpers';
 
+for (const viewport of [{width:320,height:480},{width:390,height:844},{width:568,height:320},{width:844,height:390},{width:1024,height:600},{width:1366,height:600},{width:1440,height:900}]) {
+  test(`${viewport.width}×${viewport.height}: one homepage gives returning actions and header controls room to breathe`, async ({page}) => {
+    await page.setViewportSize(viewport); await page.emulateMedia({reducedMotion:'reduce'});
+    await installFixtures(page);
+    await page.addInitScript(() => {
+      localStorage.setItem('riftscry:recent-player:v1', JSON.stringify({platform:'euw1',puuid:'p'.repeat(40),name:'A returning player with a long name#EUW'}));
+      localStorage.setItem('riftscry:resume', JSON.stringify({href:'/champion/ahri',label:'Ahri — a long saved reading with an exact historical record',updatedAt:'2026-11-04T00:00:00.000Z'}));
+    });
+    await page.goto('/'); await readyCinema(page);
+    const account=page.getByRole('link',{name:'Account and profile',exact:true});
+    const menu=page.getByRole('button',{name:'Open navigation menu',exact:true});
+    await expect(menu.getByText('Menu',{exact:true})).toBeVisible();
+    await expect(menu.locator('svg')).toBeVisible();
+    const accountStyle=await account.evaluate(el=>({background:getComputedStyle(el).backgroundColor,radius:getComputedStyle(el).borderRadius,font:parseFloat(getComputedStyle(el.querySelector('span')!).fontSize)}));
+    expect(accountStyle.background).toBe('rgba(0, 0, 0, 0)'); expect(accountStyle.radius).toBe('0px'); expect(accountStyle.font).toBeLessThanOrEqual(14);
+    const controls=await page.locator('.cinema-header a:visible,.cinema-header button:visible').all();
+    const boxes=[];
+    for(const control of controls){await reachableTarget(control,page);boxes.push((await control.boundingBox())!);}
+    for(let i=1;i<boxes.length;i++)expect(boxes[i]!.x-boxes[i-1]!.x-boxes[i-1]!.width).toBeGreaterThanOrEqual(5);
+    const actions=(await page.locator('.cinema-entry-actions').boundingBox())!;
+    const roster=(await page.locator('.cinema-roster').boundingBox())!;
+    const footer=(await page.locator('.cinema-footer').boundingBox())!;
+    // In landscape the action and champion choices sit in separate columns.
+    const separation=Math.max(roster.y-actions.y-actions.height,roster.x-actions.x-actions.width);
+    expect(separation,'The returning action must stay separate from champion choices').toBeGreaterThanOrEqual(15);
+    expect(footer.y-roster.y-roster.height,'Champion choices need space above playback controls').toBeGreaterThanOrEqual(11.9);
+    for(const control of await page.locator('.cinema-playback button').all()){
+      await reachableTarget(control,page);
+      expect(await control.evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(10);
+    }
+    await expect(page.locator('[data-home-reading]')).toHaveAttribute('href','/champion/ahri');
+    await cinemaFitsViewport(page);
+    await mkdir('player-visuals',{recursive:true});
+    await page.screenshot({path:`player-visuals/home-refined-${viewport.width}x${viewport.height}.png`});
+    await menu.click(); await expect(page.getByRole('dialog',{name:'RiftScry navigation',exact:true})).toBeVisible();
+    await page.keyboard.press('Escape'); await expect(menu).toBeFocused();
+  });
+}
+
 test.describe('Mobile world focus',()=>{
   test.use({viewport:{width:390,height:844},hasTouch:true});
   test('one homepage: keyboard and touch inspection return focus to their world control',async({page})=>{

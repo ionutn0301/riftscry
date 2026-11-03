@@ -73,7 +73,7 @@ test.describe('Touch dock navigation',()=>{
     }
     await page.locator('.journey-spine-home').tap();await expect(page).toHaveURL(url=>url.pathname==='/');await readyCinema(page);
     await expect(page.locator('.journey-chrome')).toHaveCount(0);
-    await expect(page.getByRole('button',{name:'Open navigation',exact:true})).toBeVisible();
+    await expect(page.getByRole('button',{name:'Open navigation menu',exact:true})).toBeVisible();
   });
 });
 

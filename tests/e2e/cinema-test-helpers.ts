@@ -44,7 +44,7 @@ export async function closeEvidence(page: Page) {
 
 export async function openCinemaNavigation(page: Page) {
   const menu = page.getByRole('dialog', { name: 'RiftScry navigation', exact: true });
-  if (!await menu.isVisible()) await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
+  if (!await menu.isVisible()) await page.getByRole('button', { name: 'Open navigation menu', exact: true }).click();
   await expect(menu).toBeVisible();
   await expect(menu).toHaveAttribute('data-menu-state', 'open');
   return menu;

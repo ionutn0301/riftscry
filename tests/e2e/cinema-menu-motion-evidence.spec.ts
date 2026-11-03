@@ -22,7 +22,7 @@ test('record the mobile menu opening, living state and closing for two champions
     await page.screenshot({ path: info.outputPath(`menu-${signal.championId}.png`) });
     await menu.getByRole('button', { name: 'Close navigation', exact: true }).click();
     await expect(menu).toBeHidden();
-    await expect(page.getByRole('button', { name: 'Open navigation', exact: true })).toBeFocused();
+    await expect(page.getByRole('button', { name: 'Open navigation menu', exact: true })).toBeFocused();
   }
   expect(errors).toEqual([]);
 });

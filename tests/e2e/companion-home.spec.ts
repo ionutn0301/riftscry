@@ -38,7 +38,7 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]] as const) te
 for (const [width, height] of [[320, 568], [568, 320], [844, 390], [1440, 900]] as const) test(`the compact navigation keeps real product destinations reachable at ${width}×${height}`, async ({ page }) => {
   await page.setViewportSize({ width, height });
   await page.goto('/'); await readyCinema(page);
-  const opener = page.getByRole('button', { name: 'Open navigation', exact: true });
+  const opener = page.getByRole('button', { name: 'Open navigation menu', exact: true });
   await reachableTarget(opener, page);
   const menu = await openCinemaNavigation(page);
   const destinations = menu.getByRole('navigation', { name: 'RiftScry destinations', exact: true });

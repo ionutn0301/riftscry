@@ -158,7 +158,6 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     links('[data-station-link="players"]',recent?playerLink(recent.platform,recent.puuid,{name:recent.name,view:'history'}):'/players');
     text('[data-home-briefing-label]',recent?'Continue briefing':'My briefing');
     root.querySelector('[data-home-briefing]')?.setAttribute('aria-label',recent?`Continue briefing for ${recent.name||'your player'}`:'Open my briefing');
-    const hint=root.querySelector<HTMLElement>('[data-home-return]')!;hint.hidden=!recent;hint.textContent=recent?`Ready when you are, ${recent.name||'summoner'}.`:'';
     const reading=readReturnState().resume;
     const readingLink=root.querySelector<HTMLAnchorElement>('[data-home-reading]')!;
     readingLink.hidden=!reading;readingLink.href=reading?.href??'/explore#change';
@@ -271,7 +270,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   function applyMotion(){
     const quiet=reduced();world?.setReducedMotion(quiet||menu.open);root.dataset.cinemaMotion=quiet?'reduced':'full';
     if(quiet)stopTour();
-    motion.setAttribute('aria-pressed',String(quiet));motion.setAttribute('aria-label',quiet?'Enable cinematic motion':'Reduce cinematic motion');text('[data-cinema-motion-label]',quiet?'STILL WORLD':'WORLD IN MOTION');
+    motion.setAttribute('aria-pressed',String(quiet));motion.setAttribute('aria-label',quiet?'Enable cinematic motion':'Reduce cinematic motion');text('[data-cinema-motion-label]',quiet?'Motion off':'Motion on');
     if(quiet&&menu.open){if(menu.dataset.menuState==='closing')finishMenuClose();else if(menu.dataset.menuState==='opening'){cancelMenuAnimation();menuState('open');}}
   }
   motion.addEventListener('click',()=>{
