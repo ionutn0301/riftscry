@@ -12,6 +12,6 @@
 .account-email, .account-record-key { overflow-wrap: anywhere; }
 .account-message { border-left: 3px solid #e9b97b; padding: 16px; background: #251e17; color: #fff2e0; }
 .account-fineprint { font-size: .85rem; opacity: .8; }
-.account-nav-link { display: inline-flex; align-items: center; min-height: 44px; color: inherit; font-size: .8rem; text-decoration: none; }
+.account-nav-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: inherit; font-size: .8rem; text-decoration: none; }
 .account-sync-status { position: fixed; right: 14px; bottom: 10px; z-index: 80; border: 1px solid #496876; border-radius: 20px; padding: 7px 12px; font-size: .72rem; background: #10232d; color: #e6f2fa; text-decoration: none; max-width: calc(100vw - 28px); }
 @media (max-width: 600px) { .account-panel { margin-top: 110px; } .account-card { padding: 20px; } .world-utilities .account-nav-link { font-size: .7rem; } .cinema-header-note { display: none; } }

@@ -97,7 +97,8 @@ test('offline changes survive reload and a cloud conflict preserves both version
   network.offline = true;
   await page.getByRole('option', { name: /Jinx/ }).click();
   await page.goto('/account');
-  await expect(page.getByText(/Changes remain on this device/)).toBeVisible();
+  // PostgREST retries failed reads with exponential backoff before reporting offline.
+  await expect(page.getByText(/Changes remain on this device/)).toBeVisible({ timeout: 15_000 });
   rows.get(alice)!.set('riftscry:pool', { record_key: 'riftscry:pool', value: '["Thresh"]', revision: 2 });
   network.offline = false;
   await page.getByRole('button', { name: 'Retry sync' }).click();
