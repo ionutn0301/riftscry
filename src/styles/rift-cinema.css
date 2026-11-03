@@ -54,8 +54,9 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 .cinema-primary strong{font-weight:500;font-size:15px;letter-spacing:.02em}
 .cinema-primary small{font-size:8px;letter-spacing:.18em;color:#b5bbad}
 .cinema-action-arrow{margin-left:20px;font-size:21px;color:#d6bd87}
-.cinema-resume{display:flex;align-items:center;gap:12px;max-width:360px;min-height:44px;margin-top:6px;color:#bdc9bd;font-size:12px;text-decoration:none}
-.cinema-resume>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cinema-resume{display:flex;align-items:center;gap:12px;min-width:0;width:100%;max-width:360px;min-height:44px;margin-top:6px;color:#bdc9bd;font-size:12px;text-decoration:none}
+.cinema-resume>span:first-child{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cinema-resume>span:last-child{flex-shrink:0}
 .cinema-hotspot{position:absolute;left:66%;top:45%;z-index:4;display:flex;align-items:center;gap:14px;color:#fff3da;text-decoration:none;min-height:52px;transition:opacity .4s,transform .4s}
 .cinema-hotspot-orbit{width:52px;height:52px;display:grid;place-items:center;position:relative;flex-shrink:0}
 .cinema-hotspot-orbit:before,.cinema-hotspot-orbit:after{content:'';position:absolute;inset:7px;border:1px solid #f3dfad8c;transform:rotate(45deg);box-shadow:0 0 30px #e1d79a19}
@@ -194,7 +195,7 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 .cinema-playback>button{min-width:44px}
 
 /* Reading and context share a reserved row, so Back never shifts the main action. */
-.cinema-entry-actions{display:grid;grid-template-rows:auto 44px;justify-items:start;row-gap:8px}
+.cinema-entry-actions{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto 44px;justify-items:start;row-gap:8px;min-width:0}
 .cinema-entry-actions .cinema-primary{position:relative;inset:auto;grid-row:1}
 .cinema-entry-actions .cinema-resume{position:static;grid-row:2;grid-column:1;min-height:44px;margin:0}
 @media(max-width:700px){

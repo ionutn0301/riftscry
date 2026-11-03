@@ -34,7 +34,15 @@ for (const viewport of [{width:320,height:480},{width:390,height:844},{width:568
       await reachableTarget(control,page);
       expect(await control.evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(10);
     }
-    await expect(page.locator('[data-home-reading]')).toHaveAttribute('href','/champion/ahri');
+    const reading=page.locator('[data-home-reading]');
+    await expect(reading).toHaveAttribute('href','/champion/ahri');
+    await reachableTarget(reading,page);
+    const readingBox=(await reading.boundingBox())!;
+    const labelBox=(await reading.locator('[data-home-reading-label]').boundingBox())!;
+    const readingArrow=(await reading.locator('[aria-hidden=true]').boundingBox())!;
+    expect(readingBox.x+readingBox.width,'Saved reading must fit within its action column').toBeLessThanOrEqual(actions.x+actions.width+1);
+    expect(labelBox.x+labelBox.width,'Saved reading must leave room for its visible arrow').toBeLessThanOrEqual(readingArrow.x-11);
+    expect(readingArrow.x+readingArrow.width).toBeLessThanOrEqual(readingBox.x+readingBox.width+1);
     await cinemaFitsViewport(page);
     await mkdir('player-visuals',{recursive:true});
     await page.screenshot({path:`player-visuals/home-refined-${viewport.width}x${viewport.height}.png`});
