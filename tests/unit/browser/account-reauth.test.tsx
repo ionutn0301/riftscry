@@ -4,7 +4,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 vi.mock('../../../src/lib/account/storage', async original => ({ ...await original<typeof import('../../../src/lib/account/storage')>(), accountsConfigured: true }));
 vi.mock('../../../src/lib/account/client', () => ({
-  socialProviders: ['google'], signIn: vi.fn().mockResolvedValue(undefined), signOut: vi.fn(),
+  socialProviders: ['google'], getAvailableSocialProviders: vi.fn().mockResolvedValue(['google']), signIn: vi.fn().mockResolvedValue(undefined), signOut: vi.fn(),
   syncAccount: vi.fn(), importGuestData: vi.fn(), resolveConflict: vi.fn(),
 }));
 import AccountPanel from '../../../src/components/account/AccountPanel';
@@ -23,7 +23,7 @@ it.each([false, true])('can reconnect with pending edits via account controls or
   history.replaceState(null, '', `/account${reauth ? '?reauth=1' : ''}`);
   await act(async () => root.render(createElement(AccountPanel)));
   if (!reauth) await act(async () => [...container.querySelectorAll('button')].find(button => button.textContent === 'Reconnect account')!.click());
-  const reconnect = [...container.querySelectorAll('button')].find(button => button.textContent === 'Sign in again with Google')!;
+  const reconnect = [...container.querySelectorAll('button')].find(button => button.textContent?.endsWith('Sign in again with Google'))!;
   expect(reconnect.disabled).toBe(false); expect($account.get().pending).toBe(1);
   await act(async () => reconnect.click());
   expect(signIn).toHaveBeenCalledWith('google');

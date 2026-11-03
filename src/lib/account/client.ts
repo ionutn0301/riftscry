@@ -17,6 +17,26 @@ export function getSupabase() {
 const supportedProviders = ['google', 'github', 'discord'] as const;
 export const socialProviders = (import.meta.env?.PUBLIC_AUTH_PROVIDERS ?? '').split(',').map((s: string) => s.trim())
   .filter((s: string): s is typeof supportedProviders[number] => supportedProviders.includes(s as typeof supportedProviders[number]));
+export async function getAvailableSocialProviders(): Promise<typeof socialProviders> {
+  if (!accountsConfigured || !socialProviders.length) return [];
+  const response = await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL.replace(/\/$/, '')}/auth/v1/settings`, {
+    headers: { apikey: import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY },
+    credentials: 'omit', cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(8000),
+  });
+  if (!response.ok) throw new Error('Sign-in availability could not be checked. Please retry.');
+  const settings = await response.json();
+  if (!settings?.external || typeof settings.external !== 'object' || Array.isArray(settings.external)) throw new Error('Sign-in availability could not be checked. Please retry.');
+  return socialProviders.filter(provider => settings.external[provider] === true);
+}
+export type ProfileIdentity = { userId: string; providers: string[] };
+export async function getProfileIdentity(expectedUserId: string): Promise<ProfileIdentity> {
+  const supabase = getSupabase();
+  if (!supabase || getAccountScope() !== expectedUserId) throw new Error('Open your account first.');
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user || data.user.id !== expectedUserId || getAccountScope() !== expectedUserId) throw new Error('Your sign-in details could not be refreshed.');
+  const labels: Record<string, string> = { google: 'Google', github: 'GitHub', discord: 'Discord', 'custom:riot': 'Riot Games' };
+  return { userId: expectedUserId, providers: [...new Set((data.user.identities ?? []).map(identity => labels[identity.provider] ?? 'Social account'))] };
+}
 let started: Promise<void> | undefined;
 let syncing: Promise<void> | undefined;
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -105,8 +125,11 @@ async function syncWorkspace(userId: string) {
 export async function signIn(provider: Provider) {
   const supabase = getSupabase();
   if (!supabase) throw new Error('Accounts have not been configured yet.');
+  if (!(await getAvailableSocialProviders()).some(available => available === provider)) throw new Error('This sign-in option is not available yet. Please try again later.');
   rememberAccountReturn();
-  const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}/auth/callback` } });
+  const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}/auth/callback`,
+    ...(provider === 'google' ? { scopes: 'openid email profile', queryParams: { prompt: 'select_account' } } : {}),
+  } });
   if (error) throw new Error('Could not start sign-in. Please try again.');
 }
 export async function getReviewAccessToken(): Promise<string> {

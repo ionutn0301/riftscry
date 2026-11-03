@@ -35,5 +35,11 @@ it.each(['https://evil.test', '//evil.test', '/\\evil.test', '/auth/callback?cod
 it('keeps a match return in session storage once, without modifying the OAuth callback', () => {
   const target = '/matches/EUN1_12345?platform=eun1&puuid=test#match-review';
   history.replaceState(null, '', `/account?${new URLSearchParams({ returnTo: target })}`);
-  rememberAccountReturn(); expect(consumeAccountReturn()).toBe(target); expect(consumeAccountReturn()).toBe('/account');
+  rememberAccountReturn(); expect(consumeAccountReturn()).toBe(target); expect(consumeAccountReturn()).toBe('/profile');
+});
+it('allows a private profile return while rejecting injected OAuth tokens', () => {
+  expect(safeAccountReturn('/profile')).toBe('/profile');
+  expect(safeAccountReturn('/profile?access_token=secret')).toBeNull();
+  history.replaceState(null, '', '/account?returnTo=%2Fprofile');
+  rememberAccountReturn(); expect(consumeAccountReturn()).toBe('/profile');
 });

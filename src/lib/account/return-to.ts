@@ -5,7 +5,7 @@ export function safeAccountReturn(value: unknown): string | null {
   if (typeof value !== 'string' || value.length > 2048 || !value.startsWith('/') || /[\\\s]/.test(value)) return null;
   try {
     const url = new URL(value, 'https://riftscry.invalid');
-    if (url.origin !== 'https://riftscry.invalid' || !/^\/(?:matches\/[A-Z0-9]{2,5}_\d{5,20}|players(?:\/[A-Za-z0-9_-]+)?|next-game|notebook|pool)\/?$/.test(url.pathname)) return null;
+    if (url.origin !== 'https://riftscry.invalid' || !/^\/(?:matches\/[A-Z0-9]{2,5}_\d{5,20}|players(?:\/[A-Za-z0-9_-]+)?|next-game|notebook|pool|profile)\/?$/.test(url.pathname)) return null;
     if ([...url.searchParams.keys()].some(key => !['platform', 'puuid', 'back', 'queue', 'champion', 'name', 'tag'].includes(key))) return null;
     return `${url.pathname}${url.search}${url.hash}`;
   } catch { return null; }
@@ -19,6 +19,6 @@ export function consumeAccountReturn(): string {
   try {
     const target = safeAccountReturn(sessionStorage.getItem(returnKey));
     sessionStorage.removeItem(returnKey);
-    return target ?? '/account';
-  } catch { return '/account'; }
+    return target ?? '/profile';
+  } catch { return '/profile'; }
 }

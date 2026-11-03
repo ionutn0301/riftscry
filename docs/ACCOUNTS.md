@@ -14,11 +14,12 @@ denial and anonymous denial, with all test identities rolled back. Supabase's
 security and performance advisors returned no findings.
 
 The public project URL/key are configured in Vercel Production and Development,
-and on the `feat/supabase-accounts` preview branch. `PUBLIC_AUTH_PROVIDERS` is empty
-until provider credentials are completed. Production and localhost redirect URLs
-are configured. The UI shows a setup notice instead of offering broken sign-in buttons. Set it to `github`,
-`google`, or the enabled comma-separated list after configuring the provider,
-then rebuild. Other preview branches are not given account configuration.
+and on the `feat/supabase-accounts` preview branch. `PUBLIC_AUTH_PROVIDERS=google` selects Google as the only offered provider.
+The app also checks the hosted Auth `/settings` endpoint and only renders a usable
+button when `external.google` is true. Google credentials are still pending. Production and localhost redirect URLs
+are configured. The UI shows a setup notice instead of offering broken sign-in buttons. Once Google
+is configured in Supabase, reloading Account discovers it without another app
+deployment. Changing the provider allowlist still requires a rebuild. Other preview branches are not given account configuration.
 Project URL: `https://vpirgetchbflxwrwjgzm.supabase.co`.
 
 Migration filenames match the hosted versions `20261103140311` (accounts) and
@@ -98,8 +99,9 @@ return destination; OAuth still uses the fixed `/auth/callback`. No AI request
 starts automatically after sign-in. A rejected session opens explicit reauthentication
 controls; **Reconnect account** also remains available when pending edits prevent
 sign-out. Reauthentication preserves the local outbox. Provider credentials remain a prerequisite:
-when `PUBLIC_AUTH_PROVIDERS` is empty, the account page explains that setup is
-pending and offers guest access.
+when the provider allowlist is empty, the hosted provider is disabled, or its settings
+cannot be checked, the account page offers guest access and reports the setup or
+connection status. Provider availability is checked again immediately before OAuth.
 
 Account includes getting-started links and a personal practice plan. Display names
 are up to 40 characters, focus up to 240, and up to 8 goals of 180 characters each.
@@ -186,3 +188,63 @@ tests use the real SDK with controlled Auth responses to verify failures and ide
 After configuring the hosted project, also run a real provider round trip and use
 two real test accounts to verify cloud saves from a second browser. Mocked browser
 tests cannot validate OAuth credentials, redirect allowlists or project settings.
+
+
+## My profile and navigation
+
+`/profile` is the private profile page. It includes the signed-in email, provider
+labels read from Auth, editable display name/role/focus, the existing practice
+checklist, and a saved Riot player shortcut. It uses the existing account record
+and RLS boundary; this release needs no schema migration. No public user directory
+or public profile URL is created. A late identity response is discarded after an
+account switch. Provider names are display-only and never authorize AI or database
+access.
+
+Account is a persistent user-icon button in both headers, including the immersive
+homepage. Account and My profile have explicit tabs. New sign-ins land on
+`/profile` unless a validated match/reading destination was requested; the fixed
+`/auth/callback` remains unchanged. The profile's Riot shortcut is explicitly a
+saved lookup, not verified ownership.
+
+## Finish Google activation
+
+The app and Supabase redirect settings are prepared. As of 2026-11-04 the Google
+provider is disabled with empty client fields; Google Cloud could not be reached
+from the agent's browser. Complete these provider-owned steps:
+
+1. In [Google Auth Platform](https://console.cloud.google.com/auth/clients), select
+   the intended project and create a **Web application** OAuth client. Configure
+   the app's consent details and user access as appropriate for the release.
+2. Add `https://riftscry.vercel.app` as the JavaScript origin, and this exact
+   authorized redirect URI: `https://vpirgetchbflxwrwjgzm.supabase.co/auth/v1/callback`.
+3. Save the client ID and client secret **only in Supabase → Authentication →
+   Sign In / Providers → Google**, enable the provider and save. Never put the
+   secret in the app, a public variable, git, or chat.
+4. Reload `/account`, sign in with a real Google test account, and verify return
+   to `/profile` (or the selected match), a synced preference from a second
+   browser, and sign-out. Automated fixtures cannot prove the real consent flow.
+
+The app requests only `openid email profile` and explicitly presents Google's
+account chooser. It does not request Drive, Gmail, or offline Google API access.
+The existing AI authorization boundary remains enforced on the server.
+
+## Riot Sign On readiness
+
+Riot Sign On (RSO) exists. Riot requires an approved production application and a
+separately approved RSO client; a development/personal API key alone is insufficient.
+This deployment has no RSO client configuration, so no Riot login/link button is
+enabled and manually selected Riot IDs are never shown as verified identities.
+
+After Riot grants access, evaluate a managed Supabase custom OIDC provider
+(`custom:riot`) using the exact issuer, credentials, callback rules, scopes, and
+client authentication method issued by Riot. Supabase supports custom OIDC providers
+on the current Free plan. Compatibility and any email-optional behavior must be
+verified with that issued client before enabling it. Preserve the existing Google
+workspace by using authenticated identity linking for existing users. Never merge
+accounts by Riot display name, tag, saved PUUID, or user-editable metadata. A verified
+Riot connection must come from the authorized RSO identity/account response.
+
+Sources: [Riot RSO requirements](https://support-developer.riotgames.com/hc/en-us/articles/22801670382739-RSO-Riot-Sign-On),
+[League RSO integration](https://developer.riotgames.com/docs/lol#rso-integration),
+[Supabase custom OAuth/OIDC](https://supabase.com/docs/guides/auth/custom-oauth-providers),
+[Google provider setup](https://supabase.com/docs/guides/auth/social-sign-in/auth-google).

@@ -6,11 +6,12 @@ const alice = '00000000-0000-4000-8000-000000000001';
 const bob = '00000000-0000-4000-8000-000000000002';
 const storageKey = 'sb-account-test-auth-token';
 type Row = { record_key: string; value: string | null; revision: number };
+const settingsHeaders = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,OPTIONS' };
 function session(id: string) {
   const exp = Math.floor(Date.now() / 1000) + 3600;
   const payload = Buffer.from(JSON.stringify({ sub: id, exp, role: 'authenticated' })).toString('base64url');
   return { access_token: `eyJhbGciOiJIUzI1NiJ9.${payload}.signature`, refresh_token: `refresh-${id}`, token_type: 'bearer', expires_at: exp, expires_in: 3600,
-    user: { id, email: `${id === alice ? 'alice' : 'bob'}@example.test`, aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' } };
+    user: { id, email: `${id === alice ? 'alice' : 'bob'}@example.test`, aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, identities: [{ id, user_id: id, provider: 'google' }], created_at: '2026-01-01T00:00:00Z' } };
 }
 async function seed(context: BrowserContext, id: string | null, guest = false) {
   await context.addInitScript(({ key, value, guest }) => {
@@ -27,6 +28,7 @@ async function backend(context: BrowserContext, rows: Map<string, Map<string, Ro
     const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS' };
     if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
     const url = new URL(request.url());
+    if (url.pathname.endsWith('/settings')) return route.fulfill({ headers, json: { external: { google: true } } });
     if (url.pathname.endsWith('/logout')) return route.fulfill({ status: 204, headers });
     const token = request.headers().authorization?.split(' ')[1];
     const id = token ? JSON.parse(Buffer.from(token.split('.')[1]!, 'base64url').toString()).sub as string : '';
@@ -47,6 +49,12 @@ async function backend(context: BrowserContext, rows: Map<string, Map<string, Ro
   });
 }
 
+test.beforeEach(async ({ context }) => {
+  await context.route('https://account-test.supabase.co/auth/v1/settings', route => route.fulfill({
+    headers: settingsHeaders, json: { external: { google: true } },
+  }));
+});
+
 test('social sign-in uses PKCE and the fixed callback on this origin', async ({ page }) => {
   await page.goto('/account');
   const request = page.waitForRequest('https://account-test.supabase.co/auth/v1/authorize**');
@@ -57,6 +65,60 @@ test('social sign-in uses PKCE and the fixed callback on this origin', async ({ 
   expect(url.searchParams.get('code_challenge')).toBeTruthy();
   expect(url.searchParams.get('code_challenge_method')).toBe('s256');
   expect(url.searchParams.get('redirect_to')).toBe('http://127.0.0.1:4325/auth/callback');
+  expect(url.searchParams.get('prompt')).toBe('select_account');
+  expect(url.searchParams.get('scopes')).toBe('openid email profile');
+});
+
+test('Google stays unavailable until the hosted provider is enabled and handles availability failures', async ({ page }) => {
+  await page.route('https://account-test.supabase.co/auth/v1/settings', route => route.fulfill({ headers: settingsHeaders, json: { external: { google: false } } }));
+  await page.goto('/account');
+  await expect(page.getByText('Google sign-in is being configured.', { exact: false })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue with Google' })).toHaveCount(0);
+  await page.route('https://account-test.supabase.co/auth/v1/settings', route => route.abort('failed'));
+  await page.reload();
+  await expect(page.getByText('Sign-in availability could not be checked. Please retry.')).toBeVisible();
+  await page.route('https://account-test.supabase.co/auth/v1/settings', route => route.fulfill({ headers: settingsHeaders, json: { external: { google: true } } }));
+  await page.getByRole('button', { name: 'Retry sign-in options' }).click();
+  await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeEnabled();
+});
+
+test('Account is reachable from the homepage and My profile sends guests through a safe sign-in return', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto('/');
+  const accountLink = page.getByRole('link', { name: 'Account and profile', exact: true });
+  await expect(accountLink).toBeInViewport();
+  const box = await accountLink.boundingBox();
+  expect(box!.width).toBeGreaterThanOrEqual(44); expect(box!.height).toBeGreaterThanOrEqual(44);
+  await accountLink.click();
+  await page.getByRole('link', { name: 'My profile', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'My profile.' })).toBeVisible();
+  await expect(page.getByLabel('Display name')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Sign in to create your profile' }).click();
+  await expect(page).toHaveURL(url => url.pathname === '/account' && url.searchParams.get('returnTo') === '/profile');
+  await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeEnabled();
+});
+
+for (const width of [1440, 390]) test(`My profile saves private preferences and shows an honest Riot shortcut at ${width}px`, async ({ page, context }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const rows = new Map([[alice, new Map([['riftscry:recent-player:v1', { record_key: 'riftscry:recent-player:v1', value: JSON.stringify({ platform: 'euw1', puuid: 'p'.repeat(40), name: 'Alice#EUW' }), revision: 1 }]])]]);
+  await seed(context, alice); await backend(context, rows, { offline: false });
+  await page.goto('/profile');
+  await expect(page.getByText('Sign-in: Google')).toBeVisible();
+  await page.getByLabel('Display name').fill('Alice');
+  await page.getByLabel('Preferred role').selectOption('Support');
+  await page.getByLabel('My focus for the next game').fill('Track my first ward.');
+  await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
+  await expect(page.locator('.profile-overview h2')).toHaveText('Alice');
+  await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:practice-plan:v1')?.value ?? '{}').profile?.role).toBe('Support');
+  await page.reload();
+  await expect(page.getByLabel('Display name')).toHaveValue('Alice');
+  await expect(page.getByText('Alice#EUW')).toBeVisible();
+  await expect(page.getByText(/This is a saved lookup, not verified Riot account linking/)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open this player’s briefing' })).toHaveAttribute('href', /platform=euw1/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await mkdir('player-visuals', { recursive: true });
+  await page.screenshot({ path: `player-visuals/my-profile-${width}.png`, fullPage: true });
 });
 
 for (const width of [1440, 390]) test(`account controls remain usable at ${width}px`, async ({ page }) => {

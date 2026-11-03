@@ -6,6 +6,7 @@ import { recordsFor } from '../../lib/investigation';
 import { buildHomeSignals } from '../../lib/home-signals';
 import { getAllPatches } from '../../lib/data';
 import SignalRecord from './SignalRecord.astro';
+import AccountLink from '../account/AccountLink.astro';
 import '../../styles/rift-cinema.css';
 import '../../styles/rift-cinema-navigation.css';
 
@@ -53,6 +54,7 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
     <a class="cinema-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={42} densities={[1,2]} loading="eager" /></a>
     <span class="cinema-header-note">A LEAGUE OF LEGENDS COMPANION</span>
     <nav class="cinema-utilities world-utilities" aria-label="Quick navigation">
+      <AccountLink />
       <a href="/next-game" data-home-personal data-home-briefing data-station-link="next-game"><span data-home-briefing-label>My briefing</span><span aria-hidden="true">↗</span></a>
       <button type="button" class="cinema-icon-button" data-palette-trigger aria-label="Search the archive"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button>
       <button type="button" class="cinema-menu-trigger" data-cinema-menu-open aria-label="Open navigation" aria-haspopup="dialog" aria-controls="cinema-navigation"><span></span><span></span></button>

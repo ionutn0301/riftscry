@@ -31,6 +31,7 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 .cinema-menu-trigger span{display:block;width:28px;height:1px;background:currentColor;transition:transform .3s}
 .cinema-menu-trigger:hover span:first-child{transform:translateX(4px)}
 .cinema-menu-trigger:hover span:last-child{transform:translateX(-4px)}
+.cinema-utilities .account-nav-link{gap:7px}
 .cinema-stage-mark{position:absolute;left:22px;top:44%;writing-mode:vertical-rl;display:flex;align-items:center;gap:20px;font-size:8px;letter-spacing:.2em;color:#dad6c252}
 .cinema-stage-mark i{height:40px;width:1px;background:#d7be8738}
 .cinema-opening{position:absolute;left:7.2%;top:28%;width:45%;max-width:680px;z-index:2;transform:translateY(-5%);transition:opacity .5s,transform .9s cubic-bezier(.2,.8,.2,1);pointer-events:none}
@@ -208,3 +209,11 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] .rift-sit
 @media(max-height:480px) and (min-width:500px){.cinema-opening{width:42%}.cinema-entry-actions{position:static;grid-template-rows:auto 44px;max-width:100%}.cinema-entry-actions .cinema-primary{min-height:44px}.cinema-entry-actions .cinema-resume{min-height:44px;font-size:9px}.cinema-bottom{bottom:54px;gap:16px}.cinema-identity{display:none}.cinema-roster{margin-left:auto}.cinema-roster-choices{gap:6px}.cinema-archive{margin-left:0}.cinema-roster-frame{width:44px;height:44px}.cinema-roster-choices>a{min-height:62px}.cinema-footer{height:46px}.cinema-footer>a,.cinema-footer>button{min-height:44px}.cinema-evidence-actions>a,.cinema-save{min-height:44px}}
 html[data-motion=reduced] .rift-cinema :is(*,*:before,*:after){animation:none!important;transition-duration:0s!important}
 @media(prefers-reduced-motion:reduce){html:not([data-motion=full]) .rift-cinema :is(*,*:before,*:after){animation:none!important;transition-duration:0s!important}}
+
+/* Keep Account, the briefing, and the menu reachable on the narrowest phones. */
+@media (max-width:360px) {
+  .cinema-header { padding-inline:16px; }
+  .cinema-brand img { width:96px; }
+  .cinema-utilities { gap:6px; }
+  .cinema-utilities > a[data-home-briefing] > span:last-child { display:none; }
+}

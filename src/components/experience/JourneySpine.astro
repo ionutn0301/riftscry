@@ -3,7 +3,7 @@ import { journeyStations, stationForSurface } from '../../lib/journey-stations';
 interface Props { surface: string }
 const { surface } = Astro.props;
 const station = stationForSurface(surface);
-const active = ['champions','patches'].includes(station) ? 'atlas' : station;
+const active = ['account', 'profile', 'auth'].includes(surface) ? null : ['champions','patches'].includes(station) ? 'atlas' : station;
 const links = ['next-game','players','pool'].map(id=>journeyStations.find(item=>item.id===id)!);
 ---
 <nav class="journey-spine journey-dock" aria-label="Journey destinations">

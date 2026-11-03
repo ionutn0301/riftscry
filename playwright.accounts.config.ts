@@ -11,6 +11,6 @@ export default defineConfig({
     command: 'pnpm exec astro dev --ignore-lock --host 127.0.0.1 --port 4325',
     url: 'http://127.0.0.1:4325/account',
     reuseExistingServer: false,
-    env: { ASTRO_DEV_BACKGROUND: '1', PUBLIC_SUPABASE_URL: 'https://account-test.supabase.co', PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test', PUBLIC_AUTH_PROVIDERS: 'google,github,discord' },
+    env: { ASTRO_DEV_BACKGROUND: '1', PUBLIC_SUPABASE_URL: 'https://account-test.supabase.co', PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test', PUBLIC_AUTH_PROVIDERS: 'google' },
   },
 });

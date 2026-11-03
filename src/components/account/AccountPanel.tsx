@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import PracticePlan from './PracticePlan';
+import AccountTabs from './AccountTabs';
+import SocialSignIn from './SocialSignIn';
 import { safeAccountReturn } from '../../lib/account/return-to';
 import { useStore } from '@nanostores/react';
 import { $account, accountsConfigured, guestRecords, loadRecords } from '../../lib/account/storage';
-import { importGuestData, resolveConflict, signIn, signOut, socialProviders, syncAccount } from '../../lib/account/client';
+import { importGuestData, resolveConflict, signOut, syncAccount } from '../../lib/account/client';
 
-const names = { google: 'Google', github: 'GitHub', discord: 'Discord' };
 export default function AccountPanel() {
   const account = useStore($account, { ssr: 'initial' });
   const [busy, setBusy] = useState(false);
@@ -37,19 +38,19 @@ export default function AccountPanel() {
     <p className="account-eyebrow">YOUR RIFTSCRY</p>
     <h1 id="account-title">One account.<br />Your next game, anywhere.</h1>
     <p>Keep your champion pool, notes, loadouts, Build Memory, Momentum, saved findings, and reading progress together.</p>
-    {returnTo && <p><a href={returnTo}>{account.userId ? 'Return to your match →' : 'Back to your match’s recorded summary →'}</a></p>}
+    <AccountTabs active="account" />
+    {returnTo && <p><a href={returnTo}>{returnTo.startsWith('/profile') ? 'Back to My profile →' : account.userId ? 'Return to your match →' : 'Back to your match’s recorded summary →'}</a></p>}
     {!accountsConfigured ? <div className="account-card"><h2>Guest workspace</h2><p>Accounts are not enabled on this deployment yet. Your existing browser features and backups still work.</p></div>
       : !account.ready ? <div className="account-card" role="status">{account.error ? <><p>Your account could not be opened.</p><a href="/account">Reload Account</a></> : 'Opening your account…'}</div>
       : !account.userId ? <div className="account-card"><h2>Sign in or create your account</h2><p>Use a social account. No new password to remember. Your browser data is imported only when you choose. Sign-in unlocks AI match analysis and your synced practice plan.</p>
-        <div className="account-actions">{socialProviders.map(provider => <button key={provider} disabled={busy} onClick={() => void act(() => signIn(provider))}>Continue with {names[provider]}</button>)}</div>
-        {!socialProviders.length && <p>Social sign-in is being set up. You can continue using your guest workspace.</p>}
+        <SocialSignIn />
         <a href="/next-game">Continue as a guest →</a>
       </div> : <>
-        {reauthenticate && <div className="account-card" id="account-reauth"><h2>Reconnect your sign-in</h2><p>Sign in again with the same social account to continue using AI and sync. Your saved workspace and pending edits stay on this device.</p><div className="account-actions">{socialProviders.map(provider => <button key={provider} disabled={busy} onClick={() => void act(() => signIn(provider))}>Sign in again with {names[provider]}</button>)}</div>{!socialProviders.length && <p>Social sign-in is being set up. Keep a workspace export while access is restored.</p>}</div>}
+        {reauthenticate && <div className="account-card" id="account-reauth"><h2>Reconnect your sign-in</h2><p>Sign in again with the same social account to continue using AI and sync. Your saved workspace and pending edits stay on this device.</p><SocialSignIn reauthenticate /></div>}
         <div className="account-card"><h2>Your account</h2><p className="account-email">{account.email || 'Signed in'}</p>
           <p role="status">{account.syncing ? 'Syncing your workspace…' : account.conflicts.length ? 'Some records changed on another device. Choose which version to keep below.' : account.pending ? `${account.pending} record(s) waiting to sync.` : account.error ? 'Sync needs attention.' : 'Your workspace is synced.'}</p>
           <div className="account-actions"><button disabled={busy || account.syncing} onClick={() => void act(syncAccount)}>Retry sync</button><button disabled={busy} aria-expanded={reauthenticate} aria-controls="account-reauth" onClick={() => setReauthenticate(true)}>Reconnect account</button><button disabled={busy || account.syncing} onClick={() => void act(signOut)}>Sign out</button></div>
-          <a href="/next-game">Open your briefing →</a>
+          <a className="account-primary-link" href="/profile">Open My profile →</a><a className="profile-guest-link" href="/next-game">Open your briefing →</a>
         </div>
         <div id="practice-plan"><PracticePlan /></div>
         <div className="account-card"><h2>Bring your browser data</h2><p>Import guest records from this device. Existing account records are kept, and the guest originals remain on this device. Records saved under the same category in both workspaces are skipped; use Notebook’s merge import for notes and loadouts.</p><button disabled={busy || account.syncing} onClick={() => void act(async () => { const count = await importGuestData(); setMessage(`${count} record(s) copied to your account workspace. Check sync status above.`); })}>Import this browser’s data</button></div>
