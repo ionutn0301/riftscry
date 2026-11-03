@@ -68,8 +68,9 @@ for (const [width, height] of [[320, 480], [390, 844], [480, 320], [568, 320], [
 
 type MenuFrame = { state: string; open: boolean; paint: string };
 
-// Sampling in the browser preserves the short closing interval even when
-// remote Playwright calls or software graphics take longer than an animation.
+// Inspect the real CSS animation at known timeline positions, then let it run
+// normally to verify modal lifetime and completion. Software WebKit can miss
+// every rAF during the 380ms exit; that is not evidence of unchanged keyframes.
 async function traceMenu(page: Page, trigger: string, endState: 'open' | 'closed'): Promise<MenuFrame[]> {
   return page.evaluate(async ({ trigger, endState }) => {
     const dialog = document.querySelector<HTMLDialogElement>('[data-cinema-menu]')!;
@@ -84,6 +85,20 @@ async function traceMenu(page: Page, trigger: string, endState: 'open' | 'closed
     };
     document.querySelector<HTMLButtonElement>(trigger)!.click();
     sample();
+    const name = endState === 'open' ? 'cinema-menu-enter' : 'cinema-menu-exit';
+    const animation = dialog.getAnimations().find(candidate =>
+      candidate instanceof CSSAnimation && candidate.animationName === name);
+    const duration = animation?.effect?.getTiming().duration;
+    if (!animation || typeof duration !== 'number' || duration <= 0) {
+      throw new Error(`Missing navigation animation: ${name}`);
+    }
+    animation.pause();
+    for (const progress of [.25, .75]) {
+      animation.currentTime = duration * progress;
+      sample();
+    }
+    animation.currentTime = 0;
+    animation.play();
     const start = performance.now();
     return new Promise<typeof frames>(resolve => {
       const next = () => {

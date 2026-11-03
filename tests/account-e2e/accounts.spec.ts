@@ -148,6 +148,23 @@ for (const width of [1440, 390]) test(`personal practice plan saves, survives re
   await expect(plan).toContainText('Review my first recall.');
   await plan.getByRole('button', { name: 'Reset checklist for next session' }).click();
   await expect(plan.getByRole('checkbox', { name: 'Inspect one recorded death' })).not.toBeChecked();
+  // The briefing's full-width text-input styles must not stretch checkboxes or
+  // leave the goal squeezed into a one-character column.
+  const goalGeometry = await plan.locator('.practice-goals label').evaluate(label => {
+    const checkbox = label.querySelector('input')!.getBoundingClientRect();
+    const text = label.querySelector('span')!.getBoundingClientRect();
+    const target = label.getBoundingClientRect();
+    return { checkboxWidth: checkbox.width, checkboxHeight: checkbox.height,
+      textWidth: text.width, textHeight: text.height, targetHeight: target.height,
+      textRight: text.right, targetRight: target.right };
+  });
+  expect(goalGeometry.checkboxWidth).toBeLessThanOrEqual(24);
+  expect(goalGeometry.checkboxHeight).toBeLessThanOrEqual(24);
+  expect(goalGeometry.textWidth).toBeGreaterThan(120);
+  expect(goalGeometry.textHeight).toBeLessThan(80);
+  expect(goalGeometry.targetHeight).toBeGreaterThanOrEqual(44);
+  expect(goalGeometry.textRight).toBeLessThanOrEqual(goalGeometry.targetRight + 1);
+  await expect(page.locator('.account-sync-status')).toHaveText('Workspace synced');
   await page.screenshot({ path: `player-visuals/practice-briefing-${width}.png`, fullPage: true });
 });
 

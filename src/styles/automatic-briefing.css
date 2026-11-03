@@ -39,7 +39,7 @@
 .automatic-lookup > .automatic-field:first-child,.automatic-lookup-status { grid-column: 1 / -1; }
 .automatic-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
 .automatic-field label { color: #cadbd1; font-size: 12px; line-height: 1.5; }
-.automatic-workspace :is(input,select) { min-height: 48px; min-width: 0; max-width: 100%; width: 100%; padding: 11px 13px; border: 1px solid #7ea39773; border-radius: 7px; background: #08191f; color: #e8eee8; font: 400 16px/1.5 var(--font-ui); }
+.automatic-workspace :is(input:not([type=checkbox]):not([type=radio]),select) { min-height: 48px; min-width: 0; max-width: 100%; width: 100%; padding: 11px 13px; border: 1px solid #7ea39773; border-radius: 7px; background: #08191f; color: #e8eee8; font: 400 16px/1.5 var(--font-ui); }
 .automatic-workspace select { padding-right: 28px; }
 .automatic-workspace input::placeholder { color: #99b0a8; }
 .automatic-workspace option { background: #0b1d23; color: #e8eee8; }

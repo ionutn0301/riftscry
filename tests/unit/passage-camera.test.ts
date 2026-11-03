@@ -28,8 +28,21 @@ describe('continuous Rift camera',()=>{
   });
   it('bounds invalid inputs and long frame gaps',()=>{
     expect(passagePosition(NaN)).toBe(0);expect(passagePosition(-9)).toBe(0);expect(passagePosition(10)).toBe(4);
-    expect(advancePassage(0,4,100)).toBe(advancePassage(0,4,.05));
+    expect(advancePassage(0,4,100)).toBe(4);
     expect(advancePassage(0,4,-2)).toBe(0);
+    expect(advancePassage(0,4,NaN)).toBe(0);
+    expect(advancePassage(0,4,Infinity)).toBe(0);
+  });
+  it('settles in elapsed time even when software rendering drops frames',()=>{
+    for(const framesPerSecond of [60,20,10,2]){
+      let position=0;
+      for(let frame=0;frame<framesPerSecond*2;frame++){
+        const next=advancePassage(position,4,1/framesPerSecond);
+        expect(next).toBeGreaterThanOrEqual(position);expect(next).toBeLessThanOrEqual(4);position=next;
+      }
+      expect(position).toBe(4);
+    }
+    expect(advancePassage(0,4,.1)).toBeCloseTo(advancePassage(advancePassage(0,4,.05),4,.05),12);
   });
   it('keeps the camera tangent continuous while crossing a destination',()=>{
     const h=.0001;

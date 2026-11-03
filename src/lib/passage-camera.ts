@@ -38,7 +38,11 @@ export function passageAperture(position:number){
 export function advancePassage(position:number,target:number,seconds:number,reduced=false) {
   const next=passagePosition(target),current=passagePosition(position);
   if(reduced||Math.abs(next-current)<.0005)return next;
-  return current+(next-current)*(1-Math.exp(-Math.max(0,Math.min(.05,seconds))*9));
+  // Exponential damping is stable at any frame interval. Capping each step at
+  // 50ms made a slow renderer take many seconds to finish a one-second move.
+  const elapsed=Number.isFinite(seconds)?Math.max(0,seconds):0;
+  const advanced=current+(next-current)*(1-Math.exp(-elapsed*9));
+  return Math.abs(next-advanced)<.0005?next:advanced;
 }
 export function passageColor(position:number) {
   const t=passagePosition(position),a=Math.floor(t),b=Math.min(4,a+1),blend=t-a;
