@@ -79,3 +79,5 @@
 .rift-shell .momentum-match-context { max-width: 1000px; margin-inline: auto; display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 15px 20px; border: 1px solid #86b29333; border-radius: 8px; }
 .momentum-match-context h2 { font-size: 16px; margin: 0; }
 .momentum-match-context p { font-size: 11px; margin-top: 4px; }
+.momentum-history { padding-block: 0; background: #10222780; border-color: #9abdab30; }
+.momentum-history > .momentum-receipt, .momentum-history > .momentum-highlight { margin-block: 14px; }

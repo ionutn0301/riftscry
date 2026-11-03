@@ -11,13 +11,15 @@ type View = { report: MomentumReport | null; storageNotice: string };
 
 /** A separate, bounded automatic record. Never reads or writes authored notes. */
 export function useMomentum(player: RecentPlayer, sample: Sample, queue: string, champion: string): View {
-  const [view, setView] = useState<View>({ report: null, storageNotice: '' });
   const { platform, puuid } = player;
+  const scope = JSON.stringify([platform, puuid, queue, champion.toLowerCase()]);
+  const [current, setCurrent] = useState<{ scope: string; view: View }>({ scope, view: { report: null, storageNotice: '' } });
   const { matches, available, failed, loading, error } = sample;
 
   useEffect(() => {
     let disposed = false;
     const key = momentumStorageKey(platform, puuid);
+    const setView = (view: View) => setCurrent({ scope, view });
 
     const reconcile = () => {
       if (disposed) return;
@@ -60,7 +62,9 @@ export function useMomentum(player: RecentPlayer, sample: Sample, queue: string,
     update();
     window.addEventListener('storage', onStorage);
     return () => { disposed = true; window.removeEventListener('storage', onStorage); };
-  }, [platform, puuid, matches, available, failed, loading, error, queue, champion]);
+  }, [platform, puuid, matches, available, failed, loading, error, queue, champion, scope]);
 
-  return view;
+  // A champion filter can change without remounting the report. Never paint the
+  // previous context's target under that new selection while its effect settles.
+  return current.scope === scope ? current.view : { report: null, storageNotice: '' };
 }

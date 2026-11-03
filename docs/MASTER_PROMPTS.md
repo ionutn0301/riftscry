@@ -87,8 +87,8 @@ particular defect affects every current match.
 | Prompt | Scope | Dependency and release intent |
 | --- | --- | --- |
 | 1 | Product and engineering gate | Run before each feature; establishes the bounded change. |
-| 2 | Momentum prospective focus | First release being implemented in this change set; inspect actual code and verification before extending it. |
-| 3 | Fast, broad-mode entry | Extend the existing lookup/briefing journey after Momentum integration. |
+| 2 | Momentum prospective focus | Implemented in PR #74; inspect the release contracts and verification before extending it. |
+| 3 | Fast, broad-mode entry | First-result observations, progressive initial evidence, discovered modes, scope preservation and visible recovery are implemented in the next release; see `docs/first-result/README.md` for validation and remaining limits. |
 | 4 | Automatic selection of useful match moments | Future; summary-first, timeline remains a deliberate request or later explicit preference. |
 | 5 | Personal patch/loadout decisions | Future extension of already implemented patch-impact functionality. |
 | 6 | Verified account and durable history | Future infrastructure prerequisite for cross-device continuity and scheduled processing. |

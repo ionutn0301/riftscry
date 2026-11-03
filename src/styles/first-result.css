@@ -1,0 +1,48 @@
+.first-result {
+  max-width: 1000px;
+  min-width: 0;
+  margin: 24px auto;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid #88ccc449;
+  background: radial-gradient(ellipse at 92% 0%, #7ec7b91a, transparent 65%), #102227e0;
+}
+.first-result-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.first-result-header .automatic-eyebrow { display: flex; gap: 8px; align-items: center; color: #b7ded3; }
+.first-result-badge { font-size: 11px; color: #afc8c2; }
+.first-result-intro { display: flex; justify-content: space-between; gap: 24px; margin-top: 18px; }
+.first-result-intro > div { min-width: 0; }
+.automatic-workspace .first-result h2 { margin: 0 0 10px; font-size: clamp(25px, 3vw, 36px); line-height: 1.2; text-wrap: balance; }
+.first-result-intro p { max-width: 65ch; font-size: 13px; line-height: 1.7; }
+.first-result-champion { display: flex; align-items: center; flex-shrink: 0; gap: 10px; max-width: 36%; }
+.first-result-champion > span { font-size: 13px; color: #d0e5dd; }
+.first-result-champion small { display: block; font-size: 11px; color: #adc5bd; line-height: 1.5; margin-top: 4px; }
+.first-result-observation { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; border-top: 1px solid #9bcbbd30; padding-top: 22px; margin-top: 24px; }
+.first-result-observation > div { min-width: 0; }
+.first-result-observation span { font-size: 12px; color: #b9d0c7; }
+.first-result-observation strong { display: block; margin: 7px 0; font: 500 clamp(34px, 4vw, 46px)/1.2 var(--font-display); color: #cfedce; letter-spacing: -.035em; }
+.first-result-observation strong small { font-size: .55em; margin-left: 3px; color: #b5d7c7; }
+.first-result-observation .first-result-score { font-size: clamp(26px, 3vw, 38px); letter-spacing: -.025em; }
+.first-result-observation p { margin-top: 8px; font-size: 12px; line-height: 1.6; }
+.first-result-match .automatic-button { margin-top: 15px; min-height: 44px; }
+.first-result .first-result-sample { font-size: 11px; line-height: 1.65; color: #b5c8c0; padding-top: 18px; margin-top: 22px; border-top: 1px solid #8fc5b62b; }
+.first-result-sample > span { display: block; color: #9eb6ad; margin-top: 3px; }
+.first-result-evidence { font-size: 12px; margin-top: 6px; }
+.first-result-evidence > summary { padding-block: 13px; min-height: 44px; cursor: pointer; color: #c0d9ca; }
+.first-result-evidence p + p { margin-top: 10px; }
+.briefing-contexts { max-width: 1000px; margin: 18px auto 0; min-width: 0; }
+.briefing-contexts-label { display: block; color: #a5bfb8; font-size: 11px; margin-bottom: 8px; }
+.briefing-contexts-options { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.briefing-contexts button { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; max-width: 100%; border: 1px solid #8abcb039; border-radius: 8px; background: #0c2025b8; color: #c7dcd2; padding: 9px 12px; font: 12px/1.5 var(--font-ui); cursor: pointer; text-align: left; overflow-wrap: anywhere; }
+.briefing-contexts button[aria-pressed="true"] { color: #e2efdb; background: #28504465; border-color: #bbd39a80; }
+.briefing-contexts button small { min-width: 19px; text-align: center; padding: 1px 4px; border-radius: 4px; background: #abc7b51a; color: #bdcfc0; font-size: 10px; flex: none; }
+.briefing-contexts button:focus-visible, .first-result a:focus-visible, .first-result summary:focus-visible { outline: 2px solid #cce9a9; outline-offset: 4px; }
+.briefing-contexts > details { margin-top: 7px; font-size: 12px; }
+.briefing-contexts > details > summary { min-height: 44px; padding-block: 12px; cursor: pointer; color: #b6cfc1; }
+.first-result-recovery { max-width: 1000px; margin: 24px auto; }
+@media (max-width: 700px) {
+  .first-result-intro { flex-direction: column; gap: 16px; }
+  .first-result-champion { max-width: 100%; }
+  .first-result-observation { grid-template-columns: minmax(0, 1fr); gap: 19px; }
+  .first-result-match { padding-top: 17px; border-top: 1px solid #94bfa42c; }
+  .first-result-match .automatic-button { width: 100%; justify-content: space-between; }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type SubmitEvent } from 'react';
 import useSWR from 'swr';
 import { buildAutomaticBriefing, type AutomaticChampionContext } from '../../lib/player/automatic-briefing';
+import { buildFirstResult } from '../../lib/player/first-result';
 import JourneyHandoff from '../experience/JourneyHandoff';
 import { briefingLink, parseRecentPlayer, readRecentPlayer, rememberRecentPlayer, type RecentPlayer } from '../../lib/player/identity';
 import { participant, platforms, type Match } from '../../lib/player/contracts';
@@ -16,6 +17,7 @@ import { championDisplayName } from '../player/championArtwork';
 import PlayerIcon from '../player/PlayerIcon';
 import PatchImpact from './PatchImpact';
 import Momentum from './Momentum';
+import FirstGameResult, { BriefingContexts } from './FirstGameResult';
 import { useMomentum } from './useMomentum';
 import '../../styles/signal-player.css';
 
@@ -42,6 +44,7 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
   const [hasNotebook, setHasNotebook] = useState(false);
   const [storageNotice, setStorageNotice] = useState('');
   const entryHeading = useRef<HTMLHeadingElement>(null);
+  const focusAfterSelection = useRef(false);
   useEffect(() => {
     const restore = () => {
       const next = locationSelection();
@@ -58,12 +61,19 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
     window.addEventListener('popstate', restore);
     return () => window.removeEventListener('popstate', restore);
   }, []);
+  useEffect(() => {
+    if (!selection.player || !focusAfterSelection.current) return;
+    focusAfterSelection.current = false;
+    const frame = requestAnimationFrame(() => document.getElementById('focus')?.focus({ preventScroll: true }));
+    return () => cancelAnimationFrame(frame);
+  }, [selection.player, selection.queue, selection.champion]);
 
   function choose(player: RecentPlayer) {
     const stored = rememberRecentPlayer(player);
-    setSelection({ player, queue: 'all', champion: '', problem: '' });
+    focusAfterSelection.current = true;
+    setSelection(current => ({ ...current, player, problem: '' }));
     setStorageNotice(stored ? '' : 'This browser cannot remember the player. Your briefing still works; bookmark this page to return.');
-    window.history.pushState(window.history.state, '', briefingLink(player) + (['#focus', '#changes', '#impact', '#loadout'].includes(location.hash) ? location.hash : ''));
+    window.history.pushState(window.history.state, '', briefingLink(player, { queue: selection.queue, champion: selection.champion }) + (['#focus', '#changes', '#impact', '#loadout'].includes(location.hash) ? location.hash : ''));
   }
   function changePlayer() {
     setSelection({ player: null, queue: 'all', champion: '', problem: '' });
@@ -73,8 +83,10 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
   }
   function changeScope(queue: string, champion = selection.champion) {
     if (!selection.player) return;
+    if (queue === selection.queue && champion === selection.champion) return;
+    focusAfterSelection.current = true;
     setSelection(current => ({ ...current, queue, champion }));
-    window.history.replaceState(window.history.state, '', briefingLink(selection.player, { queue, champion }) + location.hash);
+    window.history.pushState(window.history.state, '', briefingLink(selection.player, { queue, champion }) + location.hash);
   }
 
   return <div className="automatic-workspace" data-journey-deck data-journey-hydrated={ready} data-journey-default="focus" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
@@ -142,9 +154,8 @@ function AutomaticReport({ player, queue, champion, archive, onChangePlayer, onC
   const history = usePlayerHistory(platform, puuid, queue);
   const { data: account, error: accountError, mutate: retryAccount } = useSWR<Account>(api('account', { platform, puuid }), fetcher, { shouldRetryOnError: false, revalidateOnFocus: false, revalidateOnReconnect: false });
   const name = account?.puuid === puuid && account.gameName && account.tagLine ? `${account.gameName}#${account.tagLine}` : '';
-  // Match requests still arrive in bounded batches. Commit the presentation as
-  // one sample, keeping the last completed briefing during a background refresh.
-  // A changing first batch must not recast the scene five times in one import.
+  // Keep comparisons and background refreshes on the last settled sample.
+  // The first visit may show a factual result before the remaining batches finish.
   const [settled, setSettled] = useState<{ matches: Match[]; available: number | undefined; failed: number }>({ matches: [], available: undefined, failed: 0 });
   useEffect(() => {
     if (!history.loading) setSettled(current => current.matches === history.matches && current.available === history.available && current.failed === history.failed
@@ -153,6 +164,15 @@ function AutomaticReport({ player, queue, champion, archive, onChangePlayer, onC
   const sample = history.loading ? settled : history;
   const momentum = useMomentum(player, { matches: sample.matches, available: sample.available, failed: sample.failed, loading: history.loading, error: !!history.error }, queue, champion);
   const report = buildAutomaticBriefing(sample.matches, puuid, archive, { available: sample.available, failed: sample.failed, loading: history.loading || !!history.error, queue, champion });
+  const firstSample = history.loading && settled.matches.length > 0 ? settled : history;
+  const firstResult = buildFirstResult(firstSample.matches, puuid, { available: history.available, failed: firstSample.failed, loading: history.loading, error: !!history.error, queue, champion });
+  const blockedSource = firstResult.reason === 'unsupported-source' || firstResult.reason === 'unavailable-source' || firstResult.reason === 'invalid-scope';
+  const hasProgress = !blockedSource && !!momentum.report?.active;
+  const hasProgressHistory = !blockedSource && !hasProgress && !!(momentum.report?.completed || momentum.report?.highlight);
+  const relevantPatch = !blockedSource && report.focus?.kind === 'patch' && report.focus.sourceMatch.metadata.matchId === firstResult.insight?.sourceMatch.metadata.matchId;
+  const showFirstResult = !hasProgress && !relevantPatch && !!firstResult.insight;
+  const hasFocusData = !!report.latest || !!firstResult.insight;
+  const showLegacyFocus = !blockedSource && !showFirstResult && !!report.latest && (relevantPatch || report.focus?.kind !== 'patch');
   const historyRef = useRef(history);
   historyRef.current = history;
   const lastCheck = useRef(Date.now());
@@ -191,22 +211,40 @@ function AutomaticReport({ player, queue, champion, archive, onChangePlayer, onC
     ? report.champions.find(context => context.latestMatch.metadata.matchId === report.focus?.sourceMatch.metadata.matchId)
       ?.changes.find(patch => patch.id === report.focus?.patchId)?.records?.[0]
     : undefined;
-  const sourceHref = (match: Match) => matchLink(match.metadata.matchId, platform, puuid, playerLink(platform, puuid, { queue }));
+  const sourceHref = (match: Match) => matchLink(match.metadata.matchId, platform, puuid, playerLink(platform, puuid, { queue, champion }));
   const retry = () => { lastCheck.current = Date.now(); void history.refresh(); if (accountError) void retryAccount(); };
-  return <div data-briefing-report aria-busy={history.loading}>
+  return <><p className="automatic-sr-only" role="status" aria-live="polite" aria-atomic="true">{history.loading ? firstResult.insight ? 'A match observation is ready. More games are loading.' : 'Finding your recent games.' : history.error ? 'Match history is unavailable. Automatic checks are paused.' : firstResult.insight ? 'Your briefing is ready.' : 'Your briefing availability and recovery options are ready.'}</p><div data-briefing-report aria-busy={history.loading}>
     <details className="automatic-identity signal-player-scope">
       <summary><PlayerIcon name="user" size={18} /><strong>{name || (accountError ? 'Player name unavailable' : 'Finding your player…')}</strong><span>{historyOptions.find(option => option.value === queue)?.label ?? 'All games'}</span><PlayerIcon name="plus" size={16} /></summary>
-      <div className="signal-player-scope-body"><p>{serverNames[platform] ?? platform.toUpperCase()}</p><div className="automatic-actions"><button type="button" className="automatic-button" onClick={onChangePlayer}>Change player</button><a className="automatic-text-link" href={playerLink(platform, puuid, { name, view: 'history', queue })}>All matches<PlayerIcon name="arrow-right" size={16} /></a></div>
+      <div className="signal-player-scope-body"><p>{serverNames[platform] ?? platform.toUpperCase()}</p><div className="automatic-actions"><button type="button" className="automatic-button" onClick={onChangePlayer}>Change player</button><a className="automatic-text-link" href={playerLink(platform, puuid, { name, view: 'history', queue, champion })}>All matches<PlayerIcon name="arrow-right" size={16} /></a></div>
       <div className="automatic-toolbar"><div className="automatic-field"><label htmlFor={`${id}-queue`}>Game mode</label><select id={`${id}-queue`} value={queue} onChange={event => onChangeScope(event.target.value)}>{historyOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>{champion && <button type="button" className="automatic-chip" onClick={() => onChangeScope(queue, '')}>{championDisplayName(champion)}<span className="automatic-sr-only"> · clear champion focus</span><PlayerIcon name="close" size={15} /></button>}<button type="button" className="automatic-button automatic-refresh" disabled={history.loading || history.retrySeconds > 0} onClick={retry}><PlayerIcon name="refresh" size={16} />{history.retrySeconds ? `Retry in ${history.retrySeconds}s` : history.loading ? 'Preparing…' : 'Refresh'}</button></div>
       </div>
     </details>
     <div className="automatic-sample" role="status"><span className={history.loading ? 'is-loading' : ''} aria-hidden="true" /><p>{history.available == null ? 'Finding recent match records…' : `${history.matches.length} of ${history.available} recent games imported.`}{history.loading ? ' Your briefing updates when the import finishes.' : history.failed ? ` ${history.failed} ${history.failed === 1 ? 'record is' : 'records are'} unavailable; this is a partial sample.` : ''}{report.sample.omitted ? ` ${report.sample.omitted} ${report.sample.omitted === 1 ? 'record has' : 'records have'} unsupported or incomplete context.` : ''}</p></div>
     {history.error && <div className="automatic-error" role="alert"><p>{history.error.message} Automatic checks are paused.</p><button type="button" className="automatic-button" disabled={history.loading || history.retrySeconds > 0} onClick={retry}>{history.retrySeconds ? `Retry in ${history.retrySeconds}s` : 'Retry briefing'}</button></div>}
     {accountError && <p className="automatic-fineprint">The account name is temporarily unavailable. Any imported games still belong to the selected player ID.</p>}
-    <section id="focus" data-journey-panel data-journey-label="Focus" data-journey-world="next-game" className={report.latest ? 'automatic-focus-scene' : 'automatic-panel automatic-empty'} aria-label={!report.latest ? 'Briefing availability' : undefined}>
-      {!report.latest ? <><PlayerIcon name={history.loading ? 'clock' : 'info'} size={28} /><h2>{history.loading ? 'Putting your briefing together…' : availability ? 'Mayhem history is not available from Riot.' : history.error || history.failed ? 'Your match records are unavailable.' : 'No recent supported games found.'}</h2><p>{history.loading ? 'Finding your champions, loadout, and next focus.' : availability ? 'This website needs exposed match history to build an automatic briefing. Riot currently keeps Mayhem records private.' : 'Choose another mode, or come back after a supported game appears in match history.'}</p>{availability && <><a className="automatic-text-link" href={availability.sourceUrl} target="_blank" rel="noreferrer">Riot’s availability notice<PlayerIcon name="arrow-right" size={16} /></a><div className="automatic-actions"><button type="button" className="automatic-button" onClick={() => onChangeScope('450', '')}>Show regular ARAM</button><button type="button" className="automatic-button" onClick={() => onChangeScope('all', '')}>Show all games</button></div></>}</> : <><Momentum player={player} view={momentum} /><div className="automatic-lead-grid">
-        {momentum.report?.active && report.focus && report.focus.kind !== 'patch' ? <section className="momentum-match-context" data-automatic-focus="latest-game"><div><h2>Your latest {championDisplayName(report.focus.champion)} game.</h2><p>{modeForMatch(report.focus.sourceMatch).label} · {date(report.focus.sourceMatch.info.gameCreation)}</p></div><a className="automatic-text-link" href={sourceHref(report.focus.sourceMatch)}>Open the match<PlayerIcon name="arrow-right" size={16} /></a></section> : report.focus ? <section className="automatic-focus automatic-panel" aria-labelledby={`${id}-focus`} data-automatic-focus={report.focus.kind}><p className="automatic-eyebrow"><PlayerIcon name="target" size={16} /> YOUR NEXT MOVE</p><h2 id={`${id}-focus`}>{report.focus.title}</h2><div className="automatic-focus-context"><ChampionPortrait champion={report.focus.champion} size={48} /><span>{championDisplayName(report.focus.champion)}<small>{modeForMatch(report.focus.sourceMatch).label} · {date(report.focus.sourceMatch.info.gameCreation)}</small></span></div>{focusRecord ? <><p className="signal-focus-description">{focusRecord.label}</p><div className="signal-focus-delta"><dl><dt>Before</dt><dd>{focusRecord.before}</dd></dl><PlayerIcon name="arrow-right" size={24} /><dl><dt>After</dt><dd>{focusRecord.after}</dd></dl></div><p className="signal-focus-note">Patch {report.focus.patchId} · Recorded change</p></> : report.focus.metric ? <dl className="automatic-comparison"><div><dt>Latest game</dt><dd>{report.focus.metric.latest}{report.focus.metric.unit === 'percent' ? '%' : '/min'}</dd></div><div><dt>Your prior {report.focus.metric.samples} comparable games</dt><dd>{report.focus.metric.baseline}{report.focus.metric.unit === 'percent' ? '%' : '/min'}<small>median</small></dd></div></dl> : <p className="signal-focus-description">{report.focus.body}</p>}{(focusRecord || report.focus.metric) && <details className="signal-focus-details"><summary>Why this is your focus</summary><p>{report.focus.body}</p></details>}<div className="automatic-actions"><a className="automatic-button automatic-button--primary" href={report.focus.kind === 'patch' ? '#changes' : sourceHref(report.focus.sourceMatch)}>{report.focus.kind === 'patch' ? 'See what changed' : 'Open the match'}<PlayerIcon name="arrow-right" size={16} /></a>{report.focus.kind === 'patch' && <a className="automatic-text-link" href={sourceHref(report.focus.sourceMatch)}>Source game</a>}</div>{report.focus.evidenceMatchIds.length > 1 && <details className="automatic-evidence"><summary>Games behind this comparison</summary><ul>{report.focus.evidenceMatchIds.map(matchId => <li key={matchId}><a href={matchLink(matchId, platform, puuid)}>Match {matchId}</a></li>)}</ul></details>}</section> : <section className="automatic-panel automatic-empty"><h2>No imported {championDisplayName(champion)} game yet.</h2><p>Your available games remain in the latest session.</p><button type="button" className="automatic-button" onClick={() => onChangeScope(queue, '')}>Use my recent champions</button></section>}
-        <details className="automatic-session automatic-panel"><summary><PlayerIcon name="history" size={18} /><span>Latest session</span><strong>{report.session.matches.length} games</strong></summary><div className="automatic-session-body"><p className="automatic-eyebrow"><PlayerIcon name="history" size={16} /> LATEST SESSION</p><h2 id={`${id}-session`}>Your games, at a glance.</h2><div className="automatic-session-totals"><strong>{report.session.matches.length}<span>games</span></strong><strong>{Math.round(report.session.playSeconds / 60)}<span>minutes in game</span></strong></div>{report.session.from != null && report.session.to != null && <p className="automatic-fineprint">{date(report.session.from)} · {clock(report.session.from)}–{clock(report.session.to)}</p>}<ul className="automatic-session-modes">{report.session.queues.map(stats => <li key={stats.queueId}><div><strong>{stats.label}</strong><span>{stats.matchCount} games · {stats.championCounts.map(champion => championDisplayName(champion.champion)).join(', ')}</span></div><b>{stats.wins}W / {stats.losses}L{stats.outcomeCount < stats.matchCount && <small>{stats.matchCount - stats.outcomeCount} unknown</small>}</b></li>)}</ul><details className="automatic-evidence"><summary>How this session is grouped</summary><p>Consecutive imported games with no more than {report.session.gapMinutes} minutes between one ending and the next starting. This is an estimate within the selected mode and available sample.</p><p>{report.session.boundary === 'gap' ? 'A longer break marks the beginning of this group.' : report.session.boundary === 'invalid' ? 'Inconsistent timestamps stop the group; its full extent is uncertain.' : 'The group reaches the edge of the sample and may have started earlier.'}{report.sample.partial ? ' Missing or still-loading records can change this recap.' : ''}</p></details></div></details>
+    <section id="focus" tabIndex={-1} data-journey-panel data-journey-label="Focus" data-journey-world="next-game" className={hasFocusData ? 'automatic-focus-scene' : 'automatic-panel automatic-empty'} aria-label={hasFocusData ? 'Your briefing focus' : 'Briefing availability'}>
+      {!hasFocusData ? <>
+        <PlayerIcon name={history.loading ? 'clock' : 'info'} size={28} />
+        <h2>{history.loading ? 'Putting your briefing together…' : availability ? 'Mayhem history is not available from Riot.' : history.error || history.failed ? 'Your match records are unavailable.' : 'No recent supported games found.'}</h2>
+        <p>{history.loading ? 'Your first match observation appears as records arrive. Comparisons wait for the completed import.' : availability ? 'This website needs exposed match history to build an automatic briefing. Riot currently keeps Mayhem records private.' : history.error || history.failed ? 'The available records could not form a briefing. You can retry or choose another player.' : queue !== 'all' || champion ? 'There are no available records in this selected context. Your other recent games may still have something useful.' : 'No exposed recent records were returned for this player and server. You can check another identity or explore the current patch.'}</p>
+        {availability && <><a className="automatic-text-link" href={availability.sourceUrl} target="_blank" rel="noreferrer">Riot’s availability notice<PlayerIcon name="arrow-right" size={16} /></a><div className="automatic-actions"><button type="button" className="automatic-button" onClick={() => onChangeScope('450', '')}>Show regular ARAM</button><button type="button" className="automatic-button" onClick={() => onChangeScope('all', '')}>Show all games</button></div></>}
+        {!history.loading && !availability && <div className="automatic-actions">
+          {(queue !== 'all' || champion) && <button type="button" className="automatic-button automatic-button--primary" onClick={() => onChangeScope('all', '')}>Show all recent games<PlayerIcon name="arrow-right" size={16} /></button>}
+          {!history.error && history.failed > 0 && <button type="button" className="automatic-button" disabled={history.retrySeconds > 0} onClick={retry}>{history.retrySeconds ? `Retry in ${history.retrySeconds}s` : 'Retry match records'}</button>}
+          <button type="button" className="automatic-button" onClick={onChangePlayer}>Change player or server</button>
+          {queue === 'all' && !champion && !history.error && !history.failed && <a className="automatic-text-link" href="/patches">Explore patch changes<PlayerIcon name="arrow-right" size={16} /></a>}
+        </div>}
+      </> : <>
+        <BriefingContexts result={firstResult} queue={queue} champion={champion} onChangeScope={onChangeScope} />
+        {blockedSource && <section className="automatic-panel automatic-empty first-result-recovery"><h2>The newest record needs more context.</h2><p>It cannot support a reliable first-game insight. Available older games and their recorded patch information remain below.</p><div className="automatic-actions"><button type="button" className="automatic-button" disabled={history.loading || history.retrySeconds > 0} onClick={retry}>{history.retrySeconds ? `Retry in ${history.retrySeconds}s` : 'Retry match records'}</button>{(queue !== 'all' || champion) && <button type="button" className="automatic-button" onClick={() => onChangeScope('all', '')}>Show all recent games</button>}</div></section>}
+        {hasProgress && <Momentum player={player} view={momentum} />}
+        {showFirstResult && firstResult.insight && <FirstGameResult result={firstResult} insight={firstResult.insight} sourceHref={sourceHref(firstResult.insight.sourceMatch)} refreshing={settled.matches.length > 0} />}
+        {hasProgressHistory && <Momentum player={player} view={momentum} historyOnly />}
+        {!hasProgress && momentum.storageNotice && <p className="automatic-storage-note" role="status">{momentum.storageNotice}</p>}
+        <div className="automatic-lead-grid">
+        {showLegacyFocus && (momentum.report?.active && report.focus && report.focus.kind !== 'patch' ? <section className="momentum-match-context" data-automatic-focus="latest-game"><div><h2>Your latest {championDisplayName(report.focus.champion)} game.</h2><p>{modeForMatch(report.focus.sourceMatch).label} · {date(report.focus.sourceMatch.info.gameCreation)}</p></div><a className="automatic-text-link" href={sourceHref(report.focus.sourceMatch)}>Open the match<PlayerIcon name="arrow-right" size={16} /></a></section> : report.focus ? <section className="automatic-focus automatic-panel" aria-labelledby={`${id}-focus`} data-automatic-focus={report.focus.kind}><p className="automatic-eyebrow"><PlayerIcon name="target" size={16} /> YOUR NEXT MOVE</p><h2 id={`${id}-focus`}>{report.focus.title}</h2><div className="automatic-focus-context"><ChampionPortrait champion={report.focus.champion} size={48} /><span>{championDisplayName(report.focus.champion)}<small>{modeForMatch(report.focus.sourceMatch).label} · {date(report.focus.sourceMatch.info.gameCreation)}</small></span></div>{focusRecord ? <><p className="signal-focus-description">{focusRecord.label}</p><div className="signal-focus-delta"><dl><dt>Before</dt><dd>{focusRecord.before}</dd></dl><PlayerIcon name="arrow-right" size={24} /><dl><dt>After</dt><dd>{focusRecord.after}</dd></dl></div><p className="signal-focus-note">Patch {report.focus.patchId} · Recorded change</p></> : report.focus.metric ? <dl className="automatic-comparison"><div><dt>Latest game</dt><dd>{report.focus.metric.latest}{report.focus.metric.unit === 'percent' ? '%' : '/min'}</dd></div><div><dt>Your prior {report.focus.metric.samples} comparable games</dt><dd>{report.focus.metric.baseline}{report.focus.metric.unit === 'percent' ? '%' : '/min'}<small>median</small></dd></div></dl> : <p className="signal-focus-description">{report.focus.body}</p>}{(focusRecord || report.focus.metric) && <details className="signal-focus-details"><summary>Why this is your focus</summary><p>{report.focus.body}</p></details>}<div className="automatic-actions"><a className="automatic-button automatic-button--primary" href={report.focus.kind === 'patch' ? '#changes' : sourceHref(report.focus.sourceMatch)}>{report.focus.kind === 'patch' ? 'See what changed' : 'Open the match'}<PlayerIcon name="arrow-right" size={16} /></a>{report.focus.kind === 'patch' && <a className="automatic-text-link" href={sourceHref(report.focus.sourceMatch)}>Source game</a>}</div>{report.focus.evidenceMatchIds.length > 1 && <details className="automatic-evidence"><summary>Games behind this comparison</summary><ul>{report.focus.evidenceMatchIds.map(matchId => <li key={matchId}><a href={matchLink(matchId, platform, puuid)}>Match {matchId}</a></li>)}</ul></details>}</section> : <section className="automatic-panel automatic-empty"><h2>No imported {championDisplayName(champion)} game yet.</h2><p>Your available games remain in the latest session.</p><button type="button" className="automatic-button" onClick={() => onChangeScope(queue, '')}>Use my recent champions</button></section>)}
+        {report.session.matches.length > 0 && <details className="automatic-session automatic-panel"><summary><PlayerIcon name="history" size={18} /><span>Latest session</span><strong>{report.session.matches.length} games</strong></summary><div className="automatic-session-body"><p className="automatic-eyebrow"><PlayerIcon name="history" size={16} /> LATEST SESSION</p><h2 id={`${id}-session`}>Your games, at a glance.</h2><div className="automatic-session-totals"><strong>{report.session.matches.length}<span>games</span></strong><strong>{Math.round(report.session.playSeconds / 60)}<span>minutes in game</span></strong></div>{report.session.from != null && report.session.to != null && <p className="automatic-fineprint">{date(report.session.from)} · {clock(report.session.from)}–{clock(report.session.to)}</p>}<ul className="automatic-session-modes">{report.session.queues.map(stats => <li key={stats.queueId}><div><strong>{stats.label}</strong><span>{stats.matchCount} games · {stats.championCounts.map(champion => championDisplayName(champion.champion)).join(', ')}</span></div><b>{stats.wins}W / {stats.losses}L{stats.outcomeCount < stats.matchCount && <small>{stats.matchCount - stats.outcomeCount} unknown</small>}</b></li>)}</ul><details className="automatic-evidence"><summary>How this session is grouped</summary><p>Consecutive imported games with no more than {report.session.gapMinutes} minutes between one ending and the next starting. This is an estimate within the selected mode and available sample.</p><p>{report.session.boundary === 'gap' ? 'A longer break marks the beginning of this group.' : report.session.boundary === 'invalid' ? 'Inconsistent timestamps stop the group; its full extent is uncertain.' : 'The group reaches the edge of the sample and may have started earlier.'}{report.sample.partial ? ' Missing or still-loading records can change this recap.' : ''}</p></details></div></details>}
       </div>
       <details className="automatic-method automatic-panel"><summary><PlayerIcon name="info" size={16} />About your automatic briefing</summary><p>Only the available recent match sample is used. A review focus comes from recorded patch changes, or comparable games of the same champion, exact queue, role, and patch. A small sample produces a factual match recap instead of a performance claim.</p><p>This page checks for new games every two minutes while visible, and when you return after that interval. Riot results can be cached for up to two minutes. Errors and rate limits pause checks; the Refresh button retries them.</p><p>Your next champion, game outcome, and reasons for a win or loss are not inferred. Source-game links let you inspect the records behind the briefing.</p></details>
 </>}
@@ -217,7 +255,7 @@ function AutomaticReport({ player, queue, champion, archive, onChangePlayer, onC
       {latest && <AutomaticLoadout key={latest.metadata.matchId} match={latest} player={player} sourceHref={sourceHref(latest)} />}
 
     </>}
-  </div>;
+  </div></>;
 }
 
 function ChampionChanges({ context, sourceHref, expanded }: { context: AutomaticChampionContext; sourceHref: string; expanded: boolean }) {

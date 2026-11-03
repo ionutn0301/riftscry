@@ -35,6 +35,12 @@ history. The experience connects those paths across the whole site.
 - **Automatic briefing:** `/next-game` discovers recent champions, exact queues and
   recorded loadouts from imported games. It assembles a session recap and a focus
   supported by available evidence. No notes, saved cards or reflections are required.
+- **A useful first game:** one imported record can provide a role-appropriate
+  observation and a source-game link while the rest of the first import finishes.
+  Varied ARAM champion pools get valid team participation; supports get vision;
+  Arena and other limited contexts keep their recorded match facts. Visible
+  recent-mode choices and empty-result recovery need no extra setup. Explicit
+  mode/champion links retain their scope through lookup.
 - **Momentum:** one personal target, checked automatically across the next three
   comparable games. The starting median stays fixed; later games update a small
   progress record without checkboxes or journals. Supports get suitable vision
@@ -116,6 +122,7 @@ client or commit deployment environment files.
 - [Architecture](docs/ARCHITECTURE.md) — archive, automatic briefing, player API and optional notebook
 - [Automatic briefing release audit](docs/automatic-briefing/README.md) — behavior, boundaries and verification
 - [Momentum release](docs/momentum/README.md) — automatic targets, progress receipts and validation
+- [First-result release](docs/first-result/README.md) — useful sparse history, progressive results and recovery
 - [Competitive strategy](docs/COMPETITIVE_STRATEGY.md) — current primary-source research and product priorities
 - [Master implementation prompts](docs/MASTER_PROMPTS.md) — eight sequenced prompts for the next releases
 - [Personal patch impact](docs/personal-patch-impact/README.md) — calculations, coverage, sources and verification
