@@ -61,6 +61,9 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
     first();await expect(page.locator('.automatic-sample')).toContainText('4 of 20');
     expect.soft(await focus!.evaluate(node=>node.isConnected),'The loading stage must remain mounted as match batches arrive').toBe(true);
     await expect.soft(page.locator('[data-automatic-focus]')).toHaveCount(0);
+    await expect(page.locator('[data-first-result]')).toBeVisible();
+    await expect(page.locator('[data-first-result]')).toContainText('More games are loading');
+    await expect(page.locator('.momentum-target-row')).toHaveCount(0);
     await capture(page,`${prefix}-partial`);
     remaining();await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
     await expect(page.locator('.automatic-sample')).toContainText('20 of 20');

@@ -108,6 +108,18 @@ current route inventory and implementation scope are in the platform audit.
   comparable imported games and is not a lifetime record or a skill grade.
   A useful latest-game observation remains available before a target can start.
   Momentum is separate from authored notes and does not confirm Build Memory.
+- **Useful first result:** a validated imported game can provide an observation
+  before a comparable history exists. During an initial import, loaded records
+  may produce a clearly provisional factual card; Momentum and patch/session
+  presentation keep their settled-sample boundaries. Background refreshes retain
+  the previous source until the new import settles. An active target takes
+  precedence; an unrelated completed receipt stays secondary. Missing or corrupt
+  browser storage does not remove current match facts. Mode discovery describes
+  exact queues actually found and does not combine their performance statistics.
+  Selecting a mode remains an explicit bounded history request. Lookup preserves
+  a valid incoming queue/champion scope; empty and failed results expose recovery.
+  This layer adds no automatic API request, new storage, account entitlement,
+  analytics event or rank dependency. See [first-result contracts](docs/first-result/README.md).
 - **Optional review:** a timeline loads on request or through a direct
   event-evidence link. AI review requires its own explicit action. AI
   interpretation is labelled; validation constrains its evidence references and

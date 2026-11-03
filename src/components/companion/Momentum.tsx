@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import { comparisonRoleLabel } from '../../lib/player/contracts';
 import type { RecentPlayer } from '../../lib/player/identity';
-import { MOMENTUM_GAME_TARGET, momentumMetrics, type MomentumCycle, type MomentumMetricId } from '../../lib/player/momentum';
+import { MOMENTUM_GAME_TARGET, momentumMetrics, type MomentumCycle, type MomentumMetricId, type MomentumHighlight } from '../../lib/player/momentum';
 import { matchLink } from '../player/client';
 import ChampionPortrait from '../player/ChampionPortrait';
 import { championDisplayName } from '../player/championArtwork';
@@ -9,7 +9,7 @@ import PlayerIcon from '../player/PlayerIcon';
 import type { useMomentum } from './useMomentum';
 import '../../styles/momentum.css';
 
-type Props = { player: RecentPlayer; view: ReturnType<typeof useMomentum> };
+type Props = { player: RecentPlayer; view: ReturnType<typeof useMomentum>; historyOnly?: boolean };
 const format = (value: number, metric: MomentumMetricId) => `${Number(value.toFixed(2))}${momentumMetrics[metric].unit === 'percent' ? '%' : '/min'}`;
 const date = (time: number) => new Date(time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 const nextAction = {
@@ -18,7 +18,7 @@ const nextAction = {
   participation: 'Stay close enough to help when a fight is worth taking.',
 };
 
-export default function Momentum({ player, view }: Props) {
+export default function Momentum({ player, view, historyOnly = false }: Props) {
   const id = useId();
   const { report, storageNotice } = view;
   if (!report) return <section className="momentum automatic-panel" aria-label="Momentum" aria-busy="true"><p>Opening your progress…</p></section>;
@@ -26,6 +26,11 @@ export default function Momentum({ player, view }: Props) {
   const metric = active ? momentumMetrics[active.metric] : spotlight ? momentumMetrics[spotlight.metric] : null;
   const evidenceLink = (matchId: string) => matchLink(matchId, player.platform, player.puuid);
   const hits = active?.checks.filter(check => check.hit).length ?? 0;
+
+  if (historyOnly) return <section className="momentum momentum-history automatic-panel" data-momentum-history aria-label="Saved progress and personal highs">
+    {highlight && <Highlight highlight={highlight} link={evidenceLink} id={`${id}-highlight`} />}
+    {completed && <Receipt cycle={completed} link={evidenceLink} />}
+  </section>;
 
   return <section className="momentum automatic-panel" data-momentum data-momentum-state={report.status} aria-labelledby={`${id}-heading`}>
     <header className="momentum-header">
@@ -58,13 +63,17 @@ export default function Momentum({ player, view }: Props) {
       <details className="momentum-evidence"><summary>What counts &amp; starting evidence</summary><p>Only {championDisplayName(active.context.champion)} in {active.context.queueLabel}, {active.context.roleLabel}, on game version {active.context.patch}. The starting median and target stay fixed for these three games. A different context keeps its own progress.</p><p>{metric!.action}</p><p>Set {date(active.createdAt)}. Short games and unavailable measurements do not count. This describes recorded activity, not a skill grade or a claim that a target causes wins.</p><ul>{active.baselineMatchIds.map((matchId, index) => <li key={matchId}><a href={evidenceLink(matchId)}>Starting game {index + 1}<PlayerIcon name="arrow-right" size={13} /></a></li>)}</ul></details>
     </> : spotlight && <div className="momentum-spotlight"><div><span>Latest recorded · {momentumMetrics[spotlight.metric].label}</span><strong>{format(spotlight.value, spotlight.metric)}</strong></div><div><p>{report.comparableCount} comparable {report.comparableCount === 1 ? 'game' : 'games'} found.{report.status === 'warmup' ? ' An automatic target needs at least three with a valid measurement.' : ''}</p><a href={evidenceLink(spotlight.sourceMatchId)}>See this game<PlayerIcon name="arrow-right" size={15} /></a></div></div>}
 
-    {highlight && <aside className="momentum-highlight" data-momentum-highlight aria-labelledby={`${id}-highlight`}><span className="momentum-highlight-icon"><PlayerIcon name="trophy" size={23} /></span><div><p className="momentum-overline">{highlight.won === false ? 'PROGRESS, EVEN IN A LOSS' : 'A PERSONAL HIGH IN THIS SAMPLE'}</p><h3 id={`${id}-highlight`}>{format(highlight.value, highlight.metric)} <span>{momentumMetrics[highlight.metric].label.toLowerCase()}</span></h3><p>Above all {highlight.comparisonMatchIds.length} earlier comparable imported games. Their best was {format(highlight.previousBest, highlight.metric)}.</p><a href={evidenceLink(highlight.sourceMatchId)}>Open the source game<PlayerIcon name="arrow-right" size={14} /></a></div></aside>}
+    {highlight && <Highlight highlight={highlight} link={evidenceLink} id={`${id}-highlight`} />}
 
     {completed && <Receipt cycle={completed} link={evidenceLink} />}
     {report.notice && report.status !== 'tracking' && <p className="momentum-notice" role="status">{report.notice}</p>}
     {storageNotice && <p className="momentum-notice" role="status">{storageNotice}</p>}
     <footer className="momentum-footer"><PlayerIcon name="history" size={14} /><span>{storageNotice ? 'Current match observations only.' : 'Saved on this browser · Updates with your briefing · Take breaks anytime.'}</span></footer>
   </section>;
+}
+
+function Highlight({ highlight, link, id }: { highlight: MomentumHighlight; link: (id: string) => string; id: string }) {
+  return <aside className="momentum-highlight" data-momentum-highlight aria-labelledby={id}><span className="momentum-highlight-icon"><PlayerIcon name="trophy" size={23} /></span><div><p className="momentum-overline">{highlight.won === false ? 'PROGRESS, EVEN IN A LOSS' : 'A PERSONAL HIGH IN THIS SAMPLE'}</p><h3 id={id}>{format(highlight.value, highlight.metric)} <span>{momentumMetrics[highlight.metric].label.toLowerCase()}</span></h3><p>Above all {highlight.comparisonMatchIds.length} earlier comparable imported games. Their best was {format(highlight.previousBest, highlight.metric)}.</p><a href={link(highlight.sourceMatchId)}>Open the source game<PlayerIcon name="arrow-right" size={14} /></a></div></aside>;
 }
 
 function Receipt({ cycle, link }: { cycle: MomentumCycle; link: (id: string) => string }) {
