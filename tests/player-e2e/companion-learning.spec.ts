@@ -35,6 +35,20 @@ for (const width of [320, 390, 1440]) {
     await choices.nth(1).click();
     await expect(choices.nth(1)).toHaveAttribute('aria-pressed', 'true');
     await expect(build.locator('h3')).toHaveText(await choices.nth(1).innerText());
+    // Check the rendered cascade, including the surrounding match workspace.
+    const contrast = await choices.evaluateAll(buttons => buttons.map(button => {
+      const style = getComputedStyle(button);
+      const luminance = (color: string) => {
+        const rgb = color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map(channel => {
+          const value = channel / 255;
+          return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
+        });
+        return rgb[0]! * .2126 + rgb[1]! * .7152 + rgb[2]! * .0722;
+      };
+      const foreground = luminance(style.color), background = luminance(style.backgroundColor);
+      return (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05);
+    }));
+    for (const ratio of contrast) expect(ratio).toBeGreaterThanOrEqual(4.5);
     const comparison = build.locator('[data-item-comparison]');
     await comparison.locator('summary').click();
     await comparison.getByLabel('Compare', { exact: false }).selectOption('3047');
