@@ -209,9 +209,9 @@ test('menu destinations and search handoff preserve native history and return to
   await expect(cinema(page)).toHaveAttribute('data-cinema-state', 'world');
   await expect(dialog).toBeHidden(); await expect(menu(page)).toHaveJSProperty('open', false);
 
-  // Wait for the real search island, then hand focus from one modal to the
+  // Wait for the shortcut controller, then hand focus from one modal to the
   // other; the palette must not appear on top of a still-closing menu.
-  await expect(page.locator('astro-island[component-url*="CommandPalette"]')).not.toHaveAttribute('ssr', '');
+  await expect(page.locator('[data-search-host]')).toHaveAttribute('data-search-ready', 'true');
   await openCinemaNavigation(page);
   const handoff = await dialog.locator('[data-palette-trigger]').evaluate(button => {
     (button as HTMLButtonElement).click();

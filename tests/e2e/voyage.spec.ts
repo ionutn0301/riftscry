@@ -232,7 +232,7 @@ test("a failed champion request keeps the last readable perspective and a retry"
 test("Rift map has real destinations, restores focus and hands search out of its modal", async ({ page }) => {
   await page.goto("/explore");
   await ready(page);
-  await expect(page.locator('astro-island[component-url*="CommandPalette"]')).not.toHaveAttribute("ssr", "");
+  await expect(page.locator('[data-search-host]')).toHaveAttribute('data-search-ready', 'true');
   const opener = mapControl(page);
   await opener.click();
   const map = page.locator("#rift-map-dialog");

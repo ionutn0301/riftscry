@@ -86,6 +86,22 @@ test('a guest page skips the account SDK and resets safely when another tab sign
   await expect(page.getByRole('button', { name: 'Import this browser’s data' })).toBeVisible();
 });
 
+test('a restored guest document rechecks credentials before exposing a workspace', async ({ page, context }) => {
+  await seed(context, null, true);
+  await backend(context, new Map(), { offline: false });
+  await page.goto('/');
+  await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-ready', 'true');
+  // Model credentials written by a later document in this same tab. Browsers
+  // do not dispatch a storage event back to its originating browsing context.
+  await page.evaluate(({ key, value }) => {
+    localStorage.setItem(key, JSON.stringify(value));
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+  }, { key: storageKey, value: session(alice) });
+  await expect(page).toHaveURL(/\/account$/);
+  await expect(page.getByText('Your workspace is synced.', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Import this browser’s data' })).toBeVisible();
+});
+
 test('Google stays unavailable until the hosted provider is enabled and handles availability failures', async ({ page }) => {
   await page.route('https://account-test.supabase.co/auth/v1/settings', route => route.fulfill({ headers: settingsHeaders, json: { external: { google: false } } }));
   await page.goto('/account');

@@ -99,7 +99,7 @@ test.describe("keyboard-only exploration", () => {
   test("map-to-search handoff closes the native dialog before opening the palette", async ({ page }) => {
     await page.goto("/explore");
     await ready(page);
-    await expect(page.locator('astro-island[component-url*="CommandPalette"]')).not.toHaveAttribute("ssr", "");
+    await expect(page.locator('[data-search-host]')).toHaveAttribute('data-search-ready', 'true');
     await mapControl(page).focus();
     await page.keyboard.press("Enter");
     await page.locator("#rift-map-dialog [data-palette-trigger]").focus();

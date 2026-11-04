@@ -21,10 +21,22 @@ export async function bootstrapAccount() {
     }
     // Subscribe before releasing guest storage. Another tab signing in must
     // discard this document's React/SWR/form state before opening its account.
-    window.addEventListener('storage', event => {
-      if (event.key !== key || !event.newValue) return;
+    let resetRequested = false;
+    const reopen = () => {
+      if (resetRequested) return;
+      resetRequested = true;
       lockAccountScope();
       location.replace('/account');
+    };
+    window.addEventListener('storage', event => {
+      if (event.key === key && event.newValue) reopen();
+    });
+    window.addEventListener('pageshow', event => {
+      if (!event.persisted) return;
+      // A frozen document may not receive storage events while sign-in runs
+      // in a later document in this same tab. Back must recheck its boundary.
+      try { if (needsAccountClient(new URL(location.href), localStorage, key)) reopen(); }
+      catch { reopen(); }
     });
     setAccountScope(null);
   } catch {

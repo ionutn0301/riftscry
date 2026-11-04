@@ -38,7 +38,7 @@ test("patch page top", async ({ page }) => {
 test("palette open", async ({ page, isMobile }) => {
   test.skip(isMobile, "palette is keyboard-driven");
   await page.goto("/patch/26.16");
-  await page.waitForSelector("astro-island[component-url*='CommandPalette']:not([ssr])", { state: "attached" });
+  await expect(page.locator('[data-search-host]')).toHaveAttribute('data-search-ready', 'true');
   await page.keyboard.press("Control+k");
   await expect(page.locator("[cmdk-input]")).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
