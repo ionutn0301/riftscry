@@ -53,13 +53,7 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
     document.currentScript.parentElement.dataset.homeLoading = 'boot';
     document.currentScript.parentElement.dataset.homeSubject = '';
   </script>
-  <div class="cinema-world" data-cinema-world aria-hidden="true">
-    <img class="cinema-environment" src="/images/rift-cinema/summoners-rift.webp" alt="" width="2560" height="1440" fetchpriority="high" />
-    <img class="cinema-poster" data-cinema-poster src={first.world.figure} alt="" width="1628" height="1628" fetchpriority="high" />
-    <canvas data-cinema-canvas></canvas>
-    <div class="cinema-world-shade"></div>
-    <div class="cinema-grain"></div>
-  </div>
+  <div class="cinema-backdrop" aria-hidden="true"></div>
 
   <header class="cinema-header">
     <a class="cinema-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={42} densities={[1,2]} loading="eager" /></a>
@@ -89,13 +83,24 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
   </div>
 
   <div class="cinema-champion">
+  <div class="cinema-art" aria-hidden="true">
+    <div class="cinema-world" data-cinema-world>
+      <img class="cinema-environment" src="/images/rift-cinema/summoners-rift.webp" alt="" width="2560" height="1440" fetchpriority="high" />
+      <img class="cinema-poster" data-cinema-poster src={first.world.figure} alt="" width="1628" height="1628" fetchpriority="high" />
+      <canvas data-cinema-canvas></canvas>
+      <div class="cinema-world-shade"></div>
+      <div class="cinema-grain"></div>
+    </div>
+  </div>
+  <div class="cinema-champion-details">
+  <div class="cinema-identity" aria-live="off"><span class="cinema-identity-number" data-cinema-number>{first.world.number}</span><div><p><span data-cinema-region>{first.world.region}</span><i aria-hidden="true"></i><span data-cinema-character>{first.world.character}</span></p><h2 data-home-subject>{first.championName}</h2></div></div>
+
   <a href={first.explore} class="cinema-hotspot" data-cinema-inspect aria-label={`Inspect ${first.championName}'s archived change`}>
     <span class="cinema-hotspot-orbit" aria-hidden="true"><i></i><b>+</b></span>
     <span class="cinema-hotspot-caption"><small data-home-ability>{first.abilityName}</small><span><span data-cinema-inspect-label>SEE AN ARCHIVED CHANGE</span> <b aria-hidden="true">↗</b></span></span>
   </a>
 
-  <div class="cinema-identity" aria-live="off"><span class="cinema-identity-number" data-cinema-number>{first.world.number}</span><div><p><span data-cinema-region>{first.world.region}</span><i aria-hidden="true"></i><span data-cinema-character>{first.world.character}</span></p><h2 data-home-subject>{first.championName}</h2></div></div>
-
+  </div>
   </div>
   </div>
 

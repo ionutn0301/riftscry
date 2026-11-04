@@ -2,6 +2,7 @@ import { expect, test, type BrowserContext } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import sharp from 'sharp';
 import { installFixtures, sourceMatch, query, makeMatch, puuid, platform, baseTime } from '../player-e2e/fixtures';
+import { championArtIsSeparate } from '../e2e/cinema-test-helpers';
 
 const alice = '00000000-0000-4000-8000-000000000001';
 const bob = '00000000-0000-4000-8000-000000000002';
@@ -612,6 +613,25 @@ test('personal homepage: the first painted roster is the owner’s, including a 
   await expect(page.locator('[data-home-roster-status]')).toHaveText('6 recent games');
   await expect(home).toHaveAttribute('data-home-subject', 'Riven');
   expect(await page.evaluate(() => (window as unknown as { paintedHomeChampions: string[] }).paintedHomeChampions.every(id => ['Urgot', 'Riven', 'Malphite'].includes(id)))).toBe(true);
+});
+
+test('personal homepage: Urgot, Riven and Malphite artwork stays separate from text', async ({ page, context }) => {
+  test.setTimeout(90_000);
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  await installFixtures(page, { matches: homeGames(['Urgot', 'Urgot', 'Urgot', 'Riven', 'Riven', 'Malphite']) });
+  await page.goto('/');
+  await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-subject', 'Urgot');
+  await page.evaluate(() => document.fonts.ready);
+  await mkdir('player-visuals', { recursive: true });
+  for (const viewport of [{width:390,height:844},{width:1366,height:900},{width:1913,height:917}]) {
+    await page.setViewportSize(viewport);
+    for (const champion of ['Urgot', 'Riven', 'Malphite']) {
+      await page.locator(`[data-home-choice="${champion}"]`).click();
+      await expect(page.locator('[data-cinema-canvas]')).toHaveAttribute('data-cinema-champion', champion);
+      await championArtIsSeparate(page);
+      await page.screenshot({path:`player-visuals/home-personal-art-${champion}-${viewport.width}.png`,fullPage:true});
+    }
+  }
 });
 
 test('personal homepage: a failed first import stays neutral and offers recovery', async ({ page, context }) => {

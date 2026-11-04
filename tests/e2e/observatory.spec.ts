@@ -57,6 +57,7 @@ test('without WebGL the world poster, personal entry and exact archive destinati
   const poster = page.locator('[data-cinema-poster]');
   await expect(poster).toBeVisible();
   await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+  await cinemaFitsViewport(page);
   const personal = page.locator('[data-home-personal]').first();
   await expect(personal).toHaveJSProperty('href', new URL('/next-game', page.url()).href); await unobstructed(personal);
   const menu = await openCinemaNavigation(page);
@@ -80,6 +81,7 @@ test.describe('the world before JavaScript', () => {
     await expect(page.locator('[data-cinema-poster]')).toBeVisible();
     const image = page.locator('[data-cinema-poster]');
     await expect.poll(() => image.evaluate((poster: HTMLImageElement) => poster.complete && poster.naturalWidth > 0)).toBe(true);
+    await cinemaFitsViewport(page);
     const signals = await cinemaSignals(page);
     for (const signal of signals) await expect(page.locator(`[data-home-choice="${signal.championId}"]`)).toHaveAttribute('href', signal.explore);
     await expect(page.locator('[data-home-personal]').first()).toHaveAttribute('href', '/next-game');

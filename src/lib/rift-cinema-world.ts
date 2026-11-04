@@ -17,6 +17,8 @@ export interface RiftCinemaOptions {
   champions: readonly RiftCinemaChampion[];
   initialChampion?: string;
   reducedMotion?: boolean;
+  /** Keep the complete foreground inside a dedicated, text-free art area. */
+  foregroundFit?: 'contain';
   onReady?: () => void;
   onError?: (reason: string) => void;
 }
@@ -494,12 +496,15 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
       const opacity = 1;
       if (!art || opacity < .001) return;
       const focus = champion?.focus;
+      const contained = options.foregroundFit === 'contain';
       const evidence = clamp(scene - 1);
-      const positionX = mix(clamp(mobile ? focus?.mobileX ?? .56 : focus?.x ?? .70, 0, 1), mobile ? .40 : .35, evidence);
+      const positionX = contained ? .5 : mix(clamp(mobile ? focus?.mobileX ?? .56 : focus?.x ?? .70, 0, 1), mobile ? .40 : .35, evidence);
       u = bind(passes.foreground, 2, [['position', 2, 0]]); texture(art, 0); gpu.uniform1i(u('image'), 0);
-      gpu.uniform2f(u('pointer'), lookX, -lookY); gpu.uniform2f(u('focus'), positionX, 1 - clamp((mobile ? focus?.mobileY : undefined) ?? focus?.y ?? .46, 0, 1));
+      gpu.uniform2f(u('pointer'), lookX, -lookY); gpu.uniform2f(u('focus'), positionX, contained ? .5 : 1 - clamp((mobile ? focus?.mobileY : undefined) ?? focus?.y ?? .46, 0, 1));
       gpu.uniform2f(u('texel'), 1 / art.width, 1 / art.height); gpu.uniform3f(u('primary'), primary[0]!, primary[1]!, primary[2]!);
-      gpu.uniform1f(u('aspect'), aspect); gpu.uniform1f(u('imageAspect'), art.aspect); gpu.uniform1f(u('scale'), clamp((mobile ? focus?.mobileScale : undefined) ?? focus?.scale ?? 1.15, .4, 1.8) * (mobile ? .83 : 1) * (1 + scene * .11));
+      const scale = contained ? .9 * Math.min(1, aspect / art.aspect)
+        : clamp((mobile ? focus?.mobileScale : undefined) ?? focus?.scale ?? 1.15, .4, 1.8) * (mobile ? .83 : 1) * (1 + scene * .11);
+      gpu.uniform1f(u('aspect'), aspect); gpu.uniform1f(u('imageAspect'), art.aspect); gpu.uniform1f(u('scale'), scale);
       gpu.uniform1f(u('opacity'), opacity * (1 - scene * .045)); gpu.uniform1f(u('time'), time); gpu.uniform1f(u('motion'), quiet ? 0 : 1);
       gpu.uniform1f(u('reveal'), blend); gpu.uniform1f(u('incoming'), incoming ? 1 : 0);
       gpu.drawArrays(gpu.TRIANGLES, 0, passes.foreground.count);

@@ -393,7 +393,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     focus:signal.world.focus??{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0});
   const champions:RiftCinemaChampion[]=signals.map(renderChampion);
   function startWorld(){
-    try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:current.championId,reducedMotion:reduced(),
+    try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:current.championId,reducedMotion:reduced(),foregroundFit:'contain',
       onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});
     }catch{root.dataset.renderer='fallback';}
     if(!world)root.dataset.renderer='fallback';
