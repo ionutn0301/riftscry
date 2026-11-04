@@ -10,6 +10,7 @@ body.rift-shell[data-reading-layout] {
   --reading-wash:color-mix(in srgb,var(--theme-cta) 5%,transparent);
 }
 body[data-reading-layout] .rift-scene__landscape { opacity:.26; }
+body[data-reading-layout] .rift-scene .atlas-environment.is-current { opacity:.2; }
 body[data-reading-layout] .rift-scene__object { opacity:.04; }
 body[data-reading-layout] .rift-scene[data-rift-preview] .rift-scene__object { opacity:.08; }
 body[data-reading-layout] .journey-primary { gap:24px; }
@@ -145,6 +146,8 @@ body[data-reading-layout] #main .profile-shortcuts a { display:grid; grid-templa
   body[data-reading-layout] #main .gateway-composition { padding:8px 0; }
   body[data-reading-layout] #main .roster-entry>a { min-height:68px; }
   body[data-reading-layout] #main .journey-roster-lens figcaption strong { font-size:32px; }
+  body[data-reading-layout] #main .journey-roster-lens .roster-lens-media { height:140px; }
+  body[data-reading-layout] #main .journey-roster-lens figcaption { position:static; padding:14px 0 0; flex-wrap:wrap; align-items:center; gap:8px 18px; }
   body[data-reading-layout] #main .pool-picker .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px; }
   body[data-reading-layout] #main .pool-picker .grid button { gap:10px; }
   body[data-reading-layout] #main .pool-picker .name { font-size:12px; }

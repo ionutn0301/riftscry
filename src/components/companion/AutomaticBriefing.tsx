@@ -146,7 +146,7 @@ function PlayerEntry({ onChoose }: { onChoose: (player: RecentPlayer) => void })
   return <form className="automatic-lookup" onSubmit={submit} aria-label="Get an automatic player briefing" aria-busy={busy}>
     <div className="automatic-field"><label htmlFor={`${id}-riot`}>Riot ID</label><input id={`${id}-riot`} name="riotId" placeholder="Game name#TAG" autoComplete="off" spellCheck={false} required maxLength={50} disabled={busy} aria-describedby={`${id}-status`} aria-invalid={invalidId || undefined} onInput={() => { if (invalidId) { setInvalidId(false); setProblem(''); } }} /></div>
     <div className="automatic-field"><label htmlFor={`${id}-server`}>Server</label><select id={`${id}-server`} name="platform" defaultValue="euw1" disabled={busy}>{Object.keys(platforms).map(platform => <option key={platform} value={platform}>{serverNames[platform] ?? platform.toUpperCase()}</option>)}</select></div>
-    <button type="submit" className="automatic-button automatic-button--primary" disabled={busy || retrySeconds > 0}><PlayerIcon name={busy ? 'clock' : 'sparkles'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Finding your games…' : 'Get my briefing'}</button>
+    <button type="submit" className="automatic-button automatic-button--primary" disabled={busy || retrySeconds > 0}><PlayerIcon name={busy ? 'clock' : 'arrow-right'} />{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Finding your games…' : 'Get my briefing'}</button>
     <p className="automatic-lookup-status" id={`${id}-status`} role={problem ? 'alert' : 'status'}>{problem || (busy ? 'Looking up your player…' : 'Saved in your workspace.')}</p>
   </form>;
 }

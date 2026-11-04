@@ -25,6 +25,10 @@ jobs:
         run: pnpm exec playwright test tests/e2e/reading-layout.spec.ts --project=desktop --project=mobile-chromium
         env:
           CI: "true"
+      - name: Verify populated match logs and saved notebooks
+        run: pnpm exec playwright test --config=playwright.player.config.ts reading-layout.spec.ts
+        env:
+          CI: "true"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
