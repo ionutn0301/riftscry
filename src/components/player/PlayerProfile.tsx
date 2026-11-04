@@ -98,7 +98,7 @@ export default function PlayerProfile({ initial }: { initial: PlayerInitial }) {
 
   function remember() {
     setMessage(rememberRecentPlayer({ platform, puuid, name })
-      ? 'This player will open on your next visit.'
+      ? 'This player is remembered in your workspace.'
       : 'Saving is unavailable in this browser. Your player link still works.');
   }
 
