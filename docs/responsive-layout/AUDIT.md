@@ -8,7 +8,7 @@ The reported 1913×917 homepage collision came from independent absolute positio
 - Champion identity and inspection form one secondary group. The scene remains decorative and personal artwork/loading behavior is preserved. Vertical world gestures defer to document scrolling whenever content overflows.
 - Removed the homepage height-measurement observer and the conflicting viewport-position media queries.
 - Champion directory previews have intrinsic height, wrapping captions, and stop sticking on short windows.
-- Atlas footer destinations wrap in narrow landscape. Chapter labels use useful minimum widths and additional rows. Practice choices use an intrinsic card grid.
+- Atlas footer destinations wrap in narrow landscape. Chapter labels use useful minimum widths and additional rows; on phones they replace the duplicate previous/next arrows. Practice choices use an intrinsic card grid.
 
 ## Verification contract
 
