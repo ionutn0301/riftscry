@@ -9,6 +9,9 @@ export default defineConfig({
   // Earlier presentations remain archived. Voyage, keyboard, spatial-history
   // (migrated resilience contracts) and core-flow cover the active experience.
   testIgnore: [
+    // CI's home-flight job runs these tests in all three browsers with one
+    // software renderer at a time. Avoid competing WebGL/video jobs here.
+    ...(process.env.RIFTSCRY_DEDICATED_MOTION_TESTS === "1" ? ["**/home-flight.spec.ts"] : []),
     "**/performance-experience.spec.ts",
     "**/cinematic-production.spec.ts",
     "**/investigation.spec.ts",

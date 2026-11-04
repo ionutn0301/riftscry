@@ -6,6 +6,33 @@ on:
   pull_request:
 
 jobs:
+  responsive-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Audit text collisions, breakpoint boundaries and task regions
+        run: pnpm exec playwright test --config=playwright.player.config.ts responsive-layout.spec.ts
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: responsive-layout
+          path: |
+            player-visuals/responsive-*
+            test-results/
+          retention-days: 14
+
   account-profile:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -163,7 +190,7 @@ jobs:
 
   home-flight:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -177,7 +204,9 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium webkit
       - name: Verify the cinematic world, native history, touch and reduced motion
-        run: pnpm exec playwright test tests/e2e/home-flight.spec.ts
+        # Software WebGL plus video competes for the same runner CPU. Keep
+        # full-motion assertions and their timeouts; run one renderer at a time.
+        run: pnpm exec playwright test tests/e2e/home-flight.spec.ts --workers=1
         env:
           CI: "true"
       - name: Retain world states and full motion video
@@ -379,6 +408,8 @@ jobs:
         run: pnpm exec playwright test --project=${{ matrix.project }}
         env:
           CI: "true"
+          # The home-flight job owns the same full-motion cases in every browser.
+          RIFTSCRY_DEDICATED_MOTION_TESTS: "1"
       - name: Retain browser evidence
         if: always()
         uses: actions/upload-artifact@v4

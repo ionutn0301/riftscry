@@ -45,9 +45,12 @@ test('three focused scenes expose real evidence with one document scroll', async
   await expect(scenes).toHaveCount(3);
   expect(await scenes.evaluateAll(nodes=>nodes.map(node=>node.id))).toEqual(['change','history','return']);
   await expectOpeningBounds(page);
-  await page.getByRole('button',{name:'Next scene',exact:true}).click();
+  const arrow=page.getByRole('button',{name:'Next scene',exact:true});
+  const usesArrow=await arrow.isVisible();
+  await (usesArrow?arrow:page.locator('[data-journey-tab=history]')).click();
   await expect(page).toHaveURL(/#history$/);
-  await expect(page.locator('#history')).toBeFocused();
+  if(usesArrow)await expect(page.locator('#history')).toBeFocused();
+  else await expect(page.locator('[data-journey-tab=history]')).toHaveAttribute('aria-selected','true');
   await expect(page.locator('#change')).toBeHidden();
   await expect(page.getByLabel('After patch',{exact:true})).toBeVisible();
   await page.goBack();

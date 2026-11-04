@@ -50,14 +50,26 @@ export async function openCinemaNavigation(page: Page) {
   return menu;
 }
 
+/** The scene fits the document width; short/zoomed windows use native scrolling.
+ * Check real section geometry so a vertically overlapping layout cannot pass. */
 export async function cinemaFitsViewport(page: Page) {
-  const bounds = (await cinema(page).boundingBox())!;
-  const viewport = page.viewportSize()!;
-  expect(bounds.x).toBeGreaterThanOrEqual(-1);
-  expect(bounds.y).toBeGreaterThanOrEqual(-1);
-  expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width + 1);
-  expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height + 1);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
-  expect(await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)).toBeLessThanOrEqual(1);
-  expect(await page.evaluate(() => scrollY)).toBe(0);
+  const geometry = await page.evaluate(() => {
+    const rect = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
+    const header=rect('.cinema-header'), main=rect('.cinema-main'), actions=rect('.cinema-entry-actions'),
+      bottom=rect('.cinema-bottom'), roster=rect('.cinema-roster'), footer=rect('.cinema-footer');
+    return {
+      horizontal: document.documentElement.scrollWidth-innerWidth,
+      headerGap: main.top-header.bottom,
+      taskGap: bottom.top-actions.bottom,
+      footerGap: footer.top-roster.bottom,
+      nested: [...document.querySelectorAll('.cinema-main *, .cinema-bottom *, .cinema-footer *')]
+        .filter(el=>/^(auto|scroll)$/.test(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+2)
+        .map(el=>el.className),
+    };
+  });
+  expect(geometry.horizontal).toBeLessThanOrEqual(1);
+  expect(geometry.headerGap).toBeGreaterThanOrEqual(-1);
+  expect(geometry.taskGap, 'The briefing and continuation need space before champion selection').toBeGreaterThanOrEqual(15);
+  expect(geometry.footerGap, 'The champion picker must clear utility controls').toBeGreaterThanOrEqual(15);
+  expect(geometry.nested, 'Only the document should scroll outside dialogs').toEqual([]);
 }

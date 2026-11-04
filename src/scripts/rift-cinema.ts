@@ -364,7 +364,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   document.addEventListener('keydown',pauseForInput,{...events,capture:true});
   document.addEventListener('wheel',pauseForInput,{...events,capture:true,passive:true});
   const canCycle=(direction:SceneDirection)=>Boolean(choiceIds[choiceIds.indexOf(current.championId)+direction]);
-  const resetGestures=installSceneGestures(root,{signal:abort.signal,enabled:worldActive,canStep:canCycle,step:direction=>{
+  const resetGestures=installSceneGestures(root,{signal:abort.signal,enabled:()=>worldActive()&&document.documentElement.scrollHeight<=innerHeight+1,canStep:canCycle,step:direction=>{
     const selected=choiceIds[choiceIds.indexOf(current.championId)+direction];
     if(selected){stopTour();select(selected,true,true);}
   }});
@@ -392,14 +392,6 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     palette:{primary:signal.world.primary,secondary:signal.world.secondary},atmosphere:signal.championId==='Yasuo'?'wind':signal.championId==='Thresh'?'souls':'smoke',
     focus:signal.world.focus??{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0});
   const champions:RiftCinemaChampion[]=signals.map(renderChampion);
-  // Personal names and recovery messages can wrap. Reserve their real height
-  // above the mobile roster instead of placing actions at a guessed offset.
-  const bottom=root.querySelector<HTMLElement>('.cinema-bottom');
-  const bottomSize=new ResizeObserver(()=>{
-    if(bottom)root.style.setProperty('--home-bottom-height',`${Math.ceil(bottom.getBoundingClientRect().height)}px`);
-  });
-  if(bottom)bottomSize.observe(bottom);
-  abort.signal.addEventListener('abort',()=>bottomSize.disconnect(),{once:true});
   function startWorld(){
     try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:current.championId,reducedMotion:reduced(),
       onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});

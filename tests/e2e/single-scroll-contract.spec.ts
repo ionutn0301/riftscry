@@ -27,7 +27,7 @@ async function audit(page: Page) {
     };
   });
 }
-test('application rooms keep one document scroll and the immersive home stays in its viewport', async ({ page }, info) => {
+test('application rooms and the cinematic home keep one document scroll', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'Chromium geometry sweep; other suites cover WebKit');
   test.setTimeout(180_000);
   for (const { width, height } of [
@@ -148,12 +148,13 @@ test('phone chapter controls have no overlapping or horizontally scrolling tab s
         });
         const positions = visible.map(el => {
           const rect = el.getBoundingClientRect();
-          return { label: el.getAttribute('aria-label'), left: rect.left, right: rect.right, height: rect.height };
+          return { label: el.getAttribute('aria-label'), left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, height: rect.height };
         });
         const overlaps: string[] = [];
         for (let a = 0; a < positions.length; a++) {
           for (let b = a + 1; b < positions.length; b++) {
-            if (Math.min(positions[a]!.right, positions[b]!.right) - Math.max(positions[a]!.left, positions[b]!.left) > 1)
+            if (Math.min(positions[a]!.right, positions[b]!.right) - Math.max(positions[a]!.left, positions[b]!.left) > 1
+              && Math.min(positions[a]!.bottom, positions[b]!.bottom) - Math.max(positions[a]!.top, positions[b]!.top) > 1)
               overlaps.push(positions[a]!.label + ' / ' + positions[b]!.label);
           }
         }

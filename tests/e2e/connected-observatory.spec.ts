@@ -148,13 +148,13 @@ test('Explore presents real evidence directly and moves between scenes with tap 
   await stationaryWorld(page);
   await keep.click();
   await expect(keep).toHaveAttribute('aria-pressed', 'true');
-  const next = page.locator('[data-journey-next]');
+  const next = page.locator(await page.locator('[data-journey-next]').isVisible()?'[data-journey-next]':'[data-journey-tab=history]');
   await reachable(next);
   await next.click();
   await activeScene(page, 'history');
   await expect(page.locator('[data-period-older]')).toHaveValue('26.15');
   await expect(page.locator('[data-period-newer]')).toHaveValue('26.16');
-  const previous = page.locator('[data-journey-prev]');
+  const previous = page.locator(await page.locator('[data-journey-prev]').isVisible()?'[data-journey-prev]':'[data-journey-tab=change]');
   await reachable(previous);
   await previous.click();
   await activeScene(page, 'change');
@@ -193,7 +193,7 @@ test('reduced motion preserves the same scene controls and native archive exit',
   await activeScene(page, 'perspective');
   await expect(page.locator('[data-rift-scene]')).toHaveAttribute('data-rift-renderer', 'static');
   await expect(page.locator('[data-rift-scene-canvas]')).toBeHidden();
-  await page.locator('[data-journey-prev]').click();
+  await page.locator('[data-journey-tab=history]').click();
   const history = await activeScene(page, 'history');
   const patch = history.locator('[data-history-record]:visible a[href^="/patch/"]').first();
   const target = await patch.getAttribute('href');

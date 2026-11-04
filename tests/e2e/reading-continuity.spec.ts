@@ -67,7 +67,7 @@ test('scene navigation leaves Explore’s selected interval and record in charge
   await expect(page.locator('[data-record-after]')).toContainText('75 / 95 / 115 / 135 / 155');
 });
 
-test('a long Continue subject preserves the landscape map’s single footer row and destinations', async ({ page }) => {
+test('a long Continue subject preserves the landscape map’s separated footer destinations', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 568, height: 320 });
@@ -83,7 +83,6 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   await expect(shortcut).toHaveCount(1);
   await expect(shortcut).toHaveAttribute('href', '/explore#change');
   const originalShortcut = await shortcut.elementHandle();
-  const defaultHeight = await footer.evaluate(element => element.getBoundingClientRect().height);
   const reading = {
     href: '/patch/26.16#belveth',
     label: 'Bel’Veth, the Empress of the Void — patch 26.16 — True Form Remora Indicator — complete archived champion record',
@@ -101,10 +100,11 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   await expect(shortcut).toHaveCount(1);
   expect(await shortcut.evaluate((element, original) => element === original, originalShortcut)).toBe(true);
   await expect(destinations).toHaveCount(10);
-  const longHeight = await footer.evaluate(element => element.getBoundingClientRect().height);
-  expect(Math.abs(longHeight - defaultHeight), 'Continue must not consume another row of navigator space').toBeLessThanOrEqual(1);
-  const rowTops = await footer.locator('a, button').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top));
-  expect(Math.max(...rowTops) - Math.min(...rowTops)).toBeLessThanOrEqual(1);
+  const collisions = await footer.locator('a, button').evaluateAll(elements => {
+    const rects=elements.map(el=>el.getBoundingClientRect());
+    return rects.flatMap((a,i)=>rects.slice(i+1).filter(b=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1));
+  });
+  expect(collisions,'Footer destinations may wrap, but must never overlap').toEqual([]);
   for (const control of await map.locator('[data-world-link], .journey-map-footer a, [data-world-enter], button:visible').all()) {
     await unobstructed(control);
     expect(await control.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);

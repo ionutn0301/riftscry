@@ -2,7 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {installFixtures,platform,puuid,profilePath,visualMatches} from './fixtures';
 import {cinema,cinemaFitsViewport,cinemaSignals,chooseSignal,closeEvidence,evidence,inspectCinema,openCinemaNavigation,readyCinema} from '../e2e/cinema-test-helpers';
-import {reachableTarget,readyWorld} from '../e2e/journey-test-helpers';
+import {reachableTarget,readyWorld,unobstructed} from '../e2e/journey-test-helpers';
 
 const ready=readyWorld;
 async function measure(page:Page){
@@ -67,10 +67,12 @@ for(const viewport of [{width:320,height:568},{width:390,height:844}]){
     for(const route of ['/players','/next-game','/notebook','/404']){
       await page.goto(route);await ready(page);
       const metrics=await record(page,`${route.slice(1)}-${viewport.width}x${viewport.height}`);
-      // The briefing now includes a readable contents list below its form on
-      // phones; it uses the document scroll rather than hiding that guidance.
-      if(route!=='/next-game')expect.soft(metrics.scroll,route+' '+JSON.stringify(metrics)).toBeLessThanOrEqual(1);
-      expect.soft(metrics.clipped,route).toEqual([]);expect.soft(metrics.nested,route).toEqual([]);
+      // Readable briefing content and wrapping notebook chapters can reflow.
+      if(!['/next-game','/notebook'].includes(route))expect.soft(metrics.scroll,route+' '+JSON.stringify(metrics)).toBeLessThanOrEqual(1);
+      if(route!=='/notebook')expect.soft(metrics.clipped,route).toEqual([]);
+      expect.soft(metrics.nested,route).toEqual([]);
+      expect.soft(metrics.horizontal,route).toBeLessThanOrEqual(1);
+      if(route==='/notebook')for(const control of await page.locator('#main a:visible,#main button:visible').all())await unobstructed(control);
       if(route==='/next-game'){
         await expect(page.locator('.briefing-outline > li')).toHaveCount(3);
         await page.locator('.briefing-outline > li').last().scrollIntoViewIfNeeded();

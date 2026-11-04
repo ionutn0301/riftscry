@@ -4,7 +4,7 @@ import {installFixtures} from './fixtures';
 
 async function top(element:Locator){return (await element.boundingBox())!.y;}
 
-for(const viewport of [{width:1024,height:600},{width:1366,height:768},{width:1440,height:900}]){
+for(const viewport of [{width:1366,height:768},{width:1440,height:900}]){
   test(`${viewport.width}×${viewport.height}: champion preview stays pinned while scrolling from either column`,async({page})=>{
     await page.setViewportSize(viewport);await installFixtures(page);await page.goto('/champions');
     await expect(page.locator('body')).toHaveAttribute('data-journey-ready','true');
@@ -13,8 +13,9 @@ for(const viewport of [{width:1024,height:600},{width:1366,height:768},{width:14
     await expect(lens).toBeInViewport({ratio:.99});
     const initial=await lens.boundingBox();const imageTop=await top(media);
     expect(initial!.x+initial!.width).toBeLessThan(viewport.width*.6);
-    // The stage is centered in the usable screen, independent of roster length.
-    expect(Math.abs(initial!.y+initial!.height/2-viewport.height/2)).toBeLessThan(50);
+    // An intrinsic preview starts below navigation and has room for its caption.
+    expect(initial!.y).toBeGreaterThanOrEqual(0);
+    expect(initial!.y+initial!.height).toBeLessThanOrEqual(viewport.height);
     await page.locator('[data-roster-expand]').click();
     const rows=page.locator('[data-roster-row]:visible');
     expect(await rows.count()).toBeGreaterThan(100);

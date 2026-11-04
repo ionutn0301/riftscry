@@ -87,6 +87,10 @@ test('choosing a champion changes its evidence without moving the world controls
     boxes: [...document.querySelectorAll('[data-rift-cinema], #cinema-title, [data-home-choice], .cinema-header, .cinema-primary')]
       .map(element => { const box = element.getBoundingClientRect(); return [box.x, box.y, box.width, box.height]; }),
   }));
+  // Native scrolling may reveal the picker on a short window; changing its
+  // selection must not cause any further scroll or move the document layout.
+  await choices.first().scrollIntoViewIfNeeded();
+  await settleLayout(page);
   const baseline = await position();
   const expectStationary = async () => {
     await settleLayout(page);

@@ -74,10 +74,13 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
 
   <div class="cinema-stage-mark" aria-hidden="true"><span>RIFT / S.CRY</span><i></i><span>ANOTHER PERSPECTIVE</span></div>
 
+  <div class="cinema-main">
   <div class="cinema-opening">
+    <div class="cinema-intro">
     <p class="cinema-kicker"><i aria-hidden="true"></i> BEFORE YOUR NEXT QUEUE</p>
     <h1 id="cinema-title"><span>Your next game.</span> <em>A clearer plan.</em></h1>
     <p class="cinema-introduction">Your champions. Your recent games. One useful next step.</p>
+    </div>
     <div class="cinema-entry-actions"><a href="/next-game" class="cinema-primary" data-home-personal data-home-primary><span><strong>Build my briefing</strong></span><span class="cinema-action-arrow" aria-hidden="true">↗</span></a>
     <a class="cinema-resume cinema-start-link" href={`/catch-up?champion=${first.championId}`} data-home-catchup><span>Catch up on {first.championName}</span><span aria-hidden="true">↗</span></a>
     <a class="cinema-resume" href="/explore#change" data-home-reading hidden><span data-home-reading-label>Resume exploring</span><span aria-hidden="true">↗</span></a>
@@ -85,12 +88,16 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
     </div>
   </div>
 
+  <div class="cinema-champion">
   <a href={first.explore} class="cinema-hotspot" data-cinema-inspect aria-label={`Inspect ${first.championName}'s archived change`}>
     <span class="cinema-hotspot-orbit" aria-hidden="true"><i></i><b>+</b></span>
     <span class="cinema-hotspot-caption"><small data-home-ability>{first.abilityName}</small><span><span data-cinema-inspect-label>SEE AN ARCHIVED CHANGE</span> <b aria-hidden="true">↗</b></span></span>
   </a>
 
   <div class="cinema-identity" aria-live="off"><span class="cinema-identity-number" data-cinema-number>{first.world.number}</span><div><p><span data-cinema-region>{first.world.region}</span><i aria-hidden="true"></i><span data-cinema-character>{first.world.character}</span></p><h2 data-home-subject>{first.championName}</h2></div></div>
+
+  </div>
+  </div>
 
   <div class="cinema-bottom">
     <nav class="cinema-roster" aria-label="Choose your champion"><div class="cinema-roster-heading"><span class="cinema-roster-label" data-home-roster-label>Featured champions</span><span class="cinema-roster-status" data-home-roster-status>Choose a champion to explore.</span><a href="/profile#riot-id" data-home-associate hidden>Add your Riot ID</a><button type="button" data-home-roster-retry hidden>Retry</button></div><div class="cinema-roster-choices">{signals.map((signal,index)=><a href={signal.explore} data-home-choice={signal.championId} aria-current={index===0?'true':undefined} aria-label={`Enter ${signal.championName}'s world`} style={`--choice-accent:${signal.world.primary}`}><span class="cinema-roster-frame"><img src={signal.world.figure} alt="" width="1628" height="1628" loading={index===0?'eager':'lazy'} decoding="async" /></span><span data-home-choice-name>{signal.championName}</span><small data-home-choice-count hidden></small><i aria-hidden="true"></i></a>)}</div></nav>
