@@ -48,6 +48,11 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
 })).replaceAll('<','\\u003c');
 ---
 <section class="rift-cinema" data-rift-cinema data-home-signals data-home-subject={first.championId} data-cinema-state="world" style={`--cinema-accent:${first.world.primary};--cinema-secondary:${first.world.secondary}`} aria-labelledby="cinema-title">
+  <script is:inline>
+    // Run before any champion can paint. No-JS visitors retain the featured scene.
+    document.currentScript.parentElement.dataset.homeLoading = 'boot';
+    document.currentScript.parentElement.dataset.homeSubject = '';
+  </script>
   <div class="cinema-world" data-cinema-world aria-hidden="true">
     <img class="cinema-environment" src="/images/rift-cinema/summoners-rift.webp" alt="" width="2560" height="1440" fetchpriority="high" />
     <img class="cinema-poster" data-cinema-poster src={first.world.figure} alt="" width="1628" height="1628" fetchpriority="high" />

@@ -3,6 +3,8 @@ import { homeChampionCounts } from '../../src/lib/home-personalization';
 import { buildCinemaCatalogue } from '../../src/lib/home-champions';
 import { getChampionMeta } from '../../src/lib/data';
 import type { Match } from '../../src/lib/player/contracts';
+import { championFigures } from '../../src/lib/champion-figures';
+import sharp from 'sharp';
 
 const game = (id: string, champion: string, time = 1000, queueId = 420): Match => ({
   metadata: { matchId: id }, info: { gameCreation: time, gameDuration: 1200, queueId, gameType: 'MATCHED_GAME', gameMode: 'CLASSIC',
@@ -37,9 +39,28 @@ describe('cinematic artwork and evidence coverage', () => {
   it('covers every canonical champion with matching official artwork and native routes', () => {
     expect(catalogue.map(c => c.championId).sort()).toEqual(Object.keys(getChampionMeta()).sort());
     for (const champion of catalogue) {
-      expect(champion.world.figure).toBe(`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champion.championId}_0.jpg`);
-      expect(champion.world.kind).toBe('splash');
+      if (!championFigures[champion.championId]) {
+        expect(champion.world.figure).toBe(`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champion.championId}_0.jpg`);
+        expect(champion.world.kind).toBe('splash');
+      }
       expect(champion.explore).toMatch(/^\/(champion|explore)/);
+    }
+  });
+  it('uses substantial transparent painted foregrounds for Urgot, Riven and Malphite', async () => {
+    for (const id of ['Urgot', 'Riven', 'Malphite']) {
+      const champion = catalogue.find(c => c.championId === id)!;
+      expect(champion.world.kind).toBe('cutout');
+      const asset = sharp(`public${champion.world.figure}`);
+      const metadata = await asset.metadata();
+      expect(metadata.hasAlpha).toBe(true); expect(metadata.width).toBeGreaterThan(1000);
+      const { data, info } = await asset.raw().toBuffer({ resolveWithObject: true });
+      let transparent = 0, opaque = 0;
+      for (let index = info.channels - 1; index < data.length; index += info.channels) {
+        if (data[index] === 0) transparent++;
+        if (data[index]! >= 250) opaque++;
+      }
+      expect(transparent / (info.width * info.height)).toBeGreaterThan(.15);
+      expect(opaque / (info.width * info.height)).toBeGreaterThan(.20);
     }
   });
   it('preserves prose evidence and explicit absence instead of inventing numeric changes', () => {
