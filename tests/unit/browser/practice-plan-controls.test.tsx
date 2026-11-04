@@ -48,6 +48,6 @@ it('preserves unsaved preferences when another tab changes the stored version', 
   await act(async () => container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
   expect(readPracticePlan().profile.role).toBe('Jungle');
   expect(container.textContent).toContain('Preferences changed. Reload saved preferences before saving.');
-  await act(async () => button('Reload saved preferences').click());
+  await act(async () => button('Reset changes').click());
   expect(container.querySelector('select')?.value).toBe('Jungle');
 });

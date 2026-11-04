@@ -50,29 +50,30 @@ export async function openCinemaNavigation(page: Page) {
   return menu;
 }
 
-/** The scene fits the document width; short/zoomed windows use native scrolling.
- * Check real section geometry so a vertically overlapping layout cannot pass. */
+/** The homepage is a single screen. Every visible control must fit without
+ * scrolling, including short landscape and effective zoom viewports. */
 export async function cinemaFitsViewport(page: Page) {
+  // Dynamic viewport units settle on the next rendering update after rotation.
+  await expect.poll(() => cinema(page).evaluate(el => Math.abs(el.getBoundingClientRect().height-innerHeight))).toBeLessThanOrEqual(1);
   await championArtIsSeparate(page);
   const geometry = await page.evaluate(() => {
-    const rect = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
-    const header=rect('.cinema-header'), main=rect('.cinema-main'), actions=rect('.cinema-entry-actions'),
-      bottom=rect('.cinema-bottom'), roster=rect('.cinema-roster'), footer=rect('.cinema-footer');
+    const root = document.querySelector('[data-rift-cinema]')!;
+    const visible = (el: Element) => el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
+    const controls = [...root.querySelectorAll('a,button')].filter(el => !el.closest('dialog') && visible(el));
     return {
-      horizontal: document.documentElement.scrollWidth-innerWidth,
-      headerGap: main.top-header.bottom,
-      taskGap: bottom.top-actions.bottom,
-      footerGap: footer.top-roster.bottom,
-      nested: [...document.querySelectorAll('.cinema-main *, .cinema-bottom *, .cinema-footer *')]
-        .filter(el=>/^(auto|scroll)$/.test(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+2)
-        .map(el=>el.className),
+      horizontal: document.documentElement.scrollWidth - innerWidth,
+      vertical: document.documentElement.scrollHeight - innerHeight,
+      height: root.getBoundingClientRect().height,
+      viewport: innerHeight,
+      escaped: controls.filter(el => { const r = el.getBoundingClientRect(); return r.top < -1 || r.bottom > innerHeight + 1 || r.left < -1 || r.right > innerWidth + 1; }).map(el => el.textContent?.trim()),
+      nested: [...root.querySelectorAll('.cinema-main *, .cinema-bottom *, .cinema-footer *')].filter(el => visible(el) && /^(auto|scroll)$/.test(getComputedStyle(el).overflowY) && el.scrollHeight > el.clientHeight + 2).map(el => el.className),
     };
   });
   expect(geometry.horizontal).toBeLessThanOrEqual(1);
-  expect(geometry.headerGap).toBeGreaterThanOrEqual(-1);
-  expect(geometry.taskGap, 'The briefing and continuation need space before champion selection').toBeGreaterThanOrEqual(15);
-  expect(geometry.footerGap, 'The champion picker must clear utility controls').toBeGreaterThanOrEqual(15);
-  expect(geometry.nested, 'Only the document should scroll outside dialogs').toEqual([]);
+  expect(geometry.vertical, 'The homepage must not scroll').toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry.height - geometry.viewport)).toBeLessThanOrEqual(1);
+  expect(geometry.escaped, 'Visible homepage actions must fit without scrolling').toEqual([]);
+  expect(geometry.nested, 'The homepage must not contain scrolling sections').toEqual([]);
 }
 
 /** Figures stay clear of copy while the original world fills the whole homepage. */

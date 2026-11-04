@@ -50,23 +50,23 @@ for(const state of ['guest','context','reading'] as const)test(`responsive audit
     await page.setViewportSize({width,height});await page.evaluate(()=>scrollTo(0,0));
     await cinemaFitsViewport(page);
     expect(await textCollisions(page,'[data-rift-cinema]'),`${state} ${width}×${height}`).toEqual([]);
-    for(const el of await page.locator('[data-home-primary],.cinema-entry-actions a:visible,[data-home-choice]:visible,[data-home-review]').all())await reachableTarget(el,page);
+    for(const el of await page.locator('[data-home-primary],.cinema-entry-actions a:visible,[data-home-choice]:visible,[data-home-review]:visible').all())await reachableTarget(el,page);
     if([320,390,761,1101,1913].includes(width))await page.screenshot({path:`player-visuals/responsive-home-${state}-${width}.png`,fullPage:true});
   }
 });
 
-test('responsive audit: zoom reflow and short landscape keep document scrolling native',async({page})=>{
+test('responsive audit: zoom reflow and short landscape keep the homepage on one screen',async({page})=>{
   await installFixtures(page);await page.setViewportSize({width:480,height:320});await page.goto('/');await readyCinema(page);
   // 960×640 at 200% and 1280×1024 at 400% have these effective CSS viewports.
-  for(const viewport of [{width:480,height:320},{width:320,height:256}]){
+  for(const viewport of [{width:480,height:320},{width:320,height:256},{width:480,height:256},{width:1024,height:256}]){
     await page.setViewportSize(viewport);await page.evaluate(()=>scrollTo(0,0));
     await cinemaFitsViewport(page);
     expect(await textCollisions(page,'[data-rift-cinema]')).toEqual([]);
-    const champion=await page.locator('[data-rift-cinema]').getAttribute('data-home-subject');
     await page.mouse.move(10,150);await page.mouse.wheel(0,180);
-    await expect.poll(()=>page.evaluate(()=>scrollY)).toBeGreaterThan(0);
-    await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-subject',champion!);
-    await reachableTarget(page.locator('[data-home-review]'),page);
+    await expect.poll(()=>page.evaluate(()=>scrollY)).toBe(0);
+    // Wheel gestures may change the featured world; the document stays fixed.
+    await cinemaFitsViewport(page);
+    await expect(page.locator('[data-home-primary]')).toBeInViewport({ratio:1});
   }
 });
 

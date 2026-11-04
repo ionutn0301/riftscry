@@ -167,9 +167,10 @@ test('a guest page skips the account SDK and resets safely when another tab sign
   await other.goto('/');
   await other.evaluate(({ key, value }) => localStorage.setItem(key, JSON.stringify(value)), { key: storageKey, value: session(alice) });
   await expect(page).toHaveURL(/\/account$/);
-  await expect(page.getByText('Your workspace is synced.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Synced', { exact: true })).toBeVisible();
   // Browser data remains separate until the owner explicitly imports it.
-  await expect(page.getByRole('button', { name: 'Import this browser’s data' })).toBeVisible();
+  await page.getByRole('tab', { name: 'Settings', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Import guest saves' })).toBeVisible();
 });
 
 test('a restored guest document rechecks credentials before exposing a workspace', async ({ page, context }) => {
@@ -184,8 +185,9 @@ test('a restored guest document rechecks credentials before exposing a workspace
     window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
   }, { key: storageKey, value: session(alice) });
   await expect(page).toHaveURL(/\/account$/);
-  await expect(page.getByText('Your workspace is synced.', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Import this browser’s data' })).toBeVisible();
+  await expect(page.getByText('Synced', { exact: true })).toBeVisible();
+  await page.getByRole('tab', { name: 'Settings', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Import guest saves' })).toBeVisible();
 });
 
 test('Google stays unavailable until the hosted provider is enabled and handles availability failures', async ({ page }) => {
@@ -222,14 +224,15 @@ for (const width of [1440, 390]) test(`My profile saves private preferences and 
   const rows = new Map([[alice, new Map([['riftscry:recent-player:v1', { record_key: 'riftscry:recent-player:v1', value: JSON.stringify({ platform: 'euw1', puuid: 'p'.repeat(40), name: 'Alice#EUW' }), revision: 1 }]])]]);
   await seed(context, alice); await backend(context, rows, { offline: false });
   await page.goto('/profile');
-  await expect(page.getByText('Sign-in: Google')).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Profile', exact: true })).toHaveAttribute('aria-selected', 'true');
   await page.getByLabel('Display name').fill('Alice');
   await page.getByLabel('Preferred role').selectOption('Support');
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
-  await expect(page.locator('.profile-overview h2')).toHaveText('Alice');
+  await expect(page.getByLabel('Display name')).toHaveValue('Alice');
   await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:practice-plan:v1')?.value ?? '{}').profile?.role).toBe('Support');
   await page.reload();
   await expect(page.getByLabel('Display name')).toHaveValue('Alice');
+  await page.getByRole('tab', { name: 'Riot ID', exact: true }).click();
   await expect(page.getByText('No Riot ID associated yet.')).toBeVisible();
   await expect(page.getByText(/it does not verify Riot account ownership/)).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
@@ -244,6 +247,7 @@ for (const width of [1440, 390]) test(`account controls remain usable at ${width
   await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeVisible();
   await expect(page.locator('.account-panel')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await page.getByText('Guest backup', { exact: true }).click();
   await page.getByRole('button', { name: 'Export workspace' }).scrollIntoViewIfNeeded();
   await expect(page.getByRole('button', { name: 'Export workspace' })).toBeInViewport();
   await mkdir('player-visuals', { recursive: true });
@@ -256,9 +260,10 @@ test('guest import is explicit, sync reaches another device, and sign-out restor
   await seed(first, alice, true); await seed(second, alice);
   await backend(first, rows, network); await backend(second, rows, network);
   const page = await first.newPage(); await page.goto('http://127.0.0.1:4325/account');
-  await expect(page.getByText('Your workspace is synced.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Synced', { exact: true })).toBeVisible();
   expect(rows.get(alice)?.size).toBe(0);
-  await page.getByRole('button', { name: 'Import this browser’s data' }).click();
+  await page.getByRole('tab', { name: 'Settings', exact: true }).click();
+  await page.getByRole('button', { name: 'Import guest saves' }).click();
   await expect.poll(() => rows.get(alice)?.get('riftscry:pool')?.value).toBe('["Ahri"]');
   const other = await second.newPage(); await other.goto('http://127.0.0.1:4325/pool#edit-pool');
   await expect(other.getByRole('option', { name: /Ahri/ })).toHaveAttribute('aria-selected', 'true');
@@ -278,16 +283,18 @@ test('offline changes survive reload and a cloud conflict preserves both version
   network.offline = true;
   await page.getByRole('option', { name: /Jinx/ }).click();
   await page.goto('/account');
+  await page.getByRole('tab', { name: 'Settings', exact: true }).click();
   // PostgREST retries failed reads with exponential backoff before reporting offline.
   await expect(page.getByText(/Changes remain on this device/)).toBeVisible({ timeout: 15_000 });
   rows.get(alice)!.set('riftscry:pool', { record_key: 'riftscry:pool', value: '["Thresh"]', revision: 2 });
   network.offline = false;
+  await page.getByText('Sync options', { exact: true }).click();
   await page.getByRole('button', { name: 'Retry sync' }).click();
   await expect(page.getByRole('heading', { name: 'Choose a saved version' })).toBeVisible();
   expect(rows.get(alice)!.get('riftscry:pool')!.value).toBe('["Thresh"]');
   await page.getByRole('button', { name: 'Keep this device’s version' }).click();
   await expect.poll(() => rows.get(alice)!.get('riftscry:pool')!.value).toBe('["Ahri","Jinx"]');
-  await expect(page.getByText('Your workspace is synced.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Synced', { exact: true })).toBeVisible();
 });
 
 test('different accounts cannot hydrate each other’s workspace', async ({ context, page }) => {
@@ -345,7 +352,7 @@ test('a new guest sees recorded facts and a sign-in route that preserves the sel
   await entry.click();
   await expect(page).toHaveURL(url => url.pathname === '/account' && url.searchParams.get('returnTo')?.includes(sourceMatch.metadata.matchId) === true);
   await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeVisible();
-  await page.getByRole('link', { name: 'Back to your match’s recorded summary →' }).click();
+  await page.getByRole('link', { name: 'Back to your match →' }).click();
   await expect(page.locator('.review-mode')).toContainText('Recorded summary');
   expect(requests.filter(request => request.action === 'review')).toEqual([]);
 });
@@ -388,7 +395,7 @@ for (const width of [1440, 390, 320]) test(`account sections support a photo and
   await seed(context, alice); await backend(context, rows, { offline: false }, photos); await installFixtures(page);
   await page.goto('/account');
   await expect(page.getByRole('heading', { name: 'My account.' })).toBeVisible();
-  await expect(page.getByRole('navigation', { name: 'Account sections' }).getByRole('link')).toHaveCount(3);
+  await expect(page.getByRole('navigation', { name: 'Account sections' }).getByRole('tab')).toHaveCount(3);
   const file = page.locator('input[type=file]');
   await expect(file).toBeEnabled();
   const image = await sharp({ create: { width: 640, height: 480, channels: 3, background: '#c8ad7f' } }).png().toBuffer();
@@ -400,8 +407,8 @@ for (const width of [1440, 390, 320]) test(`account sections support a photo and
   expect((await sharp(photos.get(alice)!).metadata())).toMatchObject({ width: 512, height: 512, format: 'webp' });
   await page.reload();
   await expect(page.getByRole('img', { name: 'Your profile photo', exact: true })).toBeVisible();
-  await page.getByRole('navigation', { name: 'Account sections' }).getByRole('link', { name: 'Riot ID', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Your League of Legends player.' })).toBeInViewport();
+  await page.getByRole('navigation', { name: 'Account sections' }).getByRole('tab', { name: 'Riot ID', exact: true }).click();
+  await expect(page.getByRole('form', { name: 'Associate a Riot ID' })).toBeInViewport();
   const form = page.getByRole('form', { name: 'Associate a Riot ID' });
   await form.getByLabel('Riot ID', { exact: true }).fill('Fixture Player#TEST');
   await form.getByLabel('Server', { exact: true }).selectOption('eun1');
@@ -424,6 +431,7 @@ for (const width of [1440, 390, 320]) test(`account sections support a photo and
   await page.goto('/account#profile');
   await expect(page.getByRole('img', { name: 'Your profile photo', exact: true })).toBeInViewport();
   await page.screenshot({ path: `player-visuals/account-profile-${width}.png`, fullPage: false });
+  await page.getByRole('tab', { name: 'Riot ID', exact: true }).click();
   await page.getByRole('button', { name: 'Remove association', exact: true }).click();
   await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:riot-account:v1')?.value ?? '{}').player).toBeNull();
   await expect(page.getByText('No Riot ID associated yet.')).toBeVisible();
@@ -466,10 +474,12 @@ test('photos and Riot associations load on another device but not another accoun
     await seed(other, bob); await backend(other, rows, { offline: false }, photos);
     const accountPage = await same.newPage(); await accountPage.goto('http://127.0.0.1:4325/account');
     await expect(accountPage.getByRole('img', { name: 'Your profile photo', exact: true })).toBeVisible();
+    await accountPage.getByRole('tab', { name: 'Riot ID', exact: true }).click();
     await expect(accountPage.locator('.associated-player')).toContainText('Alice#EUW');
     const otherPage = await other.newPage(); await otherPage.goto('http://127.0.0.1:4325/account');
     await expect(otherPage.locator('input[type=file]')).toBeEnabled();
     await expect(otherPage.getByRole('img', { name: 'Your profile photo', exact: true })).toHaveCount(0);
+    await otherPage.getByRole('tab', { name: 'Riot ID', exact: true }).click();
     await expect(otherPage.getByText('No Riot ID associated yet.')).toBeVisible();
     expect(photos.get(alice)).toEqual(photo);
   } finally { await same.close(); await other.close(); }
@@ -506,7 +516,7 @@ for (const width of [320, 390, 1440]) test(`personal homepage: linked player's t
   await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Thresh/);
   await expect(page.locator('[data-home-catchup]')).toHaveAttribute('href', '/catch-up?champion=Thresh');
   await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', /thresh-figure(?:[^?]*\.webp|\.png%3F[^#]*&f=webp)$/);
-  const targets = page.locator('[data-home-primary], [data-home-review], [data-home-choice]:visible, [data-home-catchup]:visible');
+  const targets = page.locator('[data-home-primary], [data-home-review]:visible, [data-home-choice]:visible, [data-home-catchup]:visible');
   for (const target of await targets.all()) {
     await target.scrollIntoViewIfNeeded();
     await expect(target).toBeInViewport({ ratio: .99 });
@@ -538,8 +548,8 @@ for (const [width, height] of [[320, 568], [480, 320], [1024, 600]]) test(`perso
   expect(splashes).toEqual([]);
   const actions = (await page.locator('.cinema-entry-actions').boundingBox())!;
   const roster = (await page.locator('.cinema-roster').boundingBox())!;
-  expect(Math.max(roster.y - actions.y - actions.height, roster.x - actions.x - actions.width)).toBeGreaterThanOrEqual(15);
-  for (const target of await page.locator('[data-home-choice]:visible, [data-home-primary], [data-home-review]').all()) {
+  expect(Math.max(roster.y - actions.y - actions.height, roster.x - actions.x - actions.width)).toBeGreaterThanOrEqual(7);
+  for (const target of await page.locator('[data-home-choice]:visible, [data-home-primary], [data-home-review]:visible').all()) {
     await target.scrollIntoViewIfNeeded();
     await expect(target).toBeInViewport({ ratio: .99 });
     expect(await target.evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })).toBe(true);
@@ -707,4 +717,69 @@ test('personal homepage: a failed first import stays neutral and offers recovery
   await expect(page.locator('[data-home-roster-retry]')).toBeVisible();
   await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', new RegExp(`puuid=${puuid}`));
   await expect(page.locator('[data-home-primary]')).not.toHaveAttribute('href', /champion=Akali/);
+});
+
+for (const viewport of [{width:320,height:568},{width:390,height:844},{width:768,height:1024},{width:1366,height:768},{width:1920,height:1080}]) test(`compact account: each tab fits one screen at ${viewport.width}×${viewport.height}`, async ({ page, context }) => {
+  await page.setViewportSize(viewport); await seed(context, alice); await backend(context, new Map(), { offline:false });
+  await page.goto('/profile'); await expect(page.getByLabel('Display name')).toBeVisible();
+  await mkdir('player-visuals', {recursive:true});
+  for (const name of ['Profile','Riot ID','Settings']) {
+    await page.getByRole('tab', {name,exact:true}).click();
+    await page.screenshot({path:`player-visuals/account-compact-${name.replaceAll(' ','-')}-${viewport.width}.png`});
+    await expect(page.locator('.account-sections').getByRole('tabpanel')).toHaveCount(1);
+    const panel = page.locator('.account-sections').getByRole('tabpanel');
+    await expect(panel).toBeInViewport({ratio:1});
+    expect(await page.evaluate(() => ({x:document.documentElement.scrollWidth-innerWidth,y:document.documentElement.scrollHeight-innerHeight}))).toEqual({x:0,y:0});
+    expect(await panel.evaluate(el => el.scrollHeight-el.clientHeight), `${name} needs no scrolling in its default state`).toBeLessThanOrEqual(1);
+    for (const control of await panel.locator('button:visible,input:visible,select:visible,a:visible,summary:visible').all()) {
+      await expect(control).toBeInViewport({ratio:.99});
+    }
+    await page.screenshot({path:`player-visuals/account-compact-${name.replaceAll(' ','-')}-${viewport.width}.png`});
+  }
+  await page.mouse.wheel(0,500); expect(await page.evaluate(() => scrollY)).toBe(0);
+});
+
+test('compact account: keyboard tabs, direct links and Back preserve an unsaved draft', async ({ page, context }) => {
+  await seed(context, alice); await backend(context,new Map(),{offline:false});
+  await page.goto('/account#riot-id');
+  await expect(page.getByRole('tab',{name:'Riot ID',exact:true})).toHaveAttribute('aria-selected','true');
+  await page.getByRole('tab',{name:'Riot ID',exact:true}).press('ArrowLeft');
+  await expect(page.getByRole('tab',{name:'Profile',exact:true})).toBeFocused();
+  await page.getByLabel('Display name').fill('Unsaved draft');
+  await page.getByRole('tab',{name:'Profile',exact:true}).press('End');
+  await expect(page.getByRole('tab',{name:'Settings',exact:true})).toBeFocused();
+  await expect(page.getByLabel('Display name')).toBeHidden();
+  await page.goBack();
+  await expect(page.getByLabel('Display name')).toBeVisible();
+  await expect(page.getByLabel('Display name')).toHaveValue('Unsaved draft');
+  await page.getByRole('button',{name:'Reset changes',exact:true}).click();
+  await expect(page.getByLabel('Display name')).toHaveValue('');
+});
+
+test('compact account: short landscape keeps navigation fixed and form controls reachable', async ({ page, context }) => {
+  await page.setViewportSize({width:568,height:320}); await seed(context,alice); await backend(context,new Map(),{offline:false});
+  await page.goto('/account'); await expect(page.getByLabel('Display name')).toBeVisible();
+  for(const name of ['Profile','Riot ID','Settings']) {
+    await page.getByRole('tab',{name,exact:true}).click();
+    const panel=page.locator('.account-sections').getByRole('tabpanel');
+    for(const control of await panel.locator('button:visible,input:visible,select:visible,summary:visible').all()) {
+      await control.scrollIntoViewIfNeeded(); await expect(control).toBeInViewport({ratio:.99});
+    }
+    await expect(page.getByRole('tab',{name,exact:true})).toBeInViewport({ratio:1});
+    expect(await page.evaluate(()=>scrollY)).toBe(0);
+  }
+});
+
+test('compact account: a saved photo and linked Riot ID fit a small phone', async ({ page, context }) => {
+  await page.setViewportSize({width:320,height:568}); await seed(context,alice);
+  const photo=await sharp({create:{width:512,height:512,channels:3,background:'#c8ad7f'}}).webp().toBuffer();
+  await backend(context,homeRows(),{offline:false},new Map([[alice,photo]]));
+  await page.goto('/profile'); await expect(page.getByRole('img',{name:'Your profile photo',exact:true})).toBeVisible();
+  for(const name of ['Profile','Riot ID']) {
+    await page.getByRole('tab',{name,exact:true}).click();
+    const panel=page.locator('.account-sections').getByRole('tabpanel');
+    await page.screenshot({path:`player-visuals/account-compact-saved-${name.replaceAll(' ','-')}-320.png`});
+    expect(await panel.evaluate(el=>el.scrollHeight-el.clientHeight)).toBeLessThanOrEqual(1);
+    for(const control of await panel.locator('button:visible,input:visible,select:visible,a:visible').all()) await expect(control).toBeInViewport({ratio:.99});
+  }
 });

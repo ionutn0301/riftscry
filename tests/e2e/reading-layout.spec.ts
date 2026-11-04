@@ -49,6 +49,7 @@ test('reading layout: the homepage guide explains each feature and account requi
   await page.goto('/'); await readyCinema(page);
   await expect(page.locator('.cinema-introduction')).toContainText('Your recent games.');
   const guide = page.getByRole('link', { name: 'How RiftScry works', exact: true });
+  if (!await guide.isVisible()) await openCinemaNavigation(page);
   await reachableTarget(guide, page); await guide.click(); await readyWorld(page);
   await expect(page.getByRole('heading', { name: 'A clearer next game.' })).toBeVisible();
   await expect(page.locator('.guide-workflows > section')).toHaveCount(8);

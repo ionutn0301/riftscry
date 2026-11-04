@@ -155,7 +155,7 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
     </div>
   </dialog>
   <p class="sr-only" role="status" aria-live="polite" data-cinema-status></p>
-  <noscript><p class="cinema-nojs">Choose a champion to open their exact archive record, or <a href="/next-game">open your briefing</a>. The animated world needs JavaScript.</p></noscript>
+  <noscript><p class="sr-only">Champion links open their archive records. The animated world needs JavaScript.</p></noscript>
   <script is:inline type="application/json" id="home-signals-data" set:html={json}></script>
   <script is:inline type="application/json" id="home-legacy-signals" set:html={legacy}></script>
 </section>
