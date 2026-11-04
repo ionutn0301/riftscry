@@ -1,7 +1,8 @@
 import { defineConfig } from '@playwright/test';
 import base from './playwright.config';
 
-export default defineConfig(base, {
+export default defineConfig({
+  ...base,
   testIgnore: [],
   testMatch: '**/performance-experience.spec.ts',
   workers: 1,
