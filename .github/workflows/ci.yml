@@ -190,7 +190,7 @@ jobs:
 
   home-flight:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -204,7 +204,9 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium webkit
       - name: Verify the cinematic world, native history, touch and reduced motion
-        run: pnpm exec playwright test tests/e2e/home-flight.spec.ts
+        # Software WebGL plus video competes for the same runner CPU. Keep
+        # full-motion assertions and their timeouts; run one renderer at a time.
+        run: pnpm exec playwright test tests/e2e/home-flight.spec.ts --workers=1
         env:
           CI: "true"
       - name: Retain world states and full motion video

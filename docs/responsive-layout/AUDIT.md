@@ -9,6 +9,7 @@ The reported 1913×917 homepage collision came from independent absolute positio
 - Removed the homepage height-measurement observer and the conflicting viewport-position media queries.
 - Champion directory previews have intrinsic height, wrapping captions, and stop sticking on short windows.
 - Atlas footer destinations wrap in narrow landscape. Chapter labels use useful minimum widths and additional rows; on phones they replace the duplicate previous/next arrows. Practice choices use an intrinsic card grid.
+- Document scroll padding reserves the sticky header and bottom navigation once. Individual controls add only a small focus gap, avoiding unnecessary jumps when a visible champion is selected.
 
 ## Verification contract
 
