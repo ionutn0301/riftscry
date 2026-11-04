@@ -60,6 +60,10 @@ jobs:
         run: pnpm exec playwright test --config=playwright.player.config.ts reading-layout.spec.ts
         env:
           CI: "true"
+      - name: Verify guest review, build learning, catch-up and practice paths
+        run: pnpm exec playwright test --config=playwright.player.config.ts companion-learning.spec.ts learning-paths.spec.ts momentum.spec.ts
+        env:
+          CI: "true"
       - name: Verify compact match history and saved player links
         run: >
           pnpm exec playwright test --config=playwright.player.config.ts
@@ -72,6 +76,7 @@ jobs:
           name: reading-layout
           path: |
             player-visuals/reading-*
+            player-visuals/learning-*
             test-results/
           retention-days: 14
 
@@ -311,6 +316,8 @@ jobs:
 
       - name: Verify atlas across generated archive routes
         run: node scripts/verify-atlas.mjs
+      - name: Verify built catch-up responses and practice cards
+        run: node scripts/verify-learning-paths.mjs
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium webkit

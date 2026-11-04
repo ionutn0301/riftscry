@@ -8,7 +8,7 @@ import { sortPatchIds } from "./data";
  */
 
 export type SearchEntry = {
-  type: "champion" | "patch" | "item" | "system";
+  type: "champion" | "patch" | "item" | "system" | "page";
   label: string;
   sub?: string;
   href: string;
@@ -22,7 +22,13 @@ export function buildSearchIndex(
   const ordered = sortPatchIds(patches.map((p) => p.id)).map(
     (id) => patches.find((p) => p.id === id)!,
   );
-  const entries: SearchEntry[] = [];
+  const entries: SearchEntry[] = [
+    { type: 'page', label: 'Build my briefing', sub: 'Prepare your next game', href: '/next-game', keywords: ['briefing', 'next', 'game', 'progress'] },
+    { type: 'page', label: 'Catch up after a break', sub: 'What changed since I played?', href: '/catch-up', keywords: ['returning', 'catch', 'up', 'patch', 'break'] },
+    { type: 'page', label: 'Champion practice', sub: 'One useful habit · Garen, Lux, Ashe', href: '/learn', keywords: ['learn', 'practice', 'beginner', 'guide'] },
+    { type: 'page', label: 'Review my matches', sub: 'Recorded events and builds', href: '/players', keywords: ['review', 'matches', 'build', 'replay'] },
+    { type: 'page', label: 'My notebook', sub: 'Saved notes and takeaways', href: '/notebook', keywords: ['notebook', 'notes', 'saved'] },
+  ];
 
   // Champions (history pages) + per-patch champion jumps.
   for (const [id, m] of Object.entries(meta)) {

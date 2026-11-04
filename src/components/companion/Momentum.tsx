@@ -67,6 +67,13 @@ export default function Momentum({ player, view, historyOnly = false }: Props) {
 
     {completed && <Receipt cycle={completed} link={evidenceLink} />}
     {report.notice && report.status !== 'tracking' && <p className="momentum-notice" role="status">{report.notice}</p>}
+    <details className="momentum-evidence" data-progress-explanation><summary>How to read your progress</summary>
+      <p>{context ? `Comparison group: ${championDisplayName(context.champion)} · ${context.queueLabel} · ${context.roleLabel} · game version ${context.patch}.` : 'A supported champion, exact queue, role and game version are needed before games can be compared.'} Only the imported sample is available here; this is not your entire match history.</p>
+      <p>{context?.role === 'UTILITY' ? 'For supports, the starting measures are vision score per minute and kill participation. CS targets are not used.' : context?.role === 'MODE:aram' ? 'For ARAM, only kill participation is used. Lane-farm and Summoner’s Rift vision targets do not apply.' : 'The starting measures are CS per minute, kill participation and vision score per minute, when the records support them.'}</p>
+      <p>Per-minute measures use the whole match duration. Kill participation is your kills plus assists divided by your team’s kills; a complete five-player team and a nonzero total are required. Different queues and patches are kept separate.</p>
+      <p>Remakes, games shorter than five minutes, missing measurements and games outside the comparison group do not qualify. An incomplete import pauses updates. A new target needs at least three valid comparable games; later games count only if they started after the focus was created.</p>
+      <p>Use these measures to notice a pattern, then inspect a decision. More CS, vision or participation is not always the right choice. There is no deadline or streak to protect.</p>
+    </details>
     {storageNotice && <p className="momentum-notice" role="status">{storageNotice}</p>}
     <footer className="momentum-footer"><PlayerIcon name="history" size={14} /><span>{storageNotice ? 'Current match observations only.' : 'Saved to your workspace · Sign in to sync · Take breaks anytime.'}</span></footer>
   </section>;

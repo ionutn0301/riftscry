@@ -4,6 +4,7 @@ import type { SearchEntry } from "../../lib/search-index";
 import "./palette.css";
 
 const GROUPS: { type: SearchEntry["type"]; heading: string }[] = [
+  { type: 'page', heading: 'Start a task' },
   { type: "champion", heading: "Champions" },
   { type: "patch", heading: "Patches" },
   { type: "item", heading: "Items" },
@@ -69,8 +70,8 @@ export default function PaletteDialog({
         <span className="palette-caret" aria-hidden="true">
           Δ
         </span>
-        <span className="sr-only" id={searchHintId}>Search champions, patches, items, and systems.</span>
-        <Command.Input value={query} onValueChange={setQuery} aria-describedby={searchHintId} placeholder="Champion, patch, item, system…" />
+        <span className="sr-only" id={searchHintId}>Search tasks, champions, patches, items, and systems.</span>
+        <Command.Input value={query} onValueChange={setQuery} aria-describedby={searchHintId} placeholder="Champion, patch, or what you need…" />
         <button type="button" className="palette-close" aria-label="Close search" onClick={() => onOpenChange(false)}>Close</button>
       </div>
       <Command.List aria-busy={loadState === "loading"}>

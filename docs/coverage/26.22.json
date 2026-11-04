@@ -1,0 +1,301 @@
+{
+  "id": "26.22",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+  "checkedAt": "2026-11-04T09:56:00.453Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Aurelion Sol"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Corki"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Kayle"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Locke"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Maokai"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mel"
+      ],
+      "sourceLines": 23,
+      "parsedLines": 23
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Naafiri"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Rumble"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Shen"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Smolder"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Thresh"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Viktor"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Yasuo"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Zaahen"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Doran's Bow",
+        "Overlord's Bloodmail"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Aurelion Sol",
+        "records": 1
+      },
+      {
+        "name": "Corki",
+        "records": 2
+      },
+      {
+        "name": "Kayle",
+        "records": 2
+      },
+      {
+        "name": "Locke",
+        "records": 3
+      },
+      {
+        "name": "Maokai",
+        "records": 1
+      },
+      {
+        "name": "Mel",
+        "records": 23
+      },
+      {
+        "name": "Naafiri",
+        "records": 2
+      },
+      {
+        "name": "Rumble",
+        "records": 2
+      },
+      {
+        "name": "Shen",
+        "records": 1
+      },
+      {
+        "name": "Smolder",
+        "records": 1
+      },
+      {
+        "name": "Thresh",
+        "records": 2
+      },
+      {
+        "name": "Viktor",
+        "records": 2
+      },
+      {
+        "name": "Yasuo",
+        "records": 1
+      },
+      {
+        "name": "Zaahen",
+        "records": 2
+      }
+    ],
+    "items": [
+      {
+        "name": "Doran's Bow",
+        "records": 1
+      },
+      {
+        "name": "Overlord's Bloodmail",
+        "records": 2
+      }
+    ],
+    "systems": []
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "AurelionSol",
+        "records": 1
+      },
+      {
+        "id": "Corki",
+        "records": 2
+      },
+      {
+        "id": "Kayle",
+        "records": 2
+      },
+      {
+        "id": "Locke",
+        "records": 3
+      },
+      {
+        "id": "Maokai",
+        "records": 1
+      },
+      {
+        "id": "Mel",
+        "records": 23
+      },
+      {
+        "id": "Naafiri",
+        "records": 2
+      },
+      {
+        "id": "Rumble",
+        "records": 2
+      },
+      {
+        "id": "Shen",
+        "records": 1
+      },
+      {
+        "id": "Smolder",
+        "records": 1
+      },
+      {
+        "id": "Thresh",
+        "records": 2
+      },
+      {
+        "id": "Viktor",
+        "records": 2
+      },
+      {
+        "id": "Yasuo",
+        "records": 1
+      },
+      {
+        "id": "Zaahen",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Doran's Bow",
+        "records": 1
+      },
+      {
+        "name": "Overlord's Bloodmail",
+        "records": 2
+      }
+    ],
+    "systems": []
+  },
+  "exclusions": {},
+  "overrides": {
+    "classificationOverrides": {
+      "Mel": "rework"
+    },
+    "itemClassificationOverrides": {
+      "Overlord's Bloodmail": "adjustment"
+    },
+    "replaceChampions": [
+      {
+        "championId": "Zaahen",
+        "classification": "buff",
+        "abilities": [
+          {
+            "ability": "Q",
+            "name": "The Darkin Glaive",
+            "changes": [
+              {
+                "kind": "numeric",
+                "label": "Cooldown",
+                "before": "10 / 9 / 8 / 7 / 6s",
+                "after": "8 / 7.5 / 7 / 6.5 / 6s",
+                "direction": "buff"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "unparsed": []
+}

@@ -12,6 +12,18 @@ history. The experience connects those paths across the whole site.
 **Current experience: the Rift atlas.** Read the
 [platform audit and research](docs/rift-atlas/AUDIT.md).
 
+The [companion usability audit and player research](docs/companion-learning/AUDIT.md)
+maps the existing features, competitive opportunities and implementation priorities.
+Match overview now offers a guest replay routine and patch-grounded item explanations;
+the briefing's loadout shares those explanations. See the
+[verification record](docs/companion-learning/VALIDATION.md) for release limits.
+
+The next implementation pass adds `/catch-up` for returning players, `/learn`
+with three sourced practice cards, supported historical item tradeoffs, clearer
+progress criteria and task shortcuts in search. Patch 26.22 is ingested with
+reviewed parsing corrections. See the
+[implementation notes](docs/companion-learning/IMPLEMENTATION.md).
+
 - **A connected world:** travel around one Rift object with five camera positions.
   Drag, use the destination range, or follow any native destination link. The
   same spatial instrument opens from every champion, patch, game, and saved record;

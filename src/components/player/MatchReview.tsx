@@ -11,6 +11,8 @@ import { modeForMatch } from '../../lib/player/modes';
 import { briefingLink } from '../../lib/player/identity';
 import { buildSuggestions, type AdjustmentDraft } from '../../lib/player/advice';
 import BuildMemory from './BuildMemory';
+import BuildExplainer from './BuildExplainer';
+import QuickReview from './QuickReview';
 import { ItemLabel, RuneLabel } from './ItemPicker';
 import { useItemMetadata } from './useItemMetadata';
 import { usePlayerCooldown } from './usePlayerCooldown';
@@ -167,6 +169,8 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
           <SaveBuildButton match={match} platform={platform} puuid={puuid} metadata={items} />
         </div>
       </section>
+      <QuickReview key={match.metadata.matchId} match={match} champion={p.championName} facts={facts} loaded={!!timeline} loading={timelineLoading} error={!!timelineError} retrySeconds={retrySeconds} onLoad={() => timelineRequested ? void retryTimeline().catch(() => {}) : setTimelineRequested(true)} onReveal={revealEvidence} />
+      <BuildExplainer key={`build-${match.metadata.matchId}`} match={match} puuid={puuid} metadata={items} />
       <details className="player-explainer"><summary><PlayerIcon name="info" /> Match details</summary><p>{new Date(match.info.gameCreation).toLocaleString()} · {comparisonRoleLabel(comparisonRole(match, puuid))} · {id}</p>{mode && <p>{mode.context}</p>}<p>{items?.notice} Final loadout shows the end of the game; open the timeline for purchase order. Damage is champion damage across the whole match.</p></details>
       </section>
 

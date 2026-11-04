@@ -76,6 +76,14 @@ Rules that keep it honest:
 addHotfixes`). A wrong classification or a missed change is a small data PR — never a
 parser patch. See [CONTRIBUTING.md](../CONTRIBUTING.md) for a worked example.
 
+`itemClassificationOverrides` can also set a reviewed classification by exact
+item heading, without changing its underlying source values. In 26.22 this
+keeps Overlord’s Bloodmail’s AD increase and conditional AD reduction together
+as an adjustment. Mel is explicitly marked as a rework; Zaahen’s split cooldown
+bullets are joined through a champion override. Standalone numeric paragraphs
+are now parsed and counted alongside leaf list items, excluding blockquote
+commentary and paragraphs already owned by a list item.
+
 ## Hotfix markers
 
 The schema, override path (`addHotfixes`), and patch-page UI all support mid-patch

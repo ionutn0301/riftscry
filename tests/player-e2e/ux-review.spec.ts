@@ -112,7 +112,7 @@ test('UX audit: search distinguishes loading, failure and no matches and offers 
   await expect(search.locator('.palette-status[role="status"]')).toHaveText('Opening the archive…');await expect(search.locator('[cmdk-empty]')).toHaveCount(0);
   release();await expect(search.getByRole('alert')).toContainText('temporarily unavailable');await capture(page,'search-error');
   await search.getByRole('button',{name:'Try again',exact:true}).click();await expect(search.getByRole('option',{name:'Azir',exact:true})).toBeVisible();
-  const input=search.getByRole('combobox',{name:'Search RiftScry'});await expect(input).toHaveAccessibleDescription('Search champions, patches, items, and systems.');
+  const input=search.getByRole('combobox',{name:'Search RiftScry'});await expect(input).toHaveAccessibleDescription('Search tasks, champions, patches, items, and systems.');
   await input.fill('no-such-champion');await expect(search.locator('[cmdk-empty]')).toContainText('No matches');
   await page.keyboard.press('Escape');await expect(search).toHaveCount(0);await expect(trigger).toBeFocused();
   await trigger.click();await search.getByRole('combobox').fill('Azir');await search.getByRole('option',{name:'Azir',exact:true}).click();
