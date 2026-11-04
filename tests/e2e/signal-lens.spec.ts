@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import patch from '../../src/data/patches/26.16.json' with { type: 'json' };
+import champions from '../../src/data/champions.json' with { type: 'json' };
+import { latestArchivePatch } from '../archive-fixture';
 import { readyWorld, stationaryWorld, unobstructed } from './journey-test-helpers';
 
 const belveth = patch.champions.find(champion => champion.championId === 'Belveth')!;
@@ -118,11 +119,12 @@ for (const interval of ['26.16/26.15', '26.15/26.16']) test(`comparison ${interv
   await expect(page).toHaveURL(url => url.hash === '#compare-belveth');
 });
 
-for (const entry of ['/compare', '/compare/26.16']) test(`${entry} preserves a shared champion and scene through its redirect`, async ({ page }) => {
-  await page.goto(`${entry}?champions=azir#comparison`);
+for (const [entry, champion] of [['/compare', latestArchivePatch.champions[0]!.championId], ['/compare/26.16', 'Azir']]) test(`${entry} preserves a shared champion and scene through its redirect`, async ({ page }) => {
+  const key = champion!.toLowerCase();
+  await page.goto(`${entry}?champions=${key}#comparison`);
   await readyWorld(page);
-  await expect(page).toHaveURL(url => /^\/compare\/\d+\.\d+\/\d+\.\d+\/?$/.test(url.pathname) && url.searchParams.get('champions') === 'azir' && url.hash === '#comparison');
-  await expect(page.locator('[data-comparison-name]')).toHaveText('Azir');
+  await expect(page).toHaveURL(url => /^\/compare\/\d+\.\d+\/\d+\.\d+\/?$/.test(url.pathname) && url.searchParams.get('champions') === key && url.hash === '#comparison');
+  await expect(page.locator('[data-comparison-name]')).toHaveText(champions.champions[champion as keyof typeof champions.champions].name);
   await expect(page.locator('[data-compare-champion]:not([hidden])')).toHaveCount(1);
 });
 
@@ -195,10 +197,7 @@ test('reduced motion preserves exact interactive records with no animated value 
 // The latest-patch shortcut has its own moving-data contract; historical record
 // assertions above remain tied to their exact archived source.
 test('latest patch shortcut preserves the selected champion, scope and fragment', async ({ page }) => {
-  const directory = new URL('../../src/data/patches/', import.meta.url);
-  const latest = readdirSync(directory).filter(name => /^\d+\.\d+\.json$/.test(name))
-    .sort((a, b) => b.localeCompare(a, 'en', { numeric: true }))[0]!;
-  const record = JSON.parse(readFileSync(new URL(latest, directory), 'utf8')) as typeof patch;
+  const record = latestArchivePatch;
   const champion = record.champions[0]!.championId.toLowerCase();
   await page.goto(`/patch?champions=${champion}#${champion}`);
   await readyWorld(page);

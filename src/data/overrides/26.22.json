@@ -1,0 +1,29 @@
+{
+  "classificationOverrides": {
+    "Mel": "rework"
+  },
+  "itemClassificationOverrides": {
+    "Overlord's Bloodmail": "adjustment"
+  },
+  "replaceChampions": [
+    {
+      "championId": "Zaahen",
+      "classification": "buff",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "The Darkin Glaive",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "10 / 9 / 8 / 7 / 6s",
+              "after": "8 / 7.5 / 7 / 6.5 / 6s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

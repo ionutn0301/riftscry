@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getAllPatches, getChampionMeta } from '../lib/data';
+import { BEFORE_ARCHIVE, catchUp } from '../lib/catch-up';
+import { practiceGuides } from '../lib/practice-guides';
+import '../styles/learning-paths.css';
+export const prerender = false;
+const patches = getAllPatches();
+const roster = Object.entries(getChampionMeta()).sort((a, b) => a[1].name.localeCompare(b[1].name));
+const requestedChampion = Astro.url.searchParams.get('champion') ?? '';
+const champion = roster.find(([id]) => id.toLowerCase() === requestedChampion.toLowerCase());
+const since = Astro.url.searchParams.get('since') ?? patches[1]?.id ?? patches[0]?.id ?? '';
+const result = catchUp(patches, champion?.[0] ?? '', since);
+const invalidChampion = !!requestedChampion && !champion;
+const guided = practiceGuides.some(guide => guide.champion === champion?.[0]);
+---
+<Layout surface="champions" title="Catch up on your champion — RiftScry" description="Returning to League? Choose your champion and last played patch to see exact archived changes, with sources and coverage limits.">
+  <div class="learning-page" data-journey-deck><section id="catch-up-start" data-journey-panel data-journey-label="Catch up">
+    <header><p class="learning-kicker">WELCOME BACK</p><h1>Pick up where you left off.</h1><p>Choose your champion and the patch you last played. Read what changed, then take one thing into your next game.</p></header>
+    <form action="/catch-up#results" method="get" class="catch-up-form" autocomplete="off">
+      <div class="catch-up-field"><label for="catch-up-champion">My champion</label><select id="catch-up-champion" name="champion" required><option value="" selected={!champion}>Choose a champion</option>{roster.map(([id, meta]) => <option value={id} selected={id === champion?.[0]}>{meta.name}</option>)}</select></div>
+      <div class="catch-up-field"><label for="catch-up-since">I last played on</label><select id="catch-up-since" name="since"><option value={BEFORE_ARCHIVE} selected={since === BEFORE_ARCHIVE}>Before this archive / I’m not sure</option>{!result.valid && <option value={since} selected>Choose an archived patch</option>}{patches.map(patch => <option value={patch.id} selected={patch.id === since}>Patch {patch.id} · {patch.releaseDate}</option>)}</select></div>
+      <button type="submit">Show my catch-up</button>
+    </form>
+    <aside class="catch-up-coverage" aria-label="Archive coverage"><p>Archive: {result.oldest?.id}–{result.latest?.id} · Latest notes dated <time datetime={result.latest?.releaseDate}>{result.latest?.releaseDate}</time>.</p><p>Coverage is limited to ingested records. Mode-specific balance, bug fixes and later hotfixes may be absent. <a href={result.latest?.sourceUrl}>Check Riot’s latest archived notes ↗</a></p></aside>
+    <section id="results" class="catch-up-result" aria-labelledby="results-title" tabindex="-1">
+      {invalidChampion || !result.valid ? <div class="learning-empty"><h2 id="results-title">Choose a champion and an archived patch.</h2><p>This link contains a selection we cannot verify. Use the form above to build your catch-up.</p></div> : !champion ? <div class="learning-empty"><h2 id="results-title">Your return starts with one champion.</h2><p>No Riot ID or sign-in needed. Your selection stays in the page URL, so you can bookmark it or return with your browser’s Back button.</p></div> : <>
+        <p class="learning-kicker">{result.selected.length} ARCHIVED {result.selected.length === 1 ? 'PATCH' : 'PATCHES'} TO CHECK</p>
+        <h2 id="results-title">{champion[1].name}: {since === BEFORE_ARCHIVE ? 'across this archive' : `since patch ${since}`}</h2>
+        <p>{since === BEFORE_ARCHIVE ? 'Showing every available patch, including the earliest archived patch.' : `Showing patches after ${since}, through ${result.latest?.id}. Changes made on your last played patch are excluded.`} This is a history of changes, not a complete current ability sheet.</p>
+        {result.partial && <p class="catch-up-coverage">This is a partial catch-up. Earlier or missing patches cannot be reconstructed from this archive. Check Riot’s sources before relying on it for a long absence.</p>}
+        {result.entries.length === 0 ? <div class="learning-empty"><h3>{result.selected.length ? 'No direct champion records in this range.' : 'You’re at the newest archived patch.'}</h3><p>{result.selected.length ? 'Items, systems and unrecorded updates can still affect your champion. Check the wider changes below.' : 'There are no later ingested notes to show. This does not confirm your game client is on the same patch.'}</p></div> : result.entries.map(({ patch, change, hotfixes }, index) => <article class="catch-up-record">
+          <header><div><p class="learning-kicker">{patch.releaseDate}</p><h3>Patch {patch.id}</h3></div><a href={patch.sourceUrl}>Riot source ↗</a></header>
+          {change?.abilities.map((ability, abilityIndex) => <details open={index === 0 && abilityIndex === 0}><summary>{ability.ability === 'base' ? 'Base stats' : `${ability.ability.toUpperCase()} · ${ability.name}`} <small>({ability.changes.length})</small></summary><dl>{ability.changes.map(record => <div><dt>{record.label}</dt><dd>{record.kind === 'numeric' ? <div class="catch-up-delta"><span><small>Before</small>{record.before}</span><span><small>After</small>{record.after}</span></div> : record.text}</dd></div>)}</dl></details>)}
+          {hotfixes.map(fix => <p><strong>Recorded hotfix · {fix.date}</strong><br />{fix.description}</p>)}
+          <a href={`/patch/${patch.id}#${champion[0].toLowerCase()}`}>See this patch in context ↗</a>
+        </article>)}
+        {result.broader.length > 0 && <section class="practice-card" aria-labelledby="wider-changes"><h3 id="wider-changes">Also worth checking</h3><p>These patches contain item, system or general hotfix records. They are not automatically relevant to your champion or mode.</p><ul>{result.broader.map(patch => <li><a href={`/patch/${patch.id}`}>Patch {patch.id}</a> — {patch.items.length} item entries, {patch.systems.length} system entries{patch.hotfixes?.some(fix => !fix.championIds?.length) && ', general hotfix records'}</li>)}</ul></section>}
+        <div class="practice-card"><h3>One thing to carry forward</h3><p>Pick a change that affects a decision you make. Check it in the client, then write a short cue in your notebook. You do not need to memorize every patch.</p><div class="learning-path-actions"><a href={`/notebook?champion=${champion[0]}#notes`}>Write my cue ↗</a><a href={guided ? `/learn/${champion[0].toLowerCase()}` : `/champion/${champion[0].toLowerCase()}`}>{guided ? 'Practice this champion' : 'Full champion history'} ↗</a><a href="/next-game">Build my briefing ↗</a></div></div>
+      </>}
+    </section>
+  </section></div>
+</Layout>
+<script>
+  // Back/Forward may restore the draft selection from just before a GET
+  // submission. Keep the controls aligned with this URL's rendered results.
+  window.addEventListener('pageshow', () => {
+    document.querySelector<HTMLFormElement>('.catch-up-form')?.reset();
+  });
+</script>

@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 1,
+  "id": "26.22",
+  "assetVersion": "16.22.1",
+  "releaseDate": "2026-11-03",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-22-notes/",
+  "ingestedAt": "2026-11-04T09:56:00.453Z",
+  "champions": [
+    {
+      "championId": "AurelionSol",
+      "classification": "adjustment",
+      "summary": "The majority of Aurelion Sol players have made it pretty clear that they would much rather rank up his Singularity (E) second over his Astral Flight (W) even though it’s a much weaker second max.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Singularity",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Total Magic Damage",
+              "before": "50 / 75 / 100 / 125 / 150 (+60% AP) over 5s",
+              "after": "50 / 80 / 110 / 140 / 170 (+60 / 65 / 70 / 75 / 80% AP) over 5s",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Corki",
+      "classification": "adjustment",
+      "summary": "We were cautious about Corki’s power level going into Worlds, but now (like Azir and Orianna), he has some more space to be better for everyone.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Missile Barrage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "90 / 170 / 250 (+85% bonus AD)",
+              "after": "100 / 190 / 280 (+90% bonus AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Big One Damage",
+              "before": "180 / 340 / 500 (+170% bonus AD)",
+              "after": "200 / 380 / 560 (+180% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Kayle",
+      "classification": "buff",
+      "summary": "We've seen Kayle's relevance decrease steadily from earlier this year as the game’s moved past the top lane shake up from role quests.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Radiant Blast",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "12 / 11 / 10 / 9 / 8s",
+              "after": "10 / 9.5 / 9 / 8.5 / 8s",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Divine Judgment",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "160 / 120 / 80s",
+              "after": "140 / 110 / 80s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Locke",
+      "classification": "nerf",
+      "summary": "While Locke's performance in general is within reason, he's proven to be a much deeper champion than we initially expected and players who have reached that level of Locke play have shown him to…",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Ritual Nails",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Stack Bonus Damage",
+              "before": "18 / 26 / 34 / 42 / 50",
+              "after": "15 / 22 / 29 / 36 / 43",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Stack Damage",
+              "before": "75.6 / 109.2 / 142.8 / 176.4 / 210",
+              "after": "63 / 92.4 / 121.8 / 151.2 / 180.6",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Soul Ignition",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Duration",
+              "before": "6s",
+              "after": "5s",
+              "direction": "nerf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Maokai",
+      "classification": "adjustment",
+      "summary": "Maokai has remained a very still tree this year, and has been almost entirely stuck in support.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Bramble Smash",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "75 / 120 / 165 / 210 / 255 (+2 / 2.5 / 3 / 3.5 / 4% Target Maximum Health) (+50% AP)",
+              "after": "75 / 120 / 165 / 210 / 255 (+2.5 / 3 / 3.5 / 4 / 4.5% Target Maximum Health) (+50% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Mel",
+      "classification": "rework",
+      "summary": "This patch, Mel is getting a midscope adjustment.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health",
+              "before": "640 + 99/Level",
+              "after": "590 + 107/Level",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Mana",
+              "before": "480 + 28/Level",
+              "after": "455 + 38/Level",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "AR",
+              "before": "+5.2/Level",
+              "after": "+5.4/Level",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "AD",
+              "before": "54 + 3.3/Level",
+              "after": "52 + 3.3/Level",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "AS",
+              "before": "2.5%/Level",
+              "after": "2.75%/Level",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "passive",
+          "name": "Searing Brilliance",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Damage Per Bolt",
+              "before": "8 - 30 (+4% AP)",
+              "after": "4 - 30 (+4% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "First Stack Damage Against Minions",
+              "before": "50% Less",
+              "after": "45% Less",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "Q",
+          "name": "Radiant Volley",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "First Hit Damage",
+              "before": "60 / 85 / 110 / 135 / 160 (+55% AP)",
+              "after": "60 (+25% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Multi-Hit Damage",
+              "before": "5 / 7 / 9 / 11 / 13 (+5% AP)",
+              "after": "5 / 10 / 15 / 20 / 25 (+8% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Total Damage",
+              "before": "85 - 277 (+80 - 100% AP)",
+              "after": "85 - 285 (+65 - 97% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "prose",
+              "label": "- Now Refunds CD it hits an enemy champion at least once",
+              "text": "0.5s - 1.0s Refund (scaling with Champion Level)"
+            },
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "70 / 75 / 80 / 85 / 90",
+              "after": "60 / 65 / 70 / 75 / 80",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "Missile Speed",
+              "before": "3800",
+              "after": "3200 (takes .047s longer to travel to max range)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Rebuttal - Reworked",
+          "changes": [
+            {
+              "kind": "prose",
+              "label": "Change",
+              "text": "Unleashes a nova that expands to 400u Radius over 0.75 seconds. The nova destroys enemy projectiles and shields and grants move speed to Mel and Allies within. Destroyed missiles are retaliated against at the end of the nova."
+            },
+            {
+              "kind": "prose",
+              "label": "Retaliation Damage",
+              "text": "35 / 40 / 45 / 50 / 55 (+10% AP), reduced to 5 / 10 / 15 / 20 / 25 (+5% AP) for subsequent hits against the same enemy, up to 7 retaliations per enemy for a total of 65 - 205 (+40% AP)"
+            },
+            {
+              "kind": "prose",
+              "label": "Shield",
+              "text": "80 / 110 / 140 / 170 / 200 (+70% AP) for 2 seconds"
+            },
+            {
+              "kind": "prose",
+              "label": "Move Speed",
+              "text": "10 - 30% (scaling with Champion Level) for 2 seconds"
+            },
+            {
+              "kind": "prose",
+              "label": "Mana Cost",
+              "text": "100 / 80 / 60 / 40 / 0"
+            },
+            {
+              "kind": "prose",
+              "label": "Cooldown",
+              "text": "30 / 28.5 / 27 / 25.5 / 24"
+            }
+          ]
+        },
+        {
+          "ability": "E",
+          "name": "Solar Snare",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Root Duration",
+              "before": "1.5 seconds",
+              "after": "[0.8 - 1.6] / [0.85 - 1.75] / [0.9 - 1.9] / [0.95 - 2.05] / [1.0 - 2.2] seconds, increasing with distance",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Slow Amount",
+              "before": "30%",
+              "after": "20 / 25 / 30 / 35 / 40%",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "50 / 60 / 70 / 80 / 90",
+              "after": "40 / 50 / 60 / 70 / 80",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Golden Eclipse",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "120 / 100 / 80 seconds",
+              "after": "120 / 90 / 60 seconds",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Naafiri",
+      "classification": "buff",
+      "summary": "After a series of nerfs earlier this year, Naafiri has largely fallen out of mid lane entirely and has been pretty mediocre in the jungle.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Darkin Daggers",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Heal",
+              "before": "45 / 60 / 75 / 90 / 105 (+40% bonus AD)",
+              "after": "55 / 70 / 85 / 100 / 115 (+45% bonus AD)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "The Call of the Pack",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Bonus Attack Damage",
+              "before": "20%",
+              "after": "22%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Rumble",
+      "classification": "adjustment",
+      "summary": "Similar to Corki, Rumble was tuned for pro play.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "The Equalizer",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage per Second",
+              "before": "120 / 200 / 280 (+35% AP)",
+              "after": "(+40% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Damage Ability Power Ratio",
+              "before": "175% AP",
+              "after": "200% AP",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Shen",
+      "classification": "buff",
+      "summary": "Along with Maokai, Shen jungle has been pushed too far out of the meta.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Twilight Assault",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Monster Damage Modifier",
+              "before": "100 / 125 / 150 / 175 / 200",
+              "after": "120 / 140 / 160 / 180 / 200",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Smolder",
+      "classification": "adjustment",
+      "summary": "Our buffs a few patches ago landed a bit softer than we expected, but he’s ended up with a good balance between his Crit and Caster builds, so we’re giving him a more generic buff this time.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "ACHOOO!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Explosion Damage",
+              "before": "10 / 35 / 60 / 85 / 110 (+50% bonus AD) (+80% AP)",
+              "after": "25 / 50 / 75 / 100 / 125 (+50% bonus AD) (+80% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Thresh",
+      "classification": "nerf",
+      "summary": "Despite our prior nerf, Thresh has remained at the very top of the support pecking order for top tier players, so it’s time for another.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Damage",
+              "before": "56",
+              "after": "54",
+              "direction": "nerf"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "The Box",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "250 / 400 / 550 (+100% AP)",
+              "after": "200 / 350 / 500 (+100% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Viktor",
+      "classification": "adjustment",
+      "summary": "Last patch's nerf to Viktor hit him harder than we expected - but we are happy about the impact it had on his early game bullying, so we are buffing him back in scaling.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Health Growth",
+              "before": "100/Level",
+              "after": "105/Level",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Arcane Storm",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Conjure Damage",
+              "before": "100 / 175 / 250 (+50% AP)",
+              "after": "100 / 175 / 250 (+60% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Yasuo",
+      "classification": "adjustment",
+      "summary": "We were on the fence last patch with whether Yasuo would also need a nerf like Yone, but he's also continued growing in winrate as players migrate to crit builds and banrate reflecting that so he's…",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Steel Tempest",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "20 / 45 / 70 / 95 / 120 (+105% total AD)",
+              "after": "20 / 45 / 70 / 95 / 120 (+100% total AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Zaahen",
+      "classification": "buff",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "The Darkin Glaive",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "10 / 9 / 8 / 7 / 6s",
+              "after": "8 / 7.5 / 7 / 6.5 / 6s",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Doran's Bow",
+      "classification": "nerf",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "8",
+          "after": "7",
+          "direction": "nerf"
+        }
+      ]
+    },
+    {
+      "name": "Overlord's Bloodmail",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Attack Damage",
+          "before": "30",
+          "after": "40",
+          "direction": "buff"
+        },
+        {
+          "kind": "numeric",
+          "label": "Retribution",
+          "before": "+0 - 12% total AD, based on % Missing Health",
+          "after": "+0 - 10% total AD, based on % Missing Health",
+          "direction": "neutral"
+        }
+      ]
+    }
+  ],
+  "systems": []
+}

@@ -174,6 +174,18 @@ archive navigation remain useful when browser storage is unavailable.
 
 ## Presentation and verification
 
+### Companion learning — 4 November 2026
+
+The homepage's primary action opens the personal briefing; archive reading resume
+only replaces the secondary champion link. Match overview offers an optional
+guest replay routine and per-item build explanations, also available in the
+briefing loadout. Historical references must match the game patch. Standard item
+explanations are withheld for nonstandard modes; absent stats are not zeroes.
+The routine requests a timeline explicitly and selects a recorded death or
+purchase as a starting point, never as a detected mistake. It does not play video,
+request AI or save a takeaway. Notebook handoff retains champion and exact queue.
+See [research and implementation](docs/companion-learning/AUDIT.md).
+
 Short captions, a recognizable subject, exact evidence, and one primary action
 lead each scene. Sources, formulas, filters, and optional authoring remain
 inspectable. Use semantic HTML, visible focus, native form controls, accessible
@@ -196,6 +208,12 @@ review procedure. The earlier 2 November 2026 relief-instrument revision is
 recorded in [pull request #70](https://github.com/ionutn0301/riftscry/pull/70) and
 [its historical homepage record](docs/cinematic-instrument/README.md); those
 results apply to that superseded implementation.
+The companion learning pass adds returning-player catch-up at `/catch-up`,
+bounded historical boot/mage item comparisons, explicit Momentum criteria,
+task destinations in search and a three-champion practice pilot at `/learn`.
+Coverage, source dates and unavailable data stay visible. See
+[implementation notes](docs/companion-learning/IMPLEMENTATION.md) for limits.
+
 Do not treat test collection, typechecking, a build, historical screenshots, or
 fixture-backed results as a current visual sign-off or a successful live-account
 lookup. Earlier release records remain discoverable under [docs](docs/) and in

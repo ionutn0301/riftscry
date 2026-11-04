@@ -1,0 +1,21 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { practiceGuides } from '../../lib/practice-guides';
+import { getAllPatches } from '../../lib/data';
+import { catchUp } from '../../lib/catch-up';
+import '../../styles/learning-paths.css';
+export function getStaticPaths() { return practiceGuides.map(guide => ({ params: { champion: guide.champion.toLowerCase() }, props: { guide } })); }
+const { guide } = Astro.props;
+const updates = catchUp(getAllPatches(), guide.champion, guide.reviewedThrough);
+const stale = !updates.valid || updates.entries.length > 0;
+---
+<Layout surface="champions" title={`${guide.champion}: ${guide.theme} — RiftScry`} description={`A short ${guide.champion} practice routine with a sourced mechanic, one cue and a review question.`}>
+  <div class="learning-page" data-journey-deck><section id="practice-start" data-journey-panel data-journey-label="Practice card">
+    <nav aria-label="Practice navigation"><a href="/learn">← All practice cards</a><a href={`/catch-up?champion=${guide.champion}`}>Catch up on {guide.champion} ↗</a></nav>
+    <header><p class="learning-kicker">{guide.champion.toUpperCase()} · {guide.role.toUpperCase()}</p><h1>{guide.theme}</h1><p>You only need one observation. Try the exercise at your own pace and adapt it to the situation.</p></header>
+    {stale && <aside class="catch-up-coverage"><p><strong>This card needs a fresh review.</strong> Later champion records or a gap in coverage mean its mechanics may have changed. Check the client and <a href={`/catch-up?champion=${guide.champion}&since=${guide.reviewedThrough}`}>newer archived changes</a> before using it.</p></aside>}
+    <section class="practice-card" aria-labelledby="mechanic"><p class="learning-kicker">01 · UNDERSTAND</p><h2 id="mechanic">The mechanic</h2><p>{guide.mechanic}</p><a href={guide.source}>Read Riot’s champion overview ↗</a><p class="learning-note">Source checked {guide.reviewedAt}; archive reviewed through {guide.reviewedThrough}. Client tooltips are the place to check exact current values and mode differences.</p></section>
+    <section class="practice-card" aria-labelledby="exercise"><p class="learning-kicker">02 · TRY IT</p><h2 id="exercise">A small practice routine</h2><p><strong>Your cue:</strong> {guide.cue}</p><ol>{guide.steps.map(step => <li>{step}</li>)}</ol><p class="learning-note">Authored practice suggestions. These are not conclusions about your games.</p></section>
+    <section class="practice-card" aria-labelledby="reflect"><p class="learning-kicker">03 · REFLECT</p><h2 id="reflect">{guide.question}</h2><p>Keep one example and one adjustment. Your notebook can hold the takeaway; match review can help you find the recorded event.</p><div class="learning-path-actions"><a href={`/notebook?champion=${guide.champion}#notes`}>Write my takeaway ↗</a><a href="/players">Find my match ↗</a></div><p class="learning-note">Opening the notebook keeps your champion selected. Nothing is saved until you write and save it.</p></section>
+  </section></div>
+</Layout>

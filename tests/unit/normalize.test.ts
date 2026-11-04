@@ -171,3 +171,8 @@ it("adds hotfixes via override", () => {
   });
   expect(p.hotfixes).toHaveLength(1);
 });
+
+it('supports an explicit mixed-item classification without changing its source values', () => {
+  const p = normalizePatch(raw, meta, ids, { itemClassificationOverrides: { Eclipse: 'adjustment' } });
+  expect(p.items[0]).toMatchObject({ classification: 'adjustment', changes: [{ before: '60', after: '55', direction: 'nerf' }] });
+});

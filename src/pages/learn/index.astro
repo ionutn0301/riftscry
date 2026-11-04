@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { practiceGuides } from '../../lib/practice-guides';
+import { assetFor } from '../../lib/investigation';
+import '../../styles/learning-paths.css';
+---
+<Layout surface="champions" title="Champion practice — RiftScry" description="Short, sourced champion practice cards. Pick one decision to practice and one question to review.">
+  <div class="learning-page" data-journey-deck><section id="practice-start" data-journey-panel data-journey-label="Champion practice">
+    <header><p class="learning-kicker">CHAMPION PRACTICE · EARLY COLLECTION</p><h1>One champion. One useful habit.</h1><p>Understand a mechanic, try a small exercise, and review one decision. Start in Practice Tool, then carry a cue into a game when you want to.</p></header>
+    <div class="practice-grid">{practiceGuides.map(guide => <article class="practice-card"><img src={assetFor(guide.champion).portrait} alt="" width="64" height="64" loading="lazy" /><p class="learning-kicker">{guide.role}</p><h2>{guide.champion}</h2><p>{guide.theme}</p><div class="learning-path-actions"><a href={`/learn/${guide.champion.toLowerCase()}`}>Practice {guide.champion} ↗</a></div></article>)}</div>
+    <aside class="catch-up-coverage"><p>Three authored cards so far. Mechanics link to Riot; exercises are RiftScry suggestions. These are not matchup rankings, full champion guides or expert-validated coaching.</p></aside>
+    <nav aria-label="More ways to learn"><a href="/catch-up">Returning? Catch up on any champion ↗</a><a href="/champions">Browse every champion’s archive ↗</a><a href="/players">Review a match ↗</a></nav>
+  </section></div>
+</Layout>

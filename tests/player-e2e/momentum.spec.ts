@@ -154,6 +154,8 @@ test('gives a support player a vision focus without a farming target', async ({ 
   await expect(momentum.locator('.momentum-target')).toContainText('Vision score per minute');
   await expect(momentum.locator('.momentum-target')).not.toContainText('CS per minute');
   await expect(momentum).not.toContainText('safe minion or jungle income');
+  await momentum.locator('[data-progress-explanation] summary').click();
+  await expect(momentum.locator('[data-progress-explanation]')).toContainText('CS targets are not used.');
   await expect(momentum.locator('[data-momentum-check="waiting"]')).toHaveCount(3);
   noExpensiveReviewRequests(requests);
 });
@@ -168,6 +170,8 @@ test('uses actual five-player team kills for an ARAM participation focus', async
   await expect(momentum.locator('.momentum-target')).toContainText('Kill participation');
   await expect(momentum.locator('.momentum-baseline')).toContainText('40%');
   await expect(momentum.locator('.momentum-context')).toContainText('ARAM');
+  await momentum.locator('[data-progress-explanation] summary').click();
+  await expect(momentum.locator('[data-progress-explanation]')).toContainText('For ARAM, only kill participation is used.');
   await expect(momentum).not.toContainText('CS per minute');
   await expect(momentum).not.toContainText('Vision score per minute');
 

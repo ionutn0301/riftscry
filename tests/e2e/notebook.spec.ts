@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect, type Page } from '@playwright/test';
 import { COMPANION_KEY, emptyCompanion, makeSavedBuild, type CompanionState, type QuickNote } from '../../src/lib/companion';
-import latestPatch from '../../src/data/patches/26.21.json' with { type: 'json' };
+import historicalPatch from '../../src/data/patches/26.21.json' with { type: 'json' };
+import { latestArchivePatch } from '../archive-fixture';
 import { platform, puuid, sourceMatch } from '../player-e2e/fixtures';
 import { openScene, readyWorld } from './journey-test-helpers';
 
@@ -107,15 +108,15 @@ test('older notes show exact relevant archive changes and explicit review keeps 
   const note = page.locator('[data-recall-note="my-reminder"]');
   await expect(note.locator('[data-patch-status]')).toHaveAttribute('data-patch-status', 'review');
   await note.getByText('Check patch changes', { exact: true }).click();
-  const azir = latestPatch.champions.find(champion => champion.championId === 'Azir')!;
+  const azir = historicalPatch.champions.find(champion => champion.championId === 'Azir')!;
   const recorded = azir.abilities.flatMap(ability => ability.changes).find(change => change.kind === 'numeric')!;
   await expect(note).toContainText('Recorded changes to revisit');
   await expect(note).toContainText(recorded.before!);
   await expect(note).toContainText(recorded.after!);
   await expect(note.getByRole('link', { name: /Patch 26\.21/ }).first()).toHaveAttribute('href', '/patch/26.21#azir');
-  await note.getByRole('button', { name: 'Mark reviewed for 26.21', exact: true }).click();
+  await note.getByRole('button', { name: `Mark reviewed for ${latestArchivePatch.id}`, exact: true }).click();
   await expect(note.locator('[data-patch-status]')).toHaveAttribute('data-patch-status', 'current');
-  expect((await saved(page))!.notes[0]).toMatchObject({ patch: '16.20', reviewedPatch: '26.21' });
+  expect((await saved(page))!.notes[0]).toMatchObject({ patch: '16.20', reviewedPatch: latestArchivePatch.id });
 });
 
 test('a saved loadout surfaces a verified item change even when its champion is unchanged', async ({ page }) => {

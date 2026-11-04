@@ -23,6 +23,7 @@ import type { RawBlock, RawPatch, RawSection } from "./parse";
 
 export type PatchOverride = {
   classificationOverrides?: Record<string, Classification>;
+  itemClassificationOverrides?: Record<string, Classification>;
   replaceChampions?: ChampionChange[];
   addChampions?: ChampionChange[];
   removeChampions?: string[];
@@ -165,6 +166,9 @@ export function normalizePatch(
   }
 
   let items = raw.items.map(toItem);
+  if (override?.itemClassificationOverrides) {
+    items = items.map(item => ({ ...item, classification: override.itemClassificationOverrides![item.name] ?? item.classification }));
+  }
   if (override?.removeItems) {
     const remove = new Set(override.removeItems);
     items = items.filter((i) => !remove.has(i.name));

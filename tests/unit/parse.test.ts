@@ -4,6 +4,20 @@ import { parsePatchHtml } from "../../scripts/patch-ingestion/parse";
 
 const html = readFileSync("tests/fixtures/notes-fragment.html", "utf8");
 
+it('captures standalone numeric paragraphs without duplicating list paragraphs or treating commentary as changes', () => {
+  const { raw, report } = parsePatchHtml(`<h2 id="patch-champions">Champions</h2><div class="patch-change-block">
+    <h3 class="change-title">Locke</h3><blockquote><p>Context: 1 ⇒ 2 is discussed.</p></blockquote>
+    <h4>Q - Ritual Nails</h4><ul><li><p>Damage: 50 ⇒ 43</p></li></ul>
+    <p>Maximum Stack Damage: 210 ⇒ 180.6</p><h4>W - Soul Ignition</h4><ul><li>Duration: 6s ⇒ 5s</li></ul></div>
+    <h2 id="patch-items">Items</h2><div class="patch-change-block"><h4>Example item</h4><p>Cost: 100 ⇒ 200</p></div>
+    <h2 id="patch-system">System</h2><div class="patch-change-block"><p>Timer: 60 ⇒ 90</p></div>`);
+  expect(raw.champions[0]?.blocks[0]?.lines).toEqual([{ label: 'Damage', before: '50', after: '43' }, { label: 'Maximum Stack Damage', before: '210', after: '180.6' }]);
+  expect(raw.items[0]?.blocks[0]?.lines[0]).toEqual({ label: 'Cost', before: '100', after: '200' });
+  expect(raw.systems[0]?.blocks[0]?.lines[0]?.label).toBe('Timer');
+  expect(report.sourceBlocks.map(block => [block.sourceLines, block.parsedLines])).toEqual([[3, 3], [1, 1], [1, 1]]);
+  expect(report.unparsedBlocks).toEqual([]);
+});
+
 it("keeps all four 26.21 items separate despite shared wrappers and duplicate heading IDs", () => {
   const { raw, report } = parsePatchHtml(readFileSync("tests/fixtures/26.21-items.html", "utf8"));
   expect(raw.items.map((item) => item.name)).toEqual(["Bastion Breaker", "Dawncore", "Gluttonous Greaves", "Hubris"]);

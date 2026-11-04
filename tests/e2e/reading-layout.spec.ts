@@ -49,7 +49,9 @@ test('reading layout: the homepage guide explains each feature and account requi
   const guide = page.getByRole('link', { name: 'How RiftScry works', exact: true });
   await reachableTarget(guide, page); await guide.click(); await readyWorld(page);
   await expect(page.getByRole('heading', { name: 'A clearer next game.' })).toBeVisible();
-  await expect(page.locator('.guide-workflows > section')).toHaveCount(6);
+  await expect(page.locator('.guide-workflows > section')).toHaveCount(8);
+  await expect(page.getByRole('heading', { name: 'Return after a break', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Practice one useful habit', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'What needs an account?' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await capture(page, 'feature-guide');

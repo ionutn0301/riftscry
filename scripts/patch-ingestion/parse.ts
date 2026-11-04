@@ -58,6 +58,17 @@ function cleanText(el: HTMLElement | string): string {
   return text.replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").replace(/ /g, " ").replace(/\s+/g, " ").trim();
 }
 
+/** Riot also places numeric changes in paragraphs between lists (26.22).
+ * Exclude commentary and paragraphs already owned by a list item. */
+function isChangeLine(el: HTMLElement): boolean {
+  if (el.tagName === 'LI') return !el.querySelector('li') && !!cleanText(el);
+  if (el.tagName !== 'P' || !cleanText(el).includes(ARROW)) return false;
+  for (let parent = el.parentNode; parent; parent = parent.parentNode) {
+    if (parent.tagName === 'LI' || parent.tagName === 'BLOCKQUOTE') return false;
+  }
+  return true;
+}
+
 function parseLine(li: HTMLElement, report: ParseReport): RawLine | null {
   const text = cleanText(li);
   if (!text) return null;
@@ -102,8 +113,8 @@ function parseBlock(
     const sections: RawSection[] = [];
     let section: RawSection | null = null;
     let current: RawBlock | null = null;
-    for (const el of block.querySelectorAll("h3.change-title, h4, blockquote, li")) {
-      if (!section && el.tagName === "LI") {
+    for (const el of block.querySelectorAll("h3.change-title, h4, blockquote, li, p")) {
+      if (!section && isChangeLine(el)) {
         section = { name: sectionTitle, blocks: [] };
         sections.push(section);
       }
@@ -116,7 +127,7 @@ function parseBlock(
       } else if (section && el.tagName === "H4") {
         current = { header: cleanText(el), lines: [] };
         section.blocks.push(current);
-      } else if (section && el.tagName === "LI" && !el.querySelector("li")) {
+      } else if (section && isChangeLine(el)) {
         if (!current) {
           current = { header: "General", lines: [] };
           section.blocks.push(current);
@@ -144,7 +155,7 @@ function parseBlock(
   const sections: RawSection[] = [];
   let current: RawSection | null = null;
   let currentBlock: RawBlock | null = null;
-  for (const el of block.querySelectorAll("h4, ul, blockquote")) {
+  for (const el of block.querySelectorAll("h4, li, p, blockquote")) {
     if (el.tagName === "H4") {
       const text = cleanText(el);
       if (/:$/.test(text) && current) {
@@ -157,22 +168,20 @@ function parseBlock(
       }
     } else if (el.tagName === "BLOCKQUOTE") {
       if (current && !current.summary) current.summary = cleanText(el);
-    } else {
+    } else if (isChangeLine(el)) {
       if (!currentBlock) continue;
-      for (const li of el.querySelectorAll("li")) {
-        const line = parseLine(li, report);
-        if (line) currentBlock.lines.push(line);
-      }
+      const line = parseLine(el, report);
+      if (line) currentBlock.lines.push(line);
     }
   }
-  if (sections.length === 0 && block.querySelectorAll("li").length > 0) {
+  if (sections.length === 0 && block.querySelectorAll("li, p").some(isChangeLine)) {
     // Headerless block with real change lines (e.g. 26.2 "WASD"): name it
     // after its h2 section so nothing is dropped. Blockquote-only commentary
     // blocks (no <li>) are silently skipped.
     const fallback: RawSection = { name: sectionTitle, blocks: [{ header: "General", lines: [] }] };
     const summaryEl = block.querySelector("blockquote");
     if (summaryEl) fallback.summary = cleanText(summaryEl);
-    for (const li of block.querySelectorAll("li")) {
+    for (const li of block.querySelectorAll("li, p").filter(isChangeLine)) {
       const line = parseLine(li, report);
       if (line) fallback.blocks[0]!.lines.push(line);
     }
@@ -212,7 +221,7 @@ export function parsePatchHtml(html: string): { raw: RawPatch; report: ParseRepo
     }
     const sections = parseBlock(el, currentSection, currentTitle, report);
     const headings = el.querySelectorAll('h3.change-title').map(cleanText);
-    const sourceLines = el.querySelectorAll('li').filter((li) => !li.querySelector('li') && cleanText(li)).length;
+    const sourceLines = el.querySelectorAll('li, p').filter(isChangeLine).length;
     const parsedLines = sections.reduce((sum, section) => sum + section.blocks.reduce((n, block) => n + block.lines.length, 0), 0);
     report.sourceBlocks.push({ section: currentSection, headings, sourceLines, parsedLines });
     for (const name of headings) if (!sections.some((section) => section.name === name)) report.unparsedBlocks.push(`${currentSection}: missing entity ${name}`);

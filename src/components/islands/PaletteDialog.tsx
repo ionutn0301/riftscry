@@ -4,6 +4,7 @@ import type { SearchEntry } from "../../lib/search-index";
 import "./palette.css";
 
 const GROUPS: { type: SearchEntry["type"]; heading: string }[] = [
+  { type: 'page', heading: 'Start a task' },
   { type: "champion", heading: "Champions" },
   { type: "patch", heading: "Patches" },
   { type: "item", heading: "Items" },
@@ -32,8 +33,13 @@ export default function PaletteDialog({
   }, [entries, query]);
   // Keep the entire archive searchable without mounting hundreds of hidden
   // options and registering each one with cmdk on the first keystroke.
-  const visible = query.trim() ? matches.slice(0, 48)
-    : GROUPS.flatMap(group => matches.filter(entry => entry.type === group.type).slice(0, 12));
+  const visible = (query.trim() ? matches
+    : GROUPS.flatMap(group => matches.filter(entry => entry.type === group.type).slice(0, 12))).slice(0, 48);
+  // A typed query follows relevance across every entry type. Fixed category
+  // order would put a weak task match ahead of an exact champion name.
+  const groups = query.trim()
+    ? [{ type: 'results', heading: 'Best matches', entries: visible }]
+    : GROUPS.map(group => ({ ...group, entries: visible.filter(entry => entry.type === group.type) }));
 
   useEffect(() => {
     if (cached) { setLoadState("ready"); return; }
@@ -69,16 +75,16 @@ export default function PaletteDialog({
         <span className="palette-caret" aria-hidden="true">
           Δ
         </span>
-        <span className="sr-only" id={searchHintId}>Search champions, patches, items, and systems.</span>
-        <Command.Input value={query} onValueChange={setQuery} aria-describedby={searchHintId} placeholder="Champion, patch, item, system…" />
+        <span className="sr-only" id={searchHintId}>Search tasks, champions, patches, items, and systems.</span>
+        <Command.Input value={query} onValueChange={setQuery} aria-describedby={searchHintId} placeholder="Champion, patch, or what you need…" />
         <button type="button" className="palette-close" aria-label="Close search" onClick={() => onOpenChange(false)}>Close</button>
       </div>
       <Command.List aria-busy={loadState === "loading"}>
         {loadState === "loading" && <div className="palette-status" role="status">Opening the archive…</div>}
         {loadState === "error" && <div className="palette-status" role="alert"><p>Search is temporarily unavailable.</p><div><button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</button><a href="/champions">Browse champions ↗</a></div></div>}
         {loadState === "ready" && <Command.Empty>No matches. Try another champion, item, or patch.</Command.Empty>}
-        {GROUPS.map((g) => {
-          const group = visible.filter((e) => e.type === g.type);
+        {groups.map((g) => {
+          const group = g.entries;
           if (group.length === 0) return null;
           return (
             <Command.Group key={g.type} heading={g.heading}>
