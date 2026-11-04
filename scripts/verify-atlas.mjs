@@ -90,8 +90,8 @@ async function verifyCinema(document, assert) {
   const destinations = menu.querySelectorAll('nav[aria-label="RiftScry destinations"] a');
   const expectedDestinations = ['/', '/next-game', '/champions', '/players', '/pool#findings'];
   assert(destinations.length === expectedDestinations.length && expectedDestinations.every(href => destinations.some(link => link.getAttribute('href') === href)),'homepage menu needs five native product destinations');
-  const images = cinema.querySelectorAll('[data-cinema-world] img');
-  assert(images.length >= 2 && cinema.querySelector('[data-cinema-poster]')?.getAttribute('src') === first.world.figure,'homepage needs local environment and selected champion fallbacks');
+  const images = cinema.querySelectorAll('[data-cinema-world] .cinema-environment, .cinema-art [data-cinema-poster]');
+  assert(images.length === 2 && cinema.querySelector('[data-cinema-poster]')?.getAttribute('src') === first.world.figure,'homepage needs local environment and selected champion fallbacks');
   for (const image of images) artwork.add(image.getAttribute('src'));
   for (const src of artwork) {
     assert(typeof src === 'string' && /^\/(?:images|_astro)\/[A-Za-z0-9_./-]+\.(?:png|webp)$/.test(src) && !src.split('/').includes('..'),'homepage artwork must use a local source or optimized image path');

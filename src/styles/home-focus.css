@@ -111,7 +111,8 @@
   .cinema-introduction{font-size:14px;line-height:1.6;max-width:32ch}
   .cinema-champion{grid-row:2;gap:16px}
   .cinema-art{height:clamp(260px,70vw,400px)}
-  .cinema-champion-details{grid-template-columns:minmax(0,1fr);gap:12px}
+  .cinema-champion-details{display:flex;justify-content:flex-end;min-height:52px;gap:12px}
+  .cinema-identity{display:none}
   .cinema-hotspot-caption{max-width:190px}
   .cinema-hotspot-caption>small{font-size:12px}
   .cinema-entry-actions{grid-row:3;width:100%;max-width:none}
@@ -126,6 +127,7 @@
   .cinema-footer{gap:8px 16px}.cinema-playback{gap:16px}
   .cinema-playback>button,.cinema-footer .cinema-tour{font-size:11px;letter-spacing:0;gap:6px}
   .cinema-footer>a{margin-left:auto}
+  .cinema-world-shade{background:linear-gradient(180deg,#040a0fe6 0%,#040a0f9c 24%,#040a0f33 40%,#050b0e99 62%,#050b0e 100%)}
 }
 @media(max-width:360px){
   .rift-cinema{--home-gutter:16px}.cinema-brand img{width:96px}.cinema-utilities{gap:6px}
