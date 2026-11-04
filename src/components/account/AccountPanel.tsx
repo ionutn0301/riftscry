@@ -84,7 +84,7 @@ export default function AccountPanel({ profileView = false }: { profileView?: bo
           <div className="account-settings-row"><div><h3>Browser saves</h3><p>Copy guest saves; keep both originals.</p></div><button disabled={busy || account.syncing} onClick={() => void act(async () => { const count = await importGuestData(); setMessage(`${count} record(s) copied to your account.`); })}>Import guest saves</button></div>
           {account.conflicts.map(key => <div className="account-settings-row" key={key}><div><h3>Choose a saved version</h3><p className="account-record-key">{key.replace('riftscry:', '')}</p><p>Export first to keep both versions.</p></div><div className="account-actions"><button disabled={busy} onClick={() => void act(() => resolveConflict(key, 'cloud'))}>Use cloud version</button><button disabled={busy} onClick={() => void act(() => resolveConflict(key, 'local'))}>Keep this device’s version</button></div></div>)}
           <div className="account-settings-row"><div><h3>Backup</h3><p>All saved records, including unsynced edits.</p></div><button disabled={busy || !account.ready} onClick={exportWorkspace}>Export workspace</button></div>
-          <p className="account-fineprint">Photos aren’t included. Importable note backups are in <a href="/notebook">Notebook</a>.</p>
+          <p className="account-fineprint">Photos excluded. Note backups: <a href="/notebook">Notebook</a>.</p>
           </>}
           {(message || account.error) && <p role="alert" className="account-message">{message || account.error}</p>}
         </section>

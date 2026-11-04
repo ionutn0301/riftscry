@@ -68,6 +68,6 @@ export default function RiotAssociation({ owner }: { owner: string }) {
     </form>}
     {candidate && <div className="riot-candidate"><span>Ready to associate</span><strong>{candidate.player.name}</strong><p>{regions[candidate.player.platform]}</p><button className="account-save" type="button" onClick={associate}>Associate this Riot ID</button><button type="button" onClick={() => { setCandidate(null); setMessage(''); }}>Back</button></div>}
     <p id={`${id}-status`} role={problem ? 'alert' : 'status'} className={problem ? 'account-inline-error' : 'account-inline-status'}>{problem || message}</p>
-    <p className="account-fineprint">Links a player; it does not verify Riot account ownership. No Riot password needed.</p>
+    <p className="account-fineprint">Player link only; ownership isn’t verified. No Riot password.</p>
   </div>;
 }
