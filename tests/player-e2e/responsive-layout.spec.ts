@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
+import {mapControl} from '../shared/navigation';
 import {installFixtures,profilePath,query,recentAramWin,visualMatches} from './fixtures';
 import {readyCinema,cinemaFitsViewport} from '../e2e/cinema-test-helpers';
 import {readyWorld,reachableTarget} from '../e2e/journey-test-helpers';
@@ -77,4 +78,24 @@ for(const viewport of [{width:320,height:568},{width:568,height:320},{width:1101
     }
     await page.screenshot({path:`player-visuals/responsive-${viewport.width}-${name}.png`,fullPage:true});
   }
+});
+
+for(const viewport of [{width:844,height:390},{width:1024,height:600},{width:1101,height:900}])test(`responsive audit: long champion preview at ${viewport.width}×${viewport.height}`,async({page})=>{
+  await page.setViewportSize(viewport);await installFixtures(page);await page.goto('/champions');await readyWorld(page);
+  const lens=page.locator('.journey-roster-lens');
+  for(const name of ['Heimerdinger','Fiddlesticks','Nunu']){
+    await page.locator('[data-roster-search]').fill(name);
+    await expect(lens).toHaveAttribute('data-reader-key',name);
+    expect(await textCollisions(page,'.journey-roster-lens')).toEqual([]);
+    await reachableTarget(lens.locator('[data-reader-champion-link]'),page);
+    if(viewport.height<=700)await expect(lens).not.toHaveCSS('position','sticky');
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  }
+});
+for(const width of [480,568])test(`responsive audit: every landscape map footer destination is reachable at ${width}px`,async({page})=>{
+  await page.setViewportSize({width,height:320});await installFixtures(page);
+  await page.addInitScript(()=>localStorage.setItem('riftscry:resume',JSON.stringify({href:'/champion/heimerdinger',label:'Heimerdinger — a long saved reading with an exact historical record',updatedAt:new Date().toISOString()})));
+  await page.goto('/champions');await readyWorld(page);await mapControl(page).click();
+  for(const control of await page.locator('#rift-map-dialog .journey-map-footer :is(a,button):visible').all())await reachableTarget(control,page);
+  expect(await textCollisions(page,'#rift-map-dialog .journey-map-footer')).toEqual([]);
 });

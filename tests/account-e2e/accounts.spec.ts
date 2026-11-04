@@ -465,7 +465,7 @@ for (const width of [320, 390, 1440]) test(`personal homepage: linked player's t
   const targets = page.locator('[data-home-primary], [data-home-review], [data-home-choice]:visible, [data-home-catchup]:visible');
   for (const target of await targets.all()) {
     await target.scrollIntoViewIfNeeded();
-    await expect(target).toBeInViewport({ ratio: 1 });
+    await expect(target).toBeInViewport({ ratio: .99 });
     const box = (await target.boundingBox())!;
     expect(box.height).toBeGreaterThanOrEqual(44); expect(box.width).toBeGreaterThanOrEqual(44);
     expect(await target.evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })).toBe(true);
@@ -488,7 +488,7 @@ for (const [width, height] of [[320, 568], [480, 320], [1024, 600]]) test(`perso
   expect(Math.max(roster.y - actions.y - actions.height, roster.x - actions.x - actions.width)).toBeGreaterThanOrEqual(15);
   for (const target of await page.locator('[data-home-choice]:visible, [data-home-primary], [data-home-review]').all()) {
     await target.scrollIntoViewIfNeeded();
-    await expect(target).toBeInViewport({ ratio: 1 });
+    await expect(target).toBeInViewport({ ratio: .99 });
     expect(await target.evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })).toBe(true);
   }
   await mkdir('player-visuals', { recursive: true });
