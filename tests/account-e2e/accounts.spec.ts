@@ -462,7 +462,7 @@ for (const width of [320, 390, 1440]) test(`personal homepage: linked player's t
   await expect(page.locator('[data-cinema-canvas]')).toHaveAttribute('data-cinema-champion', 'Thresh');
   await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Thresh/);
   await expect(page.locator('[data-home-catchup]')).toHaveAttribute('href', '/catch-up?champion=Thresh');
-  await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', /thresh-figure.*\.webp$/);
+  await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', /thresh-figure(?:[^?]*\.webp|\.png%3F[^#]*&f=webp)$/);
   const targets = page.locator('[data-home-primary], [data-home-review], [data-home-choice]:visible, [data-home-catchup]:visible');
   for (const target of await targets.all()) {
     await target.scrollIntoViewIfNeeded();
@@ -608,7 +608,7 @@ test('personal homepage: the first painted roster is the owner’s, including a 
   for (const champion of ['Yasuo', 'Thresh', 'Akali']) {
     await page.locator(`[data-home-choice="${champion}"]`).click();
     await expect(home).toHaveAttribute('data-art-kind', 'cutout');
-    await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', new RegExp(`${champion.toLowerCase()}-figure.*\\.webp$`));
+    await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', new RegExp(`${champion.toLowerCase()}-figure(?:[^?]*\\.webp|\\.png%3F[^#]*&f=webp)$`));
     await expect.poll(() => page.locator('[data-cinema-poster]').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(500);
     await expect(page.locator('[data-cinema-canvas]')).toHaveAttribute('data-cinema-champion', champion);
     await mkdir('player-visuals', { recursive: true });
