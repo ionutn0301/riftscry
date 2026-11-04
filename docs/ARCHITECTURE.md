@@ -92,6 +92,18 @@ and source heading, with source-image and patch-catalog provenance. Ambiguous he
 and same-name mode variants remain unmapped. The UI states that archive/item coverage
 is partial and that mode-specific rules can also matter.
 
+## Automatic AI coach
+
+`src/pages/api/coach.ts` accepts only same-origin authenticated POSTs with a player,
+at most three match IDs and an optional bounded question. It derives evidence on
+the server; browser-authored facts are rejected. `src/lib/player/coach.ts` connects
+recorded events with the latest archived champion/item changes. Shared model
+configuration, structured output and citation checks live in `src/lib/ai/runtime.ts`.
+Generation uses existing per-client and verified-account limits, caches successful
+interpretations, and returns clearly labeled recorded facts on model failure.
+`CoachPanel` automatically requests once after import, isolates responses by owner
+and match scope, and presents one of three topics at a time. It does not read live games.
+
 ## Player API
 
 `src/pages/api/player/[action].ts` validates methods, platform, PUUID, queue and match IDs.

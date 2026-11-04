@@ -11,6 +11,15 @@ the single-world Rift Cinema homepage revision of 2 November 2026. This document
 [current homepage record](docs/rift-cinema/README.md) explain their respective
 design decisions.
 
+## AI coach update · 4 November 2026
+
+Signed-in briefings now lead with an automatically generated focus, champion-specific
+patch explanation and last-game observation, with one topic visible at a time.
+Manual goals and checklist controls are removed; prior records remain exportable.
+Recorded details remain available to guests and during AI failures. Detailed match
+reviews stay optional. [Research and implementation boundaries](docs/ai-coach-research.md)
+describe evidence validation, follow-up questions and the live-game limitation.
+
 ## Purpose
 
 RiftScry connects exact League of Legends archive records with available player
