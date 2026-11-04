@@ -1,8 +1,9 @@
 # Second implementation pass
 
 4 November 2026. Continues the recommendations in [AUDIT.md](AUDIT.md).
-Implementation is local on `feat/clearer-companion-build-learning`; this document
-does not imply the public repository or production deployment has changed.
+Implementation is on `feat/clearer-companion-build-learning` in
+[PR #78](https://github.com/ionutn0301/riftscry/pull/78). Use that PR's latest checks,
+merge state and deployment status as the current release record.
 
 ## Delivered
 

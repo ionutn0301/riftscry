@@ -107,8 +107,9 @@ post-game records; production registration/approval remains an operator obligati
 The second pass implements the P1 catch-up, freshness, supported item tradeoffs
 and progress-clarity work, plus the small P2 champion-learning pilot. See
 [IMPLEMENTATION.md](IMPLEMENTATION.md) for the concrete behavior, source review,
-coverage limits and remaining investments. “In this branch” means local code;
-publication and production verification are tracked in [VALIDATION.md](VALIDATION.md).
+coverage limits and remaining investments. Publication and production
+verification are tracked in [VALIDATION.md](VALIDATION.md) and
+[PR #78](https://github.com/ionutn0301/riftscry/pull/78).
 
 - Homepage: briefing becomes the primary action. Champion search remains the
   default secondary action; an existing reading resume can replace only that

@@ -5,7 +5,7 @@
 .learning-page a{color:var(--world-signal);text-underline-offset:4px}.learning-page :is(a,button,select,summary):focus-visible{outline:2px solid var(--world-signal);outline-offset:4px}
 .learning-page header{margin-bottom:32px}.learning-page nav,.learning-path-actions{display:flex;flex-wrap:wrap;gap:12px 24px;margin:24px 0}.learning-page nav a,.learning-path-actions a{min-height:44px;display:inline-flex;align-items:center}
 .catch-up-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:16px;align-items:end;padding:24px;background:var(--ink-2);border:1px solid var(--line);border-radius:14px;margin:28px 0}
-.catch-up-form label{display:grid;gap:10px;font-size:.9rem;min-width:0}.catch-up-form select{width:100%;min-width:0;padding:12px;border:1px solid var(--line-strong);background:var(--ink);color:var(--cream);border-radius:8px;font:inherit;min-height:48px}
+.catch-up-field{display:grid;gap:10px;min-width:0}.catch-up-form label{font-size:.9rem;min-width:0}.catch-up-form select{width:100%;min-width:0;padding:12px;border:1px solid var(--line-strong);background:var(--ink);color:var(--cream);border-radius:8px;font:inherit;min-height:48px}
 .catch-up-form button{min-height:48px;padding:12px 20px;background:var(--world-signal);color:var(--ink);border:0;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
 .catch-up-coverage{border-left:2px solid var(--world-signal);padding:4px 18px;margin:24px 0}.catch-up-coverage p{margin:4px 0;font-size:.9rem}
 .catch-up-result{scroll-margin-top:100px}.catch-up-record,.practice-card{padding:clamp(18px,3vw,30px);background:var(--ink-2);border:1px solid var(--line);border-radius:14px;margin:20px 0;overflow-wrap:anywhere}

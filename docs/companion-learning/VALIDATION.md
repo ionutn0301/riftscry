@@ -6,7 +6,9 @@ opens Notebook with the same champion and mode.
 
 The second pass also covers returning-player catch-up, historical item tradeoffs,
 support/ARAM progress explanations and three sourced champion practice cards.
-Results below describe the complete local branch as of 4 November 2026.
+Results below record local validation on 4 November 2026. The release is published
+in [PR #78](https://github.com/ionutn0301/riftscry/pull/78); its checks and merge state
+are the current release record.
 
 | Check | Result |
 | --- | --- |
@@ -18,7 +20,7 @@ Results below describe the complete local branch as of 4 November 2026.
 | `node --import tsx scripts/patch-ingestion/index.ts --validate` | All 22 archived patch files passed schema validation. |
 | `git diff --check` | Passed. |
 | Browser test collection | 13 scenarios collect across guest learning, returning/practice paths and Momentum. Includes 320/390/1440px, retry, history and no-JavaScript cases. Collection alone is not execution. |
-| CI browser execution and screenshots | Blocked pending explicit authorization to push the public branch. |
+| CI browser execution and screenshots | Running on PR #78; inspect the latest commit's checks and `reading-layout` artifacts. |
 
 ## Boundaries
 
@@ -31,6 +33,7 @@ Results below describe the complete local branch as of 4 November 2026.
 ## Environment
 
 Production homepage and briefing entry were inspected in the cloud browser.
+The published preview's catch-up and Lux practice flow were also inspected.
 The local managed preview daemon is unavailable (`sites-previewd mailbox is
 unavailable`), so no local visual sign-off is claimed. Browser regression tests
 and desktop/phone capture generation are included for execution in GitHub CI.
@@ -38,24 +41,20 @@ Fixture-backed tests do not verify live Riot availability, OAuth, or real player
 improvement. This release is a reviewable branch; it does not itself change the
 production deployment.
 
-## Publication handoff
+## Publication and release checks
 
-First implementation commit: `a8416ee`; subsequent work stays on
-`feat/clearer-companion-build-learning`. See git history for the complete branch.
-The remote URL matches the repository selected by the user, and the GitHub
-connector confirms admin/maintain/push permission. Automatic approval review
-nevertheless rejected the branch push because the user had not explicitly
-authorized publishing this implementation to a public repository. No remote
-branch, PR or deployment was created by this task.
+The user authorized publication and merging to main on 4 November. The connected
+GitHub account published the locally tested tree as commit `a163383`, with tree
+`b1c546aa991ae3c809d0ad9dd79272954422b353` matching the local build exactly.
 
-Next action after authorization: push this branch, open a draft PR into `main`,
-inspect the full CI result and the new `reading-layout` captures, fix observed
-failures and update this record. No merge is part of that publication action.
+The first CI run exposed an outdated six-section guide assertion and search
+rendering 53 entries after adding task shortcuts. The guide assertion now checks
+all eight sections; the search implementation retains its existing 48-entry
+budget. Live preview testing also led to explicit label/control associations in
+the catch-up form. No assertion timeout or performance limit was relaxed.
 
-The user subsequently authorized continued implementation. A further push was
-again rejected by automatic approval review because it did not interpret that
-instruction as explicit publication approval. No alternate publication method
-was attempted. Local implementation and validation continued independently.
+Merge is gated on the final PR checks. GitHub CI artifacts provide the actual
+desktop/mobile captures; the PR records final inspection and deployment results.
 
 ## Content review boundaries
 

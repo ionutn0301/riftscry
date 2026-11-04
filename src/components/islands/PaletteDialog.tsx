@@ -33,8 +33,8 @@ export default function PaletteDialog({
   }, [entries, query]);
   // Keep the entire archive searchable without mounting hundreds of hidden
   // options and registering each one with cmdk on the first keystroke.
-  const visible = query.trim() ? matches.slice(0, 48)
-    : GROUPS.flatMap(group => matches.filter(entry => entry.type === group.type).slice(0, 12));
+  const visible = (query.trim() ? matches
+    : GROUPS.flatMap(group => matches.filter(entry => entry.type === group.type).slice(0, 12))).slice(0, 48);
 
   useEffect(() => {
     if (cached) { setLoadState("ready"); return; }
