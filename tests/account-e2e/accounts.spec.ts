@@ -621,6 +621,11 @@ test('personal homepage: Urgot, Riven and Malphite artwork stays separate from t
   await installFixtures(page, { matches: homeGames(['Urgot', 'Urgot', 'Urgot', 'Riven', 'Riven', 'Malphite']) });
   await page.goto('/');
   await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-subject', 'Urgot');
+  // The saved account preference may enable motion. Capture settled artwork,
+  // not a crossfade between two champions or a temporarily hidden name.
+  const motion = page.locator('.cinema-footer [data-cinema-motion]');
+  if ((await motion.getAttribute('aria-pressed')) === 'false') await motion.click();
+  await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-cinema-motion', 'reduced');
   await page.evaluate(() => document.fonts.ready);
   await mkdir('player-visuals', { recursive: true });
   for (const viewport of [{width:390,height:844},{width:1366,height:900},{width:1913,height:917}]) {
@@ -628,6 +633,7 @@ test('personal homepage: Urgot, Riven and Malphite artwork stays separate from t
     for (const champion of ['Urgot', 'Riven', 'Malphite']) {
       await page.locator(`[data-home-choice="${champion}"]`).click();
       await expect(page.locator('[data-cinema-canvas]')).toHaveAttribute('data-cinema-champion', champion);
+      await expect(page.locator('.cinema-identity')).toHaveCSS('opacity', '1');
       await championArtIsSeparate(page);
       await page.screenshot({path:`player-visuals/home-personal-art-${champion}-${viewport.width}.png`,fullPage:true});
     }
