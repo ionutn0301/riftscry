@@ -53,6 +53,8 @@ export async function openCinemaNavigation(page: Page) {
 /** The homepage is a single screen. Every visible control must fit without
  * scrolling, including short landscape and effective zoom viewports. */
 export async function cinemaFitsViewport(page: Page) {
+  // Dynamic viewport units settle on the next rendering update after rotation.
+  await expect.poll(() => cinema(page).evaluate(el => Math.abs(el.getBoundingClientRect().height-innerHeight))).toBeLessThanOrEqual(1);
   await championArtIsSeparate(page);
   const geometry = await page.evaluate(() => {
     const root = document.querySelector('[data-rift-cinema]')!;

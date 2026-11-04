@@ -408,7 +408,7 @@ for (const width of [1440, 390, 320]) test(`account sections support a photo and
   await page.reload();
   await expect(page.getByRole('img', { name: 'Your profile photo', exact: true })).toBeVisible();
   await page.getByRole('navigation', { name: 'Account sections' }).getByRole('tab', { name: 'Riot ID', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Your League player' })).toBeInViewport();
+  await expect(page.getByRole('form', { name: 'Associate a Riot ID' })).toBeInViewport();
   const form = page.getByRole('form', { name: 'Associate a Riot ID' });
   await form.getByLabel('Riot ID', { exact: true }).fill('Fixture Player#TEST');
   await form.getByLabel('Server', { exact: true }).selectOption('eun1');
@@ -725,8 +725,9 @@ for (const viewport of [{width:320,height:568},{width:390,height:844},{width:768
   await mkdir('player-visuals', {recursive:true});
   for (const name of ['Profile','Riot ID','Settings']) {
     await page.getByRole('tab', {name,exact:true}).click();
-    await expect(page.getByRole('tabpanel')).toHaveCount(1);
-    const panel = page.getByRole('tabpanel');
+    await page.screenshot({path:`player-visuals/account-compact-${name.replaceAll(' ','-')}-${viewport.width}.png`});
+    await expect(page.locator('.account-sections').getByRole('tabpanel')).toHaveCount(1);
+    const panel = page.locator('.account-sections').getByRole('tabpanel');
     await expect(panel).toBeInViewport({ratio:1});
     expect(await page.evaluate(() => ({x:document.documentElement.scrollWidth-innerWidth,y:document.documentElement.scrollHeight-innerHeight}))).toEqual({x:0,y:0});
     expect(await panel.evaluate(el => el.scrollHeight-el.clientHeight), `${name} needs no scrolling in its default state`).toBeLessThanOrEqual(1);
@@ -760,11 +761,25 @@ test('compact account: short landscape keeps navigation fixed and form controls 
   await page.goto('/account'); await expect(page.getByLabel('Display name')).toBeVisible();
   for(const name of ['Profile','Riot ID','Settings']) {
     await page.getByRole('tab',{name,exact:true}).click();
-    const panel=page.getByRole('tabpanel');
+    const panel=page.locator('.account-sections').getByRole('tabpanel');
     for(const control of await panel.locator('button:visible,input:visible,select:visible,summary:visible').all()) {
       await control.scrollIntoViewIfNeeded(); await expect(control).toBeInViewport({ratio:.99});
     }
     await expect(page.getByRole('tab',{name,exact:true})).toBeInViewport({ratio:1});
     expect(await page.evaluate(()=>scrollY)).toBe(0);
+  }
+});
+
+test('compact account: a saved photo and linked Riot ID fit a small phone', async ({ page, context }) => {
+  await page.setViewportSize({width:320,height:568}); await seed(context,alice);
+  const photo=await sharp({create:{width:512,height:512,channels:3,background:'#c8ad7f'}}).webp().toBuffer();
+  await backend(context,homeRows(),{offline:false},new Map([[alice,photo]]));
+  await page.goto('/profile'); await expect(page.getByRole('img',{name:'Your profile photo',exact:true})).toBeVisible();
+  for(const name of ['Profile','Riot ID']) {
+    await page.getByRole('tab',{name,exact:true}).click();
+    const panel=page.locator('.account-sections').getByRole('tabpanel');
+    await page.screenshot({path:`player-visuals/account-compact-saved-${name.replaceAll(' ','-')}-320.png`});
+    expect(await panel.evaluate(el=>el.scrollHeight-el.clientHeight)).toBeLessThanOrEqual(1);
+    for(const control of await panel.locator('button:visible,input:visible,select:visible,a:visible').all()) await expect(control).toBeInViewport({ratio:.99});
   }
 });

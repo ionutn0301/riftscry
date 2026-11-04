@@ -23,7 +23,7 @@ function ProfileEditor({ profile, save }: { profile: PracticeProfile; save: (pro
     </div><div className="profile-field"><label htmlFor={`${id}-role`}>Preferred role</label>
     <select id={`${id}-role`} value={draft.role} onChange={event => { setDirty(true); setDraft({ ...draft, role: event.target.value as PracticeProfile['role'] }); }}>{roles.map(role => <option key={role}>{role}</option>)}</select></div>
     {dirty && original.current !== current && <p role="status">Saved preferences changed while you were editing. Reload them before saving.</p>}
-    <div className="practice-actions"><button disabled={!dirty} type="submit">Save preferences</button>{dirty && <button type="button" onClick={() => { setDraft(profile); original.current = current; setDirty(false); }}>Reset changes</button>}</div>
+    <div className="practice-actions"><button disabled={!dirty} type="submit">Save preferences</button>{dirty && <button type="button" onClick={() => { setDraft(profile); original.current = current; setDirty(false); }}>Reset<span className="sr-only"> changes</span></button>}</div>
   </form>;
 }
 

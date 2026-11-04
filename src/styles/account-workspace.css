@@ -6,7 +6,7 @@ body.rift-shell:is([data-surface=account],[data-surface=profile]) .rift-site-she
 body.rift-shell:is([data-surface=account],[data-surface=profile]) #main{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden;padding-block:12px var(--journey-dock-clearance)}
 body.rift-shell:is([data-surface=account],[data-surface=profile]) #main>.journey-chapters{display:none}
 body.rift-shell:is([data-surface=account],[data-surface=profile]) #main [data-journey-deck]{display:flex;flex:1;min-height:0;height:100%;overflow:hidden}
-body.rift-shell:is([data-surface=account],[data-surface=profile]) #main .account-panel.account-hub{display:flex;flex-direction:column;flex:1;gap:16px;width:min(960px,100%);height:100%;max-height:680px;min-height:0;margin:auto;overflow:hidden;color:var(--cream)}
+body.rift-shell:is([data-surface=account],[data-surface=profile]) #main .account-panel.account-hub{display:flex;flex-direction:column;flex:1;gap:16px;width:min(960px,100%);height:100%;max-height:520px;min-height:0;margin:auto;overflow:hidden;color:var(--cream)}
 .account-hub .account-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;padding:0;margin:0}
 body[data-reading-layout] #main .account-hub h1{font-size:clamp(27px,3vw,38px);margin:0;line-height:1.2}
 .account-hub .account-heading p{margin:4px 0 0;font-size:12px;color:var(--cream-dim);overflow-wrap:anywhere}
@@ -38,7 +38,7 @@ body[data-reading-layout] #main .account-hub .account-section>h2{font-size:24px;
 .profile-file-choice:focus-within{outline:2px solid var(--gold);outline-offset:3px}
 .profile-file-choice input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
 .profile-file-choice:has(input:disabled){opacity:.5;cursor:wait}
-.profile-photo-controls .account-actions{justify-content:center;gap:6px;margin-top:6px}
+.profile-photo-actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}.profile-photo-controls .account-actions{justify-content:center;gap:6px;margin:0}.account-hub .profile-remove-photo{display:grid;place-items:center;width:44px;padding:10px}
 .profile-photo-controls .account-actions:empty{display:none}
 .account-hub .practice-plan{border:0;margin:0;padding:0;min-width:0;color:inherit}
 .account-hub .practice-profile{display:grid;gap:16px;margin:0}
@@ -77,12 +77,12 @@ body[data-reading-layout] #main .account-guest-intro h2{font-size:clamp(24px,3vw
  .account-hub .account-layout{gap:12px}.account-hub .account-section{padding:16px}
  .account-hub .profile-details{grid-template-columns:minmax(0,1fr);gap:16px}
  .profile-photo-editor{flex-direction:row;gap:12px;align-items:center}.profile-photo-preview{width:64px;height:64px;font-size:28px}
- .profile-photo-controls{text-align:left}.profile-photo-controls .account-actions{justify-content:flex-start}
+ .profile-photo-controls{text-align:left}.profile-photo-actions{justify-content:flex-start}.profile-photo-controls .account-actions{justify-content:flex-start}
  .profile-photo-controls p{font-size:10px;margin-top:0}.account-hub .practice-profile{gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}.account-hub .practice-actions,.account-hub .practice-profile>p{grid-column:1/-1}.account-hub .profile-field label span{display:none}
- .account-settings-row{align-items:center;gap:10px;padding:12px 0}.account-settings-row p{display:none}
+ .account-settings-row{align-items:center;gap:10px;padding:8px 0}.account-settings-row p{display:none}
  .account-settings-row .account-actions{justify-content:flex-start;gap:6px}
  .account-hub .account-actions button{padding-inline:10px;font-size:12px}
- .account-riot-form{gap:12px;grid-template-columns:minmax(0,1fr)}
+ .account-riot-form{gap:12px;grid-template-columns:minmax(0,1fr) auto}.account-riot-form>div:first-child{grid-column:1/-1}
  .account-hub .practice-profile :is(input,select),.account-riot-form :is(input,select){font-size:16px}
  .account-hub .account-section-help{margin-bottom:12px}.account-hub .account-fineprint{margin-top:12px}
 }

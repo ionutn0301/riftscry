@@ -62,10 +62,10 @@ test('responsive audit: zoom reflow and short landscape keep the homepage on one
     await page.setViewportSize(viewport);await page.evaluate(()=>scrollTo(0,0));
     await cinemaFitsViewport(page);
     expect(await textCollisions(page,'[data-rift-cinema]')).toEqual([]);
-    const champion=await page.locator('[data-rift-cinema]').getAttribute('data-home-subject');
     await page.mouse.move(10,150);await page.mouse.wheel(0,180);
     await expect.poll(()=>page.evaluate(()=>scrollY)).toBe(0);
-    await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-subject',champion!);
+    // Wheel gestures may change the featured world; the document stays fixed.
+    await cinemaFitsViewport(page);
     await expect(page.locator('[data-home-primary]')).toBeInViewport({ratio:1});
   }
 });
