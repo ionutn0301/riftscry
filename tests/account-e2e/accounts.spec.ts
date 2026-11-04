@@ -456,7 +456,7 @@ for (const width of [320, 390, 1440]) test(`personal homepage: linked player's t
   await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Lux/);
   await page.locator('[data-home-choice="Chogath"]').click();
   // Freeze motion through the real preference control before inspecting art.
-  const motion = page.locator('[data-cinema-motion]');
+  const motion = page.locator('.cinema-footer [data-cinema-motion]');
   if ((await motion.getAttribute('aria-pressed')) === 'false') await motion.click();
   await expect(page.locator('[data-cinema-canvas]')).toHaveAttribute('data-cinema-champion', 'Chogath');
   await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Chogath/);

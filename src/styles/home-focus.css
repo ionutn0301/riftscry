@@ -90,6 +90,9 @@
   .rift-cinema h1>em{font-size:40px}
   .cinema-introduction{font-size:13px;line-height:1.5;margin:12px 0 16px}
 }
+@media(min-width:701px) and (max-height:640px){
+  .cinema-introduction{display:none}
+}
 @media(max-width:479px) and (min-height:451px) and (max-height:500px){
   .cinema-opening{top:62px}
   .cinema-opening>.cinema-kicker{display:none}
