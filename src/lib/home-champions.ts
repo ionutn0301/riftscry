@@ -1,13 +1,15 @@
 import { getChampionMeta, getAssetVersion, getPatch } from './data';
 import { recordsFor, type Evidence } from './investigation';
 import type { HomeSignal } from './home-signals';
+import { championFigures } from './champion-figures';
+import type { RiftCinemaChampion } from './rift-cinema-world';
 
 export type CinemaSignal = Omit<HomeSignal, 'ability' | 'classification'> & {
   classification: HomeSignal['classification'] | null;
   ability: string;
   record: Evidence | null;
   explore: string;
-  world: { id: string; region: string; character: string; primary: string; secondary: string; word: string; number: string; figure: string; kind?: 'cutout' | 'splash' };
+  world: { id: string; region: string; character: string; primary: string; secondary: string; word: string; number: string; figure: string; kind?: 'cutout' | 'splash'; focus?: RiftCinemaChampion['focus'] };
 };
 
 /** Build-time only. The full catalogue is fetched after personalization or an explicit choice. */
@@ -28,7 +30,8 @@ export function buildCinemaCatalogue(): CinemaSignal[] {
       before: numeric?.before ?? '', after: numeric?.after ?? '', unit: numeric?.unit,
       href: record ? `/patch/${record.patch}#${id.toLowerCase()}` : explore, sourceUrl: record?.source ?? '', record, explore,
       world: { id, region: 'YOUR CHAMPION', character: champion.title, primary: '#b9d9da', secondary: '#477b8a',
-        word: '', number: '', kind: 'splash', figure: `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg` },
+        word: '', number: '', kind: 'splash', figure: `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`,
+        ...(championFigures[id] ? { ...championFigures[id], kind: 'cutout' as const } : {}) },
     };
   });
 }

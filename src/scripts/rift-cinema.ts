@@ -59,7 +59,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     touring=false;clearTimeout(tourTimer);tourTimer=0;
     tour?.setAttribute('aria-pressed','false');text('[data-cinema-tour-label]','Play tour');
   }
-  function worldActive(){return pageActive&&!document.hidden&&!menu.open&&!evidence.open&&root.dataset.cinemaState==='world';}
+  function worldActive(){return root.dataset.homeLoading==='false'&&pageActive&&!document.hidden&&!menu.open&&!evidence.open&&root.dataset.cinemaState==='world';}
   function scheduleTour(){
     clearTimeout(tourTimer);
     tourTimer=window.setTimeout(()=>{
@@ -171,7 +171,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     review.querySelector('strong')!.textContent=review.dataset.latestReview?'Review latest game':recent?'Review my games':'Review a game';
     links('[data-home-catchup]',`/catch-up?champion=${current.championId}`);
     text('[data-home-catchup]>span:first-child',`Catch up on ${current.championName}`);
-    if($account.get().userId&&recent)links('[data-home-primary]',briefingLink(recent,{champion:current.championId}));
+    if($account.get().userId&&recent&&root.dataset.homeLoading==='false')links('[data-home-primary]',briefingLink(recent,{champion:current.championId}));
     const reading=readReturnState().resume;
     const readingLink=root.querySelector<HTMLAnchorElement>('[data-home-reading]')!;
     readingLink.hidden=!reading;readingLink.href=reading?.href??'/explore#change';
@@ -211,13 +211,15 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
       const signal=signals.find(signal=>signal.championId===count.id)!;
       link.dataset.homeChoice=signal.championId;link.href=signal.explore;link.setAttribute('aria-label',`Enter ${signal.championName}'s world${count.games?`, ${count.games} recent games`:''}`);
       link.style.setProperty('--choice-accent',signal.world.primary);
-      const image=link.querySelector('img')!;image.src=signal.world.kind==='splash'?signal.icon:signal.world.figure;image.dataset.artKind=signal.world.kind??'cutout';
+      // Wide foreground poses belong in the scene; square portraits stay legible in the picker.
+      const image=link.querySelector('img')!;image.src=signal.world.kind==='splash'||signal.world.focus?signal.icon:signal.world.figure;image.dataset.artKind=signal.world.kind==='splash'||signal.world.focus?'portrait':'cutout';
       link.querySelector('[data-home-choice-name]')!.textContent=signal.championName;
       const caption=link.querySelector<HTMLElement>('[data-home-choice-count]')!;caption.hidden=!count.games;caption.textContent=`${count.games} game${count.games===1?'':'s'}`;
     });
     const requested=new URLSearchParams(location.search).get('signal');
     // A shared URL wins; background personalization never changes browser history.
     select(requested&&signals.some(signal=>signal.championId===requested)?requested:choiceIds[0]!,false,false);
+    if(['#inspect','#reveal','#carry'].includes(location.hash)&&!evidence.open)inspect(false);
   }
   function select(id:string,push=false,remember=false){
     const selected=signals.find(item=>item.championId===id)??signals[0]!;
@@ -234,11 +236,20 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     text('[data-cinema-inspect-label]',current.record?'SEE AN ARCHIVED CHANGE':'CHAMPION OVERVIEW');
     text('[data-cinema-evidence-intro]',current.record?'One change, with its date and original source.':'Your champion and the available archive.');
     text('[data-home-explore]>span:first-child',current.record?'Explore the full record':'View champion history');
-    poster.src=current.world.figure;
+    // An <img> may keep its previous bitmap while a new source downloads.
+    // Keep that bitmap hidden so a slow personal texture can never reveal Akali.
+    if(poster.getAttribute('src')!==current.world.figure){poster.hidden=true;delete root.dataset.artwork;poster.src=current.world.figure;}
+    else if(poster.complete&&poster.naturalWidth>0)poster.hidden=false;
     root.dataset.artKind=current.world.kind??'cutout';
+    root.dataset.customFigure=String(Boolean(current.world.focus));
+    const focus=current.world.focus;
+    if(focus)for(const [key,value] of Object.entries({x:focus.x,y:focus.y,height:focus.scale,'mobile-x':focus.mobileX,'mobile-y':focus.mobileY,'mobile-height':(focus.mobileScale??focus.scale??1)*.83})){
+      if(value!==undefined)root.style.setProperty(`--figure-${key}`,`${value*100}%`);
+    }
     root.querySelectorAll<HTMLImageElement>('[data-cinema-menu-portrait]').forEach(image=>image.src=current.world.figure);
     text('[data-cinema-menu-subject]',current.championName);
-    world?.setChampion(current.championId);
+    if(world)world.setChampion(current.championId);else startWorld();
+    root.dataset.homeLoading='false';root.dataset.homeReady='true';
     if(changed){
       clearTimeout(changeTimer);root.dataset.changing='false';
       requestAnimationFrame(()=>{if(!abort.signal.aborted)root.dataset.changing='true';});
@@ -280,12 +291,12 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     if(id&&!signals.some(signal=>signal.championId===id)){
       void catalogue().then(()=>{
         if(location.href!==url.href||abort.signal.aborted)return;
-        if(!signals.some(signal=>signal.championId===id)){text('[data-cinema-status]','Champion not found. Choose a featured champion or use Champions in the menu.');return;}
+        if(!signals.some(signal=>signal.championId===id)){select(choiceIds[0]!);text('[data-cinema-status]','Champion not found. Choose a featured champion or use Champions in the menu.');return;}
         select(id);if(reading)inspect(false);else restoreWorld();
-      }).catch(()=>text('[data-cinema-status]','Champion preview could not load. The featured champions remain available.'));
+      }).catch(()=>{select(choiceIds[0]!);text('[data-cinema-status]','Champion preview could not load. The featured champions remain available.');});
       return;
     }
-    select(id??signals[0]!.championId,false,false);
+    select(id??choiceIds[0]??signals[0]!.championId,false,false);
     if(reading)inspect(false);else restoreWorld();
   }
   root.querySelectorAll<HTMLAnchorElement>('[data-home-choice]').forEach(link=>link.addEventListener('click',event=>{
@@ -379,7 +390,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   const renderChampion=(signal:CinemaSignal):RiftCinemaChampion=>({id:signal.championId,
     ...(signal.world.kind==='splash'?{backgroundUrl:signal.world.figure}:{foregroundUrl:signal.world.figure}),
     palette:{primary:signal.world.primary,secondary:signal.world.secondary},atmosphere:signal.championId==='Yasuo'?'wind':signal.championId==='Thresh'?'souls':'smoke',
-    focus:{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0});
+    focus:signal.world.focus??{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0});
   const champions:RiftCinemaChampion[]=signals.map(renderChampion);
   // Personal names and recovery messages can wrap. Reserve their real height
   // above the mobile roster instead of placing actions at a guessed offset.
@@ -389,10 +400,12 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   });
   if(bottom)bottomSize.observe(bottom);
   abort.signal.addEventListener('abort',()=>bottomSize.disconnect(),{once:true});
-  try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:new URLSearchParams(location.search).get('signal')??signals[0]!.championId,reducedMotion:reduced(),
-    onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});
-  }catch{root.dataset.renderer='fallback';}
-  if(!world)root.dataset.renderer='fallback';
+  function startWorld(){
+    try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:current.championId,reducedMotion:reduced(),
+      onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});
+    }catch{root.dataset.renderer='fallback';}
+    if(!world)root.dataset.renderer='fallback';
+  }
   poster.addEventListener('error',()=>{poster.hidden=true;root.dataset.artwork='unavailable';},events);
   poster.addEventListener('load',()=>{poster.hidden=false;delete root.dataset.artwork;},events);
   window.addEventListener('popstate',()=>{stopTour();resetGestures();resetMenu(true);fromLocation();},events);
@@ -409,17 +422,29 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   document.addEventListener('visibilitychange',()=>{if(document.hidden){stopTour();resetGestures();}},events);
   window.addEventListener('pageshow',event=>{pageActive=true;if(event.persisted){stopTour();resetGestures();resetMenu();}retained=readSignalContext();resume();saved();world?.resize();},events);
   window.addEventListener('pagehide',event=>{pageActive=false;stopTour();resetGestures();resetMenu();if(!event.persisted){abort.abort();preference.disconnect();world?.dispose();clearTimeout(changeTimer);cancelAnimationFrame(pointerFrame);}},events);
-  fromLocation();applyMotion();resume();saved();root.dataset.homeReady='true';
+  applyMotion();resume();saved();
+  const pending=()=>{
+    stopTour();root.dataset.homeLoading='true';root.dataset.homeSubject='';
+    restoreWorld();
+    text('[data-home-roster-label]','Your champions');text('[data-home-roster-status]','Preparing your champions…');
+    delete root.dataset.homeReady;
+    delete root.querySelector<HTMLElement>('[data-home-review]')!.dataset.latestReview;
+    world?.dispose();world=null;root.dataset.renderer='fallback';resume();
+  };
   let personalizationStarted=false;
   const unsubscribe=$account.subscribe(account=>{
-    if(!account.ready||!account.userId||personalizationStarted)return;
+    if(!account.ready){pending();if(account.error)text('[data-home-roster-status]','Your account could not load. Open Account to retry.');return;}
+    if(personalizationStarted)return;
+    if(!account.userId){fromLocation();return;}
     personalizationStarted=true;
     void import('./home-personalization').then(({personalizeHome})=>{
       if(abort.signal.aborted)return;
-      personalizeHome(root,catalogue,showRoster,()=>{
+      personalizeHome(root,catalogue,showRoster,pending,()=>{
         delete root.querySelector<HTMLElement>('[data-home-review]')!.dataset.latestReview;
         showRoster(featuredIds.map(id=>({id,games:0,lastPlayed:0})));
       },abort.signal);
+    }).catch(()=>{
+      text('[data-home-roster-status]','Your champions could not load. Reload to try again.');
     });
   });
   abort.signal.addEventListener('abort',unsubscribe,{once:true});

@@ -1,19 +1,21 @@
 import { $account, getAccountScope } from '../lib/account/storage';
 import { readRiotAssociation } from '../lib/account/riot-account';
 import { homeChampionCounts, type HomeChampionCount } from '../lib/home-personalization';
+import { HOME_ROSTER_CACHE_KEY, parseHomeRoster, type HomeRosterSnapshot } from '../lib/home-roster-cache';
 import type { CinemaSignal } from '../lib/home-champions';
 import type { Match } from '../lib/player/contracts';
 import { api, fetcher, getPlayerCooldown, matchLink } from '../components/player/client';
 
 export function personalizeHome(root: HTMLElement, catalogue: () => Promise<CinemaSignal[]>,
-  show: (champions: HomeChampionCount[]) => void, reset: () => void, lifetime: AbortSignal) {
+  show: (champions: HomeChampionCount[]) => void, pending: () => void, reset: () => void, lifetime: AbortSignal) {
   const status = root.querySelector<HTMLElement>('[data-home-roster-status]')!;
   const label = root.querySelector<HTMLElement>('[data-home-roster-label]')!;
   const retry = root.querySelector<HTMLButtonElement>('[data-home-roster-retry]')!;
   const association = root.querySelector<HTMLAnchorElement>('[data-home-associate]')!;
   const review = root.querySelector<HTMLAnchorElement>('[data-home-review]')!;
   const roster = root.querySelector<HTMLElement>('.cinema-roster')!;
-  let identity = '', revision = 0, timer = 0;
+  let identity: string | undefined, revision = 0, timer = 0, initialSyncFinished = false;
+  let displayed: HomeRosterSnapshot | null = null;
   let retryAt = 0;
   function retryLabel() {
     const seconds = Math.max(0, Math.ceil((Math.max(retryAt, getPlayerCooldown()) - Date.now()) / 1000));
@@ -27,6 +29,12 @@ export function personalizeHome(root: HTMLElement, catalogue: () => Promise<Cine
     let player = null;
     try { if (account.ready && account.userId) player = readRiotAssociation(); }
     catch { /* An unreadable optional association is never replaced by a recent lookup. */ }
+    // A restored session can precede the first cloud association download.
+    // Keep the neutral scene until that first sync has had its chance to finish.
+    if (!account.ready || (account.userId && !player && !initialSyncFinished)) {
+      if (identity !== undefined) { identity = undefined; revision++; displayed = null; }
+      pending(); return;
+    }
     const next = account.ready && account.userId && player ? `${account.userId}:${player.platform}:${player.puuid}` : '';
     if (next === identity && !force) {
       if (account.ready && account.userId && !player) {
@@ -34,20 +42,40 @@ export function personalizeHome(root: HTMLElement, catalogue: () => Promise<Cine
       }
       return;
     }
+    const changed = next !== identity;
     identity = next; const ticket = ++revision;
-    reset(); retry.hidden = true; association.hidden = !account.userId;
+    if (changed) { displayed = null; pending(); }
+    retry.hidden = true; association.hidden = !account.userId;
     roster.removeAttribute('aria-busy');
     label.textContent = 'Featured champions';
     status.textContent = account.userId ? 'Personalize with your Riot ID.' : 'Choose a champion to explore.';
-    if (!next || !player) return;
+    if (!next || !player) { reset(); return; }
     association.hidden = true;
     label.textContent = 'Your champions'; status.textContent = 'Finding your most played…';
     roster.setAttribute('aria-busy', 'true');
     const selected = player;
+    const cacheIdentity = { owner: account.userId!, platform: selected.platform, puuid: selected.puuid };
+    function display(snapshot: HomeRosterSnapshot, refreshing = false) {
+      displayed = snapshot; show(snapshot.champions);
+      label.textContent = 'Most played recently';
+      status.textContent = `${snapshot.total} recent game${snapshot.total === 1 ? '' : 's'}${snapshot.failed ? ` · ${snapshot.failed} unavailable` : ''}${snapshot.excluded ? ` · ${snapshot.excluded} excluded` : ''}${refreshing ? ' · Refreshing…' : ''}`;
+      if (snapshot.latest) {
+        review.href = matchLink(snapshot.latest, selected.platform, selected.puuid);
+        review.dataset.latestReview = review.href;
+        review.querySelector('strong')!.textContent = 'Review latest game';
+      }
+    }
     const stillCurrent = () => !lifetime.aborted && ticket === revision && getAccountScope() === account.userId &&
       (() => { try { const value = readRiotAssociation(); return value?.puuid === selected.puuid && value.platform === selected.platform; } catch { return false; } })();
     void (async () => {
-      const [entries, history] = await Promise.all([catalogue(), fetcher<unknown>(api('history', { platform: selected.platform, puuid: selected.puuid, queue: 'all' }))]);
+      const entries = await catalogue();
+      if (!stillCurrent()) return;
+      if (!displayed) {
+        let cached: HomeRosterSnapshot | null = null;
+        try { cached = parseHomeRoster(localStorage.getItem(HOME_ROSTER_CACHE_KEY), cacheIdentity, entries.map(entry => entry.championId)); } catch { /* Storage is optional. */ }
+        if (cached) display(cached, true);
+      }
+      const history = await fetcher<unknown>(api('history', { platform: selected.platform, puuid: selected.puuid, queue: 'all' }));
       if (!stillCurrent()) return;
       if (!Array.isArray(history) || history.some(id => typeof id !== 'string' || !/^[A-Z0-9]{2,5}_[0-9]{5,20}$/.test(id))) throw new Error('Recent games could not be read.');
       const ids = [...new Set(history as string[])].slice(0, 20);
@@ -64,27 +92,32 @@ export function personalizeHome(root: HTMLElement, catalogue: () => Promise<Cine
       if (!stillCurrent()) return;
       const result = homeChampionCounts(matches, selected.puuid, entries.map(entry => entry.championId));
       if (result.champions.length) {
-        show(result.champions);
-        label.textContent = 'Most played recently';
-        status.textContent = `${result.total} recent game${result.total === 1 ? '' : 's'}${failed ? ` · ${failed} unavailable` : ''}${matches.length > result.total ? ` · ${matches.length - result.total} excluded` : ''}`;
-        if (result.latest) {
-          review.href = matchLink(result.latest.metadata.matchId, selected.platform, selected.puuid);
-          review.dataset.latestReview = review.href;
-          review.querySelector('strong')!.textContent = 'Review latest game';
-        }
+        const snapshot: HomeRosterSnapshot = { ...cacheIdentity, savedAt: Date.now(), champions: result.champions,
+          total: result.total, failed, excluded: matches.length - result.total, latest: result.latest?.metadata.matchId ?? null };
+        display(snapshot);
+        try { localStorage.setItem(HOME_ROSTER_CACHE_KEY, JSON.stringify(snapshot)); } catch { /* The current roster still works without storage. */ }
       } else {
-        label.textContent = 'Featured champions';
-        status.textContent = failed ? 'Games unavailable. Try again.' : 'No supported recent games yet.';
+        if (!failed) {
+          displayed = null; pending();
+          try { localStorage.removeItem(HOME_ROSTER_CACHE_KEY); } catch { /* Optional cache. */ }
+        }
+        label.textContent = displayed ? 'Most played recently' : 'Your champions';
+        status.textContent = failed ? (displayed ? 'Saved games · Refresh unavailable.' : 'Games unavailable. Try again.') : 'No supported recent games yet.';
       }
       retry.hidden = !failed; retryAt = 0; retryLabel();
     })().catch(error => {
       if (!stillCurrent()) return;
-      label.textContent = 'Featured champions'; status.textContent = 'Your games could not load.';
+      label.textContent = displayed ? 'Most played recently' : 'Your champions';
+      status.textContent = displayed ? 'Saved games · Refresh unavailable.' : 'Your games could not load.';
       retryAt = typeof error?.retryAt === 'number' ? error.retryAt : 0;
       retry.hidden = false; retryLabel();
     }).finally(() => { if (ticket === revision) roster.removeAttribute('aria-busy'); });
   }
   const unsubscribe = $account.subscribe(() => refresh());
+  void import('../lib/account/client').then(({ initializeAccount }) => initializeAccount()).finally(() => {
+    if (lifetime.aborted) return;
+    initialSyncFinished = true; refresh();
+  });
   window.addEventListener('storage', () => refresh(), { signal: lifetime });
   window.addEventListener('pageshow', () => refresh(), { signal: lifetime });
   retry.addEventListener('click', () => { if (!retry.disabled) refresh(true); }, { signal: lifetime });

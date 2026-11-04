@@ -551,3 +551,76 @@ test('personal homepage: a delayed import cannot survive an association removal'
   await expect(page.locator('[data-home-choice="Akali"]')).toBeVisible();
   await expect(page.locator('[data-home-review]')).toHaveAttribute('href', '/players');
 });
+
+test('personal homepage: the first painted roster is the owner’s, including a slow first cloud sync and a cached return', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  await installFixtures(page, { matches: homeGames(['Urgot', 'Urgot', 'Urgot', 'Riven', 'Riven', 'Malphite']) });
+  let syncReady!: () => void, gamesReady!: () => void, artReady!: () => void;
+  const cloudGate = new Promise<void>(resolve => { syncReady = resolve; });
+  const artGate = new Promise<void>(resolve => { artReady = resolve; });
+  let gameGate = new Promise<void>(resolve => { gamesReady = resolve; });
+  await context.route('https://account-test.supabase.co/rest/v1/account_records**', async route => { await cloudGate; await route.fallback(); });
+  await page.route('**/api/player/history?**', async route => { await gameGate; await route.fallback(); });
+  await page.route('**/images/rift-cinema/urgot-figure.webp', async route => { await artGate; await route.fallback(); });
+  await page.addInitScript(() => {
+    const seen: string[] = [];
+    (window as unknown as { paintedHomeChampions: string[] }).paintedHomeChampions = seen;
+    function sample() {
+      for (const element of document.querySelectorAll<HTMLElement>('[data-home-choice]')) {
+        if (getComputedStyle(element).visibility === 'visible' && element.getClientRects().length && !element.hidden) seen.push(element.dataset.homeChoice!);
+      }
+      requestAnimationFrame(sample);
+    }
+    requestAnimationFrame(sample);
+  });
+  await page.goto('/');
+  const home = page.locator('[data-rift-cinema]');
+  await expect(home).toHaveAttribute('data-home-loading', 'true');
+  await expect(page.locator('[data-home-choice]:visible')).toHaveCount(0);
+  await expect(page.locator('[data-cinema-poster]')).toBeHidden();
+  await expect(page.locator('[data-home-primary]')).toBeVisible();
+  await expect(page.locator('[data-cinema-canvas]')).not.toHaveAttribute('data-cinema-champion');
+  syncReady();
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('Finding your most played…');
+  await expect(page.locator('[data-home-choice]:visible')).toHaveCount(0);
+  gamesReady();
+  await expect(home).toHaveAttribute('data-home-subject', 'Urgot');
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('6 recent games');
+  await expect(page.locator('[data-cinema-poster]')).toBeHidden();
+  artReady();
+  for (const champion of ['Urgot', 'Riven', 'Malphite']) {
+    await page.locator(`[data-home-choice="${champion}"]`).click();
+    await expect(home).toHaveAttribute('data-art-kind', 'cutout');
+    await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', `/images/rift-cinema/${champion.toLowerCase()}-figure.webp`);
+    await expect.poll(() => page.locator('[data-cinema-poster]').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(500);
+    await expect(page.locator('[data-cinema-canvas]')).toHaveAttribute('data-cinema-champion', champion);
+    await mkdir('player-visuals', { recursive: true });
+    await page.screenshot({ path: `player-visuals/home-personal-cutout-${champion}-390.png`, animations: 'disabled' });
+  }
+  const painted = await page.evaluate(() => (window as unknown as { paintedHomeChampions: string[] }).paintedHomeChampions);
+  expect(painted.length).toBeGreaterThan(0);
+  expect(painted.every(id => ['Urgot', 'Riven', 'Malphite'].includes(id))).toBe(true);
+  gameGate = new Promise<void>(resolve => { gamesReady = resolve; });
+  await page.goto('/');
+  await expect(home).toHaveAttribute('data-home-subject', 'Urgot');
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('6 recent games · Refreshing…');
+  await page.locator('[data-home-choice="Riven"]').click();
+  gamesReady();
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('6 recent games');
+  await expect(home).toHaveAttribute('data-home-subject', 'Riven');
+  expect(await page.evaluate(() => (window as unknown as { paintedHomeChampions: string[] }).paintedHomeChampions.every(id => ['Urgot', 'Riven', 'Malphite'].includes(id)))).toBe(true);
+});
+
+test('personal homepage: a failed first import stays neutral and offers recovery', async ({ page, context }) => {
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  await installFixtures(page);
+  await page.route('**/api/player/history?**', route => route.fulfill({ status: 503, json: { error: 'Temporarily unavailable' } }));
+  await page.goto('/');
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('Your games could not load.');
+  await expect(page.locator('[data-home-choice]:visible')).toHaveCount(0);
+  await expect(page.locator('[data-cinema-poster]')).toBeHidden();
+  await expect(page.locator('[data-home-roster-retry]')).toBeVisible();
+  await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', new RegExp(`puuid=${puuid}`));
+  await expect(page.locator('[data-home-primary]')).not.toHaveAttribute('href', /champion=Akali/);
+});

@@ -73,7 +73,7 @@ function trackStorage() {
   return access;
 }
 
-async function mount(href = '/') {
+async function mount(href = '/', ready = true) {
   transition('pagehide', false);
   vi.resetModules();
   history.replaceState(null, '', href);
@@ -103,7 +103,7 @@ async function mount(href = '/') {
     <script type="application/json" id="home-signals-data">${JSON.stringify(signals)}</script>
     <script type="application/json" id="home-legacy-signals">${JSON.stringify([{ championId: prior.championId, explore: prior.href }])}</script>`;
   await import('../../../src/scripts/rift-cinema');
-  expect(host().dataset.homeReady).toBe('true');
+  expect(host().dataset.homeReady).toBe(ready ? 'true' : undefined);
 }
 function expectContext(context: SignalContext) {
   expect(contextLink().hidden).toBe(false);
@@ -367,7 +367,7 @@ describe('home continuity in the shipped cinema controller', () => {
   it.each(['inspect', 'reveal', 'carry'])('preserves an earlier featured champion’s exact archive destination from #%s', async fragment => {
     const replace = vi.spyOn(location, 'replace').mockImplementation(() => {});
     localStorage.setItem(SIGNAL_CONTEXT_KEY, JSON.stringify(other));
-    await mount(`/?signal=${prior.championId}#${fragment}`);
+    await mount(`/?signal=${prior.championId}#${fragment}`, false);
     expect(replace).toHaveBeenCalledExactlyOnceWith(prior.href);
     expect(stored()).toEqual(other);
     expectNoSavedWork();
