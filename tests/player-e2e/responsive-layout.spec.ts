@@ -37,7 +37,7 @@ async function textCollisions(page:Page, selector:string){
     return collisions;
   });
 }
-const widths=[320,390,480,568,700,701,760,761,1000,1001,1050,1051,1100,1101,1366,1440,1913,2560];
+const widths=[320,390,480,568,700,701,760,761,899,900,901,1000,1001,1050,1051,1100,1101,1366,1440,1913,2560];
 for(const state of ['guest','context','reading'] as const)test(`responsive audit: homepage ${state} text never collides across breakpoint boundaries`,async({page})=>{
   test.setTimeout(180_000);await installFixtures(page);await page.emulateMedia({reducedMotion:'reduce'});
   await page.addInitScript(mode=>{

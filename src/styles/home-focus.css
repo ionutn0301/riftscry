@@ -1,10 +1,9 @@
-/* Player tasks lead; the cinematic artwork stays a recognizable backdrop. */
+/* Player tasks and cinematic artwork occupy separate, non-overlapping regions. */
 .rift-cinema:is([data-home-loading=boot],[data-home-loading=true]) :is(.cinema-poster,[data-cinema-canvas],.cinema-identity,.cinema-hotspot,.cinema-roster-choices,[data-home-catchup],[data-cinema-tour],.cinema-menu-portrait,[data-cinema-menu-subject]){visibility:hidden}
 .rift-cinema:is([data-home-loading=boot],[data-home-loading=true]) .cinema-environment{opacity:1;transition:none}
 .rift-cinema[data-home-loading=boot] .cinema-roster-heading{visibility:hidden}
 .rift-cinema[data-home-loading=boot] .cinema-roster-heading:after{content:'Preparing your champions…';visibility:visible;color:#cbd8d2;font-size:12px;position:absolute}
 .rift-cinema[data-art-kind=splash] .cinema-header{background:linear-gradient(180deg,#040a0fee 0%,#040a0fbd 70%,transparent 100%)}
-.rift-cinema[data-custom-figure=true] .cinema-poster{left:var(--figure-x);top:var(--figure-y);height:var(--figure-height)}
 .rift-cinema h1>span{font-size:clamp(42px,5.3vw,85px)}
 .rift-cinema h1>em{font-size:clamp(38px,4.8vw,76px)}
 .cinema-stage-mark,.cinema-interaction-note{display:none}
@@ -35,7 +34,6 @@
 .cinema-review-action strong{grid-column:1;font-size:15px;line-height:1.4;font-weight:500}
 .cinema-review-action>span:last-child{grid-column:2;grid-row:1/3;font-size:22px;color:#e4cd9a}
 .rift-cinema[data-art-kind=splash] .cinema-poster{inset:0;width:100%;height:100%;object-fit:cover;object-position:65% center;transform:none;filter:none}
-.rift-cinema[data-art-kind=splash] .cinema-world-shade{background:linear-gradient(90deg,#040a0ff2, #040a0fc9 29%,#040a0f21 66%),linear-gradient(0deg,#050b0efc,transparent 70%)}
 .rift-cinema[data-art-kind=splash] .cinema-menu-portrait{inset:0;width:100%;height:100%;object-fit:cover;opacity:.25}
 .cinema-dynamic-record{border-top:1px solid #b5c3b755;padding:22px 0;line-height:1.65;font-size:15px}
 .cinema-dynamic-record h3{font-size:22px;line-height:1.4;margin:12px 0}
@@ -48,7 +46,7 @@
 .rift-cinema{--home-gutter:clamp(20px,6.5vw,136px);display:grid;grid-template-rows:auto 1fr auto auto;row-gap:0}
 .cinema-header{position:relative;inset:auto;height:auto;min-height:88px;padding:20px var(--home-gutter)}
 .cinema-main,.cinema-bottom,.cinema-footer{width:calc(100% - 2 * var(--home-gutter));max-width:1664px;margin-inline:auto}
-.cinema-main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);align-items:center;gap:40px;min-height:360px;padding-block:32px}
+.cinema-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:40px;min-height:360px;padding-block:32px}
 .cinema-opening{position:relative;inset:auto;width:auto;max-width:none;transform:none;min-width:0;display:grid;gap:24px}
 .rift-cinema h1{margin:20px 0;line-height:1.1;text-wrap:balance;overflow-wrap:anywhere}
 .rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(34px,4.5vw,76px);line-height:1.36}
@@ -58,11 +56,19 @@
 .cinema-entry-actions .cinema-resume{position:static;grid-row:2;grid-column:1;min-height:44px;margin:0;max-width:100%;line-height:1.5}
 .cinema-resume>span:first-child{white-space:normal;overflow:visible;overflow-wrap:anywhere}
 .cinema-entry-actions:has([data-home-reading]:not([hidden]),[data-home-context]:not([hidden])) .cinema-start-link{display:none}
-.cinema-champion{display:flex;flex-direction:column-reverse;align-items:flex-start;align-self:end;gap:20px;min-width:0;padding-block:24px}
+.cinema-backdrop{position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(90deg,#050b0ef5,#050b0ed9),url('/images/rift-cinema/summoners-rift.webp') center/cover}
+.cinema-champion{display:grid;align-content:center;gap:20px;min-width:0}
+/* Only artwork belongs in this clipped area. Every label and action is outside. */
+.cinema-art{position:relative;isolation:isolate;contain:paint;overflow:hidden;width:100%;height:clamp(280px,27vw,400px);border:1px solid #bdc6af33;background:#081419}
+.cinema-art .cinema-world{z-index:0}
+.cinema-art .cinema-poster{inset:5%;width:90%;height:90%;object-fit:contain;transform:none}
+.rift-cinema[data-cinema-state=inspect] .cinema-art .cinema-poster{transform:none}
+.cinema-art .cinema-world-shade{background:linear-gradient(0deg,#050b0e55,transparent 35%)}
+.cinema-champion-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:16px 24px;min-width:0;min-height:90px}
 .cinema-identity,.cinema-hotspot{position:relative;inset:auto}
-.cinema-identity{min-width:0;gap:12px}
+.cinema-identity{min-width:0;max-width:100%;gap:12px}
 .cinema-identity>div{min-width:0}
-.cinema-identity h2{font-size:clamp(30px,4.2vw,68px);line-height:1.15;overflow-wrap:anywhere}
+.cinema-identity h2{font-size:clamp(28px,3vw,42px);line-height:1.36;overflow-wrap:anywhere}
 .cinema-identity p{flex-wrap:wrap;line-height:1.6}
 .cinema-identity-number{display:none}
 .cinema-hotspot{gap:12px;min-width:0;max-width:100%}
@@ -84,9 +90,12 @@
   .cinema-utilities{gap:16px}.cinema-main{gap:24px}
   .cinema-identity p>span:nth-of-type(2),.cinema-identity p i{display:none}
 }
+@media(max-width:900px){
+  .cinema-main{grid-template-columns:minmax(0,1fr);gap:32px;min-height:0}
+  .cinema-art{height:clamp(260px,55vw,360px)}
+}
 @media(max-width:700px){
   .rift-cinema{--home-gutter:24px}
-  .rift-cinema[data-custom-figure=true] .cinema-poster{left:var(--figure-mobile-x);top:var(--figure-mobile-y);height:var(--figure-mobile-height)}
   .cinema-header{min-height:76px;padding:14px var(--home-gutter);gap:8px}
   .cinema-brand{min-width:0}.cinema-brand img{width:118px}
   .cinema-utilities{gap:8px}.cinema-utilities>a{gap:8px;font-size:11px}
@@ -97,17 +106,15 @@
   .cinema-utilities .account-nav-link>span{display:inline}.cinema-utilities .account-nav-link svg{display:none}
   .cinema-utilities .cinema-menu-trigger{min-width:64px;gap:7px;padding:0;font-size:11px}
   .cinema-main{grid-template-columns:minmax(0,1fr);gap:24px;padding-block:24px;min-height:0}
-  .cinema-opening{display:contents}
-  .cinema-intro{grid-row:1}
   .cinema-kicker{font-size:9px;letter-spacing:.17em}
   .rift-cinema h1{margin:16px 0}
   .rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(28px,7.7vw,48px)}
   .cinema-introduction{font-size:14px;line-height:1.6;max-width:32ch}
-  .cinema-champion{grid-row:2;justify-self:end;align-items:flex-end;min-height:80px;padding:0;gap:8px;max-width:100%}
-  .cinema-identity{display:none}
+  .cinema-champion{gap:16px}
+  .cinema-champion-details{grid-template-columns:minmax(0,1fr);gap:12px}
   .cinema-hotspot-caption{max-width:190px}
   .cinema-hotspot-caption>small{font-size:12px}
-  .cinema-entry-actions{grid-row:3;width:100%;max-width:none}
+  .cinema-entry-actions{width:100%;max-width:none}
   .cinema-entry-actions .cinema-primary{width:100%;justify-content:space-between;padding:14px 18px}
   .cinema-entry-actions .cinema-resume{font-size:13px}
   .cinema-bottom{grid-template-columns:minmax(0,1fr);gap:24px;padding-block:24px}
@@ -119,8 +126,6 @@
   .cinema-footer{gap:8px 16px}.cinema-playback{gap:16px}
   .cinema-playback>button,.cinema-footer .cinema-tour{font-size:11px;letter-spacing:0;gap:6px}
   .cinema-footer>a{margin-left:auto}
-  .cinema-world-shade{background:linear-gradient(180deg,#040a0fc9 0%,#040a0f55 30%,#040a0fe8 58%,#050b0e 100%)}
-  .rift-cinema[data-art-kind=splash] .cinema-world-shade{background:linear-gradient(180deg,#040a0fe6 0%,#040a0f66 31%,#040a0fe8 58%,#050b0e 100%)}
 }
 @media(max-width:360px){
   .rift-cinema{--home-gutter:16px}.cinema-brand img{width:96px}.cinema-utilities{gap:6px}
