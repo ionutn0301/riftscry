@@ -24,7 +24,10 @@ afterEach(async () => { await act(async () => root.unmount()); container.remove(
 it.each([false, true])('can reconnect with pending edits via account controls or a rejected AI session (reauth=%s)', async reauth => {
   history.replaceState(null, '', `/account${reauth ? '?reauth=1' : ''}`);
   await act(async () => root.render(createElement(AccountPanel)));
-  if (!reauth) await act(async () => [...container.querySelectorAll('button')].find(button => button.textContent === 'Reconnect account')!.click());
+  if (!reauth) {
+    await act(async () => [...container.querySelectorAll('button')].find(button => button.textContent === 'Settings')!.click());
+    await act(async () => [...container.querySelectorAll('button')].find(button => button.textContent === 'Reconnect account')!.click());
+  }
   const reconnect = [...container.querySelectorAll('button')].find(button => button.textContent?.endsWith('Sign in again with Google'))!;
   expect(reconnect.disabled).toBe(false); expect($account.get().pending).toBe(1);
   await act(async () => reconnect.click());

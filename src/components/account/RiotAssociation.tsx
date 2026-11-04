@@ -11,6 +11,7 @@ export default function RiotAssociation({ owner }: { owner: string }) {
   const id = useId();
   const [saved, setSaved] = useState<RecentPlayer | null>(null);
   const [candidate, setCandidate] = useState<{ player: RecentPlayer; expected: RecentPlayer | null } | null>(null);
+  const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
   const [message, setMessage] = useState('');
@@ -44,29 +45,30 @@ export default function RiotAssociation({ owner }: { owner: string }) {
       if (!alive.current || getAccountScope() !== owner) return;
       const player = parseRecentPlayer({ platform, puuid: result.puuid, name: `${result.gameName}#${result.tagLine}` });
       if (!player || !result.gameName || !result.tagLine) throw new Error('This player could not be found. Check the Riot ID and server.');
-      setCandidate({ player, expected }); setMessage('Player found. Check the Riot ID and server, then associate it with your account.');
+      setCandidate({ player, expected }); setMessage('Check the player, then confirm.');
     } catch (error) { if (alive.current) { setProblem(error instanceof Error ? error.message : 'Lookup is unavailable. Please retry.'); setMessage(''); } }
     finally { if (alive.current) setBusy(false); }
   }
   function associate() {
     if (!candidate) return;
-    try { saveRiotAssociation(owner, candidate.player, candidate.expected); setCandidate(null); setProblem(''); setMessage('Riot ID associated. Your account syncs it across devices.'); }
+    try { saveRiotAssociation(owner, candidate.player, candidate.expected); setCandidate(null); setEditing(false); setProblem(''); setMessage('Riot ID associated.'); }
     catch (error) { setProblem((error as Error).message); }
   }
   function remove() {
-    try { saveRiotAssociation(owner, null, saved); setCandidate(null); setProblem(''); setMessage('Riot ID association removed. Your notes and match history have been kept.'); }
+    try { saveRiotAssociation(owner, null, saved); setCandidate(null); setProblem(''); setMessage('Riot ID removed. Your notes are kept.'); }
     catch (error) { setProblem((error as Error).message); }
   }
   return <div className="riot-association">
-    <p>Save the Riot ID you want to use for your matches and pre-game briefing. Looking up someone else later will not replace this association.</p>
-    {saved ? <div className="associated-player"><span className="account-eyebrow">ASSOCIATED RIOT ID</span><strong>{saved.name}</strong><span>{regions[saved.platform] || saved.platform.toUpperCase()}</span><div className="account-actions"><a href={briefingLink(saved)}>Open my briefing ↗</a><a href={playerLink(saved.platform, saved.puuid, { name: saved.name })}>View my matches ↗</a><button type="button" disabled={busy} onClick={remove}>Remove association</button></div></div> : <p className="account-empty">No Riot ID associated yet.</p>}
-    <form className="account-riot-form" aria-label="Associate a Riot ID" aria-busy={busy} onSubmit={lookup} onChange={() => { setCandidate(null); setProblem(''); setMessage(''); }}>
+    <p className="account-section-help">Your shortcut to matches and coaching.</p>
+    {saved ? <div className="associated-player"><span className="account-eyebrow">ASSOCIATED RIOT ID</span><strong>{saved.name}</strong><span>{regions[saved.platform] || saved.platform.toUpperCase()}</span><div className="account-actions"><a href={briefingLink(saved)}>Open my briefing ↗</a><a href={playerLink(saved.platform, saved.puuid, { name: saved.name })}>View my matches ↗</a><button type="button" disabled={busy} onClick={() => { setEditing(true); setMessage(''); }}>Change Riot ID</button><button type="button" disabled={busy} onClick={remove}>Remove association</button></div></div> : <p className="account-empty">No Riot ID associated yet.</p>}
+    {(!saved || editing) && !candidate && <form className="account-riot-form" aria-label="Associate a Riot ID" aria-busy={busy} onSubmit={lookup} onChange={() => { setCandidate(null); setProblem(''); setMessage(''); }}>
       <div><label htmlFor={`${id}-riot`}>{saved ? 'Different Riot ID' : 'Riot ID'}</label><input id={`${id}-riot`} name="riotId" autoComplete="off" spellCheck={false} placeholder="Game name#TAG" maxLength={50} required disabled={busy} aria-describedby={`${id}-status`} /></div>
       <div><label htmlFor={`${id}-server`}>Server</label><select id={`${id}-server`} name="platform" defaultValue={saved?.platform || 'euw1'} disabled={busy}>{Object.keys(platforms).map(platform => <option key={platform} value={platform}>{regions[platform] || platform.toUpperCase()}</option>)}</select></div>
       <button type="submit" disabled={busy || retrySeconds > 0}>{retrySeconds ? `Retry in ${retrySeconds}s` : busy ? 'Finding player…' : 'Find Riot ID'}</button>
-    </form>
-    {candidate && <div className="riot-candidate"><span>Ready to associate</span><strong>{candidate.player.name}</strong><p>{regions[candidate.player.platform]}</p><button className="account-save" type="button" onClick={associate}>Associate this Riot ID</button></div>}
+      {saved && <button type="button" disabled={busy} onClick={() => { setEditing(false); setProblem(''); }}>Cancel</button>}
+    </form>}
+    {candidate && <div className="riot-candidate"><span>Ready to associate</span><strong>{candidate.player.name}</strong><p>{regions[candidate.player.platform]}</p><button className="account-save" type="button" onClick={associate}>Associate this Riot ID</button><button type="button" onClick={() => { setCandidate(null); setMessage(''); }}>Back</button></div>}
     <p id={`${id}-status`} role={problem ? 'alert' : 'status'} className={problem ? 'account-inline-error' : 'account-inline-status'}>{problem || message}</p>
-    <p className="account-fineprint">This saves a player association; it does not verify Riot account ownership. Riot Sign On is not available here yet. We never ask for your Riot password.</p>
+    <p className="account-fineprint">Links a player; it does not verify Riot account ownership. No Riot password needed.</p>
   </div>;
 }

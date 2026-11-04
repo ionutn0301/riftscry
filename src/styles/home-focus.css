@@ -42,94 +42,112 @@
 .cinema-dynamic-record .after{color:var(--cinema-accent)}
 .cinema-dynamic-record>a{display:inline-flex;align-items:center;min-height:44px;margin-top:16px;color:#f0dcae}
 
-/* Shared rows, never viewport offsets: longer copy pushes the next task down. */
-.rift-cinema{--home-gutter:clamp(20px,6.5vw,136px);display:grid;grid-template-rows:auto 1fr auto auto;row-gap:0}
-.cinema-header{position:relative;inset:auto;height:auto;min-height:88px;padding:20px var(--home-gutter)}
-.cinema-main,.cinema-bottom,.cinema-footer{width:calc(100% - 2 * var(--home-gutter));max-width:1664px;margin-inline:auto}
-.cinema-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:40px;min-height:360px;padding-block:32px}
-.cinema-opening{position:relative;inset:auto;width:auto;max-width:none;transform:none;min-width:0;display:grid;gap:24px}
-.rift-cinema h1{margin:20px 0;line-height:1.1;text-wrap:balance;overflow-wrap:anywhere}
-.rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(34px,4.5vw,76px);line-height:1.36}
-.cinema-introduction{display:block;margin:0;max-width:35ch;font-size:16px;line-height:1.6}
-.cinema-entry-actions{position:static;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(44px,auto);justify-items:start;gap:8px;min-width:0;max-width:430px}
-.cinema-entry-actions .cinema-primary{position:relative;inset:auto;grid-row:1;max-width:100%;min-height:56px}
-.cinema-entry-actions .cinema-resume{position:static;grid-row:2;grid-column:1;min-height:44px;margin:0;max-width:100%;line-height:1.5}
-.cinema-resume>span:first-child{white-space:normal;overflow:visible;overflow-wrap:anywhere}
+/* A single viewport, with separate space for copy, artwork and controls. */
+html:has(.rift-cinema-shell){height:100%;overflow:hidden}
+html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home],
+html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] :is(.rift-site-shell,#main){height:100svh;height:100dvh;min-height:0;max-height:none;overflow:hidden}
+.rift-cinema{--home-gutter:clamp(20px,6.5vw,136px);display:grid;grid-template-rows:80px minmax(0,1fr) auto 56px;height:100svh;height:100dvh;min-height:0;padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box;touch-action:pan-x}
+.cinema-header{position:relative;inset:auto;height:100%;min-height:0;padding:12px var(--home-gutter)}
+.cinema-main,.cinema-bottom,.cinema-footer{width:calc(100% - 2 * var(--home-gutter));max-width:1664px;margin-inline:auto;min-width:0;min-height:0}
+.cinema-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:clamp(24px,4vw,64px);padding-block:12px 20px}
+.cinema-opening{position:relative;inset:auto;width:auto;max-width:none;transform:none;min-width:0;min-height:0;display:grid;align-content:center;gap:24px}
+.rift-cinema h1{margin:18px 0;line-height:1.12;text-wrap:balance}
+.rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(30px,min(4.5vw,7.8dvh),76px);line-height:1.2;white-space:normal}
+.cinema-introduction{display:block;margin:0;max-width:32ch;font-size:16px;line-height:1.5}
+.cinema-entry-actions{position:static;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:52px 44px;justify-items:start;gap:4px;min-width:0;max-width:430px}
+.cinema-entry-actions .cinema-primary{position:relative;inset:auto;grid-row:1;max-width:100%;min-height:52px;height:52px;padding-block:8px}
+.cinema-entry-actions .cinema-resume{position:static;grid-row:2;grid-column:1;min-height:44px;margin:0;max-width:100%;line-height:1.4}
+.cinema-resume>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .cinema-entry-actions:has([data-home-reading]:not([hidden]),[data-home-context]:not([hidden])) .cinema-start-link{display:none}
-.cinema-champion{display:grid;align-content:center;gap:20px;min-width:0}
-/* This is empty space in the scene, never a card or a second background. */
-.cinema-art{position:relative;isolation:isolate;contain:paint;overflow:hidden;width:100%;height:clamp(380px,calc(100svh - 340px),620px);border:0;background:transparent}
-.cinema-art .cinema-poster{inset:5%;width:90%;height:90%;object-fit:contain;transform:none}
+.cinema-champion{display:grid;grid-template-rows:minmax(0,1fr) 68px;gap:8px;min-width:0;min-height:0}
+.cinema-art{position:relative;isolation:isolate;contain:paint;overflow:hidden;width:100%;height:100%;min-height:0;border:0;background:transparent}
+.cinema-art .cinema-poster{inset:0;width:100%;height:100%;object-fit:contain;transform:none}
 .rift-cinema[data-cinema-state=inspect] .cinema-art .cinema-poster{transform:none}
-.cinema-champion-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:16px 24px;min-width:0;min-height:90px}
+.cinema-champion-details{display:flex;justify-content:space-between;align-items:center;gap:16px;min-width:0;min-height:0}
 .cinema-identity,.cinema-hotspot{position:relative;inset:auto}
 .cinema-identity{min-width:0;max-width:100%;gap:12px}
-.cinema-identity>div{min-width:0}
-.cinema-identity h2{font-size:clamp(28px,3vw,42px);line-height:1.36;overflow-wrap:anywhere}
-.cinema-identity p{flex-wrap:wrap;line-height:1.6}
-.cinema-identity-number{display:none}
-.cinema-hotspot{gap:12px;min-width:0;max-width:100%}
-.cinema-hotspot-caption{min-width:0;overflow-wrap:anywhere;line-height:1.5}
-.cinema-bottom{position:relative;inset:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.5fr);align-items:center;gap:32px;padding-block:24px 28px;border-top:1px solid #bdc6af33;pointer-events:auto}
-.cinema-roster{gap:16px;max-width:480px}
-.cinema-roster-heading{max-width:none;min-height:38px}
-.cinema-roster-choices{display:grid;grid-template-columns:repeat(3,minmax(0,100px));gap:20px}
-.cinema-roster-choices>a{width:auto;min-width:0;min-height:92px;font-size:13px;letter-spacing:.02em;overflow-wrap:anywhere}
-.cinema-roster-choices [data-home-choice-name]{max-width:100%;line-height:1.5}
-.cinema-review-action{min-width:0;width:min(100%,300px);margin-left:auto;padding:16px 20px;min-height:80px}
-.cinema-footer{position:relative;inset:auto;height:auto;min-height:68px;flex-wrap:wrap;gap:8px 24px;padding-block:12px}
-.cinema-playback{gap:20px}
-.cinema-playback>button{min-width:44px;min-height:44px}
+.cinema-identity>div{min-width:0}.cinema-identity h2{font-size:clamp(28px,3vw,42px);line-height:1.2}
+.cinema-identity p{flex-wrap:wrap;line-height:1.4}.cinema-identity-number{display:none}
+.cinema-hotspot{gap:10px;min-width:0;max-width:100%;min-height:44px}
+.cinema-hotspot-caption{min-width:0;line-height:1.4}.cinema-hotspot-caption>small{font-size:12px}
+.cinema-bottom{position:relative;inset:auto;display:flex;align-items:center;justify-content:space-between;gap:24px;padding-block:12px 16px;border-top:1px solid #bdc6af33;pointer-events:auto}
+.cinema-roster{gap:8px;max-width:480px}.cinema-roster-heading{min-height:0}.cinema-roster-status{display:none}
+.cinema-roster-choices{display:grid;grid-template-columns:repeat(3,76px);gap:16px}
+.cinema-roster-choices>a{width:auto;min-width:0;min-height:74px;height:74px;font-size:12px;letter-spacing:.02em;gap:4px}
+.cinema-roster-choices small{display:none}
+.cinema-roster-choices [data-home-choice-name]{max-width:100%;line-height:1.4}
+.cinema-review-action{min-width:0;width:auto;margin-left:auto;padding:12px 18px;min-height:64px}
+.cinema-footer{position:relative;inset:auto;height:100%;min-height:0;gap:16px;padding:0;border-top:1px solid #bdc6af33}
+.cinema-playback{gap:20px}.cinema-playback>button{min-width:44px;min-height:44px}
 .cinema-footer .cinema-guide-link{font-size:11px;letter-spacing:.02em;min-height:44px;color:#e7ddc7}
-.cinema-nojs{position:relative;inset:auto;margin:16px var(--home-gutter);max-width:60ch;font-size:14px}
+.cinema-nojs{position:absolute;inset:auto var(--home-gutter) 60px;font-size:12px;background:#071016}
 @media(max-width:1100px){
-  .cinema-header-note,.cinema-footer>span{display:none}
-  .cinema-utilities{gap:16px}.cinema-main{gap:24px}
-  .cinema-identity p>span:nth-of-type(2),.cinema-identity p i{display:none}
-}
-@media(max-width:900px){
-  .cinema-main{grid-template-columns:minmax(0,1fr);gap:32px;min-height:0}
-  .cinema-art{height:clamp(300px,55vw,440px)}
+ .cinema-header-note,.cinema-footer>span{display:none}.cinema-utilities{gap:16px}
+ .cinema-identity p>span:nth-of-type(2),.cinema-identity p i{display:none}
+ .cinema-hotspot-caption>span{font-size:8px}.cinema-hotspot-orbit{width:40px;height:40px}
 }
 @media(max-width:700px){
-  .rift-cinema{--home-gutter:24px}
-  .cinema-header{min-height:76px;padding:14px var(--home-gutter);gap:8px}
-  .cinema-brand{min-width:0}.cinema-brand img{width:118px}
-  .cinema-utilities{gap:8px}.cinema-utilities>a{gap:8px;font-size:11px}
-  .cinema-utilities .cinema-icon-button,.cinema-briefing-label,.cinema-briefing-arrow{display:none}
-  .cinema-utilities>a[data-home-briefing]{min-width:44px;justify-content:center;white-space:nowrap}
-  .cinema-utilities .cinema-briefing-short{display:inline;font-size:11px}
-  .cinema-utilities .account-nav-link{width:auto;min-width:44px;padding:0;font-size:11px}
-  .cinema-utilities .account-nav-link>span{display:inline}.cinema-utilities .account-nav-link svg{display:none}
-  .cinema-utilities .cinema-menu-trigger{min-width:64px;gap:7px;padding:0;font-size:11px}
-  .cinema-main{grid-template-columns:minmax(0,1fr);gap:24px;padding-block:24px;min-height:0}
-  .cinema-opening{display:contents}
-  .cinema-intro{grid-row:1}
-  .cinema-kicker{font-size:9px;letter-spacing:.17em}
-  .rift-cinema h1{margin:16px 0}
-  .rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(28px,7.7vw,48px)}
-  .cinema-introduction{font-size:14px;line-height:1.6;max-width:32ch}
-  .cinema-champion{grid-row:2;gap:16px}
-  .cinema-art{height:clamp(260px,70vw,400px)}
-  .cinema-champion-details{display:flex;justify-content:flex-end;min-height:52px;gap:12px}
-  .cinema-identity{display:none}
-  .cinema-hotspot-caption{max-width:190px}
-  .cinema-hotspot-caption>small{font-size:12px}
-  .cinema-entry-actions{grid-row:3;width:100%;max-width:none}
-  .cinema-entry-actions .cinema-primary{width:100%;justify-content:space-between;padding:14px 18px}
-  .cinema-entry-actions .cinema-resume{font-size:13px}
-  .cinema-bottom{grid-template-columns:minmax(0,1fr);gap:24px;padding-block:24px}
-  .cinema-roster{max-width:none}
-  .cinema-roster-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-  .cinema-review-action{width:100%;margin:0;min-height:64px;padding:12px 16px}
-  .cinema-review-action>span:first-child{font-size:10px}
-  .cinema-review-action strong{font-size:14px}
-  .cinema-footer{gap:8px 16px}.cinema-playback{gap:16px}
-  .cinema-playback>button,.cinema-footer .cinema-tour{font-size:11px;letter-spacing:0;gap:6px}
-  .cinema-footer>a{margin-left:auto}
-  .cinema-world-shade{background:linear-gradient(180deg,#040a0fe6 0%,#040a0f9c 24%,#040a0f33 40%,#050b0e99 62%,#050b0e 100%)}
+ .rift-cinema{--home-gutter:24px;grid-template-rows:64px minmax(0,1fr) 98px 48px}
+ .cinema-header{padding:10px var(--home-gutter);gap:8px}
+ .cinema-brand{min-width:0}.cinema-brand img{width:118px}
+ .cinema-utilities{gap:8px}.cinema-utilities>a{gap:8px;font-size:11px}
+ .cinema-utilities .cinema-icon-button,.cinema-briefing-label,.cinema-briefing-arrow{display:none}
+ .cinema-utilities>a[data-home-briefing]{display:inline-flex;min-width:44px;justify-content:center}.cinema-utilities .cinema-briefing-short{display:inline;font-size:11px}
+ .cinema-utilities .account-nav-link{width:auto;min-width:44px;padding:0;font-size:11px}
+ .cinema-utilities .account-nav-link>span{display:inline}.cinema-utilities .account-nav-link svg{display:none}
+ .cinema-utilities .cinema-menu-trigger{min-width:64px;gap:7px;padding:0;font-size:11px}
+ .cinema-main{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 100px;gap:8px;padding-block:8px 12px}
+ .cinema-opening{display:contents}.cinema-intro{grid-row:1}
+ .cinema-kicker{font-size:9px;letter-spacing:.15em}
+ .rift-cinema h1{margin:10px 0}.rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(27px,7.4vw,46px);line-height:1.18}
+ .cinema-introduction{font-size:13px;line-height:1.4;max-width:32ch}
+ .cinema-champion{grid-row:2;grid-template-rows:minmax(0,1fr) 44px;gap:0}
+ .cinema-champion-details{justify-content:flex-end;gap:12px}.cinema-identity{display:none}
+ .cinema-hotspot-caption{max-width:190px}.cinema-hotspot-caption>small{font-size:11px}
+ .cinema-hotspot-orbit{width:32px;height:32px}
+ .cinema-entry-actions{grid-row:3;width:100%;max-width:none}
+ .cinema-entry-actions .cinema-primary{width:100%;justify-content:space-between;padding-inline:16px}
+ .cinema-entry-actions .cinema-resume{font-size:12px}
+ .cinema-bottom{padding-block:10px 14px;gap:8px}.cinema-roster{max-width:none;width:100%}
+ .cinema-roster-heading{display:none}
+ .cinema-review-action{display:grid;position:absolute;right:0;bottom:-48px;height:48px;min-height:44px;padding:0;gap:8px;width:auto;border:0;background:transparent}
+ .cinema-review-action>span:first-child{display:none}.cinema-review-action strong{font-size:11px}.cinema-review-action>span:last-child{grid-row:1;font-size:16px}
+ .cinema-footer .cinema-guide-link{display:none}
+ .cinema-roster-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+ .cinema-roster-choices>a{min-height:72px;height:72px}.cinema-roster-frame{width:46px;height:46px}
+ .cinema-footer{gap:8px}.cinema-playback{gap:14px}
+ .cinema-playback>button,.cinema-footer .cinema-tour{font-size:10px;letter-spacing:0;gap:6px}
+ .cinema-footer>a{margin-left:auto}.cinema-footer .cinema-guide-link{font-size:10px}
+ .cinema-world-shade{background:linear-gradient(180deg,#040a0fe6 0%,#040a0f99 24%,#040a0f22 45%,#050b0e99 68%,#050b0e 100%)}
 }
-@media(max-width:360px){
-  .rift-cinema{--home-gutter:16px}.cinema-brand img{width:96px}.cinema-utilities{gap:6px}
-  .cinema-playback{gap:12px}.cinema-footer{column-gap:12px}
+@media(max-width:700px) and (max-height:740px){.cinema-introduction{display:none}.cinema-kicker{display:none}}
+@media(min-width:701px) and (max-height:700px){
+ .rift-cinema{grid-template-rows:64px minmax(0,1fr) 106px 48px}.cinema-opening{gap:12px}
+ .rift-cinema h1{margin:10px 0}.cinema-introduction{font-size:14px}.cinema-kicker{font-size:9px}
+ .cinema-roster-heading{display:none}.cinema-identity p{display:none}
 }
+@media(max-height:480px){
+ .rift-cinema{--home-gutter:20px;grid-template-rows:52px minmax(0,1fr) 60px 44px}
+ .cinema-header{padding-block:4px}.cinema-brand img{width:105px}.cinema-header-note{display:none}
+ .cinema-main{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:16px;padding:4px 0 8px}
+ .cinema-opening{display:grid;align-content:center;gap:8px}.cinema-intro{grid-row:auto}
+ .cinema-kicker,.cinema-introduction{display:none}.rift-cinema h1{margin:0}
+ .rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(20px,4vw,34px);line-height:1.12}
+ .cinema-entry-actions{grid-row:auto;grid-template-rows:44px;gap:0}
+ .cinema-entry-actions .cinema-primary{min-height:44px;height:44px;padding:6px 10px;gap:8px}.cinema-primary strong{font-size:12px}
+ .cinema-entry-actions .cinema-resume{display:none}
+ .cinema-champion{grid-row:auto;grid-template-rows:minmax(0,1fr) 44px;gap:0}.cinema-identity{display:none}
+ .cinema-hotspot-caption>small{display:none}.cinema-hotspot-caption>span{font-size:8px}.cinema-hotspot{gap:8px}
+ .cinema-bottom{padding:4px 0 8px}.cinema-roster{width:auto}.cinema-roster-heading{display:none}
+ .cinema-roster-choices{grid-template-columns:repeat(3,72px);gap:12px}.cinema-roster-choices>a{height:46px;min-height:46px;display:flex;flex-direction:row;justify-content:center;gap:5px;font-size:10px}
+ .cinema-roster-frame{width:28px;height:34px}.cinema-review-action{min-height:44px;padding:6px 12px}.cinema-review-action>span:first-child{display:none}
+ .cinema-review-action strong{font-size:12px}.cinema-review-action>span:last-child{grid-row:1}
+ .cinema-footer{height:44px}.cinema-review-action{bottom:-44px}.cinema-footer>span{display:none}
+}
+@media(max-width:420px) and (max-height:480px){
+ .rift-cinema{grid-template-rows:52px minmax(0,1fr) 60px}.cinema-footer,.cinema-review-action{display:none}
+ .cinema-main{gap:10px;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+ .rift-cinema h1>span,.rift-cinema h1>em{font-size:19px}.cinema-hotspot-caption{display:none}
+ .cinema-champion-details{justify-content:center}.cinema-roster{width:100%}.cinema-roster-choices{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:360px){.rift-cinema{--home-gutter:16px}.cinema-brand img{width:96px}.cinema-utilities{gap:6px}.cinema-playback{gap:10px}}

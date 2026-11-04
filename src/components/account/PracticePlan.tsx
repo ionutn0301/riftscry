@@ -18,12 +18,12 @@ function ProfileEditor({ profile, save }: { profile: PracticeProfile; save: (pro
     if (save(draft, original.current)) setDirty(false);
   }
   return <form onSubmit={submit} className="practice-profile" aria-label="Personal preferences">
-    <label htmlFor={`${id}-name`}>Display name <span>(optional)</span></label>
+    <div className="profile-field"><label htmlFor={`${id}-name`}>Display name <span>(optional)</span></label>
     <input id={`${id}-name`} maxLength={40} autoComplete="nickname" value={draft.displayName} onChange={event => { setDirty(true); setDraft({ ...draft, displayName: event.target.value }); }} />
-    <label htmlFor={`${id}-role`}>Preferred role</label>
-    <select id={`${id}-role`} value={draft.role} onChange={event => { setDirty(true); setDraft({ ...draft, role: event.target.value as PracticeProfile['role'] }); }}>{roles.map(role => <option key={role}>{role}</option>)}</select>
+    </div><div className="profile-field"><label htmlFor={`${id}-role`}>Preferred role</label>
+    <select id={`${id}-role`} value={draft.role} onChange={event => { setDirty(true); setDraft({ ...draft, role: event.target.value as PracticeProfile['role'] }); }}>{roles.map(role => <option key={role}>{role}</option>)}</select></div>
     {dirty && original.current !== current && <p role="status">Saved preferences changed while you were editing. Reload them before saving.</p>}
-    <div className="practice-actions"><button disabled={!dirty} type="submit">Save preferences</button><button type="button" disabled={!dirty} onClick={() => { setDraft(profile); original.current = current; setDirty(false); }}>Reload saved preferences</button></div>
+    <div className="practice-actions"><button disabled={!dirty} type="submit">Save preferences</button>{dirty && <button type="button" onClick={() => { setDraft(profile); original.current = current; setDirty(false); }}>Reset changes</button>}</div>
   </form>;
 }
 
@@ -47,18 +47,17 @@ export default function ProfilePreferences() {
   function update(change: (current: Plan) => Plan) {
     try {
       if (!account.userId || $account.get().userId !== account.userId || !$account.get().ready) throw new Error('Open your account before saving preferences.');
-      setPlan(updatePracticePlan(change)); setProblem(''); setMessage('Preferences saved on this device. Account sync status is shown above.'); return true;
+      setPlan(updatePracticePlan(change)); setProblem(''); setMessage('Preferences saved.'); return true;
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Preferences could not be saved.'); return false; }
   }
   if (!account.ready || !account.userId || loadedOwner !== account.userId) return null;
   return <section className="practice-plan account-card" data-profile-preferences aria-labelledby={`${id}-heading`}>
-    <h2 id={`${id}-heading`}>Profile details</h2>
-    <p className="practice-help">Your display name and preferred role. Your coach prepares the next-game focus automatically.</p>
+    <h2 id={`${id}-heading`} className="sr-only">Profile details</h2>
     {problem ? <p role="alert">{problem}</p> : <ProfileEditor profile={plan.profile} save={(profile, expected) => update(current => {
       if (JSON.stringify(current.profile) !== expected) throw new Error('Preferences changed. Reload saved preferences before saving.');
       // Keep old records in backups; removing the editor must not erase user data.
       return { ...current, profile };
     })} />}
-    <p role="status" aria-live="polite">{message}</p>
+    {message && <p role="status" aria-live="polite">{message}</p>}
   </section>;
 }
