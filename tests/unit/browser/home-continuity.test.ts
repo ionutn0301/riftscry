@@ -73,7 +73,7 @@ function trackStorage() {
   return access;
 }
 
-async function mount(href = '/', ready = true) {
+async function mount(href = '/', ready = true, resolvingAccount = false) {
   transition('pagehide', false);
   vi.resetModules();
   history.replaceState(null, '', href);
@@ -86,6 +86,7 @@ async function mount(href = '/', ready = true) {
       <a data-home-reading hidden href="/explore#change"><span data-home-reading-label></span></a>
       <p data-home-return hidden></p><a data-home-context hidden href="/explore#change"></a>
       <h2 data-home-subject></h2><a data-cinema-inspect href="${first.explore}">Scry this champion</a>
+      <span data-home-roster-label>Featured champions</span><span data-home-roster-status>Choose a champion to explore.</span>
       ${signals.map(signal => `<a data-home-choice="${signal.championId}" href="${signal.explore}">${signal.championName}</a>`).join('')}
       <dialog data-cinema-evidence>
         <button data-cinema-close>Close change</button><h2 data-cinema-evidence-name></h2>
@@ -102,6 +103,7 @@ async function mount(href = '/', ready = true) {
     </main>
     <script type="application/json" id="home-signals-data">${JSON.stringify(signals)}</script>
     <script type="application/json" id="home-legacy-signals">${JSON.stringify([{ championId: prior.championId, explore: prior.href }])}</script>`;
+  if (resolvingAccount) (await import('../../../src/lib/account/storage')).lockAccountScope();
   await import('../../../src/scripts/rift-cinema');
   expect(host().dataset.homeReady).toBe(ready ? 'true' : undefined);
 }
@@ -135,6 +137,17 @@ afterEach(() => {
 });
 
 describe('home continuity in the shipped cinema controller', () => {
+  it('replaces the account-loading message when the session resolves as a guest', async () => {
+    await mount('/', false, true);
+    expect(host().dataset.homeLoading).toBe('true');
+    expect(query('[data-home-roster-status]').textContent).toBe('Preparing your champions…');
+    const { setAccountScope } = await import('../../../src/lib/account/storage');
+    setAccountScope(null);
+    expect(host().dataset.homeLoading).toBe('false');
+    expect(host().dataset.homeSubject).toBe(first.championId);
+    expect(query('[data-home-roster-label]').textContent).toBe('Featured champions');
+    expect(query('[data-home-roster-status]').textContent).toBe('Choose a champion to explore.');
+  });
   it('offers an exact reading place alongside the returning player briefing without creating saved work', async () => {
     localStorage.setItem(RECENT_PLAYER_KEY, JSON.stringify(player));
     localStorage.setItem(SIGNAL_CONTEXT_KEY, JSON.stringify(other));

@@ -435,7 +435,10 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   const unsubscribe=$account.subscribe(account=>{
     if(!account.ready){pending();if(account.error)text('[data-home-roster-status]','Your account could not load. Open Account to retry.');return;}
     if(personalizationStarted)return;
-    if(!account.userId){fromLocation();return;}
+    if(!account.userId){
+      text('[data-home-roster-label]','Featured champions');text('[data-home-roster-status]','Choose a champion to explore.');
+      fromLocation();return;
+    }
     personalizationStarted=true;
     void import('./home-personalization').then(({personalizeHome})=>{
       if(abort.signal.aborted)return;
