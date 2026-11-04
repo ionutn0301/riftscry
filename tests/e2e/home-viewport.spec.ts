@@ -3,7 +3,7 @@ import { mkdir } from 'node:fs/promises';
 import { reachableTarget } from './journey-test-helpers';
 import { cinema, cinemaFitsViewport, closeEvidence, evidence, inspectCinema, openCinemaNavigation, readyCinema } from './cinema-test-helpers';
 
-const sizes = [[320,480],[320,568],[390,844],[480,320],[568,320],[844,390],[768,1024],[1024,768],[1101,879],[1101,880],[1366,768],[1440,900],[1920,880],[1920,1080]] as const;
+const sizes = [[320,480],[320,568],[390,844],[480,320],[568,320],[844,390],[768,1024],[1024,768],[1101,879],[1101,880],[1366,768],[1440,900],[1913,917],[1920,880],[1920,1080]] as const;
 const player = { platform: 'eun1', puuid: 'fixture-player-000000000000000000000000000000000', name: `${'LongPlayerName'.repeat(9)}#TEST` };
 
 for (const [width, height] of sizes) for (const state of ['new', 'returning'] as const) test(`world, evidence and navigation stay reachable at ${width}×${height} for ${state} players`, async ({ page }) => {
@@ -22,7 +22,7 @@ for (const [width, height] of sizes) for (const state of ['new', 'returning'] as
   const record = evidence(page).locator('[data-home-record]:not([hidden])');
   await expect(record.locator('.before')).not.toBeEmpty(); await expect(record.locator('.after')).not.toBeEmpty();
   for (const action of await evidence(page).locator('a:visible,button:visible').all()) await reachableTarget(action, page);
-  // A modal may scroll its evidence; the cinematic document never scrolls.
+  // Dialog content may scroll; background sections must retain their separation.
   await cinemaFitsViewport(page); await closeEvidence(page);
   const menu = await openCinemaNavigation(page);
   for (const action of await menu.locator('a:visible,button:visible').all()) await reachableTarget(action, page);

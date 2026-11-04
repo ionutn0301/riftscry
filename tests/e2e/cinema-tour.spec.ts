@@ -9,6 +9,16 @@ test('world gestures advance one champion per gesture and leave interactive cont
   await page.goto('/'); await readyCinema(page);
   const signals = await cinemaSignals(page);
   const viewport = page.viewportSize()!;
+  if(await page.evaluate(()=>document.documentElement.scrollHeight>innerHeight+1)){
+    // Content reflow owns vertical gestures. Explicit choices still change worlds.
+    await page.mouse.move(10,150);
+    await wheelAt(page,{x:10,y:150},180,isMobile&&browserName==='webkit');
+    await expect(cinema(page)).toHaveAttribute('data-home-subject',signals[0]!.championId);
+    await chooseSignal(page,signals[1]!);
+    await cinemaFitsViewport(page);
+    return;
+  }
+
   // Responsive player actions may occupy the former fixed wheel coordinate.
   // Find a real open part of the world, including the native swipe path, so
   // this verifies gestures on artwork rather than accidentally on a button.

@@ -45,7 +45,7 @@ for (const viewport of [{width:320,height:480},{width:390,height:844},{width:480
     expect(readingArrow.x+readingArrow.width).toBeLessThanOrEqual(readingBox.x+readingBox.width+1);
     await cinemaFitsViewport(page);
     await mkdir('player-visuals',{recursive:true});
-    await page.screenshot({path:`player-visuals/home-refined-${viewport.width}x${viewport.height}.png`});
+    await page.screenshot({fullPage:true,path:`player-visuals/home-refined-${viewport.width}x${viewport.height}.png`});
     await menu.click(); await expect(page.getByRole('dialog',{name:'RiftScry navigation',exact:true})).toBeVisible();
     await page.keyboard.press('Escape'); await expect(menu).toBeFocused();
   });
@@ -66,7 +66,7 @@ test.describe('Mobile world focus',()=>{
     await inspect.tap();await expect(evidence(page)).toBeVisible();
     await page.locator('[data-cinema-close]').tap();await expect(evidence(page)).toBeHidden();
     await expect(inspect).toBeFocused();await cinemaFitsViewport(page);
-    await mkdir('player-visuals',{recursive:true});await page.screenshot({path:'player-visuals/home-focused-world-390x844.png'});
+    await mkdir('player-visuals',{recursive:true});await page.screenshot({fullPage:true,path:'player-visuals/home-focused-world-390x844.png'});
   });
 });
 
@@ -87,6 +87,6 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
     const menu=await openCinemaNavigation(page);
     for(const action of await menu.locator('a:visible,button:visible').all())await reachableTarget(action,page);
     await page.keyboard.press('Escape');await cinemaFitsViewport(page);expect(requests).toEqual([]);
-    await mkdir('player-visuals',{recursive:true});await page.screenshot({path:`player-visuals/home-${viewport.width}x${viewport.height}.png`});
+    await mkdir('player-visuals',{recursive:true});await page.screenshot({fullPage:true,path:`player-visuals/home-${viewport.width}x${viewport.height}.png`});
   });
 }

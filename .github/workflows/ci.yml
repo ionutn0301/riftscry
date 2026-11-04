@@ -6,6 +6,33 @@ on:
   pull_request:
 
 jobs:
+  responsive-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Audit text collisions, breakpoint boundaries and task regions
+        run: pnpm exec playwright test --config=playwright.player.config.ts responsive-layout.spec.ts
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: responsive-layout
+          path: |
+            player-visuals/responsive-*
+            test-results/
+          retention-days: 14
+
   account-profile:
     runs-on: ubuntu-latest
     timeout-minutes: 10
