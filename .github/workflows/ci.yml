@@ -206,7 +206,7 @@ jobs:
       - name: Verify the cinematic world, native history, touch and reduced motion
         # Software WebGL plus video competes for the same runner CPU. Keep
         # full-motion assertions and their timeouts; run one renderer at a time.
-        run: pnpm exec playwright test tests/e2e/home-flight.spec.ts --workers=1
+        run: pnpm exec playwright test tests/e2e/home-flight.spec.ts tests/e2e/home-personalization.spec.ts --workers=1
         env:
           CI: "true"
       - name: Retain world states and full motion video

@@ -205,9 +205,9 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     root.querySelector('.cinema-save-status')!.before(container);
   }
   function showRoster(counts:HomeChampionCount[]){
-    // Keep the authored trio when even one top champion lacks matching foreground art.
-    // Do not replace the cinematic scene with a splash crop or mislabel lower-ranked picks.
-    const personal=counts.some(champion=>champion.games>0)&&counts.every(champion=>signals.some(signal=>signal.championId===champion.id&&signal.world.kind!=='splash'));
+    // Only the original complete, authored figures are approved for this scene.
+    // Existing splash extractions have cropped edges; alpha alone is not parity.
+    const personal=counts.some(champion=>champion.games>0)&&counts.every(champion=>featuredIds.includes(champion.id));
     root.dataset.homeRosterMode=personal?'personal':'featured';
     if(!personal)counts=featuredIds.map(id=>({id,games:0,lastPlayed:0}));
     choiceIds=counts.map(champion=>champion.id);
@@ -223,13 +223,13 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     });
     const requested=new URLSearchParams(location.search).get('signal');
     // A shared URL wins; background personalization never changes browser history.
-    select(requested&&signals.some(signal=>signal.championId===requested&&signal.world.kind!=='splash')?requested:choiceIds[0]!,false,false);
+    select(requested&&featuredIds.includes(requested)?requested:choiceIds[0]!,false,false);
     if(['#inspect','#reveal','#carry'].includes(location.hash)&&!evidence.open)inspect(false);
     return personal;
   }
   function select(id:string,push=false,remember=false){
     const selected=signals.find(item=>item.championId===id)??signals[0]!;
-    if(selected.world.kind==='splash'){location.replace(selected.explore);return;}
+    if(!featuredIds.includes(selected.championId)){location.replace(selected.explore);return;}
     const changed=current.championId!==selected.championId;
     current=selected;root.dataset.homeSubject=current.championId;
     ensureRecord(current);
