@@ -35,6 +35,11 @@ export default function PaletteDialog({
   // options and registering each one with cmdk on the first keystroke.
   const visible = (query.trim() ? matches
     : GROUPS.flatMap(group => matches.filter(entry => entry.type === group.type).slice(0, 12))).slice(0, 48);
+  // A typed query follows relevance across every entry type. Fixed category
+  // order would put a weak task match ahead of an exact champion name.
+  const groups = query.trim()
+    ? [{ type: 'results', heading: 'Best matches', entries: visible }]
+    : GROUPS.map(group => ({ ...group, entries: visible.filter(entry => entry.type === group.type) }));
 
   useEffect(() => {
     if (cached) { setLoadState("ready"); return; }
@@ -78,8 +83,8 @@ export default function PaletteDialog({
         {loadState === "loading" && <div className="palette-status" role="status">Opening the archive…</div>}
         {loadState === "error" && <div className="palette-status" role="alert"><p>Search is temporarily unavailable.</p><div><button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</button><a href="/champions">Browse champions ↗</a></div></div>}
         {loadState === "ready" && <Command.Empty>No matches. Try another champion, item, or patch.</Command.Empty>}
-        {GROUPS.map((g) => {
-          const group = visible.filter((e) => e.type === g.type);
+        {groups.map((g) => {
+          const group = g.entries;
           if (group.length === 0) return null;
           return (
             <Command.Group key={g.type} heading={g.heading}>
