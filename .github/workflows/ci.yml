@@ -28,7 +28,7 @@ jobs:
         env:
           CI: "true"
       - name: Verify first search on static development pages
-        run: pnpm exec playwright test --config=playwright.player.config.ts appearance.spec.ts ux-review.spec.ts --grep 'appearance themes support|search distinguishes'
+        run: pnpm exec playwright test --config=playwright.player.config.ts appearance.spec.ts ux-review.spec.ts --grep 'appearance themes support|search distinguishes' --output=test-results-development-search
         env:
           CI: "true"
       - uses: actions/upload-artifact@v4
@@ -38,6 +38,7 @@ jobs:
           path: |
             performance-results/
             test-results/
+            test-results-development-search/
           retention-days: 14
 
   surface-regressions:
