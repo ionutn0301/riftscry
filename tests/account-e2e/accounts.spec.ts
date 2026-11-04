@@ -352,7 +352,7 @@ test('a new guest sees recorded facts and a sign-in route that preserves the sel
   await entry.click();
   await expect(page).toHaveURL(url => url.pathname === '/account' && url.searchParams.get('returnTo')?.includes(sourceMatch.metadata.matchId) === true);
   await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeVisible();
-  await page.getByRole('link', { name: 'Back to your match’s recorded summary →' }).click();
+  await page.getByRole('link', { name: 'Back to your match →' }).click();
   await expect(page.locator('.review-mode')).toContainText('Recorded summary');
   expect(requests.filter(request => request.action === 'review')).toEqual([]);
 });
