@@ -200,7 +200,7 @@ export function playerRequest<T>(input: string, init?: RequestInit): Promise<T> 
   if (existing) return existing as Promise<T>;
 
   const promise = schedule(async () => {
-    const scope: Scope = action === 'review' ? 'review' : 'player';
+    const scope: Scope = ['review', 'coach'].includes(action) ? 'review' : 'player';
     const until = getPlayerCooldown(scope);
     if (until > Date.now()) throw new PlayerRequestError('Player requests are temporarily paused.', 429, until, scope);
     const deferred = deferredErrors.get(key);
