@@ -45,9 +45,11 @@ for (const width of [320, 390, 1440]) {
     await build.scrollIntoViewIfNeeded();
     await page.screenshot({ path: `player-visuals/learning-build-${width}.png`, fullPage: true });
     await build.locator(':scope > summary').click();
-    await quick.locator('summary').click();
-    await quick.getByRole('button', { name: 'Find a review moment', exact: true }).click();
+    // Returning to the overview is a same-document chapter change. The
+    // opened review and fetched timeline should survive it without a refetch.
+    await expect(quick).toHaveJSProperty('open', true);
     await expect(quick.getByLabel('Choose a moment')).toBeVisible();
+    expect(requests.filter(request => request.action === 'timeline')).toHaveLength(1);
     await quick.scrollIntoViewIfNeeded();
     await page.screenshot({ path: `player-visuals/learning-review-${width}.png`, fullPage: true });
     await quick.getByRole('link', { name: 'Write my takeaway in Notebook', exact: false }).click();

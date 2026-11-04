@@ -53,6 +53,16 @@ all eight sections; the search implementation retains its existing 48-entry
 budget. Live preview testing also led to explicit label/control associations in
 the catch-up form. No assertion timeout or performance limit was relaxed.
 
+Further CI feedback fixed relevance ordering in typed search, wrapping of Explore
+controls at 320px, a champion preview shifting when its caption wrapped, and
+catch-up controls restoring an old draft rather than the URL's results on Back.
+Moving archive assertions now derive the current patch from checked-in data;
+historical evidence assertions retain their fixed source patch. The exhaustive
+interval test is split into one case per champion without removing assertions or
+changing timeouts: all 959 unit/integration cases pass locally. The guest review
+browser case also verifies its existing timeline survives chapter navigation
+without another request.
+
 Merge is gated on the final PR checks. GitHub CI artifacts provide the actual
 desktop/mobile captures; the PR records final inspection and deployment results.
 

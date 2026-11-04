@@ -75,6 +75,9 @@ body[data-journey-ready] .journey-casting-wall { overflow:auto; overscroll-behav
   .journey-roster-panel > .journey-roster-results { grid-area:results; }
   .journey-roster-panel > .journey-roster-lens {
     grid-area:preview; align-self:start; position:sticky;
+    /* Changing the hovered champion can wrap its name. Anchor the artwork so
+       the caption's height cannot move the preview while the list scrolls. */
+    justify-content:flex-start;
     top:calc(var(--world-header-height) + 16px);
     /* Leave room for the shared footer and document padding at the last row,
        otherwise sticky positioning pushes the stage upward at the page end. */

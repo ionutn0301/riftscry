@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { Patch } from '../../src/lib/schema';
 import { readyWorld } from './journey-test-helpers';
+import { latestArchivePatch } from '../archive-fixture';
 
 async function expectPatch(page: Page, patchId: string) {
   const patch = JSON.parse(readFileSync(new URL(`../../src/data/patches/${patchId}.json`, import.meta.url), 'utf8')) as Patch;
@@ -29,7 +30,7 @@ test('the date instrument uses native keyboard steps and keeps archive-link focu
   await range.press('ArrowRight');
   await expectPatch(page, '26.2');
   await range.press('End');
-  await expectPatch(page, '26.21');
+  await expectPatch(page, latestArchivePatch.id);
 
   await page.locator('[data-reader-patch-key="26.16"] > a').focus();
   await expectPatch(page, '26.16');

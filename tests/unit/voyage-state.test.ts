@@ -24,21 +24,24 @@ function patchOrder(left: string, right: string) {
 }
 
 describe('voyage period and evidence contract', () => {
-  it('includes exactly (older, newer] for every valid interval of every canonical champion', () => {
+  it('covers every canonical champion', () => {
     expect(identities.map((identity) => identity.id).sort()).toEqual(Object.keys(getChampionMeta()).sort());
-    for (const model of models) {
-      for (const older of model.archive) {
-        for (const newer of model.archive) {
-          if (patchOrder(older.id, newer.id) >= 0) continue;
-          const actual = voyagePeriod(model, older.id, newer.id);
-          const expected = model.records.filter((record) => patchOrder(record.patch, older.id) > 0 && patchOrder(record.patch, newer.id) <= 0);
-          const includedPatches = model.archive.filter((patch) => patchOrder(patch.id, older.id) > 0 && patchOrder(patch.id, newer.id) <= 0);
-          expect(actual.valid).toBe(true);
-          expect(actual.records).toEqual(expected);
-          expect(actual.patchCount).toBe(includedPatches.length);
-          expect(actual.records.some((record) => record.patch === older.id)).toBe(false);
-          expect(actual.records.filter((record) => record.patch === newer.id)).toEqual(model.records.filter((record) => record.patch === newer.id));
-        }
+  });
+
+  // Each champion is an independent case. Keep exhaustive interval coverage
+  // as the archive grows, with the normal per-test timeout and useful failures.
+  it.each(models)('$identity.id includes exactly (older, newer] for every valid interval', (model) => {
+    for (const older of model.archive) {
+      for (const newer of model.archive) {
+        if (patchOrder(older.id, newer.id) >= 0) continue;
+        const actual = voyagePeriod(model, older.id, newer.id);
+        const expected = model.records.filter((record) => patchOrder(record.patch, older.id) > 0 && patchOrder(record.patch, newer.id) <= 0);
+        const includedPatches = model.archive.filter((patch) => patchOrder(patch.id, older.id) > 0 && patchOrder(patch.id, newer.id) <= 0);
+        expect(actual.valid).toBe(true);
+        expect(actual.records).toEqual(expected);
+        expect(actual.patchCount).toBe(includedPatches.length);
+        expect(actual.records.some((record) => record.patch === older.id)).toBe(false);
+        expect(actual.records.filter((record) => record.patch === newer.id)).toEqual(model.records.filter((record) => record.patch === newer.id));
       }
     }
   });
