@@ -40,8 +40,11 @@ body.rift-shell[data-journey-ready] :is(.journey-record-selector,.journey-patch-
   overflow-x: visible; flex-wrap: wrap; align-content: start;
 }
 body.rift-shell[data-journey-ready] #main :is(a,button,input,select,summary) {
+  scroll-margin-block: calc(var(--world-header-height) + 14px) var(--journey-dock-clearance);
+}
+body.rift-shell[data-journey-ready] #main .patch-impact-context {
   /* The document already reserves the header and dock via scroll-padding.
-     Repeating their height here makes focusing visible controls scroll again. */
+     A visible comparison choice needs only a small gap when focused. */
   scroll-margin-block: 14px;
 }
 body.rift-shell[data-journey-ready] :is(input,select,textarea) { font-size: max(16px,1em); }
