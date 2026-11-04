@@ -25,7 +25,7 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
   <div class="journey-reader journey-roster" data-journey-deck data-roster-directory>
     <section id="roster" class="journey-panel journey-roster-panel" data-journey-panel data-journey-label="Find a champion" data-journey-world="champions" aria-label="Champion roster">
       <header class="journey-reader-header" id="route-arrival">
-        <div><p class="journey-reader-kicker">CHAMPIONS / {champions.length} PERSPECTIVES</p><h1>Find your champion.</h1></div>
+        <div><p class="journey-reader-kicker">THE CHAMPION DIRECTORY / {champions.length} CHAMPIONS</p><h1>Find your champion.</h1></div>
         <a class="journey-quiet-link" href="/pool#briefing">Saved champions <span aria-hidden="true">↗</span></a>
       </header>
       <form class="roster-tools journey-roster-tools" data-roster-tools hidden>
@@ -36,17 +36,17 @@ const roleLabels: Record<string,string> = { top:"Top",jungle:"Jungle",mid:"Mid",
       <div class="roster-lens journey-roster-lens" data-reader-champion-lens="arrival" data-reader-key={spotlight.id}>
         <figure>
           <div class="roster-lens-media" data-reader-lens-media><img data-reader-champion-art src={assetFor(spotlight.id).splash} alt={spotlight.name + " — official Riot Games artwork"} width="1215" height="717" loading="eager" decoding="async" /><p class="roster-lens-fallback" data-reader-art-fallback hidden>Artwork unavailable. Champion records are still available.</p></div>
-          <figcaption><div><strong data-reader-champion-name>{spotlight.name}</strong><span data-reader-champion-title>{spotlight.title}</span></div><a class="reader-lens-open" data-reader-champion-link href={"/champion/" + spotlight.id.toLowerCase()}>Enter history <span aria-hidden="true">↗</span></a></figcaption>
+          <figcaption><div><strong data-reader-champion-name>{spotlight.name}</strong><span data-reader-champion-title>{spotlight.title}</span></div><a class="reader-lens-open" data-reader-champion-link href={"/champion/" + spotlight.id.toLowerCase()}>View patch history <span aria-hidden="true">↗</span></a></figcaption>
         </figure>
         <p class="reader-lens-record" data-reader-champion-record>{spotlight.changes ? "Latest " + spotlight.latest + " · " + spotlight.changes + " archived " + (spotlight.changes === 1 ? "patch" : "patches") : "No direct records yet"}</p>
         <p class="journey-art-credit">RIOT GAMES ARTWORK · ARCHIVE THROUGH {latest.releaseDate}</p>
       </div>
       <div class="journey-roster-results">
-        <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions in focus</p><button type="button" data-roster-expand aria-controls="roster-wall" aria-expanded="false">View all {champions.length} champions ↗</button></div>
+        <div class="roster-results-bar"><p><span data-roster-count aria-live="polite">{champions.length}</span> champions</p><button type="button" data-roster-expand aria-controls="roster-wall" aria-expanded="false">View all {champions.length} champions ↗</button></div>
         <p class="journey-empty" data-roster-empty hidden>No matches. Try another name or clear the filters.</p>
         <ul id="roster-wall" class="roster-wall journey-casting-wall">
           {champions.map((c) => <li class="roster-entry" data-roster-row data-roster-featured={featuredIds.has(c.id) ? "true" : undefined} data-roster-key={c.id} data-signal-subject={c.id} data-signal-name={c.name} data-signal-patch={c.latest} data-roster-name={c.name} data-roster-title={c.title} data-roster-latest={c.latest ?? ""} data-roster-changes={c.changes} data-roster-splash={assetFor(c.id).splash} data-roster-query={normalize(c.id + " " + c.name)} data-roster-roles={c.roles.join(",")} data-reader-active={c.id === spotlight.id ? "true" : undefined}>
-            <a href={"/champion/" + c.id.toLowerCase()}><span class="roster-portrait"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async" /></span><span class="roster-entry-copy"><span class="name">{c.name}</span><span class="roster-entry-roles">{c.roles.map(role => roleLabels[role]).join(" / ")}</span></span><span class="roster-arrow" aria-hidden="true">↗</span></a>
+            <a href={"/champion/" + c.id.toLowerCase()}><span class="roster-portrait"><img src={"https://ddragon.leagueoflegends.com/cdn/" + assetVersion + "/img/champion/" + c.id + ".png"} alt="" width="48" height="48" loading="lazy" decoding="async" /></span><span class="roster-entry-copy"><span class="name">{c.name}</span><span class="roster-entry-roles">{c.roles.map(role => roleLabels[role]).join(" / ")}</span></span><span class="roster-entry-record">{c.latest ? "Patch " + c.latest : "No changes yet"}</span><span class="roster-arrow" aria-hidden="true">↗</span></a>
           </li>)}
         </ul>
       </div>

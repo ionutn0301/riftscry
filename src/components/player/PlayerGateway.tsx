@@ -81,7 +81,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
       <header className="gateway-heading">
         <p className="player-kicker"><span className="observatory-section-mark" aria-hidden="true" /> YOUR GAMES</p>
         <h1 id="player-gateway-heading">Find your <em>games.</em></h1>
-        <p>Pick up where you left off.</p>
+        <p>Look up recent matches, inspect a build, or return to your saved notes.</p>
       </header>
 
       {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { ...filters, name: remembered.name, view })}>

@@ -2,7 +2,6 @@
 import Layout from '../layouts/Layout.astro';
 import PlayerGateway from '../components/player/PlayerGateway';
 import { platforms } from '../lib/player/contracts';
-import { playerLink } from '../components/player/client';
 import '../styles/player.css';
 export const prerender = false;
 Astro.response.headers.set('Cache-Control','private, no-store');

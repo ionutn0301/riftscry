@@ -15,8 +15,9 @@ const compareHref = patches.length > 1 ? `/compare/${patches[0]!.id}/${patches[1
 <header class="world-controls journey-header" aria-label="RiftScry controls">
   <a class="world-brand" href="/" aria-label="RiftScry home"><Image src={logo} alt="RiftScry" height={40} densities={[1, 2]} loading="eager" /></a>
   <nav class="journey-primary" aria-label="Main navigation">
-    <a href="/" aria-current={section === 'discover' ? 'page' : undefined}>Discover</a>
-    <a href="/next-game" data-station-link="next-game" aria-current={section === 'game' ? 'page' : undefined}>My game</a>
+    <a href="/champions" aria-current={active === 'champions' ? 'page' : undefined}>Champions</a>
+    <a href="/patches" aria-current={active === 'patches' ? 'page' : undefined}>Patch notes</a>
+    <a href="/next-game" data-station-link="next-game" aria-current={section === 'game' ? 'page' : undefined}>Briefing</a>
     <a href="/pool" aria-current={section === 'saved' ? 'page' : undefined}>Saved <span data-signal-saved-count aria-hidden="true" hidden>0</span></a>
   </nav>
   <div class="world-utilities">

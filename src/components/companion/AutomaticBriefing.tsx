@@ -95,19 +95,19 @@ export default function AutomaticBriefing({ archive }: { archive: RecallPatch[] 
 
   return <div className="automatic-workspace" data-journey-deck data-journey-hydrated={ready} data-journey-default="focus" data-automatic-briefing data-briefing-state={selection.player ? 'report' : 'entry'}>
     <div className="automatic-wrap">
-      <header className="automatic-header"><p className="automatic-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> AUTOMATIC BRIEFING</p><h1>Your briefing.</h1>{ready && !selection.player && <p>Your games become your next move.</p>}</header>
+      <header className="automatic-header"><p className="automatic-eyebrow">BEFORE YOUR NEXT GAME</p><h1>Your briefing.</h1>{ready && !selection.player && <p>Recent matches, relevant patch changes, and one focus for your next queue.</p>}</header>
       {!ready ? <section id="focus" className="automatic-loading automatic-panel automatic-empty" data-journey-panel data-journey-label="Focus" data-journey-world="next-game" role="status"><PlayerIcon name="clock" size={28} /><h2>Opening your briefing…</h2><p>Finding your latest games.</p></section> : selection.player ?
         <AutomaticReport key={`${selection.player.platform}:${selection.player.puuid}:${selection.queue}`} player={selection.player} queue={selection.queue} champion={selection.champion} archive={archive} onChangePlayer={changePlayer} onChangeScope={changeScope} /> :
         <section id="connect" data-journey-panel data-journey-label="Connect" data-journey-world="next-game" className="automatic-entry automatic-panel" aria-labelledby="automatic-entry-heading">
           <div>
-            <h2 id="automatic-entry-heading" tabIndex={-1} ref={entryHeading}>Connect your games.</h2>
-            <p>Enter your Riot ID once. Your briefing builds itself.</p>
+            <h2 id="automatic-entry-heading" tabIndex={-1} ref={entryHeading}>Start with your Riot ID.</h2>
+            <p>Choose your server to find your recent games. No Riot password needed.</p>
             {selection.problem && <p className="automatic-error" role="alert">{selection.problem}</p>}
             <PlayerEntry onChoose={choose} />
           </div>
           <aside className="automatic-entry-preview journey-connection" aria-label="Your automatic briefing">
-            <span className="journey-connection-mark" aria-hidden="true"><PlayerIcon name="sparkles" size={36} /></span>
-            <ol><li><PlayerIcon name="history" /><span>Your games</span></li><li><PlayerIcon name="sparkles" /><span>What changed</span></li><li><PlayerIcon name="target" /><span>Your next move</span></li></ol>
+            <p className="briefing-outline-label">IN YOUR BRIEFING</p>
+            <ol className="briefing-outline"><li><span aria-hidden="true">01</span><div><strong>Your recent games</strong><p>Review the champions, results, and builds you played.</p></div></li><li><span aria-hidden="true">02</span><div><strong>Changes that affect you</strong><p>Compare supported patch changes with your recorded games.</p></div></li><li><span aria-hidden="true">03</span><div><strong>A focus for next time</strong><p>Save one adjustment to take into your next match.</p></div></li></ol>
           </aside>
         </section>}
       <PracticePlan compact />
