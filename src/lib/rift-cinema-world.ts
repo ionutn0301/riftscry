@@ -19,6 +19,8 @@ export interface RiftCinemaOptions {
   reducedMotion?: boolean;
   /** Keep the complete foreground inside a dedicated, text-free art area. */
   foregroundFit?: 'contain';
+  /** Empty scene space reserved for the figure; the environment stays full bleed. */
+  foregroundRegion?: HTMLElement;
   onReady?: () => void;
   onError?: (reason: string) => void;
 }
@@ -377,6 +379,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
   const textureCache = new Map<string, Promise<Texture>>();
   let disposed = false, lost = false, failed = false, visible = true, ready = false, requestedReduced = options.reducedMotion ?? false;
   let width = 1, height = 1, dpr = 1, frame = 0, last = 0, elapsed = 0, scene = 0, targetScene = 0, blend = 1;
+  let foregroundBounds = { x: 0, y: 0, width: 1, height: 1 };
   let lookX = 0, lookY = 0, targetX = 0, targetY = 0, requestId = 0;
   let selected = options.champions.find(item => item.id === options.initialChampion) ?? options.champions[0];
   let previousSelected = selected;
@@ -492,17 +495,24 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     }
 
     gpu.enable(gpu.BLEND); gpu.blendFunc(gpu.SRC_ALPHA, gpu.ONE_MINUS_SRC_ALPHA);
+    if (options.foregroundRegion) {
+      const area = foregroundBounds;
+      gpu.enable(gpu.SCISSOR_TEST);
+      gpu.scissor(Math.ceil(area.x * canvas.width), Math.ceil((1 - area.y - area.height) * canvas.height),
+        Math.floor(area.width * canvas.width), Math.floor(area.height * canvas.height));
+    }
     const drawForeground = (art: Texture | null, champion: RiftCinemaChampion | undefined, incoming: boolean) => {
       const opacity = 1;
       if (!art || opacity < .001) return;
       const focus = champion?.focus;
       const contained = options.foregroundFit === 'contain';
+      const area = foregroundBounds;
       const evidence = clamp(scene - 1);
-      const positionX = contained ? .5 : mix(clamp(mobile ? focus?.mobileX ?? .56 : focus?.x ?? .70, 0, 1), mobile ? .40 : .35, evidence);
+      const positionX = contained ? area.x + area.width / 2 : mix(clamp(mobile ? focus?.mobileX ?? .56 : focus?.x ?? .70, 0, 1), mobile ? .40 : .35, evidence);
       u = bind(passes.foreground, 2, [['position', 2, 0]]); texture(art, 0); gpu.uniform1i(u('image'), 0);
-      gpu.uniform2f(u('pointer'), lookX, -lookY); gpu.uniform2f(u('focus'), positionX, contained ? .5 : 1 - clamp((mobile ? focus?.mobileY : undefined) ?? focus?.y ?? .46, 0, 1));
+      gpu.uniform2f(u('pointer'), lookX, -lookY); gpu.uniform2f(u('focus'), positionX, contained ? 1 - area.y - area.height / 2 : 1 - clamp((mobile ? focus?.mobileY : undefined) ?? focus?.y ?? .46, 0, 1));
       gpu.uniform2f(u('texel'), 1 / art.width, 1 / art.height); gpu.uniform3f(u('primary'), primary[0]!, primary[1]!, primary[2]!);
-      const scale = contained ? .9 * Math.min(1, aspect / art.aspect)
+      const scale = contained ? .9 * Math.min(area.height, area.width * aspect / art.aspect)
         : clamp((mobile ? focus?.mobileScale : undefined) ?? focus?.scale ?? 1.15, .4, 1.8) * (mobile ? .83 : 1) * (1 + scene * .11);
       gpu.uniform1f(u('aspect'), aspect); gpu.uniform1f(u('imageAspect'), art.aspect); gpu.uniform1f(u('scale'), scale);
       gpu.uniform1f(u('opacity'), opacity * (1 - scene * .045)); gpu.uniform1f(u('time'), time); gpu.uniform1f(u('motion'), quiet ? 0 : 1);
@@ -511,6 +521,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     };
     if (blend < 1) drawForeground(oldForeground, previousSelected, false);
     drawForeground(foreground, selected, true);
+    gpu.disable(gpu.SCISSOR_TEST);
 
     gpu.blendFunc(gpu.ONE, gpu.ONE);
     u = bind(passes.motes, 4, [['position', 3, 0], ['seed', 1, 3]]);
@@ -532,6 +543,11 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
   function resize() {
     if (disposed || lost) return;
     const bounds = canvas.getBoundingClientRect(); width = Math.max(1, bounds.width); height = Math.max(1, bounds.height);
+    if (options.foregroundRegion) {
+      const region = options.foregroundRegion.getBoundingClientRect();
+      foregroundBounds = { x: (region.left - bounds.left) / width, y: (region.top - bounds.top) / height,
+        width: region.width / width, height: region.height / height };
+    }
     const budget = width < 700 ? 800_000 : 1_900_000;
     dpr = Math.min(devicePixelRatio || 1, 1.5, Math.sqrt(budget / (width * height)));
     const w = Math.max(1, Math.round(width * dpr)), h = Math.max(1, Math.round(height * dpr));
@@ -543,6 +559,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     textureResources.forEach(resource => gpu.deleteTexture(resource)); textureResources.clear(); textureCache.clear();
   }
   const sizeObserver = new ResizeObserver(resize); sizeObserver.observe(canvas);
+  if (options.foregroundRegion) sizeObserver.observe(options.foregroundRegion);
   const visibilityObserver = new IntersectionObserver(entries => { visible = entries[0]?.isIntersecting ?? true; if (visible) schedule(); else stop(); }); visibilityObserver.observe(canvas);
   document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else schedule(); }, events);
   media.addEventListener('change', () => { stop(); schedule(); }, events);

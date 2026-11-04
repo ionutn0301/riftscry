@@ -75,7 +75,7 @@ export async function cinemaFitsViewport(page: Page) {
   expect(geometry.nested, 'Only the document should scroll outside dialogs').toEqual([]);
 }
 
-/** The rendered champion may never share its painted area with homepage copy. */
+/** Figures stay clear of copy while the original world fills the whole homepage. */
 export async function championArtIsSeparate(page: Page) {
   const report = await page.locator('[data-rift-cinema]').evaluate(root => {
     const art = root.querySelector('.cinema-art')!;
@@ -90,15 +90,22 @@ export async function championArtIsSeparate(page: Page) {
       if ([...range.getClientRects()].some(r => Math.min(box.right,r.right)-Math.max(box.left,r.left)>1
         && Math.min(box.bottom,r.bottom)-Math.max(box.top,r.top)>1)) collisions.push(node.textContent.trim());
     }
-    const escaped = [...art.querySelectorAll('canvas,[data-cinema-poster]')].filter(el => {
+    const escaped = [...art.querySelectorAll('[data-cinema-poster]')].filter(el => {
       if (!el.getClientRects().length) return false;
       const r = el.getBoundingClientRect();
       return r.left < box.left-1 || r.right > box.right+1 || r.top < box.top-1 || r.bottom > box.bottom+1;
     }).map(el => el.tagName);
-    return { collisions, escaped, clip: getComputedStyle(art).overflow, width: box.width, height: box.height };
+    const scene=root.querySelector(':scope > .cinema-world')!, canvas=scene.querySelector('canvas')!;
+    const world=canvas.getBoundingClientRect(), page=root.getBoundingClientRect(), style=getComputedStyle(art);
+    return { collisions, escaped, clip: style.overflow, width: box.width, height: box.height,
+      background:style.backgroundColor,border:style.borderTopWidth,
+      fullBleed:Math.abs(world.width-page.width)<1&&Math.abs(world.height-page.height)<1 };
   });
   expect(report.collisions, 'Homepage text must never paint over the champion art').toEqual([]);
-  expect(report.escaped, 'Both GPU artwork and its fallback must stay inside the art area').toEqual([]);
+  expect(report.escaped, 'The fallback figure must stay in its reserved scene space').toEqual([]);
+  expect(report.fullBleed, 'One continuous cinematic world must fill the homepage').toBe(true);
+  expect(report.background, 'The champion must never appear inside a background card').toBe('rgba(0, 0, 0, 0)');
+  expect(report.border, 'There must be no frame around the champion').toBe('0px');
   expect(report.clip).toBe('hidden');
   expect(report.width).toBeGreaterThan(0);
   expect(report.height).toBeGreaterThan(0);
