@@ -14,6 +14,6 @@ The reported 1913×917 homepage collision came from independent absolute positio
 
 `responsive-layout.spec.ts` exercises guest, retained-champion and saved-reading home states at 18 widths (320–2560), including 700/701, 760/761, 1000/1001, 1050/1051, 1100/1101 and the reported 1913×917. It measures actual text ranges and region gaps, not just horizontal overflow. Effective CSS viewports of 480×320 and 320×256 model 200%/400% zoom reflow. These complement, rather than claim to replace, browser-level zoom and accessibility review.
 
-The same suite captures 16 route families at four phone, landscape, intermediate and desktop sizes. Existing account, populated player, briefing, saved reading, keyboard, dialogs, WebKit, Chromium and reduced-motion suites remain in CI. Personal homepage controls are tested for reachability after native scrolling; requiring every control simultaneously onscreen is no longer the product contract.
+The same suite captures 17 route families at four phone, landscape, intermediate and desktop sizes. Existing account, populated player, briefing, saved reading, keyboard, dialogs, WebKit, Chromium and reduced-motion suites remain in CI. Personal homepage controls are tested for reachability after native scrolling; requiring every control simultaneously onscreen is no longer the product contract.
 
 A dedicated CI artifact retains full-page responsive screenshots. The managed local preview service was unavailable in this workspace, so visual browser verification uses CI captures and the production deployment.

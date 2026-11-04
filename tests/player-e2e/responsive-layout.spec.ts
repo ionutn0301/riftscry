@@ -14,7 +14,17 @@ async function textCollisions(page:Page, selector:string){
       const node=walk.currentNode,el=node.parentElement;
       if(!node.textContent?.trim()||!el?.checkVisibility({checkOpacity:true,checkVisibilityCSS:true})||el.closest('script,style,svg,[aria-hidden=true],.sr-only,.visually-hidden,dialog:not([open])'))continue;
       const range=document.createRange();range.selectNodeContents(node);
-      for(const rect of range.getClientRects())if(rect.width>2&&rect.height>2)text.push({parent:el,text:node.textContent.trim().slice(0,80),rect});
+      for(const source of range.getClientRects()){
+        let left=source.left,right=source.right,top=source.top,bottom=source.bottom;
+        // Ellipsized labels paint only inside their clipping ancestor.
+        for(let ancestor:Element|null=el;ancestor&&root.contains(ancestor);ancestor=ancestor.parentElement){
+          const style=getComputedStyle(ancestor),box=ancestor.getBoundingClientRect();
+          if(/hidden|clip|auto|scroll/.test(style.overflowX)){left=Math.max(left,box.left);right=Math.min(right,box.right);}
+          if(/hidden|clip|auto|scroll/.test(style.overflowY)){top=Math.max(top,box.top);bottom=Math.min(bottom,box.bottom);}
+        }
+        const rect=new DOMRect(left,top,right-left,bottom-top);
+        if(rect.width>2&&rect.height>2)text.push({parent:el,text:node.textContent.trim().slice(0,80),rect});
+      }
     }
     const collisions=[];
     for(let i=0;i<text.length;i++)for(let j=i+1;j<text.length;j++){
@@ -60,11 +70,11 @@ test('responsive audit: zoom reflow and short landscape keep document scrolling 
   }
 });
 
-const routes=[['champions','/champions'],['champion','/champion/heimerdinger'],['patches','/patches'],['patch','/patch/26.21'],['compare','/compare/26.21/26.20'],['pool','/pool#edit-pool'],['briefing',`/next-game?${query}`],['notebook','/notebook'],['players','/players'],['player',profilePath],['match',`/matches/${recentAramWin.metadata.matchId}?${query}`],['account','/account'],['profile','/profile'],['catch-up','/catch-up?champion=Heimerdinger'],['practice','/practice'],['guide','/guide']];
+const routes=[['champions','/champions'],['champion','/champion/heimerdinger'],['patches','/patches'],['patch','/patch/26.21'],['compare','/compare/26.21/26.20'],['pool','/pool#edit-pool'],['briefing',`/next-game?${query}`],['notebook','/notebook'],['players','/players'],['player',profilePath],['match',`/matches/${recentAramWin.metadata.matchId}?${query}`],['account','/account'],['profile','/profile'],['catch-up','/catch-up?champion=Heimerdinger'],['practice','/learn'],['practice-card','/learn/lux'],['guide','/guide']];
 for(const viewport of [{width:320,height:568},{width:568,height:320},{width:1101,height:700},{width:1913,height:917}])test(`responsive audit: site task sections at ${viewport.width}×${viewport.height}`,async({page})=>{
   test.setTimeout(240_000);await page.setViewportSize(viewport);await installFixtures(page,{matches:visualMatches});await mkdir('player-visuals',{recursive:true});
   for(const [name,path] of routes){
-    await page.goto(path!);await readyWorld(page);
+    const response=await page.goto(path!);expect(response?.status(),path).toBe(200);await readyWorld(page);
     if(name==='briefing')await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),path).toBeLessThanOrEqual(1);
     for(const group of await page.locator('.journey-reader-header,.journey-roster-lens figcaption,.journey-chapters,.learning-page header,.automatic-entry').all()){
