@@ -226,7 +226,7 @@ test('timeline and AI failures keep the loaded match summary usable while unavai
   await expect(overview.getByText('Item 1001', { exact: true })).toBeVisible();
   await openScene(page, 'match-evidence');
   await page.getByRole('button', { name: 'Open timeline', exact: true }).click();
-  await expect(page.getByText(/Timeline unavailable/).first()).toBeVisible();
+  await expect(page.locator('#match-evidence').getByText(/Timeline unavailable/)).toBeVisible();
   await openScene(page, 'match-review');
   await page.getByRole('button', { name: 'Review with AI', exact: true }).click();
   await expect(page.getByText(/Recorded summary remains available/)).toBeVisible();

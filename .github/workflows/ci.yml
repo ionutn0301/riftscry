@@ -64,6 +64,10 @@ jobs:
         run: pnpm exec playwright test --config=playwright.player.config.ts companion-learning.spec.ts learning-paths.spec.ts momentum.spec.ts
         env:
           CI: "true"
+      - name: Verify match recovery when timeline, AI or item details fail
+        run: pnpm exec playwright test --config=playwright.player.config.ts player.spec.ts --grep 'timeline and AI failures'
+        env:
+          CI: "true"
       - name: Verify compact match history and saved player links
         run: >
           pnpm exec playwright test --config=playwright.player.config.ts
