@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
-import { readyCinema } from './cinema-test-helpers';
+import { readyCinema, openCinemaNavigation } from './cinema-test-helpers';
 import { readyWorld, reachableTarget, stationaryWorld } from './journey-test-helpers';
 import { installFixtures, visualMatches } from '../player-e2e/fixtures';
 
@@ -16,11 +16,13 @@ async function capture(page: Page, name: string) {
 test('reading layout: a new visitor can understand and enter the champion directory', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/'); await readyCinema(page);
-  const browse = page.getByRole('link', { name: 'Find your champion', exact: false });
   const briefing = page.getByRole('link', { name: 'Build my briefing', exact: false });
   await expect(page.locator('.cinema-introduction')).toBeInViewport({ ratio: 1 });
-  await reachableTarget(browse, page); await reachableTarget(briefing, page);
+  await reachableTarget(page.locator('[data-home-catchup]'), page); await reachableTarget(briefing, page);
   await capture(page, 'home');
+  const menu = await openCinemaNavigation(page);
+  const browse = menu.getByRole('link', { name: 'Champions', exact: false });
+  await reachableTarget(browse, page);
   await browse.click(); await readyWorld(page);
   await expect(page).toHaveURL(/\/champions\/?$/);
   const rows = page.locator('[data-roster-row]:visible');
@@ -45,7 +47,7 @@ test('reading layout: a new visitor can understand and enter the champion direct
 test('reading layout: the homepage guide explains each feature and account requirements', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/'); await readyCinema(page);
-  await expect(page.locator('.cinema-introduction')).toContainText('Review your matches.');
+  await expect(page.locator('.cinema-introduction')).toContainText('Your recent games.');
   const guide = page.getByRole('link', { name: 'How RiftScry works', exact: true });
   await reachableTarget(guide, page); await guide.click(); await readyWorld(page);
   await expect(page.getByRole('heading', { name: 'A clearer next game.' })).toBeVisible();

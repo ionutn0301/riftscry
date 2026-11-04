@@ -9,7 +9,20 @@ test('world gestures advance one champion per gesture and leave interactive cont
   await page.goto('/'); await readyCinema(page);
   const signals = await cinemaSignals(page);
   const viewport = page.viewportSize()!;
-  const point = { x: viewport.width * .53, y: viewport.height * .48 };
+  // Responsive player actions may occupy the former fixed wheel coordinate.
+  // Find a real open part of the world, including the native swipe path, so
+  // this verifies gestures on artwork rather than accidentally on a button.
+  const point = await page.evaluate(({ width, height }) => {
+    const world = document.querySelector('[data-rift-cinema]')!;
+    for (const fraction of [.3, .36, .48, .58]) {
+      const candidate = { x: width * .53, y: height * fraction };
+      if ([0, 45, 100].every(offset => {
+        const target = document.elementFromPoint(candidate.x - offset, candidate.y);
+        return target && world.contains(target) && !target.closest('a,button,input,dialog');
+      })) return candidate;
+    }
+    throw new Error('No unobstructed artwork area for a world gesture');
+  }, viewport);
   const mobileWebKit = isMobile && browserName === 'webkit';
   const open = page.getByRole('button', { name: 'Open navigation menu', exact: true });
   const openBox = (await open.boundingBox())!;

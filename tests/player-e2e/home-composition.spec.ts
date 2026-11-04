@@ -4,7 +4,7 @@ import {installFixtures} from './fixtures';
 import {cinema,cinemaFitsViewport,cinemaSignals,chooseSignal,closeEvidence,evidence,inspectCinema,openCinemaNavigation,readyCinema} from '../e2e/cinema-test-helpers';
 import {reachableTarget} from '../e2e/journey-test-helpers';
 
-for (const viewport of [{width:320,height:480},{width:390,height:844},{width:568,height:320},{width:844,height:390},{width:1024,height:600},{width:1366,height:600},{width:1440,height:900}]) {
+for (const viewport of [{width:320,height:480},{width:390,height:844},{width:480,height:320},{width:568,height:320},{width:844,height:390},{width:1024,height:600},{width:1366,height:600},{width:1440,height:900}]) {
   test(`${viewport.width}×${viewport.height}: one homepage gives returning actions and header controls room to breathe`, async ({page}) => {
     await page.setViewportSize(viewport); await page.emulateMedia({reducedMotion:'reduce'});
     await installFixtures(page);
@@ -75,7 +75,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
     await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
     const requests=await installFixtures(page);await page.goto('/');await readyCinema(page);
     await expect(page.locator('main h1')).toHaveCount(1);
-    await expect(page.locator('main h1')).toHaveAccessibleName('The Rift has changed.');
+    await expect(page.locator('main h1')).toHaveAccessibleName('Your next game. A clearer plan.');
     await expect(page.locator('[data-journey-deck],[data-journey-panel],[data-journey-tabs],.journey-chrome')).toHaveCount(0);
     for(const action of await cinema(page).locator('a:visible,button:visible').all())await reachableTarget(action,page);
     await cinemaFitsViewport(page);

@@ -21,7 +21,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - name: Verify account sections, private photos and Riot associations
-        run: pnpm exec playwright test --config=playwright.accounts.config.ts --grep 'account sections|photo upload|photos and Riot|Account is reachable'
+        run: pnpm exec playwright test --config=playwright.accounts.config.ts --grep 'account sections|photo upload|photos and Riot|Account is reachable|personal homepage'
         env:
           CI: "true"
       - uses: actions/upload-artifact@v4
@@ -30,6 +30,7 @@ jobs:
           name: account-profile
           path: |
             player-visuals/account-*
+            player-visuals/home-personal-*
             test-results/
           retention-days: 14
 

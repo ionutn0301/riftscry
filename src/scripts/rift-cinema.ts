@@ -1,6 +1,7 @@
 import { createRiftCinemaWorld, type RiftCinemaWorld, type RiftCinemaChampion } from '../lib/rift-cinema-world';
-import type { HomeSignal } from '../lib/home-signals';
-import type { Evidence } from '../lib/investigation';
+import type { CinemaSignal } from '../lib/home-champions';
+import { $account } from '../lib/account/storage';
+import type { HomeChampionCount } from '../lib/home-personalization';
 import { readFindings, writeFindings, FINDINGS_EVENT, FINDINGS_KEY, FINDINGS_LIMIT } from '../lib/kept-findings';
 import { parseSignalContext, readSignalContext, rememberSignal, SIGNAL_CONTEXT_EVENT, SIGNAL_CONTEXT_KEY } from '../lib/signal-context';
 import { readPreferredPlayer as readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
@@ -8,7 +9,6 @@ import { playerLink } from '../components/player/client';
 import { readReturnState, rememberReading, RETURN_STATE_EVENT, RESUME_KEY } from '../lib/return-briefing';
 import { installSceneGestures, type SceneDirection } from '../lib/scene-gestures';
 
-type CinemaSignal=HomeSignal & {record:Evidence;explore:string;world:{id:string;region:string;character:string;primary:string;secondary:string;word:string;number:string;figure:string}};
 const host=document.querySelector<HTMLElement>('[data-rift-cinema]');
 const data=document.getElementById('home-signals-data');
 if(host&&data?.textContent)mount(host,JSON.parse(data.textContent) as CinemaSignal[]);
@@ -30,6 +30,13 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   const restoreMotion=()=>{document.documentElement.dataset.motion=motionChoice??(media.matches?'reduced':'full');};
   restoreMotion();
   let current=signals[0]!;
+  const featuredIds=signals.map(signal=>signal.championId);
+  let choiceIds=[...featuredIds];
+  let cataloguePromise:Promise<CinemaSignal[]>|undefined;
+  const catalogue=()=>cataloguePromise??=(fetch('/home-champions.json',{signal:AbortSignal.timeout(15000)})
+    .then(response=>{if(!response.ok)throw new Error('Champion artwork could not load.');return response.json() as Promise<CinemaSignal[]>;})
+    .then(entries=>{for(const entry of entries)if(!signals.some(signal=>signal.championId===entry.championId)){signals.push(entry);champions.push(renderChampion(entry));}return entries;})
+    .catch(error=>{cataloguePromise=undefined;throw error;}));
   let retained=readSignalContext();
   let world:RiftCinemaWorld|null=null;
   let inspector:HTMLElement|null=null;
@@ -58,8 +65,8 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     tourTimer=window.setTimeout(()=>{
       tourTimer=0;
       if(!touring||!worldActive()){stopTour();return;}
-      const index=signals.findIndex(signal=>signal.championId===current.championId);
-      select(signals[(index+1)%signals.length]!.championId);
+      const index=choiceIds.indexOf(current.championId);
+      select(choiceIds[(index+1)%choiceIds.length]!);
       const url=new URL(location.href);url.searchParams.set('signal',current.championId);url.hash='';
       history.replaceState({cinema:true},'',url.pathname+url.search);
       scheduleTour();
@@ -147,7 +154,8 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   menuState('closed');
 
   function saved(){
-    const present=readFindings().some(item=>item.id===current.record.id);
+    keep.hidden=!current.record;
+    const present=Boolean(current.record&&readFindings().some(item=>item.id===current.record!.id));
     keep.setAttribute('aria-pressed',String(present));
     const label=keep.querySelector('span');if(label)label.textContent=present?'Finding kept':'Keep this finding';
     const mark=keep.querySelector('span:last-child');if(mark)mark.textContent=present?'✓':'+';
@@ -158,6 +166,12 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     links('[data-station-link="players"]',recent?playerLink(recent.platform,recent.puuid,{name:recent.name,view:'history'}):'/players');
     text('[data-home-briefing-label]',recent?'Continue briefing':'My briefing');
     root.querySelector('[data-home-briefing]')?.setAttribute('aria-label',recent?`Continue briefing for ${recent.name||'your player'}`:'Open my briefing');
+    const review=root.querySelector<HTMLAnchorElement>('[data-home-review]')!;
+    review.href=review.dataset.latestReview??(recent?playerLink(recent.platform,recent.puuid,{name:recent.name,view:'history'}):'/players');
+    review.querySelector('strong')!.textContent=review.dataset.latestReview?'Review latest game':recent?'Review my games':'Review a game';
+    links('[data-home-catchup]',`/catch-up?champion=${current.championId}`);
+    text('[data-home-catchup]>span:first-child',`Catch up on ${current.championName}`);
+    if($account.get().userId&&recent)links('[data-home-primary]',briefingLink(recent,{champion:current.championId}));
     const reading=readReturnState().resume;
     const readingLink=root.querySelector<HTMLAnchorElement>('[data-home-reading]')!;
     readingLink.hidden=!reading;readingLink.href=reading?.href??'/explore#change';
@@ -168,20 +182,60 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     context.hidden=!show;context.href=show?retained!.href:'/explore#change';context.textContent=show?`Continue following ${retained!.name} ↗`:'';
   }
   function rememberCurrent(){
-    rememberSignal({championId:current.championId,name:current.championName,href:current.explore,patch:current.patchId,event:current.record.id});
+    rememberSignal({championId:current.championId,name:current.championName,href:current.explore,...(current.record?{patch:current.patchId,event:current.record.id}:{})});
+  }
+  function ensureRecord(signal:CinemaSignal){
+    if(root.querySelector(`[data-home-record="${signal.championId}"]`))return;
+    const container=document.createElement('div');container.dataset.homeRecord=signal.championId;container.hidden=true;
+    container.className='cinema-dynamic-record';
+    const add=(tag:string,value:string,className='')=>{const element=document.createElement(tag);element.textContent=value;element.className=className;container.append(element);return element;};
+    if(signal.record){
+      add('p',`Patch ${signal.patchId} · ${signal.abilityName}`,'signal-coordinate');
+      add('h3',signal.label);
+      if(signal.record.change.kind==='numeric'){
+        for(const [label,value,side] of [['Before',signal.before,'before'],['After',signal.after,'after']]){
+          add('p',label!,'cinema-value-label');add('strong',value!,side!);
+        }
+      }else add('p',signal.record.change.text,'prose-text');
+      const source=add('a','Original source · Riot’s notes') as HTMLAnchorElement;source.href=signal.sourceUrl;source.target='_blank';source.rel='noreferrer';
+    }else{
+      add('h3','No direct change recorded');
+      add('p','There is no direct ability change for this champion in the available archive. Item and system changes may still affect your games.');
+    }
+    root.querySelector('.cinema-save-status')!.before(container);
+  }
+  function showRoster(counts:HomeChampionCount[]){
+    choiceIds=counts.map(champion=>champion.id);
+    root.querySelectorAll<HTMLAnchorElement>('[data-home-choice]').forEach((link,index)=>{
+      const count=counts[index];link.hidden=!count;if(!count)return;
+      const signal=signals.find(signal=>signal.championId===count.id)!;
+      link.dataset.homeChoice=signal.championId;link.href=signal.explore;link.setAttribute('aria-label',`Enter ${signal.championName}'s world${count.games?`, ${count.games} recent games`:''}`);
+      link.style.setProperty('--choice-accent',signal.world.primary);
+      const image=link.querySelector('img')!;image.src=signal.world.kind==='splash'?signal.icon:signal.world.figure;image.dataset.artKind=signal.world.kind??'cutout';
+      link.querySelector('[data-home-choice-name]')!.textContent=signal.championName;
+      const caption=link.querySelector<HTMLElement>('[data-home-choice-count]')!;caption.hidden=!count.games;caption.textContent=`${count.games} game${count.games===1?'':'s'}`;
+    });
+    const requested=new URLSearchParams(location.search).get('signal');
+    // A shared URL wins; background personalization never changes browser history.
+    select(requested&&signals.some(signal=>signal.championId===requested)?requested:choiceIds[0]!,false,false);
   }
   function select(id:string,push=false,remember=false){
     const selected=signals.find(item=>item.championId===id)??signals[0]!;
     const changed=current.championId!==selected.championId;
     current=selected;root.dataset.homeSubject=current.championId;
+    ensureRecord(current);
     root.style.setProperty('--cinema-accent',current.world.primary);root.style.setProperty('--cinema-secondary',current.world.secondary);
     root.querySelectorAll<HTMLAnchorElement>('[data-home-choice]').forEach(link=>{if(link.dataset.homeChoice===current.championId)link.setAttribute('aria-current','true');else link.removeAttribute('aria-current');});
     root.querySelectorAll<HTMLElement>('[data-home-record]').forEach(record=>{record.hidden=record.dataset.homeRecord!==current.championId;record.inert=record.hidden;});
     text('[data-home-subject]',current.championName);text('[data-cinema-evidence-name]',current.championName);
     text('[data-home-ability]',current.abilityName);text('[data-cinema-region]',current.world.region);text('[data-cinema-character]',current.world.character);text('[data-cinema-number]',current.world.number);
     links('[data-cinema-inspect]',current.explore);links('[data-home-explore]',current.explore);
-    root.querySelector('.cinema-hotspot')?.setAttribute('aria-label',`Inspect ${current.championName}'s archived change`);
+    root.querySelector('.cinema-hotspot')?.setAttribute('aria-label',current.record?`Inspect ${current.championName}'s archived change`:`Open ${current.championName}'s overview`);
+    text('[data-cinema-inspect-label]',current.record?'SEE AN ARCHIVED CHANGE':'CHAMPION OVERVIEW');
+    text('[data-cinema-evidence-intro]',current.record?'One change, with its date and original source.':'Your champion and the available archive.');
+    text('[data-home-explore]>span:first-child',current.record?'Explore the full record':'View champion history');
     poster.src=current.world.figure;
+    root.dataset.artKind=current.world.kind??'cutout';
     root.querySelectorAll<HTMLImageElement>('[data-cinema-menu-portrait]').forEach(image=>image.src=current.world.figure);
     text('[data-cinema-menu-subject]',current.championName);
     world?.setChampion(current.championId);
@@ -189,7 +243,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
       clearTimeout(changeTimer);root.dataset.changing='false';
       requestAnimationFrame(()=>{if(!abort.signal.aborted)root.dataset.changing='true';});
       changeTimer=window.setTimeout(()=>delete root.dataset.changing,1100);
-      text('[data-cinema-status]',`${current.championName}. ${current.world.character}. ${current.abilityName}, patch ${current.patchId}.`);
+      text('[data-cinema-status]',`${current.championName}. ${current.world.character}.${current.record?` ${current.abilityName}, patch ${current.patchId}.`:' No direct change recorded in this archive.'}`);
     }
     if(push){const url=new URL(location.href);url.searchParams.set('signal',current.championId);url.hash=evidence.open?'inspect':'';history.pushState({cinema:true},'',url.pathname+url.search+url.hash);}
     if(remember)rememberCurrent();
@@ -223,6 +277,14 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
       const previous=legacy.find(signal=>signal.championId===id);
       if(previous?.explore){location.replace(previous.explore);return;}
     }
+    if(id&&!signals.some(signal=>signal.championId===id)){
+      void catalogue().then(()=>{
+        if(location.href!==url.href||abort.signal.aborted)return;
+        if(!signals.some(signal=>signal.championId===id)){text('[data-cinema-status]','Champion not found. Choose a featured champion or use Champions in the menu.');return;}
+        select(id);if(reading)inspect(false);else restoreWorld();
+      }).catch(()=>text('[data-cinema-status]','Champion preview could not load. The featured champions remain available.'));
+      return;
+    }
     select(id??signals[0]!.championId,false,false);
     if(reading)inspect(false);else restoreWorld();
   }
@@ -238,10 +300,12 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   evidence.addEventListener('click',event=>{if(event.target===evidence)closeEvidence();},events);
   keep.hidden=false;
   keep.addEventListener('click',()=>{
-    const findings=readFindings();const present=findings.some(item=>item.id===current.record.id);
+    if(!current.record)return;
+    const record=current.record;
+    const findings=readFindings();const present=findings.some(item=>item.id===record.id);
     if(!present&&findings.length>=FINDINGS_LIMIT){text('[data-home-keep-status]','Your collection holds 50 findings. Remove one in Saved before keeping another.');return;}
     if(!present){
-      const finding={id:current.record.id,champion:current.championId,name:current.championName,patch:current.patchId,date:current.releaseDate,label:`${current.abilityName} / ${current.label}`,text:`${current.before} → ${current.after}`,href:current.explore};
+      const finding={id:current.record.id,champion:current.championId,name:current.championName,patch:current.patchId,date:current.releaseDate,label:`${current.abilityName} / ${current.label}`,text:current.record.change.kind==='numeric'?`${current.before} → ${current.after}`:current.record.change.text,href:current.explore};
       if(!writeFindings([finding,...findings])){text('[data-home-keep-status]','This browser could not save the finding. You can still open its source or bookmark the record.');return;}
     }
     rememberReading(current.explore,`${current.championName} — ${current.label}`);saved();text('[data-home-keep-status]',`${current.championName}'s finding is kept on this device.`);
@@ -288,10 +352,10 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   document.addEventListener('touchstart',pauseForInput,{...events,capture:true,passive:true});
   document.addEventListener('keydown',pauseForInput,{...events,capture:true});
   document.addEventListener('wheel',pauseForInput,{...events,capture:true,passive:true});
-  const canCycle=(direction:SceneDirection)=>Boolean(signals[signals.findIndex(signal=>signal.championId===current.championId)+direction]);
+  const canCycle=(direction:SceneDirection)=>Boolean(choiceIds[choiceIds.indexOf(current.championId)+direction]);
   const resetGestures=installSceneGestures(root,{signal:abort.signal,enabled:worldActive,canStep:canCycle,step:direction=>{
-    const selected=signals[signals.findIndex(signal=>signal.championId===current.championId)+direction];
-    if(selected){stopTour();select(selected.championId,true,true);}
+    const selected=choiceIds[choiceIds.indexOf(current.championId)+direction];
+    if(selected){stopTour();select(selected,true,true);}
   }});
   const preference=new MutationObserver(applyMotion);preference.observe(document.documentElement,{attributes:true,attributeFilter:['data-motion']});
   media.addEventListener('change',()=>{restoreMotion();applyMotion();},events);
@@ -312,9 +376,19 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   root.addEventListener('pointerup',release,events);root.addEventListener('pointercancel',release,events);
   root.addEventListener('pointerleave',()=>{if(!drag){pointer={x:0,y:0};if(!pointerFrame)pointerFrame=requestAnimationFrame(sendPointer);}},events);
 
-  const champions:RiftCinemaChampion[]=signals.map(signal=>({id:signal.championId,foregroundUrl:signal.world.figure,
+  const renderChampion=(signal:CinemaSignal):RiftCinemaChampion=>({id:signal.championId,
+    ...(signal.world.kind==='splash'?{backgroundUrl:signal.world.figure}:{foregroundUrl:signal.world.figure}),
     palette:{primary:signal.world.primary,secondary:signal.world.secondary},atmosphere:signal.championId==='Yasuo'?'wind':signal.championId==='Thresh'?'souls':'smoke',
-    focus:{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0}));
+    focus:{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0});
+  const champions:RiftCinemaChampion[]=signals.map(renderChampion);
+  // Personal names and recovery messages can wrap. Reserve their real height
+  // above the mobile roster instead of placing actions at a guessed offset.
+  const bottom=root.querySelector<HTMLElement>('.cinema-bottom');
+  const bottomSize=new ResizeObserver(()=>{
+    if(bottom)root.style.setProperty('--home-bottom-height',`${Math.ceil(bottom.getBoundingClientRect().height)}px`);
+  });
+  if(bottom)bottomSize.observe(bottom);
+  abort.signal.addEventListener('abort',()=>bottomSize.disconnect(),{once:true});
   try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:new URLSearchParams(location.search).get('signal')??signals[0]!.championId,reducedMotion:reduced(),
     onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});
   }catch{root.dataset.renderer='fallback';}
@@ -336,4 +410,17 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   window.addEventListener('pageshow',event=>{pageActive=true;if(event.persisted){stopTour();resetGestures();resetMenu();}retained=readSignalContext();resume();saved();world?.resize();},events);
   window.addEventListener('pagehide',event=>{pageActive=false;stopTour();resetGestures();resetMenu();if(!event.persisted){abort.abort();preference.disconnect();world?.dispose();clearTimeout(changeTimer);cancelAnimationFrame(pointerFrame);}},events);
   fromLocation();applyMotion();resume();saved();root.dataset.homeReady='true';
+  let personalizationStarted=false;
+  const unsubscribe=$account.subscribe(account=>{
+    if(!account.ready||!account.userId||personalizationStarted)return;
+    personalizationStarted=true;
+    void import('./home-personalization').then(({personalizeHome})=>{
+      if(abort.signal.aborted)return;
+      personalizeHome(root,catalogue,showRoster,()=>{
+        delete root.querySelector<HTMLElement>('[data-home-review]')!.dataset.latestReview;
+        showRoster(featuredIds.map(id=>({id,games:0,lastPlayed:0})));
+      },abort.signal);
+    });
+  });
+  abort.signal.addEventListener('abort',unsubscribe,{once:true});
 }
