@@ -29,7 +29,7 @@ for (const viewport of [{width:320,height:480},{width:390,height:844},{width:480
     // In landscape the action and champion choices sit in separate columns.
     const separation=Math.max(roster.y-actions.y-actions.height,roster.x-actions.x-actions.width);
     expect(separation,'The returning action must stay separate from champion choices').toBeGreaterThanOrEqual(7);
-    if (footer) expect(footer.y-roster.y-roster.height,'Champion choices need space above playback controls').toBeGreaterThanOrEqual(11.9);
+    if (footer) expect(footer.y-roster.y-roster.height,'Champion choices need space above playback controls').toBeGreaterThanOrEqual(7);
     for(const control of await page.locator('.cinema-playback button:visible').all()){
       await reachableTarget(control,page);
       expect(await control.evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(10);

@@ -754,3 +754,17 @@ test('compact account: keyboard tabs, direct links and Back preserve an unsaved 
   await page.getByRole('button',{name:'Reset changes',exact:true}).click();
   await expect(page.getByLabel('Display name')).toHaveValue('');
 });
+
+test('compact account: short landscape keeps navigation fixed and form controls reachable', async ({ page, context }) => {
+  await page.setViewportSize({width:568,height:320}); await seed(context,alice); await backend(context,new Map(),{offline:false});
+  await page.goto('/account'); await expect(page.getByLabel('Display name')).toBeVisible();
+  for(const name of ['Profile','Riot ID','Settings']) {
+    await page.getByRole('tab',{name,exact:true}).click();
+    const panel=page.getByRole('tabpanel');
+    for(const control of await panel.locator('button:visible,input:visible,select:visible,summary:visible').all()) {
+      await control.scrollIntoViewIfNeeded(); await expect(control).toBeInViewport({ratio:.99});
+    }
+    await expect(page.getByRole('tab',{name,exact:true})).toBeInViewport({ratio:1});
+    expect(await page.evaluate(()=>scrollY)).toBe(0);
+  }
+});

@@ -62,7 +62,7 @@ export default function AccountPanel({ profileView = false }: { profileView?: bo
   }
   function selectSection(next: AccountSection) {
     setSection(next);
-    history.pushState(null, '', `#${next}`);
+    history.pushState(history.state, '', `#${next}`);
   }
   return <section id="workspace" className="account-panel account-hub" data-journey-panel data-journey-label="Account" aria-labelledby="account-title">
     <header className="account-heading"><div><h1 id="account-title">{profileView ? 'My profile.' : 'My account.'}</h1><p>{signedIn ? account.email || 'Your private workspace' : 'Your player. Your space.'}</p></div>
