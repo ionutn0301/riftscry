@@ -381,6 +381,14 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     palette:{primary:signal.world.primary,secondary:signal.world.secondary},atmosphere:signal.championId==='Yasuo'?'wind':signal.championId==='Thresh'?'souls':'smoke',
     focus:{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0});
   const champions:RiftCinemaChampion[]=signals.map(renderChampion);
+  // Personal names and recovery messages can wrap. Reserve their real height
+  // above the mobile roster instead of placing actions at a guessed offset.
+  const bottom=root.querySelector<HTMLElement>('.cinema-bottom');
+  const bottomSize=new ResizeObserver(()=>{
+    if(bottom)root.style.setProperty('--home-bottom-height',`${Math.ceil(bottom.getBoundingClientRect().height)}px`);
+  });
+  if(bottom)bottomSize.observe(bottom);
+  abort.signal.addEventListener('abort',()=>bottomSize.disconnect(),{once:true});
   try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:new URLSearchParams(location.search).get('signal')??signals[0]!.championId,reducedMotion:reduced(),
     onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});
   }catch{root.dataset.renderer='fallback';}

@@ -455,6 +455,10 @@ for (const width of [320, 390, 1440]) test(`personal homepage: linked player's t
   await expect(page.locator('[data-home-review]')).toHaveAttribute('href', /\/matches\/EUN1_33000\?/);
   await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Lux/);
   await page.locator('[data-home-choice="Chogath"]').click();
+  // Freeze motion through the real preference control before inspecting art.
+  const motion = page.locator('[data-cinema-motion]');
+  if ((await motion.getAttribute('aria-pressed')) === 'false') await motion.click();
+  await expect(page.locator('[data-cinema-canvas]')).toHaveAttribute('data-cinema-champion', 'Chogath');
   await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Chogath/);
   await expect(page.locator('[data-home-catchup]')).toHaveAttribute('href', '/catch-up?champion=Chogath');
   await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', /Chogath_0.jpg$/);
@@ -470,6 +474,23 @@ for (const width of [320, 390, 1440]) test(`personal homepage: linked player's t
   await page.screenshot({ path: `player-visuals/home-personal-${width}.png`, animations: 'disabled' });
   await page.locator('[data-home-review]').click();
   await expect(page).toHaveURL(/\/matches\/EUN1_33000/);
+});
+
+for (const [width, height] of [[320, 568], [480, 320], [1024, 600]]) test(`personal homepage: long champion names keep actions separate at ${width}px`, async ({ page, context }) => {
+  await page.setViewportSize({ width: width!, height: height! });
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  await installFixtures(page, { matches: homeGames(['AurelionSol', 'Nunu', 'Renata']) });
+  await page.goto('/');
+  await expect(page.locator('[data-home-roster-label]')).toHaveText('Most played recently');
+  const actions = (await page.locator('.cinema-entry-actions').boundingBox())!;
+  const roster = (await page.locator('.cinema-roster').boundingBox())!;
+  expect(Math.max(roster.y - actions.y - actions.height, roster.x - actions.x - actions.width)).toBeGreaterThanOrEqual(15);
+  for (const target of await page.locator('[data-home-choice]:visible, [data-home-primary], [data-home-review]').all()) {
+    await expect(target).toBeInViewport({ ratio: 1 });
+    expect(await target.evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })).toBe(true);
+  }
+  await mkdir('player-visuals', { recursive: true });
+  await page.screenshot({ path: `player-visuals/home-personal-long-${width}.png`, animations: 'disabled' });
 });
 
 test('personal homepage: signed-in accounts need an associated Riot ID, never a guest or last-viewed identity', async ({ page, context }) => {

@@ -44,7 +44,7 @@
   .rift-cinema h1>span{font-size:clamp(28px,8vw,48px)}
   .rift-cinema h1>em{font-size:clamp(28px,8vw,48px)}
   .cinema-introduction{font-size:13px;line-height:1.5;max-width:30ch;margin-top:12px}
-  .cinema-entry-actions{bottom:246px;width:86%;max-width:360px;gap:4px;grid-template-rows:52px 44px}
+  .cinema-entry-actions{bottom:max(256px,calc(var(--home-bottom-height,0px) + 76px));width:86%;max-width:360px;gap:4px;grid-template-rows:52px 44px}
   .cinema-entry-actions .cinema-primary{min-height:52px;width:100%;justify-content:space-between;padding:12px 18px}
   .cinema-entry-actions .cinema-resume{font-size:12px}
   .cinema-bottom{inset:auto 7% 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
@@ -69,7 +69,7 @@
   .cinema-roster-heading :is(.cinema-roster-label,.cinema-roster-status){grid-column:1}
 }
 @media(max-width:700px) and (max-height:740px){
-  .cinema-entry-actions{bottom:245px}
+  .cinema-entry-actions{bottom:max(255px,calc(var(--home-bottom-height,0px) + 76px))}
   .cinema-identity{display:none}
   .cinema-opening{top:14%}
   .rift-cinema h1{margin-top:8px}
@@ -83,13 +83,26 @@
   .cinema-primary strong{font-size:13px}
   .cinema-hotspot{top:auto;bottom:293px;right:7%}
 }
-@media(max-height:480px) and (min-width:500px){
-  .cinema-opening{left:5%;top:23%;width:47%}
+@media(min-width:701px) and (max-height:720px){
+  .cinema-opening{top:16%;transform:none}
+  .rift-cinema h1{margin:12px 0;line-height:1.05}
+  .rift-cinema h1>span{font-size:44px}
+  .rift-cinema h1>em{font-size:40px}
+  .cinema-introduction{font-size:13px;line-height:1.5;margin:12px 0 16px}
+}
+@media(max-width:479px) and (min-height:451px) and (max-height:500px){
+  .cinema-opening{top:62px}
+  .cinema-opening>.cinema-kicker{display:none}
+  .rift-cinema h1{margin:0;line-height:1.1}
+  .rift-cinema h1>span,.rift-cinema h1>em{font-size:24px}
+}
+@media(max-height:480px) and (min-width:480px){
+  .cinema-opening{left:5%;top:23%;width:46%}
   .rift-cinema h1{margin:0 0 14px}
   .rift-cinema h1>span,.rift-cinema h1>em{font-size:clamp(24px,4vw,34px)}
   .cinema-introduction{display:none}
   .cinema-entry-actions{position:static;max-width:100%;width:100%;grid-template-rows:44px 44px;gap:2px}
-  .cinema-entry-actions .cinema-primary{min-height:44px;padding:8px 12px;gap:6px}
+  .cinema-entry-actions .cinema-primary{min-height:44px;width:100%;padding:8px 12px;gap:6px}
   .cinema-primary strong{font-size:13px}
   .cinema-entry-actions .cinema-resume{font-size:11px}
   .cinema-bottom{inset:auto 5% 54px auto;width:40%;display:grid;gap:6px}
@@ -103,13 +116,13 @@
   .cinema-review-action{min-height:44px;padding:8px 10px;display:flex;justify-content:space-between}
   .cinema-review-action>span:first-child{display:none}
   .cinema-review-action strong{font-size:12px}
-  .cinema-hotspot{top:23%;left:auto;right:6%;z-index:4;min-height:44px}
+  .cinema-hotspot{top:18%;bottom:auto;left:auto;right:6%;z-index:4;min-height:44px}
   .cinema-hotspot-orbit{width:44px;height:44px}
   .cinema-identity{display:none}
   .cinema-nojs{display:none}
 }
 /* Reflow remains usable with large text/zoom, even when a cinematic viewport cannot fit. */
-@media(max-width:499px) and (max-height:450px){
+@media(max-width:479px) and (max-height:450px){
   html:has(.rift-cinema-shell),body.rift-cinema-shell{overflow:auto}
   html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] :is(.rift-site-shell,#main){height:auto;min-height:620px;overflow:visible}
   .rift-cinema{height:620px;min-height:620px}
