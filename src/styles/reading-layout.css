@@ -32,6 +32,10 @@ body[data-reading-layout] #main .automatic-workspace { --automatic-accent:var(--
 body[data-reading-layout] #main .recall-workspace { --recall-accent:var(--gold); }
 body[data-reading-layout] #main .player-workspace { --player-accent:var(--gold); }
 body[data-reading-layout] #main .journey-reader { --reader-signal:var(--gold); --reader-line:var(--reading-rule); }
+body[data-reading-layout] #main .return-briefing { --rb-cyan:var(--gold); }
+body[data-reading-layout] #main .return-briefing__personal>h3 { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); max-width:24ch; line-height:1.25; }
+body[data-reading-layout] #main .return-briefing__changes a { border:0; border-bottom:1px solid var(--reading-rule); padding-inline:0; }
+body[data-reading-layout] #main :is(.archive-instrument-current strong,.archive-instrument-counts dd,.journey-source-counts dd,.journey-patch-stops .pid,.automatic-comparison dd,.automatic-session-totals>strong,.patch-impact-patch-rail strong,.patch-impact-comparison dd) { font-family:var(--font-ui); font-variant-numeric:tabular-nums; }
 
 /* Remove nested content containers, rather than giving every feature a tile. */
 body[data-reading-layout] #main :is(
@@ -107,7 +111,8 @@ body[data-reading-layout] #main .gateway-intents button[aria-pressed=true] { bor
 body[data-reading-layout] #main .recall-notebook-grid { grid-template-columns:minmax(0,1fr); gap:0; counter-reset:entry; }
 body[data-reading-layout] #main :is(.recall-saved-note,.recall-saved-build) { position:relative; padding:24px 0 24px 46px; border-top:1px solid var(--reading-rule); counter-increment:entry; }
 body[data-reading-layout] #main :is(.recall-saved-note,.recall-saved-build)::before { content:counter(entry,decimal-leading-zero); position:absolute; top:26px; left:0; font:11px/1.5 var(--font-ui); color:var(--gold); }
-body[data-reading-layout] #main .recall-note-text { max-width:75ch; font-size:18px; line-height:1.65; }
+body[data-reading-layout] #main .recall-note-text { max-width:75ch; font-family:var(--font-ui); font-size:18px; line-height:1.65; }
+body[data-reading-layout] #main .recall-card blockquote { font-family:var(--font-ui); }
 body[data-reading-layout] #main .recall-record-actions { border:0; padding-top:4px; margin-top:8px; }
 body[data-reading-layout] #main .recall-tags>span { background:transparent; border:0; padding:0; }
 body[data-reading-layout] #main .recall-tags>span+span::before { content:'·'; margin-right:8px; color:var(--cream-faint); }
@@ -147,6 +152,7 @@ body[data-reading-layout] #main .profile-shortcuts a { display:grid; grid-templa
   body[data-reading-layout] #main .roster-entry>a { min-height:68px; }
   body[data-reading-layout] #main .journey-roster-lens figcaption strong { font-size:32px; }
   body[data-reading-layout] #main .journey-roster-lens .roster-lens-media { height:140px; }
+  body[data-reading-layout] #main .journey-roster-lens .roster-lens-media img { object-fit:cover; }
   body[data-reading-layout] #main .journey-roster-lens figcaption { position:static; padding:14px 0 0; flex-wrap:wrap; align-items:center; gap:8px 18px; }
   body[data-reading-layout] #main .pool-picker .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px; }
   body[data-reading-layout] #main .pool-picker .grid button { gap:10px; }

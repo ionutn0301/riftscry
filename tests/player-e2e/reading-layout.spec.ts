@@ -29,6 +29,7 @@ test(`${viewport.width}px reading layout: match logs align and notebook entries 
     expect(boxes[i]!.y).toBeGreaterThanOrEqual(boxes[i - 1]!.bottom - 1);
   }
   await stationaryWorld(page); await capture(page, 'match-log');
+  await rows.first().scrollIntoViewIfNeeded(); await capture(page, 'match-log-rows');
   await rows.first().click();
   await expect(page).toHaveURL(/\/matches\//);
   await readyWorld(page); await stationaryWorld(page); await capture(page, 'match-review');

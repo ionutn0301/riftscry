@@ -43,10 +43,22 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,
       await page.goto(path!);await ready(page);
       if(name==='briefing')await expect(page.locator('[data-briefing-report]')).toHaveAttribute('aria-busy','false');
       const surfaces=await paintedSurfaces(page);report.push({name,path,surfaces});
-      for(const card of await page.locator('.automatic-entry,.gateway-composition').all()){
-        if(!await card.isVisible())continue;
-        const padding=await card.evaluate(el=>{const s=getComputedStyle(el);return [s.paddingTop,s.paddingRight,s.paddingBottom,s.paddingLeft].map(parseFloat);});
-        expect.soft(Math.min(...padding),`${path}: filled cards need an inset on every edge`).toBeGreaterThanOrEqual(12);
+      for(const surface of await page.locator('.automatic-entry,.gateway-composition').all()){
+        if(!await surface.isVisible())continue;
+        // These entrances are open layouts now. Verify the form remains inside
+        // its working area rather than requiring the removed card padding.
+        const geometry=await surface.evaluate(el=>{
+          const outer=el.getBoundingClientRect();
+          return [...el.querySelectorAll('input,select,button')].filter(control=>control.checkVisibility()).map(control=>{
+            const rect=control.getBoundingClientRect();return {left:rect.left-outer.left,right:outer.right-rect.right,width:rect.width,height:rect.height};
+          });
+        });
+        for(const control of geometry){
+          expect.soft(control.left,`${path}: control extends beyond its form`).toBeGreaterThanOrEqual(-1);
+          expect.soft(control.right,`${path}: control extends beyond its form`).toBeGreaterThanOrEqual(-1);
+          expect.soft(control.width).toBeGreaterThanOrEqual(43.99);
+          expect.soft(control.height).toBeGreaterThanOrEqual(43.99);
+        }
       }
       expect.soft(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),path).toBeLessThanOrEqual(1);
       await page.screenshot({path:`player-visuals/spacing-${viewport.width}-${name}.png`});

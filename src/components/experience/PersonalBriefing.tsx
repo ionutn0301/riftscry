@@ -52,7 +52,7 @@ export default function PersonalBriefing({ archive, champions, insights, initial
     : briefing.mode === 'quiet-interval' ? 'A quiet interval.'
     : briefing.mode === 'first-visit' || briefing.mode === 'missing-baseline' ? 'Your champions, in view.'
     : briefing.mode === 'empty-archive' ? 'The archive is waiting.'
-    : 'Choose who stays with you.';
+    : 'Save your regular picks.';
   const patchHref = briefing.mode === 'new-records' && latest && device.reviewedPatch
     ? `/compare/${latest.id}/${device.reviewedPatch}?pool=1`
     : latest ? `/patch/${latest.id}${pool.length ? '?pool=1' : ''}` : '/patches';

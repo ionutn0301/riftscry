@@ -67,8 +67,16 @@ for(const viewport of [{width:320,height:568},{width:390,height:844}]){
     for(const route of ['/players','/next-game','/notebook','/404']){
       await page.goto(route);await ready(page);
       const metrics=await record(page,`${route.slice(1)}-${viewport.width}x${viewport.height}`);
-      expect.soft(metrics.scroll,route+' '+JSON.stringify(metrics)).toBeLessThanOrEqual(1);
+      // The briefing now includes a readable contents list below its form on
+      // phones; it uses the document scroll rather than hiding that guidance.
+      if(route!=='/next-game')expect.soft(metrics.scroll,route+' '+JSON.stringify(metrics)).toBeLessThanOrEqual(1);
       expect.soft(metrics.clipped,route).toEqual([]);expect.soft(metrics.nested,route).toEqual([]);
+      if(route==='/next-game'){
+        await expect(page.locator('.briefing-outline > li')).toHaveCount(3);
+        await page.locator('.briefing-outline > li').last().scrollIntoViewIfNeeded();
+        await expect(page.locator('.briefing-outline > li').last()).toBeInViewport({ratio:1});
+        await reachableTarget(page.getByRole('button',{name:'Get my briefing',exact:true}),page);
+      }
     }
     await page.goto(profilePath);await ready(page);await expect(page.locator('.match-row').first()).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollHeight-innerHeight)).toBeGreaterThan(100);
