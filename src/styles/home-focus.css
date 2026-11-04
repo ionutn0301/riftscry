@@ -131,7 +131,7 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] :is(.rift
  .cinema-roster-heading{display:none}.cinema-identity p{display:none}
 }
 @media(max-height:480px){
- .rift-cinema{--home-gutter:20px;grid-template-rows:52px minmax(0,1fr) 60px 44px}
+ .rift-cinema{--home-gutter:20px;grid-template-rows:52px minmax(0,1fr) 60px 48px}
  .cinema-header{padding-block:4px}.cinema-brand img{width:105px}.cinema-header-note{display:none}
  .cinema-main{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:16px;padding:4px 0 8px}
  .cinema-opening{display:grid;align-content:center;gap:8px}.cinema-intro{grid-row:auto}
@@ -146,7 +146,7 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] :is(.rift
  .cinema-roster-choices{grid-template-columns:repeat(3,72px);gap:12px}.cinema-roster-choices>a{height:46px;min-height:46px;display:flex;flex-direction:row;justify-content:center;gap:5px;font-size:10px}
  .cinema-roster-frame{width:28px;height:34px}.cinema-review-action{min-height:44px;padding:6px 12px}.cinema-review-action>span:first-child{display:none}
  .cinema-review-action strong{font-size:12px}.cinema-review-action>span:last-child{grid-row:1}
- .cinema-footer{height:44px}.cinema-review-action{bottom:-44px}.cinema-footer>span{display:none}
+ .cinema-footer{height:48px}.cinema-review-action{bottom:-48px}.cinema-footer>span{display:none}
 }
 @media(max-width:420px) and (max-height:480px){
  .rift-cinema{grid-template-rows:52px minmax(0,1fr) 60px}.cinema-footer,.cinema-review-action{display:none}
@@ -157,3 +157,7 @@ html[data-motion] body.rift-shell.rift-cinema-shell[data-surface=home] :is(.rift
 @media(max-width:360px){.rift-cinema{--home-gutter:16px}.cinema-brand img{width:96px}.cinema-utilities{gap:6px}.cinema-playback{gap:10px}}
 
 .cinema-hotspot{min-width:44px;justify-content:center}
+
+@media(min-width:421px) and (max-height:300px){
+ .rift-cinema h1>span{display:none}.rift-cinema h1>em{font-size:22px}
+}

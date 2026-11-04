@@ -58,7 +58,7 @@ for(const state of ['guest','context','reading'] as const)test(`responsive audit
 test('responsive audit: zoom reflow and short landscape keep the homepage on one screen',async({page})=>{
   await installFixtures(page);await page.setViewportSize({width:480,height:320});await page.goto('/');await readyCinema(page);
   // 960×640 at 200% and 1280×1024 at 400% have these effective CSS viewports.
-  for(const viewport of [{width:480,height:320},{width:320,height:256}]){
+  for(const viewport of [{width:480,height:320},{width:320,height:256},{width:480,height:256},{width:1024,height:256}]){
     await page.setViewportSize(viewport);await page.evaluate(()=>scrollTo(0,0));
     await cinemaFitsViewport(page);
     expect(await textCollisions(page,'[data-rift-cinema]')).toEqual([]);
