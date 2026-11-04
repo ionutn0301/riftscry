@@ -75,7 +75,7 @@ for(const viewport of [{width:320,height:568},{width:390,height:844},{width:683,
     await page.setViewportSize(viewport);await page.emulateMedia({reducedMotion:'reduce'});
     const requests=await installFixtures(page);await page.goto('/');await readyCinema(page);
     await expect(page.locator('main h1')).toHaveCount(1);
-    await expect(page.locator('main h1')).toHaveAccessibleName('The Rift has changed.');
+    await expect(page.locator('main h1')).toHaveAccessibleName('Your next game. A clearer plan.');
     await expect(page.locator('[data-journey-deck],[data-journey-panel],[data-journey-tabs],.journey-chrome')).toHaveCount(0);
     for(const action of await cinema(page).locator('a:visible,button:visible').all())await reachableTarget(action,page);
     await cinemaFitsViewport(page);

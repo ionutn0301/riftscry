@@ -19,7 +19,7 @@ test('failed imagery leaves native world entry and exact evidence before and aft
   try {
     await page.goto('/', { waitUntil: 'commit' });
     await expect(home).toBeVisible();
-    await expect(home.locator('h1')).toHaveAccessibleName('The Rift has changed.');
+    await expect(home.locator('h1')).toHaveAccessibleName('Your next game. A clearer plan.');
     const signals = await cinemaSignals(page);
     await expect(choices).toHaveCount(signals.length);
     for (const signal of signals) {

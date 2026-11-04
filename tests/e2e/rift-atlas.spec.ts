@@ -8,7 +8,7 @@ test('the immersive homepage has a native archive exit and browser Back retains 
   page.on('request', request => { if (request.url().includes('/api/player/')) requests.push(request.url()); });
   await page.goto('/'); await readyCinema(page);
   await expect(page.locator('#main [data-rift-atlas],.journey-dock,[data-journey-tabs]')).toHaveCount(0);
-  await expect(page.locator('main h1')).toHaveAccessibleName('The Rift has changed.');
+  await expect(page.locator('main h1')).toHaveAccessibleName('Your next game. A clearer plan.');
   const subject = await cinema(page).getAttribute('data-home-subject');
   const menu = await openCinemaNavigation(page);
   await menu.locator('a[href="/champions"]').click();

@@ -1,7 +1,7 @@
 import { expect, test, type BrowserContext } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import sharp from 'sharp';
-import { installFixtures, sourceMatch, query } from '../player-e2e/fixtures';
+import { installFixtures, sourceMatch, query, makeMatch, puuid, platform, baseTime } from '../player-e2e/fixtures';
 
 const alice = '00000000-0000-4000-8000-000000000001';
 const bob = '00000000-0000-4000-8000-000000000002';
@@ -429,4 +429,104 @@ test('photos and Riot associations load on another device but not another accoun
     await expect(otherPage.getByText('No Riot ID associated yet.')).toBeVisible();
     expect(photos.get(alice)).toEqual(photo);
   } finally { await same.close(); await other.close(); }
+});
+
+function homeRows(championPlayer = { platform, puuid, name: 'My player#TEST' }) {
+  const record: Row = { record_key: 'riftscry:riot-account:v1', value: JSON.stringify({ version: 1, player: championPlayer }), revision: 1 };
+  return new Map([[alice, new Map([[record.record_key, record]])]]);
+}
+function homeGames(ids = ['Lux', 'Chogath', 'Lux', 'Chogath', 'Lulu', 'Ashe']) {
+  return ids.map((champion, index) => {
+    const match = makeMatch(`EUN1_${33000 + index}`, baseTime - index * 3600000);
+    match.info.participants[0]!.championName = champion;
+    return match;
+  });
+}
+for (const width of [320, 390, 1440]) test(`personal homepage: linked player's top three, useful actions and art at ${width}px`, async ({ page, context }) => {
+  await page.setViewportSize({ width, height: width === 320 ? 568 : 900 });
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  const requests = await installFixtures(page, { matches: homeGames() });
+  await page.goto('/');
+  await expect(page.locator('[data-home-roster-label]')).toHaveText('Most played recently');
+  await expect(page.locator('[data-home-choice]:visible')).toHaveCount(3);
+  expect(await page.locator('[data-home-choice]:visible').evaluateAll(links => links.map(link => (link as HTMLElement).dataset.homeChoice))).toEqual(['Lux', 'Chogath', 'Lulu']);
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('6 recent games');
+  await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-subject', 'Lux');
+  await expect(page.locator('[data-home-review]')).toHaveAttribute('href', /\/matches\/EUN1_33000\?/);
+  await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Lux/);
+  await page.locator('[data-home-choice="Chogath"]').click();
+  await expect(page.locator('[data-home-primary]')).toHaveAttribute('href', /champion=Chogath/);
+  await expect(page.locator('[data-home-catchup]')).toHaveAttribute('href', '/catch-up?champion=Chogath');
+  await expect(page.locator('[data-cinema-poster]')).toHaveAttribute('src', /Chogath_0.jpg$/);
+  const targets = page.locator('[data-home-primary], [data-home-review], [data-home-choice]:visible, [data-home-catchup]:visible');
+  for (const target of await targets.all()) {
+    await expect(target).toBeInViewport({ ratio: 1 });
+    const box = (await target.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(44); expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(await target.evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })).toBe(true);
+  }
+  expect(requests.some(request => ['timeline', 'review', 'rank', 'items'].includes(request.action))).toBe(false);
+  await mkdir('player-visuals', { recursive: true });
+  await page.screenshot({ path: `player-visuals/home-personal-${width}.png`, animations: 'disabled' });
+  await page.locator('[data-home-review]').click();
+  await expect(page).toHaveURL(/\/matches\/EUN1_33000/);
+});
+
+test('personal homepage: signed-in accounts need an associated Riot ID, never a guest or last-viewed identity', async ({ page, context }) => {
+  await seed(context, alice, true); await backend(context, new Map(), { offline: false });
+  await page.addInitScript(player => localStorage.setItem('riftscry:recent-player:v1', JSON.stringify(player)), { platform, puuid, name: 'Someone else#TEST' });
+  const requests = await installFixtures(page);
+  await page.goto('/');
+  await expect(page.locator('[data-home-associate]')).toBeVisible();
+  await expect(page.locator('[data-home-roster-label]')).toHaveText('Featured champions');
+  expect(requests).toEqual([]);
+  await page.locator('[data-home-associate]').click();
+  await expect(page).toHaveURL(/\/profile#riot-id$/);
+});
+
+test('personal homepage: one played champion stays one, and an empty archive stays honest', async ({ page, context }) => {
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  await installFixtures(page, { matches: homeGames(['Lulu']) });
+  await page.goto('/');
+  await expect(page.locator('[data-home-roster-label]')).toHaveText('Most played recently');
+  await expect(page.locator('[data-home-choice]:visible')).toHaveCount(1);
+  await page.locator('[data-cinema-inspect]').click();
+  await expect(page.locator('[data-home-record="Lulu"]')).toContainText('No direct change recorded');
+  await expect(page.locator('[data-home-keep]')).toBeHidden();
+  await expect(page.locator('[data-home-explore]')).toHaveAttribute('href', '/champion/lulu');
+});
+
+test('personal homepage: failed games label the partial sample and retry recovers without invented picks', async ({ page, context }) => {
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  await installFixtures(page, { matches: homeGames() });
+  await page.route('**/api/player/match?**', route => new URL(route.request().url()).searchParams.get('id') === 'EUN1_33000'
+    ? route.fulfill({ status: 503, json: { error: 'Temporary failure' } }) : route.fallback());
+  await page.goto('/');
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('5 recent games · 1 unavailable');
+  await expect(page.locator('[data-home-roster-retry]')).toBeVisible();
+  await page.unroute('**/api/player/match?**');
+  await page.locator('[data-home-roster-retry]').click();
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('6 recent games');
+  await expect(page.locator('[data-home-roster-retry]')).toBeHidden();
+});
+
+test('personal homepage: a delayed import cannot survive an association removal', async ({ page, context }) => {
+  await seed(context, alice); await backend(context, homeRows(), { offline: false });
+  await installFixtures(page, { matches: homeGames() });
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/player/history?**', async route => { await gate; await route.fallback(); });
+  await page.goto('/');
+  await expect(page.locator('[data-home-roster-status]')).toHaveText('Finding your most played…');
+  await page.evaluate(owner => {
+    const key = `riftscry:account:v1:${owner}`, records = JSON.parse(localStorage.getItem(key)!);
+    records['riftscry:riot-account:v1'].value = JSON.stringify({ version: 1, player: null });
+    localStorage.setItem(key, JSON.stringify(records));
+    window.dispatchEvent(new StorageEvent('storage', { key }));
+  }, alice);
+  release();
+  await expect(page.locator('[data-home-associate]')).toBeVisible();
+  await expect(page.locator('[data-home-roster-label]')).toHaveText('Featured champions');
+  await expect(page.locator('[data-home-choice="Akali"]')).toBeVisible();
+  await expect(page.locator('[data-home-review]')).toHaveAttribute('href', '/players');
 });

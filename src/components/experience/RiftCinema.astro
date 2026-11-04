@@ -4,7 +4,7 @@ import akali from '../../../public/images/rift-cinema/akali-figure.png';
 import yasuo from '../../../public/images/rift-cinema/yasuo-figure.png';
 import thresh from '../../../public/images/rift-cinema/thresh-figure.png';
 import logo from '../../assets/brand/logo-desktop-light.png';
-import { getChampionMeta, getLatestPatch, getPatch, getAssetVersion } from '../../lib/data';
+import { getChampionMeta, getPatch, getAssetVersion } from '../../lib/data';
 import { recordsFor } from '../../lib/investigation';
 import { buildHomeSignals } from '../../lib/home-signals';
 import { getAllPatches } from '../../lib/data';
@@ -12,8 +12,8 @@ import SignalRecord from './SignalRecord.astro';
 import AccountLink from '../account/AccountLink.astro';
 import '../../styles/rift-cinema.css';
 import '../../styles/rift-cinema-navigation.css';
+import '../../styles/home-focus.css';
 
-const latest = getLatestPatch();
 const roster = getChampionMeta();
 // One optimized source is shared by the poster, portraits and GPU texture.
 // Keeping the alpha channel and full dimensions preserves the authored art.
@@ -71,10 +71,10 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
 
   <div class="cinema-opening">
     <p class="cinema-kicker"><i aria-hidden="true"></i> BEFORE YOUR NEXT QUEUE</p>
-    <h1 id="cinema-title"><span>The Rift</span><em>has changed.</em></h1>
-    <p class="cinema-introduction">Track champion changes. Review your matches. Prepare your next game.</p>
-    <div class="cinema-entry-actions"><a href="/next-game" class="cinema-primary" data-home-personal><span class="cinema-primary-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><circle cx="21" cy="21" r="12"/><path d="m30 30 10 10"/></svg></span><span><strong>Build my briefing</strong></span><span class="cinema-action-arrow" aria-hidden="true">↗</span></a>
-    <a class="cinema-resume cinema-start-link" href="/champions" data-home-browse><span>Find your champion</span><span aria-hidden="true">↗</span></a>
+    <h1 id="cinema-title"><span>Your next game.</span> <em>A clearer plan.</em></h1>
+    <p class="cinema-introduction">Your champions. Your recent games. One useful next step.</p>
+    <div class="cinema-entry-actions"><a href="/next-game" class="cinema-primary" data-home-personal data-home-primary><span><strong>Build my briefing</strong></span><span class="cinema-action-arrow" aria-hidden="true">↗</span></a>
+    <a class="cinema-resume cinema-start-link" href={`/catch-up?champion=${first.championId}`} data-home-catchup><span>Catch up on {first.championName}</span><span aria-hidden="true">↗</span></a>
     <a class="cinema-resume" href="/explore#change" data-home-reading hidden><span data-home-reading-label>Resume exploring</span><span aria-hidden="true">↗</span></a>
     <a class="cinema-resume" href="/explore#change" data-home-context hidden></a>
     </div>
@@ -82,15 +82,15 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
 
   <a href={first.explore} class="cinema-hotspot" data-cinema-inspect aria-label={`Inspect ${first.championName}'s archived change`}>
     <span class="cinema-hotspot-orbit" aria-hidden="true"><i></i><b>+</b></span>
-    <span class="cinema-hotspot-caption"><small data-home-ability>{first.abilityName}</small><span>PREVIEW A PATCH CHANGE <b aria-hidden="true">↗</b></span></span>
+    <span class="cinema-hotspot-caption"><small data-home-ability>{first.abilityName}</small><span><span data-cinema-inspect-label>SEE AN ARCHIVED CHANGE</span> <b aria-hidden="true">↗</b></span></span>
   </a>
 
   <div class="cinema-identity" aria-live="off"><span class="cinema-identity-number" data-cinema-number>{first.world.number}</span><div><p><span data-cinema-region>{first.world.region}</span><i aria-hidden="true"></i><span data-cinema-character>{first.world.character}</span></p><h2 data-home-subject>{first.championName}</h2></div></div>
 
   <div class="cinema-bottom">
-    <nav class="cinema-roster" aria-label="Choose your champion"><span class="cinema-roster-label">FEATURED CHAMPIONS</span><div class="cinema-roster-choices">{signals.map((signal,index)=><a href={signal.explore} data-home-choice={signal.championId} aria-current={index===0?'true':undefined} aria-label={`Enter ${signal.championName}'s world`} style={`--choice-accent:${signal.world.primary}`}><span class="cinema-roster-frame"><img src={signal.world.figure} alt="" width="1628" height="1628" loading={index===0?'eager':'lazy'} decoding="async" /></span><span>{signal.championName}</span><i aria-hidden="true"></i></a>)}</div></nav>
+    <nav class="cinema-roster" aria-label="Choose your champion"><div class="cinema-roster-heading"><span class="cinema-roster-label" data-home-roster-label>Featured champions</span><span class="cinema-roster-status" data-home-roster-status>Choose a champion to explore.</span><a href="/profile#riot-id" data-home-associate hidden>Add your Riot ID</a><button type="button" data-home-roster-retry hidden>Retry</button></div><div class="cinema-roster-choices">{signals.map((signal,index)=><a href={signal.explore} data-home-choice={signal.championId} aria-current={index===0?'true':undefined} aria-label={`Enter ${signal.championName}'s world`} style={`--choice-accent:${signal.world.primary}`}><span class="cinema-roster-frame"><img src={signal.world.figure} alt="" width="1628" height="1628" loading={index===0?'eager':'lazy'} decoding="async" /></span><span data-home-choice-name>{signal.championName}</span><small data-home-choice-count hidden></small><i aria-hidden="true"></i></a>)}</div></nav>
     <span class="cinema-interaction-note" data-cinema-interaction><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8 3 12l4 4m10-8 4 4-4 4M3 12h18"/></svg><span>Move to look. Scroll to change worlds.</span></span>
-    <a class="cinema-archive" href={`/patch/${latest.id}`}><span>ARCHIVED PATCH</span><strong>{latest.id}</strong><span aria-hidden="true">↗</span></a>
+    <a class="cinema-review-action" href="/players" data-home-review><span>AFTER A GAME</span><strong>Review a game</strong><span aria-hidden="true">↗</span></a>
   </div>
 
   <footer class="cinema-footer"><div class="cinema-playback" role="group" aria-label="World playback"><button type="button" data-cinema-motion aria-pressed="false" aria-label="Reduce cinematic motion"><span class="cinema-motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-cinema-motion-label>Motion on</span></button><button type="button" class="cinema-tour" data-cinema-tour aria-pressed="false" title="Automatically explore the champion worlds"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="cinema-tour-play" d="M5 3 13 8 5 13Z"/><path class="cinema-tour-pause" d="M4 3h3v10H4zM10 3h3v10h-3z"/></svg><span data-cinema-tour-label>Play tour</span></button></div><span>RIOT GAMES ARTWORK · INDEPENDENT FAN PROJECT</span><a href="/guide" class="cinema-guide-link" aria-label="How RiftScry works"><span>How it works</span><span aria-hidden="true">↗</span></a></footer>
@@ -98,7 +98,7 @@ const legacy=JSON.stringify(buildHomeSignals(getAllPatches(),roster).map(signal=
   <dialog class="cinema-evidence" data-cinema-evidence aria-labelledby="cinema-evidence-title">
     <div class="cinema-evidence-sheet">
       <header class="cinema-evidence-header"><span class="cinema-kicker">A CHANGE WORTH SEEING</span><button class="cinema-close" type="button" data-cinema-close aria-label="Close change"><span>Return to the Rift</span><b aria-hidden="true">×</b></button></header>
-      <div class="cinema-evidence-content"><p class="cinema-evidence-region" data-cinema-region>{first.world.region}</p><h2 id="cinema-evidence-title" data-cinema-evidence-name>{first.championName}</h2><p class="cinema-evidence-intro">One change. Its exact source. Your next perspective.</p>
+      <div class="cinema-evidence-content"><p class="cinema-evidence-region" data-cinema-region>{first.world.region}</p><h2 id="cinema-evidence-title" data-cinema-evidence-name>{first.championName}</h2><p class="cinema-evidence-intro" data-cinema-evidence-intro>One change, with its date and original source.</p>
       {signals.map((signal,index)=><div data-home-record={signal.championId} hidden={index!==0}><SignalRecord label={signal.championName} championId={signal.championId} entries={[{change:signal.record.change,ability:signal.ability,abilityName:signal.abilityName}]} patchId={signal.patchId} sourceUrl={signal.sourceUrl}/></div>)}
       <p class="cinema-save-status" role="status" data-home-keep-status></p>
       </div>

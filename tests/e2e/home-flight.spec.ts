@@ -18,7 +18,7 @@ test('the cinematic world selects real champions and opens exact evidence withou
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/player/')) requests.push(request.url()); });
   await page.goto('/'); await readyCinema(page);
-  await expect(page.locator('main h1')).toHaveAccessibleName('The Rift has changed.');
+  await expect(page.locator('main h1')).toHaveAccessibleName('Your next game. A clearer plan.');
   await expect(page.locator('[data-journey-deck],[data-journey-panel],[data-journey-tabs],.journey-chrome')).toHaveCount(0);
   await expect(page.locator('[data-cinema-canvas]')).toHaveCount(1);
   await page.evaluate(() => { (window as any).__cinemaCanvas = document.querySelector('[data-cinema-canvas]'); });
