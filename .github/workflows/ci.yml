@@ -52,6 +52,10 @@ jobs:
         run: pnpm exec playwright test tests/e2e/reading-layout.spec.ts --project=desktop --project=mobile-chromium
         env:
           CI: "true"
+      - name: Verify expanded menus at narrow and landscape sizes
+        run: pnpm exec playwright test tests/e2e/cinema-navigation.spec.ts tests/e2e/mobile-layout.spec.ts tests/e2e/reading-continuity.spec.ts --grep 'fits one screen|all five primary|long Continue' --project=desktop --project=mobile-chromium
+        env:
+          CI: "true"
       - name: Verify populated match logs and saved notebooks
         run: pnpm exec playwright test --config=playwright.player.config.ts reading-layout.spec.ts
         env:

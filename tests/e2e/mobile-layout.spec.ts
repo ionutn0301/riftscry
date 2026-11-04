@@ -93,13 +93,15 @@ for (const [width, height] of [[320, 568], [390, 844], [568, 320], [768, 1024], 
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
   });
 
-  test(`all five primary and three specialist destinations are reachable and close restores the journey at ${width}×${height}`, async ({ page }) => {
+  test(`all five primary and five specialist destinations are reachable and close restores the journey at ${width}×${height}`, async ({ page }) => {
     const { opener, scrollBefore, reading, panelScroll } = await readyJourneyMap(page, width, height);
     await opener.click();
     const map = page.locator("#rift-map-dialog");
     await expect(map).toBeVisible();
     const destinations = map.locator("[data-world-link], .journey-map-footer a");
-    await expect(destinations).toHaveCount(8);
+    await expect(destinations).toHaveCount(10);
+    await expect(map.getByRole('link', { name: 'How this page works', exact: true })).toHaveAttribute('href', '/guide#champions');
+    await expect(map.getByRole('link', { name: 'My account ↗', exact: true })).toHaveAttribute('href', '/account');
     for (const destination of await destinations.all()) {
       await expectUncovered(destination);
     }

@@ -124,7 +124,7 @@
   .cinema-menu-kicker { margin-bottom: 4px; font-size: 6px; line-height: 12px; }
   .cinema-menu-route { min-height: 44px; padding: 0; column-gap: 12px; grid-template-columns: 18px minmax(0,1fr) 24px; }.cinema-menu-label>span { font-size: 29px; }
   .cinema-menu-secondary { align-self: center; max-width: none; margin: 0; gap: 3px; }
-  .cinema-menu-tools { grid-template-columns: 1fr; gap: 0; border: 0; }.cinema-menu-tools>a,.cinema-menu-tools>button { min-height: 44px; font-size: 11px; border-bottom: 1px solid #c4c8a51e; }
+  .cinema-menu-tools { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 12px; border: 0; }.cinema-menu-tools>a,.cinema-menu-tools>button { min-height: 44px; font-size: 11px; border-bottom: 1px solid #c4c8a51e; }
   .cinema-menu-preferences { gap: 5px; }.cinema-menu-preferences fieldset { gap: 1px; }.cinema-menu-preferences label { font-size: 8px; gap: 3px; padding-inline: 0; }.cinema-menu-source { font-size: 8px; gap: 5px; }
   .cinema-menu-credit { font-size: 5.5px; line-height: 10px; }.cinema-menu-perspective { display: none; }
   .cinema-menu-orbit { width: 85%; right: -10%; }.cinema-menu-portrait { right: -18%; top: -25%; height: 160%; }

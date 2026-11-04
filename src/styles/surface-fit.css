@@ -6,7 +6,7 @@
 body.rift-shell #rift-map-dialog [data-reading-shortcut] { min-width:44px; }
 body.rift-shell #rift-map-dialog [data-reading-subject] { min-width:0; }
 @media (orientation:landscape) and (max-height:480px) {
-  body.rift-shell #rift-map-dialog .journey-map-footer { flex-wrap:nowrap; gap:0 12px; }
+  body.rift-shell #rift-map-dialog .journey-map-footer { flex-wrap:nowrap; gap:0 8px; }
   body.rift-shell #rift-map-dialog .journey-map-footer > :is(a,button) { flex:none; }
   body.rift-shell #rift-map-dialog .journey-map-footer > [data-reading-shortcut] { flex:0 1 130px; min-width:44px; }
   body.rift-shell #voyage-roster .voyage-roster-shell { padding:10px 14px; gap:4px; }

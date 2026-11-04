@@ -79,7 +79,7 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   const destinations = map.locator('[data-world-link], .journey-map-footer a');
   const shortcut = map.locator('[data-reading-shortcut]');
   const footer = map.locator('.journey-map-footer');
-  await expect(destinations).toHaveCount(8);
+  await expect(destinations).toHaveCount(10);
   await expect(shortcut).toHaveCount(1);
   await expect(shortcut).toHaveAttribute('href', '/explore#change');
   const originalShortcut = await shortcut.elementHandle();
@@ -100,7 +100,7 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   await expect(shortcut).toHaveAttribute('href', reading.href);
   await expect(shortcut).toHaveCount(1);
   expect(await shortcut.evaluate((element, original) => element === original, originalShortcut)).toBe(true);
-  await expect(destinations).toHaveCount(8);
+  await expect(destinations).toHaveCount(10);
   const longHeight = await footer.evaluate(element => element.getBoundingClientRect().height);
   expect(Math.abs(longHeight - defaultHeight), 'Continue must not consume another row of navigator space').toBeLessThanOrEqual(1);
   const rowTops = await footer.locator('a, button').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top));
@@ -117,6 +117,6 @@ test('a long Continue subject preserves the landscape map’s single footer row 
   });
   await expect(shortcut).toHaveAttribute('href', '/explore#change');
   expect(await shortcut.evaluate((element, original) => element === original, originalShortcut)).toBe(true);
-  await expect(destinations).toHaveCount(8);
+  await expect(destinations).toHaveCount(10);
   expect(errors).toEqual([]);
 });
