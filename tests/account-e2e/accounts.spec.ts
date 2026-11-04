@@ -83,6 +83,7 @@ for (const width of [320, 390, 768, 1440]) test(`AI coach explains one topic at 
   const coach = page.locator('[data-ai-coach]');
   await expect(coach).toHaveAttribute('data-coach-mode', 'ai');
   await expect(coach.getByRole('heading', { name: 'Notice your recall timing' })).toBeVisible();
+  await expect(page.locator('[data-journey-controls]')).toBeHidden();
   await mkdir('player-visuals', { recursive: true });
   await page.screenshot({ path: `player-visuals/coach-default-${width}.png`, fullPage: true });
   expect(requests).toHaveLength(1); expect(requests[0]!.matchIds).toHaveLength(3);
@@ -109,6 +110,12 @@ for (const width of [320, 390, 768, 1440]) test(`AI coach explains one topic at 
   await expect(coach.getByText('Preparation from your recorded games.', { exact: false })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.screenshot({ path: `player-visuals/coach-quiet-${width}.png`, fullPage: true });
+  await page.getByText('Recorded match details', { exact: true }).click();
+  await page.getByRole('link', { name: 'Recorded build', exact: false }).click();
+  await expect(page.locator('#loadout')).toBeVisible();
+  await expect(page.locator('[data-journey-controls]')).toBeVisible();
+  await page.locator('[data-journey-tab=focus]').click();
+  await expect(coach).toBeVisible();
 });
 
 test('AI coach handles unavailable AI and expired sessions without losing recorded details', async ({ page, context }) => {

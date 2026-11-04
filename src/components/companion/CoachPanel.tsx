@@ -72,9 +72,9 @@ export default function CoachPanel({ player, matchIds, waiting = false }: { play
       return fact ? <li key={key}><p>{fact.text}</p><a href={fact.href}>Open source ↗</a></li> : null;
     })}</ul></details>;
   }
-  return <section className="coach-panel automatic-panel" data-ai-coach data-coach-mode={report?.mode ?? 'pending'} data-quiet={quiet} aria-labelledby={`${id}-title`}>
-    <header className="coach-heading"><div><p className="automatic-eyebrow">YOUR COACH</p><h2 id={`${id}-title`}>One clear next step.</h2></div>{report && <span>{championDisplayName(report.champion)} · {report.queue}</span>}</header>
-    {!owner || reauth ? <div className="coach-entry"><p>Your coach reads your recent games, explains the latest patch for your champion, and chooses one thing to pay attention to. No goals to write or checklists to manage.</p><a className="automatic-button automatic-button--primary" href={signIn}>{reauth ? 'Reconnect your account' : 'Sign in for your AI briefing'} ↗</a></div> : <>
+  return <section className="coach-panel automatic-panel" data-ai-coach data-coach-authenticated={Boolean(owner)} data-coach-mode={report?.mode ?? 'pending'} data-quiet={quiet} aria-labelledby={`${id}-title`}>
+    <header className="coach-heading"><div><p className="automatic-eyebrow">YOUR COACH</p><h2 className="automatic-sr-only" id={`${id}-title`}>One clear next step.</h2></div>{report && <span>{championDisplayName(report.champion)} · {report.queue}</span>}</header>
+    {!account.ready ? <p role="status">Checking your account…</p> : !owner || reauth ? <div className="coach-entry"><p>Your coach reads your recent games, explains the latest patch for your champion, and chooses one thing to pay attention to. No goals to write or checklists to manage.</p><a className="automatic-button automatic-button--primary" href={signIn}>{reauth ? 'Reconnect your account' : 'Sign in for your AI briefing'} ↗</a></div> : <>
       {!report && <p role="status">{waiting ? 'Finishing your match import…' : busy ? 'Reading your games and the latest patch…' : 'Your recorded details are available below.'}</p>}
       {report && <>
         {!quiet && <div className="coach-tabs" role="tablist" aria-label="Coach topics">{topics.map((item, index) => <button key={item.id} id={`${id}-${item.id}`} role="tab" aria-selected={topic === item.id} tabIndex={topic === item.id ? 0 : -1} aria-controls={`${id}-answer`} onClick={() => setTopic(item.id)} onKeyDown={event => {
