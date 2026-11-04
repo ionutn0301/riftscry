@@ -3,6 +3,7 @@ import { mkdir } from 'node:fs/promises';
 import sharp from 'sharp';
 import { installFixtures, sourceMatch, query, makeMatch, puuid, platform, baseTime } from '../player-e2e/fixtures';
 import { championArtIsSeparate } from '../e2e/cinema-test-helpers';
+import { coachReport } from '../fixtures/coach';
 
 const alice = '00000000-0000-4000-8000-000000000001';
 const bob = '00000000-0000-4000-8000-000000000002';
@@ -65,6 +66,74 @@ async function backend(context: BrowserContext, rows: Map<string, Map<string, Ro
     return route.fulfill({ headers, json: key ? records.get(key) : [...records.values()] });
   });
 }
+
+for (const width of [320, 390, 768, 1440]) test(`AI coach explains one topic at a time without manual goals at ${width}px`, async ({ page, context }) => {
+  test.setTimeout(60_000);
+  await page.setViewportSize({ width, height: 1000 });
+  await seed(context, alice); await backend(context, new Map(), { offline: false }); await installFixtures(page);
+  const requests: { matchIds: string[]; question: string }[] = [];
+  await page.route('**/api/coach', async route => {
+    expect(route.request().method()).toBe('POST');
+    const token = route.request().headers().authorization?.split(' ')[1];
+    expect(JSON.parse(Buffer.from(token!.split('.')[1]!, 'base64url').toString()).sub).toBe(alice);
+    const input = route.request().postDataJSON(); requests.push(input);
+    await route.fulfill({ json: { ...coachReport, matchId: input.matchIds[0], answer: input.question ? { text: 'The recorded purchase is a starting point. Use the replay to inspect what you knew at that moment.', evidence: ['match-event-0'] } : null } });
+  });
+  await page.goto(`/next-game?${query}`);
+  const coach = page.locator('[data-ai-coach]');
+  await expect(coach).toHaveAttribute('data-coach-mode', 'ai');
+  await expect(coach.getByRole('heading', { name: 'Notice your recall timing' })).toBeVisible();
+  await expect(page.locator('[data-journey-controls]')).toBeHidden();
+  await mkdir('player-visuals', { recursive: true });
+  await page.screenshot({ path: `player-visuals/coach-default-${width}.png`, fullPage: true });
+  expect(requests).toHaveLength(1); expect(requests[0]!.matchIds).toHaveLength(3);
+  expect(requests[0]!.question).toBe('');
+  await expect(page.locator('[data-practice-plan]')).toHaveCount(0);
+  await expect(page.locator('.coach-recorded-details')).not.toHaveAttribute('open', '');
+  await expect(coach.getByRole('tabpanel')).toHaveCount(1);
+  await coach.getByRole('tab', { name: 'Next game', exact: true }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(coach.getByRole('tab', { name: 'Latest patch' })).toHaveAttribute('aria-selected', 'true');
+  await expect(coach.getByText('AI interpretation · Patch 26.22 · 2026-11-03')).toBeVisible();
+  await coach.getByText('See the evidence', { exact: true }).click();
+  await expect(coach.getByRole('link', { name: 'Open source' })).toHaveAttribute('href', /league-of-legends-patch-26-22-notes/);
+  await coach.getByText('Ask a question', { exact: true }).click();
+  await coach.getByLabel('Ask about these games or patch changes').fill('What should I check in the replay?');
+  await coach.getByRole('button', { name: 'Ask my coach' }).click();
+  await expect(coach.getByRole('heading', { name: 'Your answer' })).toBeVisible();
+  expect(requests).toHaveLength(2); expect(requests[1]!.question).toBe('What should I check in the replay?');
+  await mkdir('player-visuals', { recursive: true });
+  await coach.screenshot({ path: `player-visuals/coach-${width}.png` });
+  await coach.getByRole('button', { name: 'Keep only this focus open' }).click();
+  await expect(coach.getByRole('tablist')).toHaveCount(0);
+  await expect(coach.getByRole('textbox')).toHaveCount(0);
+  await expect(coach.getByText('Preparation from your recorded games.', { exact: false })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await page.screenshot({ path: `player-visuals/coach-quiet-${width}.png`, fullPage: true });
+  await page.getByText('Recorded match details', { exact: true }).click();
+  await page.getByRole('link', { name: 'Recorded build', exact: false }).click();
+  await expect(page.locator('#loadout')).toBeVisible();
+  await expect(page.locator('[data-journey-controls]')).toBeVisible();
+  await page.locator('[data-journey-tab=focus]').click();
+  await expect(coach).toBeVisible();
+});
+
+test('AI coach handles unavailable AI and expired sessions without losing recorded details', async ({ page, context }) => {
+  await seed(context, alice); await backend(context, new Map(), { offline: false }); await installFixtures(page);
+  let attempts = 0;
+  await page.route('**/api/coach', route => {
+    attempts += 1;
+    return attempts === 1 ? route.fulfill({ status: 503, json: { error: 'Coach temporarily unavailable.' } })
+      : route.fulfill({ status: 401, json: { error: 'Session expired.' } });
+  });
+  await page.goto(`/next-game?${query}`);
+  const coach = page.locator('[data-ai-coach]');
+  await expect(coach.getByRole('alert')).toHaveText('Coach temporarily unavailable.');
+  await page.getByText('Recorded match details', { exact: true }).click();
+  await expect(page.locator('.coach-recorded-details')).toHaveAttribute('open', '');
+  await coach.getByRole('button', { name: 'Retry AI briefing' }).click();
+  await expect(coach.getByRole('link', { name: 'Reconnect your account' })).toHaveAttribute('href', /reauth=1/);
+});
 
 test.beforeEach(async ({ context }) => {
   await context.route('https://account-test.supabase.co/auth/v1/settings', route => route.fulfill({
@@ -156,7 +225,6 @@ for (const width of [1440, 390]) test(`My profile saves private preferences and 
   await expect(page.getByText('Sign-in: Google')).toBeVisible();
   await page.getByLabel('Display name').fill('Alice');
   await page.getByLabel('Preferred role').selectOption('Support');
-  await page.getByLabel('My focus for the next game').fill('Track my first ward.');
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
   await expect(page.locator('.profile-overview h2')).toHaveText('Alice');
   await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:practice-plan:v1')?.value ?? '{}').profile?.role).toBe('Support');
@@ -233,64 +301,39 @@ test('different accounts cannot hydrate each other’s workspace', async ({ cont
   expect(rows.get(alice)!.get('riftscry:pool')!.value).toBe('["Ahri"]');
 });
 
-for (const width of [1440, 390]) test(`personal practice plan saves, survives reload, and is usable at ${width}px`, async ({ page, context }) => {
+for (const width of [1440, 390]) test(`profile preferences replace manual goals at ${width}px`, async ({ page, context }) => {
   await page.setViewportSize({ width, height: 900 });
   const rows = new Map<string, Map<string, Row>>();
   await seed(context, alice); await backend(context, rows, { offline: false });
   await page.goto('/account');
-  const plan = page.locator('[data-practice-plan]');
   await page.getByLabel('Display name').fill('Alice');
   await page.getByLabel('Preferred role').selectOption('Mid');
-  await page.getByLabel('My focus for the next game').fill('Review my first recall.');
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
-  await plan.getByLabel('New practice goal').fill('Inspect one recorded death');
-  await plan.getByRole('button', { name: 'Add goal', exact: true }).click();
-  await plan.getByRole('checkbox', { name: 'Inspect one recorded death' }).check();
-  await expect(plan).toContainText('1 of 1 goals checked');
-  await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:practice-plan:v1')?.value ?? '{}').goals?.[0]?.done).toBe(true);
+  await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:practice-plan:v1')?.value ?? '{}').profile?.role).toBe('Mid');
   await page.reload();
   await expect(page.getByLabel('Display name')).toHaveValue('Alice');
-  await expect(plan.getByRole('checkbox', { name: 'Inspect one recorded death' })).toBeChecked();
+  await expect(page.getByLabel('New practice goal')).toHaveCount(0);
+  await expect(page.getByLabel('My focus for the next game')).toHaveCount(0);
+  await expect(page.locator('[data-practice-plan]')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await mkdir('player-visuals', { recursive: true });
-  await page.screenshot({ path: `player-visuals/practice-plan-${width}.png`, fullPage: true });
+  await page.screenshot({ path: `player-visuals/account-preferences-${width}.png`, fullPage: true });
   await page.goto('/next-game');
-  await expect(plan).toContainText('Alice’s practice plan');
-  await expect(plan).toContainText('Review my first recall.');
-  await plan.getByRole('button', { name: 'Reset checklist for next session' }).click();
-  await expect(plan.getByRole('checkbox', { name: 'Inspect one recorded death' })).not.toBeChecked();
-  // The briefing's full-width text-input styles must not stretch checkboxes or
-  // leave the goal squeezed into a one-character column.
-  const goalGeometry = await plan.locator('.practice-goals label').evaluate(label => {
-    const checkbox = label.querySelector('input')!.getBoundingClientRect();
-    const text = label.querySelector('span')!.getBoundingClientRect();
-    const target = label.getBoundingClientRect();
-    return { checkboxWidth: checkbox.width, checkboxHeight: checkbox.height,
-      textWidth: text.width, textHeight: text.height, targetHeight: target.height,
-      textRight: text.right, targetRight: target.right };
-  });
-  expect(goalGeometry.checkboxWidth).toBeLessThanOrEqual(24);
-  expect(goalGeometry.checkboxHeight).toBeLessThanOrEqual(24);
-  expect(goalGeometry.textWidth).toBeGreaterThan(120);
-  expect(goalGeometry.textHeight).toBeLessThan(80);
-  expect(goalGeometry.targetHeight).toBeGreaterThanOrEqual(44);
-  expect(goalGeometry.textRight).toBeLessThanOrEqual(goalGeometry.targetRight + 1);
-  await expect(page.locator('.account-sync-status')).toHaveText('Workspace synced');
-  await page.screenshot({ path: `player-visuals/practice-briefing-${width}.png`, fullPage: true });
+  await expect(page.locator('[data-practice-plan]')).toHaveCount(0);
 });
 
-test('a practice plan syncs across devices and remains private to its owner', async ({ browser }) => {
+test('profile preferences sync across devices and remain private to their owner', async ({ browser }) => {
   const rows = new Map<string, Map<string, Row>>(); const network = { offline: false };
   const first = await browser.newContext(); const second = await browser.newContext(); const other = await browser.newContext();
   for (const [context, id] of [[first, alice], [second, alice], [other, bob]] as const) { await seed(context, id); await backend(context, rows, network); }
   const page = await first.newPage(); await page.goto('http://127.0.0.1:4325/account');
-  await page.getByLabel('My focus for the next game').fill('My private focus');
+  await page.getByLabel('Display name').fill('Private display name');
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
   await expect.poll(() => rows.get(alice)?.has('riftscry:practice-plan:v1')).toBe(true);
   const same = await second.newPage(); await same.goto('http://127.0.0.1:4325/account');
-  await expect(same.getByLabel('My focus for the next game')).toHaveValue('My private focus');
+  await expect(same.getByLabel('Display name')).toHaveValue('Private display name');
   const different = await other.newPage(); await different.goto('http://127.0.0.1:4325/account');
-  await expect(different.getByLabel('My focus for the next game')).toHaveValue('');
+  await expect(different.getByLabel('Display name')).toHaveValue('');
   await first.close(); await second.close(); await other.close();
 });
 
@@ -345,7 +388,7 @@ for (const width of [1440, 390, 320]) test(`account sections support a photo and
   await seed(context, alice); await backend(context, rows, { offline: false }, photos); await installFixtures(page);
   await page.goto('/account');
   await expect(page.getByRole('heading', { name: 'My account.' })).toBeVisible();
-  await expect(page.getByRole('navigation', { name: 'Account sections' }).getByRole('link')).toHaveCount(4);
+  await expect(page.getByRole('navigation', { name: 'Account sections' }).getByRole('link')).toHaveCount(3);
   const file = page.locator('input[type=file]');
   await expect(file).toBeEnabled();
   const image = await sharp({ create: { width: 640, height: 480, channels: 3, background: '#c8ad7f' } }).png().toBuffer();

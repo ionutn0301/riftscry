@@ -1,10 +1,10 @@
-import { generateText, Output } from 'ai';
+import { AI_MODEL, structuredAI, validateCitations } from '../ai/runtime';
 import { z } from 'zod';
 import { fallbackReview, type Fact, type Review } from './contracts';
 import { ITEM_ADVICE_VERSION, type AdjustmentDraft } from './advice';
 import { cached, type BeforeFetch } from './server';
 
-const model = 'google/gemini-3.8-flash';
+const model = AI_MODEL;
 export const reviewSchema = z.object({
   sections: z.array(z.object({
     index: z.number().int().min(0).max(3),
@@ -37,11 +37,7 @@ export function groundedSections(raw: unknown, facts: Fact[]): z.infer<typeof re
   if (new Set(sections.map(s => s.index)).size !== 4 || sections.some(s => s.evidence.some(id => !allowed.has(id)))) {
     throw new Error('Unsupported review evidence');
   }
-  const numbers = (text: string) => (text.replace(/https?:\/\/\S+/g, '').match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map(value => Number(value.replaceAll(',', '')));
-  for (const section of sections) {
-    const supported = new Set(numbers(section.evidence.map(id => facts.find(f => f.id === id)!.text).join(' ')));
-    if (numbers(section.text).some(value => !supported.has(value))) throw new Error('Unsupported quantitative claim');
-  }
+  for (const section of sections) validateCitations(section.text, section.evidence, facts);
   return sections;
 }
 
@@ -51,13 +47,7 @@ export async function review(facts: Fact[], suggestions: AdjustmentDraft[] = [],
   try {
     return await cached(`review:prompt-4-mode-aware:${ITEM_ADVICE_VERSION}:evidence-4:${model}:${JSON.stringify({ facts: baseline.facts, suggestions })}`, 86400, async () => {
       await beforeGenerate?.();
-      const { output } = await generateText({
-        model,
-        maxOutputTokens: 1600,
-        maxRetries: 0,
-        abortSignal: AbortSignal.timeout(20000),
-        output: Output.object({ schema: reviewSchema }),
-        prompt: `You write a concise post-match review for the player. Return all four indices exactly once, with existing evidence IDs and 1–3 useful sentences each.
+      const output = await structuredAI(reviewSchema, `You write a concise post-match review for the player. Return all four indices exactly once, with existing evidence IDs and 1–3 useful sentences each.
 0: What the recorded match tells us. Use relevant supported metrics. Describe a positive only when the evidence supports it; neutral observations are welcome.
 1: One specific recorded moment to inspect in a replay. Ask a useful question about the player's plan. An event is not a verdict about why it happened.
 2: One actual item decision, or an explicit conditional comparison from the supplied rule facts. Use item names and exact values only when present. Include the relevant tradeoff. All rule alternatives are options for the player to evaluate, not optimal-build instructions.
@@ -67,8 +57,7 @@ Keep the main report around 150–250 words. Ground every section in the referen
 Use only supplied evidence. A final inventory is not purchase order. Raw purchases can be undone or sold. A base-stat comparison does not model passives, upgrades, abilities, swaps or affordability. Rates are match-wide, not laning-phase measurements. Support/jungle roles have different contexts; do not import rank or role benchmarks. Do not invent comparisons with other matches, enemy threats, hidden information, positioning judgments, mental state, true rank, causal outcomes, or unprovided item advice. Never claim an alternative would prevent a death or win a game. Reference checks do not independently verify your interpretation. If useful data is absent, ask a specific replay question rather than inventing an answer.
 The mode-context fact is a hard applicability boundary. Keep ARAM, ARAM: Mayhem, Swiftplay, ranked, normal and other queues separate. Never apply Summoner's Rift lane, farming, vision or standard item advice to ARAM/Arena/rotating modes. Mayhem and Arena augments are not modeled, and their effects must not be invented. Swiftplay has different progression and item rules: its rates are observations for that queue only. A recorded win flag is not an Arena placement. Current rank is separate from these match facts.
 Evidence (an even sample of recorded events when the timeline is long): ${JSON.stringify(selected)}
-Optional adjustment drafts: ${JSON.stringify(suggestions)}`,
-      });
+Optional adjustment drafts: ${JSON.stringify(suggestions)}`);
       const sections = groundedSections(output, selected);
       return {
         ...baseline,

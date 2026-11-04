@@ -73,19 +73,19 @@ breaking the archive, notebook or existing browser data.
 | Saved findings | Private synchronized findings |
 | Player shortcuts | Most recent/legacy remembered player syncs |
 | Reading continuity | Reviewed patch, resume position and focused signal sync |
-| Personal practice plan | Display name, preferred role, custom focus and up to 8 self-tracked goals sync privately |
+| Profile preferences | Display name and preferred role sync privately; legacy focus/goals are retained for export |
 | Theme and reduced motion | Stay on this device |
 | Riot response caches, temporary navigation and AI responses | Do not sync |
 
 Selecting a Riot ID is a shortcut, **not verified Riot account linking**. Existing
 Riot API approval, deployment protection, request budgets, Redis caching and AI
-opt-in rules remain in force. Social auth does not bypass these rules or make
+authorization rules remain in force. Social auth does not bypass these rules or make
 existing paid AI/Redis usage free.
 
-## AI access and personal practice
+## AI access and profile preferences
 
-AI analysis requires a signed-in, non-anonymous RiftScry account. The review API
-verifies the bearer access token using Supabase Auth `getUser` before any Riot,
+AI analysis requires a signed-in, non-anonymous RiftScry account. The review and coach APIs
+verify the bearer access token using Supabase Auth `getUser` before any Riot,
 metadata, cache or AI work. Missing/invalid sessions return 401; unavailable Auth
 or missing server configuration fails closed with 503. Existing same-origin POST,
 Riot deployment gates and IP limits remain enforced; AI generation also has a
@@ -95,20 +95,20 @@ storage. Concurrent AI POST responses are not deduplicated across identities.
 
 Guests retain recorded summaries, deterministic item comparisons, timelines and
 all existing guest notebook features. Match sign-in links carry a validated local
-return destination; OAuth still uses the fixed `/auth/callback`. No AI request
-starts automatically after sign-in. A rejected session opens explicit reauthentication
+return destination; OAuth still uses the fixed `/auth/callback`. The signed-in briefing automatically requests a coach response after its match
+import settles. A detailed match review still requires its explicit action. A rejected session opens explicit reauthentication
 controls; **Reconnect account** also remains available when pending edits prevent
 sign-out. Reauthentication preserves the local outbox. Provider credentials remain a prerequisite:
 when the provider allowlist is empty, the hosted provider is disabled, or its settings
 cannot be checked, the account page offers guest access and reports the setup or
 connection status. Provider availability is checked again immediately before OAuth.
 
-Account includes getting-started links and a personal practice plan. Display names
-are up to 40 characters, focus up to 240, and up to 8 goals of 180 characters each.
-The plan appears on the automatic briefing with checkboxes and a next-session
-reset. The preferred role is a personal label, not a filter on recorded evidence.
-These are user-authored intentions and manually checked goals, never an inferred
-performance score or AI advice. Unsaved profile edits cannot silently replace
+Account includes getting-started links and profile preferences. Display names
+are up to 40 characters. The preferred role is a personal label, not a filter on
+recorded evidence. The coach selects a focus automatically; manual goal, checklist
+and focus controls have been removed. Legacy fields stay in the existing record
+for export compatibility and are preserved when preferences change.
+Unsaved profile edits cannot silently replace
 preferences that changed in another tab. Cloud conflicts use the existing account
 resolution flow. The dedicated record is additionally capped at 8 KB in Postgres.
 
@@ -193,8 +193,7 @@ tests cannot validate OAuth credentials, redirect allowlists or project settings
 ## My profile and navigation
 
 `/profile` is the private profile page. It includes the signed-in email, provider
-labels read from Auth, editable display name/role/focus, the existing practice
-checklist, and a saved Riot player shortcut. It uses the existing account record
+labels read from Auth, editable display name/role and a saved Riot player shortcut. It uses the existing account record
 and RLS boundary; this release needs no schema migration. No public user directory
 or public profile URL is created. A late identity response is discarded after an
 account switch. Provider names are display-only and never authorize AI or database

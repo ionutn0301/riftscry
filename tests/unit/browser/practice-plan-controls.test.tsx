@@ -14,28 +14,16 @@ beforeEach(() => {
   container = document.createElement('div'); document.body.append(container); root = createRoot(container);
 });
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); setAccountScope(null); vi.unstubAllGlobals(); });
-async function mount(compact = false) { await act(async () => root.render(createElement(PracticePlan, { compact }))); }
+async function mount() { await act(async () => root.render(createElement(PracticePlan))); }
 function button(name: string) { return [...container.querySelectorAll('button')].find(button => button.textContent === name)!; }
 
-it('checks, reopens, resets, and removes goals through the account controls', async () => {
+it('removes goal controls while preserving legacy data for export', async () => {
   await mount();
-  expect(container.querySelector('h2')?.textContent).toBe('Alice’s practice plan');
-  await act(async () => container.querySelector<HTMLInputElement>('input[type=checkbox]')!.click());
-  expect(readPracticePlan().goals[0]?.done).toBe(true);
-  expect(container.textContent).toContain('1 of 1 goals checked');
-  await act(async () => button('Reset checklist for next session').click());
-  expect(readPracticePlan().goals[0]?.done).toBe(false);
-  await act(async () => button('Remove').click());
-  expect(readPracticePlan().goals).toEqual([]);
-  expect(container.textContent).toContain('No goals yet');
-});
-it('shows the same editable checklist on the briefing without offering profile edits there', async () => {
-  await mount(true);
-  expect(container.textContent).toContain('Inspect my first recall');
-  expect(container.querySelector('a')?.getAttribute('href')).toBe('/account#practice-plan');
-  expect(container.querySelector('.practice-profile')).toBeNull();
-  await act(async () => container.querySelector<HTMLInputElement>('input[type=checkbox]')!.click());
-  expect(readPracticePlan().goals[0]?.done).toBe(true);
+  expect(container.querySelector('h2')?.textContent).toBe('Profile details');
+  expect(container.querySelector('input[type=checkbox]')).toBeNull();
+  expect(container.querySelector('textarea')).toBeNull();
+  expect(container.textContent).not.toContain('Review one death');
+  expect(readPracticePlan().goals[0]?.text).toBe('Review one death');
 });
 it('clears another account’s plan and hides controls after sign-out', async () => {
   await mount();
@@ -43,7 +31,7 @@ it('clears another account’s plan and hides controls after sign-out', async ()
   expect(container.textContent).not.toContain('Alice');
   expect(container.textContent).not.toContain('Review one death');
   await act(async () => setAccountScope(null));
-  expect(container.querySelector('[data-practice-plan]')).toBeNull();
+  expect(container.querySelector('[data-profile-preferences]')).toBeNull();
 });
 it('saves a preferred role through the form', async () => {
   await mount();

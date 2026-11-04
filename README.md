@@ -44,16 +44,18 @@ reviewed parsing corrections. See the
   across routes. Exact before/after values, a champion's dated history, the patch
   timeline, and comparisons use the same evidence-led presentation. Explicit
   date ranges and queue selections retain their scope.
-- **Automatic briefing:** `/next-game` discovers recent champions, exact queues and
-  recorded loadouts from imported games. It assembles a session recap and a focus
-  supported by available evidence. No notes, saved cards or reflections are required.
+- **AI coach:** `/next-game` automatically prepares one next step for signed-in players,
+  explains the latest archived patch for their selected champion, and highlights a
+  recorded decision. One topic is visible at a time, with linked evidence, optional
+  follow-up questions and a quiet focus view. No manual goals or checklists.
+  Guests retain recorded briefings; model failures are labeled as recorded facts.
 - **A useful first game:** one imported record can provide a role-appropriate
   observation and a source-game link while the rest of the first import finishes.
   Varied ARAM champion pools get valid team participation; supports get vision;
   Arena and other limited contexts keep their recorded match facts. Visible
   recent-mode choices and empty-result recovery need no extra setup. Explicit
   mode/champion links retain their scope through lookup.
-- **Momentum:** one personal target, checked automatically across the next three
+- **Guest Momentum:** one personal target, checked automatically across the next three
   comparable games. The starting median stays fixed; later games update a small
   progress record without checkboxes or journals. Supports get suitable vision
   measures, ARAM uses valid team participation, and a personal high can appear
@@ -82,7 +84,8 @@ reviewed parsing corrections. See the
 A successful lookup or explicit valid player selection remembers the player in your
 workspace. Sign in at `/account` to sync across devices; guests keep browser-local
 data. AI match analysis requires sign-in; recorded summaries and timelines remain
-available to guests. Account also offers a synced personal focus and practice checklist.
+available to guests. Account keeps editable profile details; the coach replaces the
+manual focus and practice checklist. Legacy records remain available in exports.
 Guest imports are explicit and account workspaces are isolated. Direct player
 links still work without storage. A RiftScry login does not verify Riot account ownership. Automatic
 results require exposed match history; checked Mayhem availability metadata explains
@@ -91,9 +94,9 @@ capabilities and source references live in [modes.ts](src/lib/player/modes.ts).
 
 Current validation and the complete route inventory are recorded in the
 [platform audit](docs/rift-atlas/AUDIT.md). Automated checks cover the camera,
-image races, scene registration and explicit AI request flow. Browser visual QA
-remains pending because the managed preview service is unavailable and the
-Vercel preview requires access. Historical screenshots do not represent this UI.
+image races, scene registration, automatic coach generation and explicit detailed
+match reviews. CI captures browser evidence for signed-in flows and responsive
+layouts; isolated model fixtures test the interface, not live model quality.
 
 ## Run it
 
@@ -132,7 +135,10 @@ than a performance claim. Session grouping uses an explicit 90-minute gap estima
 While visible, the briefing checks for updates every two minutes and when the player
 returns after that interval. Cached data may persist for up to two minutes. History
 errors and rate limits pause automatic checks; an explicit Refresh can retry them.
-The briefing does not request AI reviews, timelines, ranks or summoner profiles.
+Signed-in briefings call `/api/coach` after import, using at most three records,
+optional timeline/item data and the latest archived patch. Repeated unchanged
+refreshes do not regenerate. Generation is authenticated, rate limited and cached;
+questions use the same evidence boundary. Rank and summoner profiles are not needed.
 
 `/api/player/*` validates access and identifiers, budgets Riot requests, caches records,
 and returns private/no-store responses. Production player access requires the configured
@@ -140,6 +146,7 @@ Riot access mode, server-side credentials and Redis cache/budget state; see
 [the player release notes](docs/player-release.md). Never expose credentials to the
 client or commit deployment environment files.
 
+- [AI coach research and decisions](docs/ai-coach-research.md) — player signals, implemented scope and live-game boundaries
 - [Product contract](PRODUCT.md) — current journey, evidence boundaries, and browser-storage semantics
 - [Design contract](DESIGN.md) — shared scene model, route presentation, and active implementation map
 - [Signal journey audit](docs/signal-journey/AUDIT.md) — platform scope, simplification, and source/dependency cleanup
