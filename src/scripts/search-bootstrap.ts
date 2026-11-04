@@ -6,7 +6,15 @@ const recovery = feedback.querySelector<HTMLElement>('[data-search-recovery]')!;
 let loading: ReturnType<typeof importPalette> | undefined;
 let pending: { trigger?: HTMLElement } | undefined;
 let mounting = false;
-const importPalette = () => import('../components/islands/palette-mount');
+const importPalette = async () => {
+  // Static Astro pages have no island to install React's development preamble.
+  // Initialize the plugin's supported entry before importing the first TSX.
+  // This branch is removed entirely from the production bundle.
+  if (import.meta.env.DEV && !(window as Window & { $RefreshReg$?: unknown }).$RefreshReg$) {
+    await import('@vitejs/plugin-react/preamble');
+  }
+  return import('../components/islands/palette-mount');
+};
 const events = new AbortController();
 
 function clear() {
