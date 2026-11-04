@@ -1,4 +1,4 @@
-import { briefingLink, readRecentPlayer, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
+import { briefingLink, readPreferredPlayer as readRecentPlayer, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
 import { playerLink } from '../components/player/client';
 import { documentAtBoundary, installSceneGestures } from '../lib/scene-gestures';
 
@@ -224,7 +224,7 @@ function restorePlayer() {
   });
 }
 window.addEventListener(RECENT_PLAYER_EVENT, restorePlayer, listen);
-window.addEventListener('storage', event => { if (event.key === RECENT_PLAYER_KEY || event.key === null || event.key === 'riftscry:remembered-player:v1') restorePlayer(); }, listen);
+window.addEventListener('storage', event => { if (event.key === 'riftscry:riot-account:v1' || event.key === RECENT_PLAYER_KEY || event.key === null || event.key === 'riftscry:remembered-player:v1') restorePlayer(); }, listen);
 
 const about = document.querySelector<HTMLDialogElement>('#journey-about-dialog');
 let aboutTrigger: HTMLElement | null = null;

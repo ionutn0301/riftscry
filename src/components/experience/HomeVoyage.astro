@@ -17,7 +17,7 @@ const safeModel = JSON.stringify(model).replaceAll('<', '\\u003c');
 ---
 <div class="rift-voyage voyage-station" data-voyage data-chapter="2" data-journey-deck data-journey-default="change">
   <header class="voyage-station-heading">
-    <div><p class="journey-eyebrow">FOLLOW YOUR SIGNAL</p><h1>Look closer.</h1></div>
+    <div><p class="journey-eyebrow">EXPLORE A PATCH CHANGE</p><h1>Look closer.</h1><p class="page-purpose">Inspect exact champion changes, follow their history, and save a finding to revisit.</p></div>
     <div class="voyage-perspective-controls">
       <div class="quick-perspectives" role="group" aria-label="Featured champion perspectives">{featured.map(champion => <button type="button" data-choose-champion={champion.id} aria-pressed={champion.id === model.identity.id}><img src={champion.icon} alt="" width="40" height="40" loading="lazy" decoding="async" /><span>{champion.name}</span></button>)}</div>
       <button type="button" class="voyage-action voyage-action--outline" data-roster-open>Find your champion <span aria-hidden="true">↗</span></button>

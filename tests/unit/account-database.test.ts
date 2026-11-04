@@ -16,6 +16,13 @@ beforeAll(async () => {
   db = new PGlite();
   await db.exec(`create role anon; create role authenticated;
     create schema auth; create table auth.users (id uuid primary key);
+    create schema storage;
+    create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+    create table storage.objects (bucket_id text references storage.buckets(id), name text, primary key(bucket_id,name));
+    alter table storage.objects enable row level security;
+    grant usage on schema storage to anon, authenticated;
+    grant select on storage.objects to anon;
+    grant select, insert, update, delete on storage.objects to authenticated;
     create function auth.uid() returns uuid language sql stable as $$
       select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
     $$;
@@ -79,6 +86,32 @@ describe('Postgres account isolation and write boundary', () => {
     await save('riftscry:resume', JSON.stringify('x'.repeat(1_999_990)));
     await expect(save('riftscry:signal-context:v1', JSON.stringify('x'.repeat(100)))).rejects.toThrow('Workspace storage limit');
     expect((await db.query("select * from public.account_records where record_key = 'riftscry:signal-context:v1'")).rows).toEqual([]);
+  });
+  it('keeps Riot associations private, bounded and revision checked', async () => {
+    await asUser(alice);
+    await save('riftscry:riot-account:v1', JSON.stringify({ version: 1, player: { platform: 'euw1', puuid: 'p'.repeat(40), name: 'Alice#EUW' } }));
+    await expect(save('riftscry:riot-account:v1', '{}')).rejects.toMatchObject({ code: '40001' });
+    await expect(save('riftscry:riot-account:v1', JSON.stringify('x'.repeat(1024)), 1)).rejects.toThrow('account_riot_association_size');
+    await asUser(bob);
+    expect((await db.query("select * from public.account_records where record_key = 'riftscry:riot-account:v1'")).rows).toEqual([]);
+  });
+  it('isolates private photos and limits each account to its own fixed object path', async () => {
+    await db.exec('reset role');
+    expect((await db.query('select public, file_size_limit, allowed_mime_types from storage.buckets')).rows).toEqual([{ public: false, file_size_limit: 524288, allowed_mime_types: ['image/webp'] }]);
+    await asUser(alice);
+    await db.query("insert into storage.objects values ('account-avatars', $1)", [`${alice}/avatar.webp`]);
+    expect((await db.query('select * from storage.objects')).rows).toHaveLength(1);
+    await expect(db.query("insert into storage.objects values ('account-avatars', $1)", [`${alice}/extra.webp`])).rejects.toThrow('row-level security');
+    await expect(db.query('update storage.objects set name=$1', [`${bob}/avatar.webp`])).rejects.toThrow('row-level security');
+    await asUser(bob);
+    expect((await db.query('select * from storage.objects')).rows).toEqual([]);
+    await expect(db.query("insert into storage.objects values ('account-avatars', $1)", [`${alice}/avatar.webp`])).rejects.toThrow('row-level security');
+    expect((await db.query('delete from storage.objects returning *')).rows).toEqual([]);
+    await db.exec('reset role; set role anon');
+    expect((await db.query('select * from storage.objects')).rows).toEqual([]);
+    await expect(db.query("insert into storage.objects values ('account-avatars', 'anonymous/avatar.webp')")).rejects.toThrow('permission denied');
+    await asUser(alice);
+    expect((await db.query('delete from storage.objects returning *')).rows).toHaveLength(1);
   });
   it('deleting an auth user cascades their workspace without touching another user', async () => {
     await db.exec('reset role;');

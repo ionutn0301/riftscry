@@ -14,7 +14,7 @@ function fmt(date: string) { return new Date(date + "T00:00:00Z").toLocaleDateSt
 ---
 <Layout surface="patches" title="Patch archive — RiftScry" description="Move between the Rift’s recorded moments. Choose a patch to reveal its exact changes.">
   <div class="journey-reader journey-patch-directory" data-journey-deck data-patch-directory>
-    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">PATCHES / {patches.length} RECORDED MOMENTS</p><h1>Move through time.</h1></div><a class="journey-quiet-link" href="/compare">Compare two patches <span aria-hidden="true">↗</span></a></header>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">PATCHES / {patches.length} RECORDED MOMENTS</p><h1>Patch notes.</h1><p class="page-purpose">Choose a patch to see champion, item, and system changes, with links to Riot’s original notes.</p></div><a class="journey-quiet-link" href="/compare">Compare two patches <span aria-hidden="true">↗</span></a></header>
     <section id="archive" class="journey-panel journey-archive-panel" data-journey-panel data-journey-label="Choose a patch" data-journey-world="patches" aria-label="Patch archive">
       <figure class="archive-instrument" data-archive-instrument data-reader-key={latest.id} aria-label={"Archive from patch " + earliest.id + " through " + latest.id}>
         <figcaption><span>PATCH IN FOCUS</span><span data-archive-gesture>THE ARCHIVE</span></figcaption>

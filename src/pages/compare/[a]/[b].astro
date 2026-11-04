@@ -28,7 +28,7 @@ const grouped = groups.map((group) => ({...group,champions:result.champions.filt
 ---
 <Layout surface="compare" title={"League " + result.newer + " vs " + result.older + " — RiftScry"} description={"Follow every recorded change after League patch " + result.older + " through " + result.newer + "."}>
   <div class="journey-reader journey-compare" data-journey-deck>
-    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">COMPARE / {result.span.length} ARCHIVED {result.span.length === 1 ? "PATCH" : "PATCHES"}</p><h1>Between two moments.</h1></div><ComparePicker client:load ids={ids} newer={result.newer} older={result.older}/></header>
+    <header class="journey-reader-header" id="route-arrival"><div><p class="journey-reader-kicker">COMPARE / {result.span.length} ARCHIVED {result.span.length === 1 ? "PATCH" : "PATCHES"}</p><h1>Compare patches.</h1><p class="page-purpose">Pick two patches to see which champions, items, and systems changed between them.</p></div><ComparePicker client:load ids={ids} newer={result.newer} older={result.older}/></header>
     <p class="journey-context-line">After {result.older}, through {result.newer}. Starting patch excluded. Classifications describe records, not current strength.</p>
     <section id="comparison" class="journey-panel journey-comparison-panel" data-journey-panel data-journey-label="Champions" data-journey-world="compare" aria-label="Champion comparison">
       <p class="compare-range-note" data-compare-context hidden></p><button class="journey-quiet-link" data-compare-all hidden>Show all champions</button>

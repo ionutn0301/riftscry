@@ -1,7 +1,7 @@
 import { personalStorage } from '../lib/account/storage';
 import { comparisonWithSignal, readSignalContext, rememberSignal, parseSignalContext, SIGNAL_CONTEXT_EVENT, SIGNAL_CONTEXT_KEY } from '../lib/signal-context';
 import { FINDINGS_EVENT, FINDINGS_KEY, readFindings } from '../lib/kept-findings';
-import { readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
+import { readPreferredPlayer as readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
 
 let signal = readSignalContext();
 const abort = new AbortController();
@@ -58,7 +58,7 @@ window.addEventListener(FINDINGS_EVENT, render, options);
 window.addEventListener(RECENT_PLAYER_EVENT, render, options);
 window.addEventListener('storage', event => {
   if (event.key === SIGNAL_CONTEXT_KEY || event.key === null) signal = readSignalContext();
-  if ([SIGNAL_CONTEXT_KEY, FINDINGS_KEY, RECENT_PLAYER_KEY, 'riftscry:remembered-player:v1', null].includes(event.key)) render();
+  if ([SIGNAL_CONTEXT_KEY, FINDINGS_KEY, RECENT_PLAYER_KEY, 'riftscry:riot-account:v1', 'riftscry:remembered-player:v1', null].includes(event.key)) render();
 }, options);
 window.addEventListener('pageshow', event => {
   // Initial producers may already have supplied session context even when

@@ -42,6 +42,22 @@ test('reading layout: a new visitor can understand and enter the champion direct
   await readyWorld(page); await stationaryWorld(page); await capture(page, 'champion-history');
 });
 
+test('reading layout: the homepage guide explains each feature and account requirements', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/'); await readyCinema(page);
+  await expect(page.locator('.cinema-introduction')).toContainText('Review your matches.');
+  const guide = page.getByRole('link', { name: 'How RiftScry works', exact: true });
+  await reachableTarget(guide, page); await guide.click(); await readyWorld(page);
+  await expect(page.getByRole('heading', { name: 'A clearer next game.' })).toBeVisible();
+  await expect(page.locator('.guide-workflows > section')).toHaveCount(6);
+  await expect(page.getByRole('heading', { name: 'What needs an account?' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await capture(page, 'feature-guide');
+  await page.getByRole('link', { name: 'Open my account', exact: false }).click();
+  await expect(page).toHaveURL(/\/account\/?$/);
+  await expect(page.getByRole('heading', { name: 'My account.' })).toBeVisible();
+});
+
 test('reading layout: briefing form and contents stay readable before and after lookup', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await installFixtures(page, { matches: visualMatches });

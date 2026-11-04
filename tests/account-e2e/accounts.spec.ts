@@ -1,5 +1,6 @@
 import { expect, test, type BrowserContext } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
+import sharp from 'sharp';
 import { installFixtures, sourceMatch, query } from '../player-e2e/fixtures';
 
 const alice = '00000000-0000-4000-8000-000000000001';
@@ -21,11 +22,11 @@ async function seed(context: BrowserContext, id: string | null, guest = false) {
     if (guest) localStorage.setItem('riftscry:pool', '["Ahri"]');
   }, { key: storageKey, value: id ? session(id) : null, guest });
 }
-async function backend(context: BrowserContext, rows: Map<string, Map<string, Row>>, network: { offline: boolean }) {
+async function backend(context: BrowserContext, rows: Map<string, Map<string, Row>>, network: { offline: boolean; uploadFails?: boolean }, photos = new Map<string, Buffer>()) {
   await context.route('https://account-test.supabase.co/**', async route => {
     if (network.offline) return route.abort('failed');
     const request = route.request();
-    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS' };
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PUT,DELETE,OPTIONS' };
     if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
     const url = new URL(request.url());
     if (url.pathname.endsWith('/settings')) return route.fulfill({ headers, json: { external: { google: true } } });
@@ -34,6 +35,21 @@ async function backend(context: BrowserContext, rows: Map<string, Map<string, Ro
     const id = token ? JSON.parse(Buffer.from(token.split('.')[1]!, 'base64url').toString()).sub as string : '';
     if (!id) return route.fulfill({ status: 401, headers, json: { message: 'No session' } });
     if (url.pathname.endsWith('/user')) return route.fulfill({ headers, json: session(id).user });
+    if (url.pathname.startsWith('/storage/v1/object/')) {
+      if (request.method() === 'DELETE') {
+        const prefixes = request.postDataJSON().prefixes;
+        if (!Array.isArray(prefixes) || prefixes.some(path => path !== `${id}/avatar.webp`)) return route.fulfill({ status: 403, headers, json: { message: 'Denied' } });
+        photos.delete(id); return route.fulfill({ headers, json: [] });
+      }
+      if (!url.pathname.endsWith(`/account-avatars/${id}/avatar.webp`)) return route.fulfill({ status: 403, headers, json: { message: 'Denied' } });
+      if (request.method() === 'GET') return photos.has(id) ? route.fulfill({ headers, contentType: 'image/webp', body: photos.get(id) }) : route.fulfill({ status: 404, headers, json: { message: 'Object not found', statusCode: '404' } });
+      if (network.uploadFails) return route.fulfill({ status: 503, headers, json: { message: 'Upload unavailable' } });
+      const form = await new Response(new Uint8Array(request.postDataBuffer()!), { headers: { 'content-type': request.headers()['content-type']! } }).formData();
+      const image = [...form.values()].find(value => typeof value !== 'string') as File;
+      if (!image || image.type !== 'image/webp' || image.size > 524288) return route.fulfill({ status: 400, headers, json: { message: 'Invalid image' } });
+      photos.set(id, Buffer.from(await image.arrayBuffer()));
+      return route.fulfill({ headers, json: { Key: `account-avatars/${id}/avatar.webp`, Id: id } });
+    }
     if (!rows.has(id)) rows.set(id, new Map());
     const records = rows.get(id)!;
     if (url.pathname.endsWith('/rpc/save_account_record')) {
@@ -115,7 +131,7 @@ test('Google stays unavailable until the hosted provider is enabled and handles 
   await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeEnabled();
 });
 
-test('Account is reachable from the homepage and My profile sends guests through a safe sign-in return', async ({ page }) => {
+test('Account is reachable from the homepage and the profile bookmark offers sign-in to guests', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/');
   const accountLink = page.getByRole('link', { name: 'Account and profile', exact: true });
@@ -123,15 +139,15 @@ test('Account is reachable from the homepage and My profile sends guests through
   const box = await accountLink.boundingBox();
   expect(box!.width).toBeGreaterThanOrEqual(44); expect(box!.height).toBeGreaterThanOrEqual(44);
   await accountLink.click();
-  await page.getByRole('link', { name: 'My profile', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'My account.' })).toBeVisible();
+  await page.goto('/profile');
   await expect(page.getByRole('heading', { name: 'My profile.' })).toBeVisible();
   await expect(page.getByLabel('Display name')).toHaveCount(0);
-  await page.getByRole('link', { name: 'Sign in to create your profile' }).click();
-  await expect(page).toHaveURL(url => url.pathname === '/account' && url.searchParams.get('returnTo') === '/profile');
+  await expect(page.locator('input[type=file]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeEnabled();
 });
 
-for (const width of [1440, 390]) test(`My profile saves private preferences and shows an honest Riot shortcut at ${width}px`, async ({ page, context }) => {
+for (const width of [1440, 390]) test(`My profile saves private preferences and does not assume a recent lookup is an association at ${width}px`, async ({ page, context }) => {
   await page.setViewportSize({ width, height: 900 });
   const rows = new Map([[alice, new Map([['riftscry:recent-player:v1', { record_key: 'riftscry:recent-player:v1', value: JSON.stringify({ platform: 'euw1', puuid: 'p'.repeat(40), name: 'Alice#EUW' }), revision: 1 }]])]]);
   await seed(context, alice); await backend(context, rows, { offline: false });
@@ -145,9 +161,8 @@ for (const width of [1440, 390]) test(`My profile saves private preferences and 
   await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:practice-plan:v1')?.value ?? '{}').profile?.role).toBe('Support');
   await page.reload();
   await expect(page.getByLabel('Display name')).toHaveValue('Alice');
-  await expect(page.getByText('Alice#EUW')).toBeVisible();
-  await expect(page.getByText(/This is a saved lookup, not verified Riot account linking/)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open this player’s briefing' })).toHaveAttribute('href', /platform=euw1/);
+  await expect(page.getByText('No Riot ID associated yet.')).toBeVisible();
+  await expect(page.getByText(/it does not verify Riot account ownership/)).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.evaluate(() => window.scrollTo(0, 0));
   await mkdir('player-visuals', { recursive: true });
@@ -223,17 +238,17 @@ for (const width of [1440, 390]) test(`personal practice plan saves, survives re
   await seed(context, alice); await backend(context, rows, { offline: false });
   await page.goto('/account');
   const plan = page.locator('[data-practice-plan]');
-  await plan.getByLabel('Display name').fill('Alice');
-  await plan.getByLabel('Preferred role').selectOption('Mid');
-  await plan.getByLabel('My focus for the next game').fill('Review my first recall.');
-  await plan.getByRole('button', { name: 'Save preferences', exact: true }).click();
+  await page.getByLabel('Display name').fill('Alice');
+  await page.getByLabel('Preferred role').selectOption('Mid');
+  await page.getByLabel('My focus for the next game').fill('Review my first recall.');
+  await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
   await plan.getByLabel('New practice goal').fill('Inspect one recorded death');
   await plan.getByRole('button', { name: 'Add goal', exact: true }).click();
   await plan.getByRole('checkbox', { name: 'Inspect one recorded death' }).check();
   await expect(plan).toContainText('1 of 1 goals checked');
   await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:practice-plan:v1')?.value ?? '{}').goals?.[0]?.done).toBe(true);
   await page.reload();
-  await expect(plan.getByLabel('Display name')).toHaveValue('Alice');
+  await expect(page.getByLabel('Display name')).toHaveValue('Alice');
   await expect(plan.getByRole('checkbox', { name: 'Inspect one recorded death' })).toBeChecked();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await mkdir('player-visuals', { recursive: true });
@@ -320,4 +335,98 @@ test('the real review route rejects a guest or malformed token before any Riot a
     expect(response.status()).toBe(401);
     expect(response.headers()['cache-control']).toBe('private, no-store');
   }
+});
+
+for (const width of [1440, 390, 320]) test(`account sections support a photo and an explicit Riot ID association at ${width}px`, async ({ page, context }) => {
+  test.setTimeout(60_000);
+  await page.setViewportSize({ width, height: 900 });
+  const rows = new Map<string, Map<string, Row>>(); const photos = new Map<string, Buffer>();
+  await seed(context, alice); await backend(context, rows, { offline: false }, photos); await installFixtures(page);
+  await page.goto('/account');
+  await expect(page.getByRole('heading', { name: 'My account.' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Account sections' }).getByRole('link')).toHaveCount(4);
+  const file = page.locator('input[type=file]');
+  await expect(file).toBeEnabled();
+  const image = await sharp({ create: { width: 640, height: 480, channels: 3, background: '#c8ad7f' } }).png().toBuffer();
+  await file.setInputFiles({ name: 'portrait.png', mimeType: 'image/png', buffer: image });
+  await expect(page.getByRole('img', { name: 'New profile photo preview' })).toBeVisible();
+  expect(photos.size).toBe(0);
+  await page.getByRole('button', { name: 'Save photo', exact: true }).click();
+  await expect(page.getByText('Profile photo saved.', { exact: false })).toBeVisible();
+  expect((await sharp(photos.get(alice)!).metadata())).toMatchObject({ width: 512, height: 512, format: 'webp' });
+  await page.reload();
+  await expect(page.getByRole('img', { name: 'Your profile photo', exact: true })).toBeVisible();
+  await page.getByRole('navigation', { name: 'Account sections' }).getByRole('link', { name: 'Riot ID', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your League of Legends player.' })).toBeInViewport();
+  const form = page.getByRole('form', { name: 'Associate a Riot ID' });
+  await form.getByLabel('Riot ID', { exact: true }).fill('Fixture Player#TEST');
+  await form.getByLabel('Server', { exact: true }).selectOption('eun1');
+  await form.getByRole('button', { name: 'Find Riot ID', exact: true }).click();
+  await expect(page.locator('.riot-candidate')).toContainText('Fixture Player#TEST');
+  expect(rows.get(alice)?.has('riftscry:riot-account:v1')).not.toBe(true);
+  await page.getByRole('button', { name: 'Associate this Riot ID', exact: true }).click();
+  await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:riot-account:v1')?.value ?? '{}').player?.name).toBe('Fixture Player#TEST');
+  await page.reload();
+  await expect(page.locator('.associated-player')).toContainText('Fixture Player#TEST');
+  await expect(page.getByRole('link', { name: 'Open my briefing', exact: false })).toHaveAttribute('href', /platform=eun1/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await mkdir('player-visuals', { recursive: true });
+  await page.screenshot({ path: `player-visuals/account-riot-${width}.png`, fullPage: true });
+  if (width === 1440) {
+    await page.goto('/');
+    await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-ready', 'true');
+    await expect(page.locator('[data-home-briefing]').first()).toHaveAttribute('href', /platform=eun1.*puuid=/);
+  }
+  await page.goto('/account#profile');
+  await expect(page.getByRole('img', { name: 'Your profile photo', exact: true })).toBeInViewport();
+  await page.screenshot({ path: `player-visuals/account-profile-${width}.png`, fullPage: false });
+  await page.getByRole('button', { name: 'Remove association', exact: true }).click();
+  await expect.poll(() => JSON.parse(rows.get(alice)?.get('riftscry:riot-account:v1')?.value ?? '{}').player).toBeNull();
+  await expect(page.getByText('No Riot ID associated yet.')).toBeVisible();
+});
+
+test('photo upload validates files, recovers from failure, and removes the saved image', async ({ page, context }) => {
+  const rows = new Map<string, Map<string, Row>>(); const photos = new Map<string, Buffer>();
+  const network = { offline: false, uploadFails: true };
+  await seed(context, alice); await backend(context, rows, network, photos);
+  await page.goto('/account');
+  const input = page.locator('input[type=file]'); await expect(input).toBeEnabled();
+  await input.setInputFiles({ name: 'bad.svg', mimeType: 'image/svg+xml', buffer: Buffer.from('<svg></svg>') });
+  await expect(page.getByText('Choose a JPG, PNG, or WebP image.')).toBeVisible();
+  expect(photos.size).toBe(0);
+  const image = await sharp({ create: { width: 80, height: 80, channels: 3, background: '#c8ad7f' } }).png().toBuffer();
+  await input.setInputFiles({ name: 'photo.png', mimeType: 'image/png', buffer: image });
+  await page.getByRole('button', { name: 'Save photo', exact: true }).click();
+  await expect(page.getByText('Your photo was not saved.', { exact: false })).toBeVisible();
+  expect(photos.size).toBe(0);
+  await expect(page.getByRole('img', { name: 'New profile photo preview' })).toBeVisible();
+  network.uploadFails = false;
+  await page.getByRole('button', { name: 'Save photo', exact: true }).click();
+  await expect(page.getByRole('img', { name: 'Your profile photo', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Remove photo', exact: true }).click();
+  await expect(page.getByText('Profile photo removed.')).toBeVisible();
+  expect(photos.size).toBe(0);
+  await page.reload();
+  await expect(page.locator('input[type=file]')).toBeEnabled();
+  await expect(page.getByRole('img', { name: 'Your profile photo', exact: true })).toHaveCount(0);
+});
+
+test('photos and Riot associations load on another device but not another account', async ({ browser }) => {
+  const photo = await sharp({ create: { width: 512, height: 512, channels: 3, background: '#c8ad7f' } }).webp().toBuffer();
+  const photos = new Map([[alice, photo]]);
+  const association = { version: 1, player: { platform: 'euw1', puuid: 'p'.repeat(40), name: 'Alice#EUW' } };
+  const rows = new Map([[alice, new Map([['riftscry:riot-account:v1', { record_key: 'riftscry:riot-account:v1', value: JSON.stringify(association), revision: 1 }]])]]);
+  const same = await browser.newContext(); const other = await browser.newContext();
+  try {
+    await seed(same, alice); await backend(same, rows, { offline: false }, photos);
+    await seed(other, bob); await backend(other, rows, { offline: false }, photos);
+    const accountPage = await same.newPage(); await accountPage.goto('http://127.0.0.1:4325/account');
+    await expect(accountPage.getByRole('img', { name: 'Your profile photo', exact: true })).toBeVisible();
+    await expect(accountPage.locator('.associated-player')).toContainText('Alice#EUW');
+    const otherPage = await other.newPage(); await otherPage.goto('http://127.0.0.1:4325/account');
+    await expect(otherPage.locator('input[type=file]')).toBeEnabled();
+    await expect(otherPage.getByRole('img', { name: 'Your profile photo', exact: true })).toHaveCount(0);
+    await expect(otherPage.getByText('No Riot ID associated yet.')).toBeVisible();
+    expect(photos.get(alice)).toEqual(photo);
+  } finally { await same.close(); await other.close(); }
 });

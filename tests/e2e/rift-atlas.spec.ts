@@ -83,7 +83,7 @@ test('the destination range moves the same object continuously and keeps direct 
   await expect(passage.locator('[data-passage-enter]')).toHaveAttribute('href',/\/pool#briefing$/);
   await expect.poll(()=>passage.getAttribute('data-passage-position')).toBe('4.0000');
   expect(await passage.locator('[data-passage-aperture]').getAttribute('d')).not.toBe(shape);
-  await expect(passage.locator('[data-passage-title]')).toHaveAccessibleName('A world that remembers.');
+  await expect(passage.locator('[data-passage-title]')).toHaveAccessibleName('Return to your collection.');
   await expect(passage.locator('canvas')).toBeVisible();await expect(passage.locator('[data-passage-still]')).toBeHidden();
   await expect(passage.locator('[data-passage-stop]')).toHaveCount(5);
   await stationaryWorld(page);

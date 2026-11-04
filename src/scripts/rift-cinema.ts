@@ -3,7 +3,7 @@ import type { HomeSignal } from '../lib/home-signals';
 import type { Evidence } from '../lib/investigation';
 import { readFindings, writeFindings, FINDINGS_EVENT, FINDINGS_KEY, FINDINGS_LIMIT } from '../lib/kept-findings';
 import { parseSignalContext, readSignalContext, rememberSignal, SIGNAL_CONTEXT_EVENT, SIGNAL_CONTEXT_KEY } from '../lib/signal-context';
-import { readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
+import { readPreferredPlayer as readRecentPlayer, briefingLink, RECENT_PLAYER_EVENT, RECENT_PLAYER_KEY } from '../lib/player/identity';
 import { playerLink } from '../components/player/client';
 import { readReturnState, rememberReading, RETURN_STATE_EVENT, RESUME_KEY } from '../lib/return-briefing';
 import { installSceneGestures, type SceneDirection } from '../lib/scene-gestures';
@@ -328,7 +328,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
   window.addEventListener(RETURN_STATE_EVENT,resume,events);
   window.addEventListener('storage',event=>{
     if(event.key===SIGNAL_CONTEXT_KEY||event.key===null)retained=readSignalContext();
-    if([RECENT_PLAYER_KEY,'riftscry:remembered-player:v1',SIGNAL_CONTEXT_KEY,RESUME_KEY,null].includes(event.key))resume();
+    if([RECENT_PLAYER_KEY,'riftscry:riot-account:v1','riftscry:remembered-player:v1',SIGNAL_CONTEXT_KEY,RESUME_KEY,null].includes(event.key))resume();
     if(event.key===FINDINGS_KEY||event.key===null)saved();
     if(event.key==='riftscry:motion'||event.key===null){motionChoice=readMotion();restoreMotion();applyMotion();}
   },events);

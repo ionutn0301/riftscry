@@ -232,3 +232,4 @@ html[data-motion=reduced] .rift-cinema :is(*,*:before,*:after){animation:none!im
   .cinema-brand img { width:96px; }
   .cinema-utilities { gap:6px; }
 }
+.cinema-footer .cinema-guide-link{font-size:10px;letter-spacing:.08em;min-height:44px;color:#e7ddc7}

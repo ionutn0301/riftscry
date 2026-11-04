@@ -167,3 +167,24 @@ body[data-reading-layout] #main .profile-shortcuts a { display:grid; grid-templa
   body[data-reading-layout] #main .roster-entry>a { gap:10px; }
   body[data-reading-layout] #main .pool-picker .grid { grid-template-columns:minmax(0,1fr); }
 }
+
+body[data-reading-layout] #main .page-purpose { max-width:64ch; margin:14px 0 0; color:var(--cream-dim); font:14px/1.65 var(--font-ui); letter-spacing:0; }
+.feature-guide { max-width:1080px; margin-inline:auto; }
+.guide-start { display:flex; align-items:center; gap:32px; padding:24px 0; border-bottom:1px solid var(--reading-rule); }
+.guide-start p { max-width:65ch; margin:0; line-height:1.7; }
+.guide-start>a { display:inline-flex; align-items:center; min-height:44px; color:var(--gold); white-space:nowrap; }
+.guide-index { display:flex; flex-wrap:wrap; gap:0 28px; padding:20px 0 28px; }
+.guide-index a { display:inline-flex; align-items:center; min-height:44px; font-size:12px; color:var(--cream-dim); }
+.guide-workflows>section { display:grid; grid-template-columns:60px minmax(0,1fr); gap:28px; padding:36px 0; border-top:1px solid var(--reading-rule); scroll-margin-top:110px; }
+.guide-number { color:var(--gold); font:12px/2 var(--font-ui); }
+.guide-workflows h2 { margin:0 0 16px; }
+.guide-workflows p { max-width:72ch; line-height:1.75; }
+.guide-detail { color:var(--cream-dim); font-size:14px; }
+.guide-actions { display:flex; flex-wrap:wrap; gap:12px 32px; margin-top:20px; }
+.guide-actions a { display:inline-flex; gap:12px; align-items:center; min-height:44px; color:var(--gold); }
+.guide-access { padding:36px 0; border-top:1px solid var(--reading-rule); }
+.guide-access dl>div { display:grid; grid-template-columns:180px minmax(0,1fr); gap:24px; padding:20px 0; border-bottom:1px solid var(--reading-rule); }
+.guide-access dt { color:var(--gold); }
+.guide-access dd { margin:0; max-width:66ch; line-height:1.7; color:var(--cream-dim); }
+.guide-access>p { font-size:13px; color:var(--cream-dim); }
+@media(max-width:700px) { .guide-start { align-items:flex-start; flex-direction:column; gap:8px; } .guide-workflows>section { grid-template-columns:24px minmax(0,1fr); gap:12px; } .guide-access dl>div { grid-template-columns:1fr; gap:10px; } .guide-index { gap:0 18px; } body[data-reading-layout] #main .page-purpose { font-size:13px; } }

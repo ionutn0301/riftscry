@@ -29,7 +29,7 @@ function ProfileEditor({ profile, save }: { profile: PracticeProfile; save: (pro
   </form>;
 }
 
-export default function PracticePlan({ compact = false }: { compact?: boolean }) {
+export default function PracticePlan({ compact = false, section = 'all' }: { compact?: boolean; section?: 'all' | 'profile' | 'goals' }) {
   const account = useStore($account, { ssr: 'initial' });
   const id = useId();
   const [plan, setPlan] = useState(emptyPracticePlan);
@@ -55,16 +55,15 @@ export default function PracticePlan({ compact = false }: { compact?: boolean })
   }
   if (!account.ready || !account.userId || loadedOwner !== account.userId) return null;
   const done = plan.goals.filter(item => item.done).length;
-  return <section className={`practice-plan${compact ? ' practice-plan-compact' : ' account-card'}`} aria-labelledby={`${id}-heading`} data-practice-plan>
-    <p className="practice-eyebrow">YOUR OWN PLAN</p>
-    <h2 id={`${id}-heading`}>{plan.profile.displayName ? `${plan.profile.displayName}’s practice plan` : 'Your practice plan'}</h2>
-    <p className="practice-help">Your own focus and checklist. Completion is self-tracked and does not measure match performance.</p>
+  return <section className={`practice-plan${compact ? ' practice-plan-compact' : ' account-card'}`} aria-labelledby={`${id}-heading`} data-practice-plan={section !== 'profile' || undefined}>
+    <h2 id={`${id}-heading`}>{section === 'profile' ? 'Profile details' : plan.profile.displayName ? `${plan.profile.displayName}’s practice plan` : 'Your practice plan'}</h2>
+    <p className="practice-help">{section === 'profile' ? 'Choose how you appear in your private workspace, your role, and what to focus on next.' : 'Set small goals for your next session. Check them off yourself as you practise.'}</p>
     {problem ? <p role="alert">{problem}</p> : <>
-      {compact ? <><p>{plan.profile.focus || 'Choose one thing you want to pay attention to in your next game.'}</p>{plan.profile.role !== 'Any role' && <p className="practice-help">Preferred role: {plan.profile.role}</p>}<a href="/account#practice-plan">Edit your preferences and goals →</a></> : <ProfileEditor profile={plan.profile} save={(profile, expected) => update(current => {
+      {compact || section === 'goals' ? <><p>{plan.profile.focus || 'Choose one thing you want to pay attention to in your next game.'}</p>{plan.profile.role !== 'Any role' && <p className="practice-help">Preferred role: {plan.profile.role}</p>}<a href={compact ? '/account#practice-plan' : '#profile'}>{compact ? 'Edit your preferences and goals →' : 'Edit profile and focus ↑'}</a></> : <ProfileEditor profile={plan.profile} save={(profile, expected) => update(current => {
         if (JSON.stringify(current.profile) !== expected) throw new Error('Preferences changed. Reload saved preferences before saving.');
         return { ...current, profile };
       }, 'Preferences saved on this device. Account sync status is shown above.')} />}
-      <p className="practice-progress">{plan.goals.length ? `${done} of ${plan.goals.length} goals checked` : 'No goals yet. Add your first small, specific practice goal.'}</p>
+      {section !== 'profile' && <><p className="practice-progress">{plan.goals.length ? `${done} of ${plan.goals.length} goals checked` : 'No goals yet. Add your first small, specific practice goal.'}</p>
       <ul className="practice-goals">{plan.goals.map(item => <li key={item.id}>
         <label><input type="checkbox" checked={item.done} onChange={event => { const checked = event.target.checked; update(current => ({ ...current, goals: current.goals.map(value => value.id === item.id ? { ...value, done: checked } : value) }), checked ? 'Goal checked.' : 'Goal reopened.'); }} /><span>{item.text}</span></label>
         {!compact && <button type="button" aria-label={`Remove goal: ${item.text}`} onClick={() => update(current => ({ ...current, goals: current.goals.filter(value => value.id !== item.id) }), 'Goal removed.')}>Remove</button>}
@@ -73,7 +72,7 @@ export default function PracticePlan({ compact = false }: { compact?: boolean })
         <label htmlFor={`${id}-goal`}>New practice goal</label><input id={`${id}-goal`} value={goal} maxLength={180} required onChange={event => setGoal(event.target.value)} placeholder="For example: inspect one recorded death." />
         <button type="submit" disabled={plan.goals.length >= 8 || !goal.trim()}>Add goal</button><p className="practice-help">Up to 8 goals. Remove a goal to make room for a new one.</p>
       </form>}
-      {done > 0 && <button type="button" onClick={() => update(current => ({ ...current, goals: current.goals.map(item => ({ ...item, done: false })) }), 'Checklist reset for your next session.')}>Reset checklist for next session</button>}
+      {done > 0 && <button type="button" onClick={() => update(current => ({ ...current, goals: current.goals.map(item => ({ ...item, done: false })) }), 'Checklist reset for your next session.')}>Reset checklist for next session</button>}</>}
     </>}
     <p role="status" aria-live="polite">{message}</p>
   </section>;

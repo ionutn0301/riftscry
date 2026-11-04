@@ -1,10 +1,11 @@
-import { personalStorage } from '../account/storage';
+import { getAccountScope, personalStorage } from '../account/storage';
 import { platforms } from './contracts';
 import { historyOptions } from './modes';
 
 export type RecentPlayer = { platform: string; puuid: string; name: string };
 export const RECENT_PLAYER_KEY = 'riftscry:recent-player:v1';
 export const RECENT_PLAYER_EVENT = 'riftscry:recent-player-change';
+export const ASSOCIATED_PLAYER_KEY = 'riftscry:riot-account:v1';
 const rememberedKey = 'riftscry:remembered-player:v1';
 
 export function parseRecentPlayer(value: unknown): RecentPlayer | null {
@@ -27,6 +28,19 @@ export function readRecentPlayer(): RecentPlayer | null {
     }
   } catch { /* A direct link and lookup work without browser storage. */ }
   return null;
+}
+
+/** Navigation uses the explicitly associated account; a direct lookup still wins on its own page. */
+export function readPreferredPlayer(): RecentPlayer | null {
+  try {
+    if (getAccountScope()) {
+      const raw = personalStorage.getItem(ASSOCIATED_PLAYER_KEY);
+      const record = raw ? JSON.parse(raw) : null;
+      const associated = record?.version === 1 ? parseRecentPlayer(record.player) : null;
+      if (associated) return associated;
+    }
+  } catch { /* A damaged optional association cannot prevent a player lookup. */ }
+  return readRecentPlayer();
 }
 
 export function rememberRecentPlayer(value: RecentPlayer): boolean {

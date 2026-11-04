@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { buildAutomaticBriefing, type AutomaticChampionContext } from '../../lib/player/automatic-briefing';
 import { buildFirstResult } from '../../lib/player/first-result';
 import JourneyHandoff from '../experience/JourneyHandoff';
-import { briefingLink, parseRecentPlayer, readRecentPlayer, rememberRecentPlayer, type RecentPlayer } from '../../lib/player/identity';
+import { briefingLink, parseRecentPlayer, readPreferredPlayer, readRecentPlayer, rememberRecentPlayer, type RecentPlayer } from '../../lib/player/identity';
 import { participant, platforms, type Match } from '../../lib/player/contracts';
 import { historyAvailabilityForQueue, historyOptions, modeForMatch } from '../../lib/player/modes';
 import { compatibleItems } from '../../lib/player/advice';
@@ -36,7 +36,7 @@ function locationSelection(): Selection {
   const champion = /^[A-Za-z0-9]{1,40}$/.test(query.get('champion') ?? '') ? query.get('champion')! : '';
   if (query.has('change')) return { player: null, queue, champion, problem: '' };
   const explicit = query.has('platform') || query.has('puuid');
-  const player = explicit ? parseRecentPlayer({ platform: query.get('platform'), puuid: query.get('puuid'), name: query.get('name') ?? '' }) : readRecentPlayer();
+  const player = explicit ? parseRecentPlayer({ platform: query.get('platform'), puuid: query.get('puuid'), name: query.get('name') ?? '' }) : readPreferredPlayer();
   return { player, queue, champion, problem: explicit && !player ? 'This player link is incomplete. Enter a Riot ID to open the right briefing.' : '' };
 }
 

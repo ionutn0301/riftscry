@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type SubmitEvent } from 'react';
 import { platforms } from '../../lib/player/contracts';
 import { historyOptions } from '../../lib/player/modes';
-import { readRecentPlayer, RECENT_PLAYER_EVENT, rememberRecentPlayer } from '../../lib/player/identity';
+import { readPreferredPlayer as readRecentPlayer, RECENT_PLAYER_EVENT, rememberRecentPlayer } from '../../lib/player/identity';
 import { api, fetcher, playerLink, type PlayerView } from './client';
 import { usePlayerCooldown } from './usePlayerCooldown';
 import PlayerIcon from './PlayerIcon';
@@ -81,7 +81,7 @@ export default function PlayerGateway({ name = '', platform = '', view: initialV
       <header className="gateway-heading">
         <p className="player-kicker"><span className="observatory-section-mark" aria-hidden="true" /> YOUR GAMES</p>
         <h1 id="player-gateway-heading">Find your <em>games.</em></h1>
-        <p>Look up recent matches, inspect a build, or return to your saved notes.</p>
+        <p>Enter a Riot ID and server to review recent matches, inspect builds, and save what you learn.</p>
       </header>
 
       {remembered && <a className="remembered-player" href={playerLink(remembered.platform, remembered.puuid, { ...filters, name: remembered.name, view })}>

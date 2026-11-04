@@ -155,7 +155,7 @@ export default function NextGame({ champions, archive }: { champions: RecallCham
   return <div className="recall-workspace" data-journey-deck data-journey-hydrated={ready} data-journey-default={active ? "game-card" : "notes"} data-rift-recall>
     <div className="recall-wrap">
       <header className="recall-header">
-        <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR SAVED IDEAS</p><h1>Notebook.</h1><p className="recall-tagline">Your notes, saved builds, and match reflections.</p></div>
+        <div><p className="recall-eyebrow"><span className="observatory-section-mark" aria-hidden="true" /> YOUR SAVED IDEAS</p><h1>Notebook.</h1><p className="recall-tagline">Write a note, save a build, or revisit a match reflection before you queue.</p></div>
         <div className="recall-header-note"><PlayerIcon name="bookmark" size={16} /><p>Saved to your workspace.</p></div>
       </header>
 

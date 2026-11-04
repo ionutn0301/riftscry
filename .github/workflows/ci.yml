@@ -6,6 +6,33 @@ on:
   pull_request:
 
 jobs:
+  account-profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Verify account sections, private photos and Riot associations
+        run: pnpm exec playwright test --config=playwright.accounts.config.ts --grep 'account sections|photo upload|photos and Riot|Account is reachable'
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: account-profile
+          path: |
+            player-visuals/account-*
+            test-results/
+          retention-days: 14
+
   reading-layout:
     runs-on: ubuntu-latest
     timeout-minutes: 10

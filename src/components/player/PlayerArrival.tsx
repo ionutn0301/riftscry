@@ -40,6 +40,7 @@ export default function PlayerArrival({ briefingHref, initial, summoner, ranks, 
           <strong>{tierLabel(rank.tier)} {rank.rank}</strong><span>{rank.leaguePoints} LP</span>
         </span>) : <span>Unranked</span> : <span>{rankFailed ? 'Current rank unavailable' : 'Loading rank…'}</span>}
       </aside>
+      <p className="page-purpose">Filter your recent matches by mode. Open a match for its stats, builds, and review.</p>
     </div>
   </header>;
 }

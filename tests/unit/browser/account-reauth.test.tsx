@@ -6,7 +6,9 @@ vi.mock('../../../src/lib/account/storage', async original => ({ ...await origin
 vi.mock('../../../src/lib/account/client', () => ({
   socialProviders: ['google'], getAvailableSocialProviders: vi.fn().mockResolvedValue(['google']), signIn: vi.fn().mockResolvedValue(undefined), signOut: vi.fn(),
   syncAccount: vi.fn(), importGuestData: vi.fn(), resolveConflict: vi.fn(),
+  getProfileIdentity: vi.fn().mockResolvedValue({ userId: 'alice', providers: ['Google'] }),
 }));
+vi.mock('../../../src/lib/account/avatar', () => ({ downloadAvatar: vi.fn().mockResolvedValue(null), preparePhoto: vi.fn(), uploadAvatar: vi.fn(), removeAvatar: vi.fn() }));
 import AccountPanel from '../../../src/components/account/AccountPanel';
 import { $account, loadRecords, personalStorage, setAccountScope } from '../../../src/lib/account/storage';
 import { signIn, signOut, syncAccount } from '../../../src/lib/account/client';

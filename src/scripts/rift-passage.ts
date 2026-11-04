@@ -2,7 +2,7 @@ import { journeyStations } from '../lib/journey-stations';
 import { getRiftPreset, projectRift } from '../lib/rift-geometry';
 import { advancePassage, passagePose, passagePosition, passageColor,passageAperture } from '../lib/passage-camera';
 import { prepareKineticTitle,setKineticTitle } from './kinetic-type';
-import { readRecentPlayer,RECENT_PLAYER_EVENT,RECENT_PLAYER_KEY } from '../lib/player/identity';
+import { readPreferredPlayer as readRecentPlayer,RECENT_PLAYER_EVENT,RECENT_PLAYER_KEY } from '../lib/player/identity';
 
 /** A persistent object and continuous camera; links never wait for travel. */
 document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
@@ -151,7 +151,7 @@ document.querySelectorAll<HTMLElement>('[data-passage]').forEach(root=>{
   stops.forEach(stop=>links.observe(stop,{attributes:true,attributeFilter:['href']}));
   const restorePlayer=()=>{player=readRecentPlayer();entry();};
   window.addEventListener(RECENT_PLAYER_EVENT,restorePlayer,events);
-  window.addEventListener('storage',event=>{if([RECENT_PLAYER_KEY,'riftscry:remembered-player:v1',null].includes(event.key))restorePlayer();},events);
+  window.addEventListener('storage',event=>{if([RECENT_PLAYER_KEY,'riftscry:riot-account:v1','riftscry:remembered-player:v1',null].includes(event.key))restorePlayer();},events);
   document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(frame);frame=0;time=0;schedule();},events);
   window.addEventListener('riftscry:motion-change',()=>{cancelAnimationFrame(frame);frame=0;if(reduced()){position=target;lookX=lookY=targetLookX=targetLookY=0;}schedule();},events);
   window.addEventListener('pageshow',()=>{suspended=false;restorePlayer();measure();},events);

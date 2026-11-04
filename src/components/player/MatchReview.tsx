@@ -133,7 +133,7 @@ export default function MatchReview({ id, platform, puuid, back }: { id: string;
     <header className="player-hero review-champion-heading">
       {p && <ChampionPortrait className="review-champion-portrait" champion={p.championName} size={88} />}
       <div><p className="player-kicker">MATCH REVIEW</p><h1>{p ? championDisplayName(p.championName) : 'Selected match'}</h1>
-      <div className="player-chips">{match ? <><span className="player-chip">{mode?.label}</span><span>Patch {patchOf(match.info.gameVersion)}</span><span><PlayerIcon name="clock" />{clock(match.info.gameDuration * 1000)}</span></> : <span>Loading match…</span>}</div></div>
+      <div className="player-chips">{match ? <><span className="player-chip">{mode?.label}</span><span>Patch {patchOf(match.info.gameVersion)}</span><span><PlayerIcon name="clock" />{clock(match.info.gameDuration * 1000)}</span></> : <span>Loading match…</span>}</div><p className="page-purpose">Inspect match facts, save an observation, or sign in for optional AI analysis.</p></div>
     </header>
     {(!match || !p) && <section id="match-overview" className="match-overview-scene" data-journey-panel data-journey-label="Match" data-journey-world="match">
       {isLoading && <p role="status">Loading match summary…</p>}

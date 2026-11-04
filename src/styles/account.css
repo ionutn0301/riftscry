@@ -55,3 +55,75 @@
   .profile-overview { align-items: flex-start; gap: 14px; }
   .profile-avatar { flex-basis: 52px; height: 52px; border-radius: 18px; font-size: 1.6rem; }
 }
+
+/* Account settings use a stable section index and one continuous document. */
+body.rift-shell[data-reading-layout] #main .account-panel.account-hub { width:min(1120px,calc(100% - 40px)); margin:30px auto 100px; }
+.account-heading { border-bottom:1px solid var(--reading-rule); padding-bottom:24px; margin-bottom:32px; }
+.account-heading>p { max-width:70ch; }
+.account-sync-line { font-size:12px; color:var(--cream-dim); }
+.account-layout { display:grid; grid-template-columns:180px minmax(0,1fr); gap:56px; align-items:start; }
+.account-section-nav { position:sticky; top:112px; display:grid; align-content:start; }
+.account-section-nav a { display:flex; align-items:center; gap:14px; min-height:52px; border-bottom:1px solid var(--reading-rule); color:var(--cream-dim); text-decoration:none; }
+.account-section-nav a:hover { color:var(--gold); }
+.account-section-nav span { font:10px var(--font-ui); color:var(--gold); }
+.account-sections { min-width:0; }
+.account-section { scroll-margin-top:105px; padding:0 0 40px; margin-bottom:40px; border-bottom:1px solid var(--reading-rule); }
+.account-section>h2 { max-width:28ch; }
+.account-section .account-card { border:0!important; padding:0!important; margin:28px 0 0; }
+.account-section .practice-plan { max-width:none; }
+.account-section .practice-profile { max-width:660px; }
+.account-hub .account-fineprint { color:var(--cream-dim); opacity:1; }
+.account-hub a { color:var(--gold); }
+.account-hub button { background:transparent; border:1px solid var(--reading-rule); color:var(--cream); border-radius:2px; }
+.account-hub button:hover:not(:disabled) { border-color:var(--gold); }
+.account-hub button.account-save { background:var(--gold); border-color:var(--gold); color:var(--ink); }
+.account-hub :is(button,a,input,select):focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+.account-actions a { display:inline-flex; align-items:center; min-height:44px; }
+.account-hub .profile-overview { margin-bottom:28px; }
+.account-hub .profile-overview h2 { margin-bottom:8px; }
+.profile-photo-editor { display:grid; grid-template-columns:112px minmax(0,1fr); align-items:start; gap:24px; padding-bottom:24px; }
+.profile-photo-preview { width:112px; height:112px; overflow:hidden; border-radius:50%; display:grid; place-items:center; background:var(--reading-wash); border:1px solid var(--reading-rule); color:var(--gold); font:40px var(--font-display); }
+.profile-photo-preview img { width:100%; height:100%; object-fit:cover; }
+.profile-photo-controls h3 { margin:0; font-size:16px; }
+.profile-photo-controls p { font-size:13px; max-width:49ch; }
+.profile-file-choice { display:inline-flex; align-items:center; position:relative; min-height:44px; padding:10px 16px; border:1px solid var(--reading-rule); color:var(--gold); overflow:hidden; cursor:pointer; }
+.profile-file-choice:focus-within { outline:2px solid var(--gold); outline-offset:4px; }
+.profile-file-choice input { position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer; }
+.profile-file-choice:has(input:disabled) { opacity:.5; cursor:wait; }
+.profile-photo-controls .account-actions { margin:10px 0 0; }
+.account-inline-status,.account-inline-error { min-height:1.5em; font-size:13px; line-height:1.6; }
+.account-inline-error { color:#ffd2a8; }
+.account-empty { color:var(--cream-dim); font-size:14px; }
+.account-riot-form { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) auto; align-items:end; gap:16px; margin-top:24px; }
+.account-riot-form label { display:block; margin-bottom:8px; font-size:13px; }
+.account-riot-form :is(input,select) { width:100%; min-height:46px; padding:10px; border:1px solid var(--reading-rule); background:var(--ink-2); color:var(--cream); font:14px var(--font-ui); box-sizing:border-box; }
+.associated-player,.riot-candidate { display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:20px 0; border-block:1px solid var(--reading-rule); margin:24px 0; }
+.associated-player strong,.riot-candidate strong { font-size:22px; overflow-wrap:anywhere; }
+.associated-player>span:last-of-type,.riot-candidate>span { font-size:12px; color:var(--cream-dim); }
+.riot-candidate { border-left:2px solid var(--gold); padding-left:20px; }
+.riot-candidate p { margin:0 0 8px; }
+.account-settings-row { padding:24px 0; border-bottom:1px solid var(--reading-rule); }
+.account-settings-row:last-child { border:0; }
+.account-settings-row h3 { margin:0; font-size:18px; }
+.account-settings-row p { max-width:68ch; font-size:14px; color:var(--cream-dim); }
+.account-settings-row .account-actions { margin-bottom:0; }
+.account-guest-intro { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:64px; }
+.account-guest-intro .account-card { border:0!important; margin:0; padding:0!important; }
+.account-benefits { list-style:none; padding:0; margin:0; counter-reset:benefit; }
+.account-benefits li { position:relative; padding:18px 0 18px 34px; border-bottom:1px solid var(--reading-rule); counter-increment:benefit; }
+.account-benefits li::before { content:counter(benefit,decimal-leading-zero); position:absolute; left:0; top:20px; font:10px var(--font-ui); color:var(--gold); }
+.account-benefits strong,.account-benefits span { display:block; }
+.account-benefits span { margin-top:6px; font-size:13px; line-height:1.6; color:var(--cream-dim); }
+@media(max-width:900px) { .account-layout { grid-template-columns:150px minmax(0,1fr); gap:28px; } .account-riot-form { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .account-riot-form>button { grid-column:1/-1; justify-self:start; } }
+@media(max-width:650px) {
+ body.rift-shell[data-reading-layout] #main .account-panel.account-hub { width:calc(100% - 32px); margin-top:20px; }
+ .account-layout,.account-guest-intro { grid-template-columns:1fr; gap:28px; }
+ .account-section-nav { position:static; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px; }
+ .account-section-nav a { font-size:13px; gap:10px; }
+ .account-section { padding-bottom:28px; margin-bottom:28px; scroll-margin-top:90px; }
+ .profile-photo-editor { grid-template-columns:76px minmax(0,1fr); gap:16px; }
+ .profile-photo-preview { width:76px; height:76px; font-size:30px; }
+ .account-riot-form { grid-template-columns:1fr; }
+ .account-riot-form>button { width:100%; }
+ .profile-photo-controls .account-actions { flex-direction:column; align-items:flex-start; }
+}
