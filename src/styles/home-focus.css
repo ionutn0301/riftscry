@@ -1,4 +1,5 @@
 /* Player tasks lead; the cinematic artwork stays a recognizable backdrop. */
+.rift-cinema[data-art-kind=splash] .cinema-header{background:linear-gradient(180deg,#040a0fee 0%,#040a0fbd 70%,transparent 100%)}
 .rift-cinema h1>span{font-size:clamp(42px,5.3vw,85px)}
 .rift-cinema h1>em{font-size:clamp(38px,4.8vw,76px)}
 .cinema-stage-mark,.cinema-interaction-note{display:none}
