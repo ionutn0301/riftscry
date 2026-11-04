@@ -69,6 +69,23 @@ test('social sign-in uses PKCE and the fixed callback on this origin', async ({ 
   expect(url.searchParams.get('scopes')).toBe('openid email profile');
 });
 
+test('a guest page skips the account SDK and resets safely when another tab signs in', async ({ page, context }) => {
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
+  await seed(context, null, true);
+  await backend(context, new Map(), { offline: false });
+  await page.goto('/');
+  await expect(page.locator('[data-rift-cinema]')).toHaveAttribute('data-home-ready', 'true');
+  expect(requests.some(url => /supabase-js|supabase_supabase-js|\/lib\/account\/client/.test(url))).toBe(false);
+  const other = await context.newPage();
+  await other.goto('/');
+  await other.evaluate(({ key, value }) => localStorage.setItem(key, JSON.stringify(value)), { key: storageKey, value: session(alice) });
+  await expect(page).toHaveURL(/\/account$/);
+  await expect(page.getByText('Your workspace is synced.', { exact: true })).toBeVisible();
+  // Browser data remains separate until the owner explicitly imports it.
+  await expect(page.getByRole('button', { name: 'Import this browser’s data' })).toBeVisible();
+});
+
 test('Google stays unavailable until the hosted provider is enabled and handles availability failures', async ({ page }) => {
   await page.route('https://account-test.supabase.co/auth/v1/settings', route => route.fulfill({ headers: settingsHeaders, json: { external: { google: false } } }));
   await page.goto('/account');

@@ -267,6 +267,9 @@ export function initializeRiftScene(root: HTMLElement): () => void {
   let targetPointerY = 0;
   let viewportSize = 1;
   let mobile = innerWidth <= 700;
+  let inView = false;
+  let objectVisible = true;
+  let paintedPointerX = '', paintedPointerY = '';
   const abort = new AbortController();
   const events = { signal: abort.signal };
   const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
@@ -275,11 +278,9 @@ export function initializeRiftScene(root: HTMLElement): () => void {
 
   function available() {
     if (disposed || suspended || document.hidden || lost || failed) return false;
-    if (getComputedStyle(object!).visibility === 'hidden') return false;
+    if (!objectVisible || !inView) return false;
     if (!preview && window.scrollY > innerHeight * (mobile ? 1.10 : 1.45)) return false;
-    const bounds = object!.getBoundingClientRect();
-    return bounds.width > 0 && bounds.height > 0 && bounds.right > 0 && bounds.left < innerWidth
-      && bounds.bottom > 0 && bounds.top < innerHeight;
+    return true;
   }
 
   function stopped() {
@@ -367,6 +368,8 @@ export function initializeRiftScene(root: HTMLElement): () => void {
   function measure() {
     mobile = innerWidth <= 700;
     const bounds = object!.getBoundingClientRect();
+    objectVisible = getComputedStyle(object!).visibility !== 'hidden';
+    inView = bounds.width > 0 && bounds.height > 0 && bounds.right > 0 && bounds.left < innerWidth && bounds.bottom > 0 && bounds.top < innerHeight;
     const dpr = Math.min(devicePixelRatio || 1, mobile ? 1 : 1.5);
     // The object occupies a square buffer, not a high-DPR full-screen shader.
     const size = Math.max(1, Math.floor(Math.min(bounds.width * dpr, Math.sqrt(mobile ? 480_000 : 1_050_000))));
@@ -400,8 +403,9 @@ export function initializeRiftScene(root: HTMLElement): () => void {
       rotation[1]! + pointerX * .075 + progress * .12,
       rotation[2]! + Math.sin(elapsed * .055) * .012 - progress * .07,
     ]);
-    root.style.setProperty('--rift-scene-pointer-x', `${(pointerX * 14).toFixed(2)}px`);
-    root.style.setProperty('--rift-scene-pointer-y', `${(pointerY * 10).toFixed(2)}px`);
+    const x = `${(pointerX * 14).toFixed(2)}px`, y = `${(pointerY * 10).toFixed(2)}px`;
+    if (x !== paintedPointerX) { root.style.setProperty('--rift-scene-pointer-x', x); paintedPointerX = x; }
+    if (y !== paintedPointerY) { root.style.setProperty('--rift-scene-pointer-y', y); paintedPointerY = y; }
 
     const context = gl;
     context.viewport(0, 0, viewportSize, viewportSize);
@@ -456,9 +460,9 @@ export function initializeRiftScene(root: HTMLElement): () => void {
     context.disable(context.BLEND);
 
     canvas!.hidden = false;
-    root.dataset.riftRenderer = 'webgl';
-    root.dataset.riftPaused = 'false';
-    root.dataset.riftReady = 'true';
+    if (root.dataset.riftRenderer !== 'webgl') root.dataset.riftRenderer = 'webgl';
+    if (root.dataset.riftPaused !== 'false') root.dataset.riftPaused = 'false';
+    if (root.dataset.riftReady !== 'true') root.dataset.riftReady = 'true';
   }
 
   function tick(now: number) {
@@ -513,6 +517,7 @@ export function initializeRiftScene(root: HTMLElement): () => void {
       pointerX = 0; pointerY = 0; focus = 0;
       root.style.setProperty('--rift-scene-pointer-x', '0px');
       root.style.setProperty('--rift-scene-pointer-y', '0px');
+      paintedPointerX = paintedPointerY = '0px';
       updateStatic(targetPreset);
     }
     schedule();
@@ -561,6 +566,13 @@ export function initializeRiftScene(root: HTMLElement): () => void {
 
   const observer = new ResizeObserver(measure);
   observer.observe(object);
+  // Geometry is delivered by the browser, not synchronously read after every
+  // animation write. A stopped scene can wake when it re-enters the viewport.
+  const visibilityObserver = new IntersectionObserver(entries => {
+    inView = entries[0]?.isIntersecting ?? false;
+    schedule();
+  });
+  visibilityObserver.observe(object);
   window.addEventListener('resize', measure, { passive: true, ...events });
   window.addEventListener('scroll', schedule, { passive: true, ...events });
   window.addEventListener('riftscry:motion-change', motionChanged, events);
@@ -581,6 +593,7 @@ export function initializeRiftScene(root: HTMLElement): () => void {
     stopped();
     abort.abort();
     observer.disconnect();
+    visibilityObserver.disconnect();
     if (gl && resources && !lost) releaseResources(gl, resources);
     resources = null;
     gl = null;

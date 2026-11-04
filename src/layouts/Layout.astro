@@ -11,10 +11,10 @@ import Wayfinder from "../components/experience/JourneyWayfinder.astro";
 import RiftScene from "../components/experience/RiftScene.astro";
 import JourneyChrome from "../components/experience/JourneyChrome.astro";
 import JourneyChapters from "../components/experience/JourneyChapters.astro";
-import CommandPalette from "../components/islands/CommandPalette";
-import SyncStatus from '../components/account/SyncStatus';
+import SyncStatus from '../components/account/SyncStatus.astro';
 import generalUrl from "../assets/fonts/GeneralSans-Variable.woff2?url";
 import displayUrl from "../assets/fonts/ClashDisplay-Variable.woff2?url";
+import cinemaDisplayUrl from "../assets/fonts/rift-cinema/Cinzel-Variable.woff2?url";
 
 interface Props {
   title: string;
@@ -45,7 +45,7 @@ const surface = requestedSurface ?? inferredSurface;
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" as="font" type="font/woff2" href={generalUrl} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={displayUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={immersive ? cinemaDisplayUrl : displayUrl} crossorigin />
     <link rel="expect" href="#main" blocking="render" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -106,11 +106,16 @@ const surface = requestedSurface ?? inferredSurface;
       <main id="main">{!immersive && <JourneyChapters />}<slot /></main>
     </div>
     {!immersive && <JourneyChrome surface={surface} />}
-    <CommandPalette client:load />
-    <SyncStatus client:load />
+    <div data-search-host></div>
+    <div class="search-feedback" data-search-feedback role="status" hidden>
+      <span data-search-feedback-label>Opening search…</span>
+      <span data-search-recovery hidden><button type="button" data-palette-trigger>Try again</button><a href="/champions">Browse champions ↗</a></span>
+    </div>
+    <SyncStatus />
     <script>
-      import { initializeAccount } from '../lib/account/client';
-      void initializeAccount();
+      import { bootstrapAccount } from '../lib/account/bootstrap';
+      void bootstrapAccount();
+      import '../scripts/search-bootstrap';
       import '../scripts/experience';
       import '../scripts/appearance';
       import '../scripts/connected-observatory';

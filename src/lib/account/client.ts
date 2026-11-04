@@ -6,12 +6,13 @@ import {
 } from './storage';
 import { acknowledgeRecord, reconcileRecords } from './sync';
 import { consumeAccountReturn, rememberAccountReturn } from './return-to';
+import { accountStorageKey } from './config';
 
 let client: SupabaseClient | null = null;
 export function getSupabase() {
   if (!accountsConfigured) return null;
   return client ??= createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
-    auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true },
+    auth: { storageKey: accountStorageKey(), flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true },
   });
 }
 const supportedProviders = ['google', 'github', 'discord'] as const;

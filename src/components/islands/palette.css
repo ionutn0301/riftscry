@@ -133,3 +133,4 @@
 .palette-status > div { display:flex; flex-wrap:wrap; gap:12px 24px; margin-top:16px; }
 .palette-status :is(a,button) { display:inline-flex; align-items:center; min-height:44px; font-size:13px; }
 .palette-status button { padding:8px 16px; border:1px solid #89b8a566; border-radius:4px; color:#dcf4e6; background:#19382f; }
+.palette-result-hint { flex: none; padding: 12px 16px; border-top: 1px solid var(--line); color: var(--cream-dim); font-size: 12px; line-height: 1.5; }

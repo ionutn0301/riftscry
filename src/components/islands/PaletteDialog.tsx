@@ -1,5 +1,5 @@
-import { Command } from "cmdk";
-import { useEffect, useId, useState } from "react";
+import { Command, defaultFilter } from "cmdk";
+import { useEffect, useId, useMemo, useState } from "react";
 import type { SearchEntry } from "../../lib/search-index";
 import "./palette.css";
 
@@ -23,6 +23,17 @@ export default function PaletteDialog({
   const [entries, setEntries] = useState<SearchEntry[]>(cached ?? []);
   const [loadState, setLoadState] = useState<"loading" | "ready" | "error">(cached ? "ready" : "loading");
   const [attempt, setAttempt] = useState(0);
+  const [query, setQuery] = useState('');
+  const matches = useMemo(() => {
+    const term = query.trim();
+    if (!term) return entries;
+    return entries.map(entry => ({ entry, score: defaultFilter(entry.label, term, entry.keywords) }))
+      .filter(result => result.score > 0).sort((a, b) => b.score - a.score).map(result => result.entry);
+  }, [entries, query]);
+  // Keep the entire archive searchable without mounting hundreds of hidden
+  // options and registering each one with cmdk on the first keystroke.
+  const visible = query.trim() ? matches.slice(0, 48)
+    : GROUPS.flatMap(group => matches.filter(entry => entry.type === group.type).slice(0, 12));
 
   useEffect(() => {
     if (cached) { setLoadState("ready"); return; }
@@ -52,13 +63,14 @@ export default function PaletteDialog({
       className="palette"
       overlayClassName="palette-overlay"
       loop
+      shouldFilter={false}
     >
       <div className="palette-head">
         <span className="palette-caret" aria-hidden="true">
           Δ
         </span>
         <span className="sr-only" id={searchHintId}>Search champions, patches, items, and systems.</span>
-        <Command.Input aria-describedby={searchHintId} placeholder="Champion, patch, item, system…" />
+        <Command.Input value={query} onValueChange={setQuery} aria-describedby={searchHintId} placeholder="Champion, patch, item, system…" />
         <button type="button" className="palette-close" aria-label="Close search" onClick={() => onOpenChange(false)}>Close</button>
       </div>
       <Command.List aria-busy={loadState === "loading"}>
@@ -66,7 +78,7 @@ export default function PaletteDialog({
         {loadState === "error" && <div className="palette-status" role="alert"><p>Search is temporarily unavailable.</p><div><button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</button><a href="/champions">Browse champions ↗</a></div></div>}
         {loadState === "ready" && <Command.Empty>No matches. Try another champion, item, or patch.</Command.Empty>}
         {GROUPS.map((g) => {
-          const group = entries.filter((e) => e.type === g.type);
+          const group = visible.filter((e) => e.type === g.type);
           if (group.length === 0) return null;
           return (
             <Command.Group key={g.type} heading={g.heading}>
@@ -87,6 +99,7 @@ export default function PaletteDialog({
           );
         })}
       </Command.List>
+      {loadState === 'ready' && matches.length > visible.length && <p className="palette-result-hint">Showing {visible.length} of {matches.length} results. Type to narrow your search.</p>}
     </Command.Dialog>
   );
 }

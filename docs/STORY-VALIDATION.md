@@ -1,6 +1,6 @@
 # Replacement scroll story — 26 October 2026
 
-Review `/story-review/` for the actual completed four-frame contact sheet, unedited browser video, portrait captures, reduced-motion capture, asset register and raw lab measurements. `/images/story/storyboard.png` was composed before implementing the story using the intended actual assets.
+Review `docs/reviews/story-review/` for the actual completed four-frame contact sheet, unedited browser video, portrait captures, reduced-motion capture, asset register and raw lab measurements. `/images/story/storyboard.png` was composed before implementing the story using the intended actual assets.
 
 ## Implemented
 - Native document scrolling; no range inputs, timeline rail, wheel interception, compulsory interaction or WebGL dependency.

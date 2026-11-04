@@ -409,7 +409,10 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
       image.onerror = () => { images.delete(image); image.onload = null; image.onerror = null; reject(new Error('Artwork could not be loaded.')); };
       image.src = url;
     });
-    textureCache.set(url, promise); return promise;
+    textureCache.set(url, promise);
+    // A transient network error must not poison every future selection.
+    void promise.catch(() => { if (textureCache.get(url) === promise) textureCache.delete(url); });
+    return promise;
   }
 
   async function loadSelection(champion: RiftCinemaChampion | undefined) {
@@ -515,7 +518,7 @@ export function createRiftCinemaWorld(canvas: HTMLCanvasElement, options: RiftCi
     frame = 0;
     if (disposed || lost || failed || !visible || document.hidden) return;
     if (last && now - last < 1000 / 30 - 1 && !reduced()) { frame = requestAnimationFrame(tick); return; }
-    const delta = Math.min(.1, (now - last) / 1000 || 1 / 30); last = now;
+    const delta = last ? Math.min(.1, (now - last) / 1000) : 0; last = now;
     render(delta);
     if (!reduced()) frame = requestAnimationFrame(tick);
   }

@@ -94,9 +94,12 @@ async function verifyCinema(document, assert) {
   assert(images.length >= 2 && cinema.querySelector('[data-cinema-poster]')?.getAttribute('src') === first.world.figure,'homepage needs local environment and selected champion fallbacks');
   for (const image of images) artwork.add(image.getAttribute('src'));
   for (const src of artwork) {
-    assert(typeof src === 'string' && src.startsWith('/images/') && !src.split('/').includes('..'),'homepage artwork must use a local image path');
-    try { await Promise.all([access(join('public',src)),access(join(root,src))]); }
-    catch { assert(false,'homepage artwork is missing from public or production output: ' + src); }
+    assert(typeof src === 'string' && /^\/(?:images|_astro)\/[A-Za-z0-9_./-]+\.(?:png|webp)$/.test(src) && !src.split('/').includes('..'),'homepage artwork must use a local source or optimized image path');
+    try {
+      await access(join(root,src));
+      if (src.startsWith('/images/')) await access(join('public',src));
+    }
+    catch { assert(false,'homepage artwork is missing from production output or its public source: ' + src); }
   }
 }
 const pages = (await files(root)).filter(file => file.endsWith('.html'));

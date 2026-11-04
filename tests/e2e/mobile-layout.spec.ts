@@ -48,11 +48,8 @@ async function readyJourneyMap(page: Page, width: number, height: number) {
   // Preserve the selected scene and its real reading-panel position through overlays.
   await page.goto("/explore#change", { waitUntil: "domcontentloaded" });
   await readyJourney(page);
-  // Astro islands use display:contents; attachment and the hydration attribute
-  // establish readiness without waiting for the island itself to be visible.
-  const paletteIsland = page.locator('astro-island[component-url*="CommandPalette"]');
-  await paletteIsland.waitFor({ state: "attached" });
-  await expect(paletteIsland).not.toHaveAttribute("ssr", "");
+  // The lightweight shortcut controller is ready before React is requested.
+  await expect(page.locator('[data-search-host]')).toHaveAttribute('data-search-ready', 'true');
   const opener = mapControl(page);
   await opener.focus();
   await expectUncovered(opener);

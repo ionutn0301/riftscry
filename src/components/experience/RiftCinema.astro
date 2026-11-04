@@ -1,5 +1,8 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
+import akali from '../../../public/images/rift-cinema/akali-figure.png';
+import yasuo from '../../../public/images/rift-cinema/yasuo-figure.png';
+import thresh from '../../../public/images/rift-cinema/thresh-figure.png';
 import logo from '../../assets/brand/logo-desktop-light.png';
 import { getChampionMeta, getLatestPatch, getPatch, getAssetVersion } from '../../lib/data';
 import { recordsFor } from '../../lib/investigation';
@@ -12,10 +15,13 @@ import '../../styles/rift-cinema-navigation.css';
 
 const latest = getLatestPatch();
 const roster = getChampionMeta();
+// One optimized source is shared by the poster, portraits and GPU texture.
+// Keeping the alpha channel and full dimensions preserves the authored art.
+const [akaliArt, yasuoArt, threshArt] = await Promise.all([akali, yasuo, thresh].map(src => getImage({ src, format: 'webp', quality: 90 })));
 const worlds = [
-  {id:'Akali', region:'IONIA', character:'The Rogue Assassin', primary:'#83cdb2', secondary:'#38656d', word:'SHROUD', number:'01', figure:'/images/rift-cinema/akali-figure.png'},
-  {id:'Yasuo', region:'IONIA', character:'The Unforgiven', primary:'#a9d5ea', secondary:'#476797', word:'WIND', number:'02', figure:'/images/rift-cinema/yasuo-figure.png'},
-  {id:'Thresh', region:'SHADOW ISLES', character:'The Chain Warden', primary:'#65ddaa', secondary:'#176d76', word:'SOUL', number:'03', figure:'/images/rift-cinema/thresh-figure.png'},
+  {id:'Akali', region:'IONIA', character:'The Rogue Assassin', primary:'#83cdb2', secondary:'#38656d', word:'SHROUD', number:'01', figure:akaliArt!.src},
+  {id:'Yasuo', region:'IONIA', character:'The Unforgiven', primary:'#a9d5ea', secondary:'#476797', word:'WIND', number:'02', figure:yasuoArt!.src},
+  {id:'Thresh', region:'SHADOW ISLES', character:'The Chain Warden', primary:'#65ddaa', secondary:'#176d76', word:'SOUL', number:'03', figure:threshArt!.src},
 ];
 const signals = worlds.map(world => {
   const candidates = recordsFor(world.id).filter(record => record.change.kind === 'numeric');

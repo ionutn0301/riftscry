@@ -9,6 +9,7 @@ export default defineConfig({
   // Earlier presentations remain archived. Voyage, keyboard, spatial-history
   // (migrated resilience contracts) and core-flow cover the active experience.
   testIgnore: [
+    "**/performance-experience.spec.ts",
     "**/cinematic-production.spec.ts",
     "**/investigation.spec.ts",
     "**/investigation-review.spec.ts",

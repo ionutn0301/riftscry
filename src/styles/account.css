@@ -18,7 +18,12 @@
 .world-utilities .account-nav-link::after { content: ''; position: absolute; inset: auto 4px 3px; height: 1px; background: currentColor; opacity: 0; transform: scaleX(.4); transition: opacity .2s, transform .2s; }
 .world-utilities .account-nav-link:is(:hover, [aria-current=page]) { color: var(--world-signal, #d7be87); }
 .world-utilities .account-nav-link:is(:hover, [aria-current=page])::after { opacity: .65; transform: scaleX(1); }
-.account-sync-status { position: fixed; right: 14px; bottom: 10px; z-index: 80; border: 1px solid #496876; border-radius: 20px; padding: 7px 12px; font-size: .72rem; background: #10232d; color: #e6f2fa; text-decoration: none; max-width: calc(100vw - 28px); }
+.account-sync-status { position: fixed; right: max(14px, env(safe-area-inset-right)); top: max(88px, calc(env(safe-area-inset-top) + 72px)); z-index: 80; border: 1px solid #496876; border-radius: 8px; padding: 12px 16px; min-height: 44px; font-size: .8rem; background: #10232d; color: #e6f2fa; text-decoration: none; max-width: calc(100vw - 28px); }
+.account-nav-link:is([data-sync=synced], [data-sync=attention])::before { content: ''; position: absolute; width: 5px; height: 5px; border-radius: 50%; top: 7px; left: 17px; background: #a2d9cf; box-shadow: 0 0 0 2px var(--ink, #071016); }
+.account-nav-link[data-sync=attention]::before { background: #e9b97b; }
+.search-feedback { position: fixed; z-index: 110; left: 50%; bottom: max(100px, calc(env(safe-area-inset-bottom) + 76px)); transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px); padding: 14px 20px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--ink-2); color: var(--cream); box-shadow: 0 12px 36px #0006; font-size: 14px; line-height: 1.5; }
+.search-feedback [data-search-recovery]:not([hidden]) { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 8px; }
+.search-feedback :is(button,a) { display: inline-flex; min-height: 44px; align-items: center; color: var(--gold-bright); }
 @media (max-width: 600px) { .account-panel { margin-top: 110px; } .account-card { padding: 20px; } .world-utilities .account-nav-link { font-size: .7rem; } .cinema-header-note { display: none; } }
 
 #practice-plan { scroll-margin-top: 100px; }

@@ -1,0 +1,24 @@
+<a class="account-sync-status" href="/account" role="status" data-account-status hidden></a>
+<script>
+  import { $account, accountsConfigured } from '../../lib/account/storage';
+  const status = document.querySelector<HTMLAnchorElement>('[data-account-status]')!;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  $account.subscribe(state => {
+    clearTimeout(timer);
+    const attention = Boolean(state.error || state.conflicts.length);
+    const busy = !state.ready || state.syncing || state.pending > 0;
+    const message = !state.ready ? state.error ? 'Account needs attention' : 'Opening account…'
+      : state.conflicts.length ? 'Resolve sync conflicts'
+      : state.error ? 'Changes saved on device · Retry sync'
+      : busy ? 'Syncing workspace…' : 'Workspace synced';
+    document.querySelectorAll<HTMLElement>('.account-nav-link').forEach(link => {
+      link.dataset.sync = attention ? 'attention' : busy ? 'busy' : state.userId ? 'synced' : 'guest';
+      link.title = state.userId || attention ? `Account and profile · ${message}` : 'Account and profile';
+    });
+    status.textContent = message;
+    // Quiet successes belong in Account. Only actionable problems interrupt
+    // reading; a short delay also avoids a toast flashing on every navigation.
+    status.hidden = true;
+    if (accountsConfigured && attention) timer = setTimeout(() => { status.hidden = false; }, 350);
+  });
+</script>

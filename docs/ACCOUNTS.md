@@ -16,10 +16,10 @@ security and performance advisors returned no findings.
 The public project URL/key are configured in Vercel Production and Development,
 and on the `feat/supabase-accounts` preview branch. `PUBLIC_AUTH_PROVIDERS=google` selects Google as the only offered provider.
 The app also checks the hosted Auth `/settings` endpoint and only renders a usable
-button when `external.google` is true. Google credentials are still pending. Production and localhost redirect URLs
-are configured. The UI shows a setup notice instead of offering broken sign-in buttons. Once Google
-is configured in Supabase, reloading Account discovers it without another app
-deployment. Changing the provider allowlist still requires a rebuild. Other preview branches are not given account configuration.
+button when `external.google` is true. Google is enabled and the owner confirmed a
+successful real sign-in on 2026-11-04. Production and localhost redirect URLs are
+configured. If the hosted provider is disabled later, the UI shows a setup notice
+instead of offering a broken sign-in button. Changing the provider allowlist still requires a rebuild. Other preview branches are not given account configuration.
 Project URL: `https://vpirgetchbflxwrwjgzm.supabase.co`.
 
 Migration filenames match the hosted versions `20261103140311` (accounts) and
@@ -206,11 +206,12 @@ homepage. Account and My profile have explicit tabs. New sign-ins land on
 `/auth/callback` remains unchanged. The profile's Riot shortcut is explicitly a
 saved lookup, not verified ownership.
 
-## Finish Google activation
+## Google activation and future reconfiguration
 
-The app and Supabase redirect settings are prepared. As of 2026-11-04 the Google
-provider is disabled with empty client fields; Google Cloud could not be reached
-from the agent's browser. Complete these provider-owned steps:
+Google sign-in is active. On 2026-11-04 the hosted provider was enabled, the app
+reached the Google account chooser, and the owner confirmed a successful sign-in.
+Credentials were not copied into the app or repository. The following steps are
+retained for future reconfiguration; they are not pending setup work:
 
 1. In [Google Auth Platform](https://console.cloud.google.com/auth/clients), select
    the intended project and create a **Web application** OAuth client. Configure

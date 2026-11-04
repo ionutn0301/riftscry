@@ -1,12 +1,10 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import PaletteDialog from './PaletteDialog';
 
 /**
- * Global ⌘K palette. The cmdk machinery and the search index only load on
- * first open — this shell costs almost nothing at idle.
+ * Loaded with React and cmdk on first search intent by the native bootstrap.
  */
-const PaletteDialog = lazy(() => import("./PaletteDialog"));
-
-export default function CommandPalette() {
+export default function CommandPalette({ initialTrigger, onReady }: { initialTrigger?: HTMLElement; onReady?: () => void }) {
   const [open, setOpen] = useState(false);
   const [everOpened, setEverOpened] = useState(false);
   const handoffFrame = useRef<number | null>(null);
@@ -63,6 +61,11 @@ export default function CommandPalette() {
   }, []);
 
   useEffect(() => {
+    onReady?.();
+    show(initialTrigger);
+  }, [initialTrigger, onReady, show]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.isComposing) return;
       if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === "k") {
@@ -111,8 +114,6 @@ export default function CommandPalette() {
 
   if (!everOpened) return null;
   return (
-    <Suspense fallback={null}>
-      <PaletteDialog open={open} onOpenChange={(next) => next ? show() : hide()} />
-    </Suspense>
+    <PaletteDialog open={open} onOpenChange={(next) => next ? show() : hide()} />
   );
 }

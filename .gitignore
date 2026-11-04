@@ -6,6 +6,7 @@ test-results/
 playwright-report/
 player-visuals/
 signal-visuals/
+performance-results/
 .vercel/
 .env
 .env.*

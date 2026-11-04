@@ -12,7 +12,7 @@ Azir's one Q damage record and Camille's five real records are taken directly fr
 
 ## Evidence
 
-`/incision-review/index.html` contains the unedited two-branch recording, start/middle/end frames, alternative Camille record, portrait/reduced-motion images, raw performance JSON and asset register. It supersedes the earlier `/story-review/` material, which remains an archived artifact of the rejected V3 concept.
+`docs/reviews/incision-review/index.html` contains the unedited two-branch recording, start/middle/end frames, alternative Camille record, portrait/reduced-motion images, raw performance JSON and asset register. It supersedes the earlier `docs/reviews/story-review/` material, which remains an archived artifact of the rejected V3 concept.
 
 Mode: production build, Chromium, GSAP/CSS 2.5D and accessible HTML. No WebGL renderer. Video contains actual clicks, layers and record changes, not an edited simulation. Reduced-motion captures are clearly distinguished.
 
