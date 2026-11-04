@@ -7,7 +7,7 @@ import type { Match } from '../lib/player/contracts';
 import { api, fetcher, getPlayerCooldown, matchLink } from '../components/player/client';
 
 export function personalizeHome(root: HTMLElement, catalogue: () => Promise<CinemaSignal[]>,
-  show: (champions: HomeChampionCount[]) => void, pending: () => void, reset: () => void, lifetime: AbortSignal) {
+  show: (champions: HomeChampionCount[]) => boolean, pending: () => void, reset: () => void, lifetime: AbortSignal) {
   const status = root.querySelector<HTMLElement>('[data-home-roster-status]')!;
   const label = root.querySelector<HTMLElement>('[data-home-roster-label]')!;
   const retry = root.querySelector<HTMLButtonElement>('[data-home-roster-retry]')!;
@@ -56,9 +56,9 @@ export function personalizeHome(root: HTMLElement, catalogue: () => Promise<Cine
     const selected = player;
     const cacheIdentity = { owner: account.userId!, platform: selected.platform, puuid: selected.puuid };
     function display(snapshot: HomeRosterSnapshot, refreshing = false) {
-      displayed = snapshot; show(snapshot.champions);
-      label.textContent = 'Most played recently';
-      status.textContent = `${snapshot.total} recent game${snapshot.total === 1 ? '' : 's'}${snapshot.failed ? ` · ${snapshot.failed} unavailable` : ''}${snapshot.excluded ? ` · ${snapshot.excluded} excluded` : ''}${refreshing ? ' · Refreshing…' : ''}`;
+      displayed = snapshot; const personal = show(snapshot.champions);
+      label.textContent = personal ? 'Most played recently' : 'Featured champions';
+      status.textContent = personal ? `${snapshot.total} recent game${snapshot.total === 1 ? '' : 's'}${snapshot.failed ? ` · ${snapshot.failed} unavailable` : ''}${snapshot.excluded ? ` · ${snapshot.excluded} excluded` : ''}${refreshing ? ' · Refreshing…' : ''}` : 'Your briefing still uses your recent games.';
       if (snapshot.latest) {
         review.href = matchLink(snapshot.latest, selected.platform, selected.puuid);
         review.dataset.latestReview = review.href;
@@ -101,13 +101,13 @@ export function personalizeHome(root: HTMLElement, catalogue: () => Promise<Cine
           displayed = null; pending();
           try { localStorage.removeItem(HOME_ROSTER_CACHE_KEY); } catch { /* Optional cache. */ }
         }
-        label.textContent = displayed ? 'Most played recently' : 'Your champions';
+        label.textContent = displayed ? (root.dataset.homeRosterMode === 'personal' ? 'Most played recently' : 'Featured champions') : 'Your champions';
         status.textContent = failed ? (displayed ? 'Saved games · Refresh unavailable.' : 'Games unavailable. Try again.') : 'No supported recent games yet.';
       }
       retry.hidden = !failed; retryAt = 0; retryLabel();
     })().catch(error => {
       if (!stillCurrent()) return;
-      label.textContent = displayed ? 'Most played recently' : 'Your champions';
+      label.textContent = displayed ? (root.dataset.homeRosterMode === 'personal' ? 'Most played recently' : 'Featured champions') : 'Your champions';
       status.textContent = displayed ? 'Saved games · Refresh unavailable.' : 'Your games could not load.';
       retryAt = typeof error?.retryAt === 'number' ? error.retryAt : 0;
       retry.hidden = false; retryLabel();

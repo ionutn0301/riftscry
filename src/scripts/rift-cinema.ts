@@ -171,7 +171,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     review.querySelector('strong')!.textContent=review.dataset.latestReview?'Review latest game':recent?'Review my games':'Review a game';
     links('[data-home-catchup]',`/catch-up?champion=${current.championId}`);
     text('[data-home-catchup]>span:first-child',`Catch up on ${current.championName}`);
-    if($account.get().userId&&recent&&root.dataset.homeLoading==='false')links('[data-home-primary]',briefingLink(recent,{champion:current.championId}));
+    if($account.get().userId&&recent&&root.dataset.homeLoading==='false')links('[data-home-primary]',briefingLink(recent,root.dataset.homeRosterMode==='featured'?{}:{champion:current.championId}));
     const reading=readReturnState().resume;
     const readingLink=root.querySelector<HTMLAnchorElement>('[data-home-reading]')!;
     readingLink.hidden=!reading;readingLink.href=reading?.href??'/explore#change';
@@ -205,6 +205,11 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     root.querySelector('.cinema-save-status')!.before(container);
   }
   function showRoster(counts:HomeChampionCount[]){
+    // Only the original complete, authored figures are approved for this scene.
+    // Existing splash extractions have cropped edges; alpha alone is not parity.
+    const personal=counts.some(champion=>champion.games>0)&&counts.every(champion=>featuredIds.includes(champion.id));
+    root.dataset.homeRosterMode=personal?'personal':'featured';
+    if(!personal)counts=featuredIds.map(id=>({id,games:0,lastPlayed:0}));
     choiceIds=counts.map(champion=>champion.id);
     root.querySelectorAll<HTMLAnchorElement>('[data-home-choice]').forEach((link,index)=>{
       const count=counts[index];link.hidden=!count;if(!count)return;
@@ -218,11 +223,13 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     });
     const requested=new URLSearchParams(location.search).get('signal');
     // A shared URL wins; background personalization never changes browser history.
-    select(requested&&signals.some(signal=>signal.championId===requested)?requested:choiceIds[0]!,false,false);
+    select(requested&&featuredIds.includes(requested)?requested:choiceIds[0]!,false,false);
     if(['#inspect','#reveal','#carry'].includes(location.hash)&&!evidence.open)inspect(false);
+    return personal;
   }
   function select(id:string,push=false,remember=false){
     const selected=signals.find(item=>item.championId===id)??signals[0]!;
+    if(!featuredIds.includes(selected.championId)){location.replace(selected.explore);return;}
     const changed=current.championId!==selected.championId;
     current=selected;root.dataset.homeSubject=current.championId;
     ensureRecord(current);
@@ -393,7 +400,7 @@ function mount(root:HTMLElement,signals:CinemaSignal[]){
     focus:signal.world.focus??{x:.71,y:.46,scale:signal.championId==='Yasuo'?1.17:1.13},crystalStrength:0});
   const champions:RiftCinemaChampion[]=signals.map(renderChampion);
   function startWorld(){
-    try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:current.championId,reducedMotion:reduced(),foregroundFit:'contain',
+    try{world=createRiftCinemaWorld(canvas,{environmentUrl:'/images/rift-cinema/summoners-rift.webp',champions,initialChampion:current.championId,reducedMotion:reduced(),foregroundFit:'contain',foregroundRegion:root.querySelector<HTMLElement>('.cinema-art')!,
       onReady:()=>{root.dataset.renderer='webgl';},onError:reason=>{root.dataset.renderer='fallback';root.dataset.cinemaGraphicsIssue=reason;}});
     }catch{root.dataset.renderer='fallback';}
     if(!world)root.dataset.renderer='fallback';
