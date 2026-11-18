@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "id": "26.23",
+  "assetVersion": "16.23.1",
+  "releaseDate": "2026-11-17",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-23-notes/",
+  "ingestedAt": "2026-11-18T15:14:05.583Z",
+  "champions": [
+    {
+      "championId": "Annie",
+      "classification": "adjustment",
+      "summary": "Annie has been underperforming a bit for a while now for the average player, so we're looking to give a little more fire-power and also help support her burning Tibbers build.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Summon: Tibbers",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Tibbers Health",
+              "before": "1150 - 3500 (Scaling with Champion Level) (+50% AP)",
+              "after": "1275 - 4000 (Scaling with Champion Level) (+50% AP) (+150% Bonus HP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Tibbers Aura Damage per Second",
+              "before": "8 / 12 / 16 (+4% AP)",
+              "after": "10 / 15 / 20 (+4% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Tibbers Attack Damage",
+              "before": "30 / 45 / 60 (+10% AP)",
+              "after": "30 / 50 / 70 (+10% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Azir",
+      "classification": "buff",
+      "summary": "Hello again, bird gang.",
+      "abilities": [
+        {
+          "ability": "base",
+          "name": "Base Stats",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Attack Range",
+              "before": "525",
+              "after": "550",
+              "direction": "buff"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Arise!",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "On Hit / Attack Damage Ratio",
+              "before": "50%",
+              "after": "67%",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Bard",
+      "classification": "adjustment",
+      "summary": "Bard has been in a pretty weak state after pro focused nerfs earlier this year, and has stopped building AP entirely.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Cosmic Binding",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80 / 120 / 160 / 200 / 240 (+80% AP)",
+              "after": "80 / 125 / 170 / 215 / 260 (+100% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Ezreal",
+      "classification": "adjustment",
+      "summary": "Ezreal has been underperforming at most ranks this entire year, despite still being very meta in pro play.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Essence Flux",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "80 / 135 / 190 / 245 / 300 (+100% bonus AD) (+90% AP)",
+              "after": "80 / 135 / 190 / 245 / 300 (+115% bonus AD) (+100% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "R",
+          "name": "Trueshot Barrage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Champion Damage",
+              "before": "350 / 550 / 750 (+100% bonus AD) (+110% AP)",
+              "after": "350 / 600 / 850 (+110% bonus AD) (+120% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Galio",
+      "classification": "adjustment",
+      "summary": "Galio's been a bit weak lately, and we want to take the time to buff him, especially to help out his weaker AP bruiser-y builds rather than only helping his current heavy AP one.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Shield of Durand",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Shield Amount (Also affects R)",
+              "before": "7.5 / 9 / 10.5 / 12 / 13.5% of his Max HP",
+              "after": "8 / 11 / 14 / 17 / 20% of his Max HP",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Gnar",
+      "classification": "adjustment",
+      "summary": "Like Ezreal, Gnar may be a top pick for pros, but he hasn't been performing as well in the rest of skill brackets, so we're giving his throwing arm a buff to give him a helping hand.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Boomerang Throw",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mini Damage",
+              "before": "5 / 45 / 85 / 125 / 165 (+125% AD)",
+              "after": "5 / 45 / 85 / 125 / 165 (+135% AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Mega Damage",
+              "before": "45 / 90 / 135 / 180 / 225 (+140% AD)",
+              "after": "45 / 90 / 135 / 180 / 225 (+150% AD)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "KSante",
+      "classification": "buff",
+      "summary": "K'Sante is another staple in pro play at Worlds, but he isn't nearly as performant for everyone else, especially in late game where he falls off a cliff unlike most tanks.",
+      "abilities": [
+        {
+          "ability": "W",
+          "name": "Path Maker",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana",
+              "before": "45 / 50 / 55 / 60 / 65",
+              "after": "45",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Base Damage",
+              "before": "45 / 75 / 105 / 135 / 165",
+              "after": "45 / 85 / 125 / 165 / 205",
+              "direction": "buff"
+            },
+            {
+              "kind": "numeric",
+              "label": "All Out Charge Time Damage Increase",
+              "before": "10 / 27.5 / 45 / 62.5 / 80% damage",
+              "after": "10 / 26.25 / 42.5 / 58.75 / 75% damage",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Leblanc",
+      "classification": "adjustment",
+      "summary": "LeBlanc's damage is sitting a little too high, especially on her very dependable Q, so we're tamping down her scaling ratio to make her less oppressive, especially when snowballing.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Sigil of Malice",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Ability Power Ratio (Both Initial and Mark)",
+              "before": "40% AP",
+              "after": "35% AP",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "MasterYi",
+      "classification": "adjustment",
+      "summary": "We've been keeping an eye on Master Yi for a few patches as the buffs, his Q Cooldown Refund, QoL adjustments, and jungle meta changes have settled.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Alpha Strike",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "20 / 40 / 60 / 80 / 100 (+70% AD)",
+              "after": "20 / 40 / 60 / 80 / 100 (+60% AD)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Single Target Damage",
+              "before": "35 / 70 / 105 / 140 / 175 (+122.5% AD)",
+              "after": "35 / 70 / 105 / 140 / 175 (+105% AD). Reminder that this can also Critically Strike for bonus damage.",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Mel",
+      "classification": "adjustment",
+      "summary": "Mel's rework has landed directionally as we hoped as a moderate buff without affecting her ban rate.",
+      "abilities": [
+        {
+          "ability": "Q",
+          "name": "Radiant Barrage",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Subsequent Bolt Damage",
+              "before": "5 / 10 / 15 / 20 / 25 (+8% AP)",
+              "after": "6 / 11 / 16 / 21 / 26 (+9% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Maximum Damage",
+              "before": "85 / 120 / 165 / 220 / 285 (+65 / 73 / 81 / 89 / 97% AP)",
+              "after": "90 / 126 / 172 / 228 / 294 (+70 / 79 / 88 / 97 / 106% AP)",
+              "direction": "neutral"
+            }
+          ]
+        },
+        {
+          "ability": "W",
+          "name": "Rebuttal",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Shield",
+              "before": "50 / 80 / 110 / 140 / 170 (+50% AP)",
+              "after": "50 / 90 / 130 / 170 / 210 (+50% AP)",
+              "direction": "neutral"
+            },
+            {
+              "kind": "numeric",
+              "label": "Retaliation",
+              "before": "35 / 40 / 45 / 50 / 55 (+10% AP)",
+              "after": "35 / 45 / 55 / 65 / 75 (+10% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Syndra",
+      "classification": "nerf",
+      "summary": "Syndra's stun feels a bit too available, so we're making it both more costly and higher cooldown early.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Scatter the Weak",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Mana Cost",
+              "before": "50",
+              "after": "60",
+              "direction": "nerf"
+            },
+            {
+              "kind": "numeric",
+              "label": "Cooldown",
+              "before": "15",
+              "after": "17 / 16.5 / 16 / 15.5 / 15",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Velkoz",
+      "classification": "buff",
+      "summary": "We made a small error in Vel'Koz's math.",
+      "abilities": [
+        {
+          "ability": "R",
+          "name": "Life Form Disintegration Ray",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Total Damage",
+              "before": "450 / 700 / 925",
+              "after": "450 / 700 / 950",
+              "direction": "buff"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "championId": "Vi",
+      "classification": "adjustment",
+      "summary": "Now that the pro season is over, we want to give Vi a little more strength to boost her numbers in the rest of the ladder.",
+      "abilities": [
+        {
+          "ability": "E",
+          "name": "Relentless Force",
+          "changes": [
+            {
+              "kind": "numeric",
+              "label": "Damage",
+              "before": "10 / 30 / 50 / 70 / 90 (+110% AD) (+100% AP)",
+              "after": "10 / 35 / 60 / 85 / 110 (+110% AD) (+100% AP)",
+              "direction": "neutral"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Voltaic Cyclosword",
+      "classification": "adjustment",
+      "changes": [
+        {
+          "kind": "numeric",
+          "label": "Bonus Damage",
+          "before": "[9% || 7%] target's current hp",
+          "after": "[8% || 6%] target's current hp",
+          "direction": "neutral"
+        }
+      ]
+    }
+  ],
+  "systems": []
+}
