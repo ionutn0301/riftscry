@@ -1,0 +1,248 @@
+{
+  "id": "26.23",
+  "sourceUrl": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-23-notes/",
+  "checkedAt": "2026-11-25T16:53:53.489Z",
+  "sourceBlocks": [
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Annie"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Azir"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Bard"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Ezreal"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Galio"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Gnar"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "K'Sante"
+      ],
+      "sourceLines": 3,
+      "parsedLines": 3
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "LeBlanc"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Master Yi"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Mel"
+      ],
+      "sourceLines": 4,
+      "parsedLines": 4
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Syndra"
+      ],
+      "sourceLines": 2,
+      "parsedLines": 2
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vel'Koz"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-champions",
+      "headings": [
+        "Vi"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    },
+    {
+      "section": "patch-items",
+      "headings": [
+        "Voltaic Cyclosword"
+      ],
+      "sourceLines": 1,
+      "parsedLines": 1
+    }
+  ],
+  "sections": {
+    "champions": [
+      {
+        "name": "Annie",
+        "records": 3
+      },
+      {
+        "name": "Azir",
+        "records": 2
+      },
+      {
+        "name": "Bard",
+        "records": 1
+      },
+      {
+        "name": "Ezreal",
+        "records": 2
+      },
+      {
+        "name": "Galio",
+        "records": 1
+      },
+      {
+        "name": "Gnar",
+        "records": 2
+      },
+      {
+        "name": "K'Sante",
+        "records": 3
+      },
+      {
+        "name": "LeBlanc",
+        "records": 1
+      },
+      {
+        "name": "Master Yi",
+        "records": 2
+      },
+      {
+        "name": "Mel",
+        "records": 4
+      },
+      {
+        "name": "Syndra",
+        "records": 2
+      },
+      {
+        "name": "Vel'Koz",
+        "records": 1
+      },
+      {
+        "name": "Vi",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Voltaic Cyclosword",
+        "records": 1
+      }
+    ],
+    "systems": []
+  },
+  "normalized": {
+    "champions": [
+      {
+        "id": "Annie",
+        "records": 3
+      },
+      {
+        "id": "Azir",
+        "records": 2
+      },
+      {
+        "id": "Bard",
+        "records": 1
+      },
+      {
+        "id": "Ezreal",
+        "records": 2
+      },
+      {
+        "id": "Galio",
+        "records": 1
+      },
+      {
+        "id": "Gnar",
+        "records": 2
+      },
+      {
+        "id": "KSante",
+        "records": 3
+      },
+      {
+        "id": "Leblanc",
+        "records": 1
+      },
+      {
+        "id": "MasterYi",
+        "records": 2
+      },
+      {
+        "id": "Mel",
+        "records": 4
+      },
+      {
+        "id": "Syndra",
+        "records": 2
+      },
+      {
+        "id": "Velkoz",
+        "records": 1
+      },
+      {
+        "id": "Vi",
+        "records": 1
+      }
+    ],
+    "items": [
+      {
+        "name": "Voltaic Cyclosword",
+        "records": 1
+      }
+    ],
+    "systems": []
+  },
+  "exclusions": {},
+  "overrides": null,
+  "unparsed": []
+}
